@@ -8,7 +8,7 @@ import org.eclipse.jgit.lib.Repository;
 import collector.PotentialBFCDetector;
 import collector.Provider;
 import collector.RelatedTestCaseParser;
-import collector.migrate.TestMigrator;
+import collector.migrate.TestReducer;
 import model.PotentialRFC;
 
 public class Start {
@@ -22,7 +22,7 @@ public class Start {
 					List<PotentialRFC> pRFCs = pBFCDetector.detectPotentialBFC();
 					RelatedTestCaseParser rTCParser = new RelatedTestCaseParser(repo);
 					rTCParser.parseTestSuite(pRFCs);
-					TestMigrator tm = new TestMigrator(repo);
+					TestReducer tm = new TestReducer(repo);
 					// tm.migrate(pRFCs.get(1));
 					float i = 0;
 					float j = (float) pRFCs.size();

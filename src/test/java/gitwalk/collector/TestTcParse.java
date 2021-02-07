@@ -20,7 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import collector.PotentialBFCDetector;
 import collector.Provider;
 import collector.RelatedTestCaseParser;
-import collector.migrate.TestMigrator;
+import collector.migrate.TestReducer;
 import model.ExperResult;
 import model.PotentialRFC;
 import model.SZZBFCObject;
@@ -50,7 +50,7 @@ public class TestTcParse {
 			List<PotentialRFC> pRFCs = pBFCDetector.detectPotentialBFC();
 			RelatedTestCaseParser rTCParser = new RelatedTestCaseParser(repo);
 			rTCParser.parseTestSuite(pRFCs);
-			TestMigrator tm = new TestMigrator(repo);
+			TestReducer tm = new TestReducer(repo);
 			// tm.migrate(pRFCs.get(1));
 			float i = 0;
 			int z =0;
