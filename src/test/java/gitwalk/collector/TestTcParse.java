@@ -1,29 +1,23 @@
 package gitwalk.collector;
 
-import java.io.File;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.alibaba.fastjson.JSONObject;
-
 import collector.PotentialBFCDetector;
 import collector.Provider;
 import collector.RelatedTestCaseParser;
+import collector.migrate.BICFinder;
 import collector.migrate.TestReducer;
 import model.ExperResult;
 import model.PotentialRFC;
-import model.SZZBFCObject;
 
 public class TestTcParse {
 	Repository repo = null;
@@ -53,10 +47,11 @@ public class TestTcParse {
 			TestReducer tm = new TestReducer(repo);
 			// tm.migrate(pRFCs.get(1));
 			float i = 0;
-			int z =0;
+
 			float j = (float) pRFCs.size();
 			Iterator<PotentialRFC> iterator = pRFCs.iterator();
-			Map<String, SZZBFCObject> map = new HashMap<>();
+			int z = 0;
+			BICFinder finder = new BICFinder("fastjson");
 			while (iterator.hasNext()) {
 				PotentialRFC pRfc = iterator.next();
 				i++;
@@ -65,16 +60,28 @@ public class TestTcParse {
 				if (rTC == null) {
 					iterator.remove();
 				} else {
-					z++;
-					String time = DATE_FORMAT.format(((long) pRfc.getCommit().getCommitTime()) * 1000).concat(" +0000");
-					map.put("FASTJSON" + z, new SZZBFCObject(time, time, pRfc.getCommit().getName(), time));
+//					Map<String, SZZBFCObject> map = new HashMap<>();
+//					String time = DATE_FORMAT.format(((long) pRfc.getCommit().getCommitTime()) * 1000).concat(" +0000");
+//					map.put("fastJson" + z, new SZZBFCObject(time, time, pRfc.getCommit().getName(), time));
+//					JSONObject object = new JSONObject();
+//					object.putAll(map);
+//					File file = new File("issue_list.json");
+//					FileUtils.write(file, object.toJSONString());
+//					Thread.sleep(1500);
+//
+//					testMigrater.migrate(pRfc, finder.getBICSet());
+//					file.delete();
+					finder.searchBIC(pRfc);
 				}
 			}
-			JSONObject object = new JSONObject();
-			object.putAll(map);
-			FileUtils.write(new File("/home/sxz/Desktop/SZZUnleashed-master/examples/data/issue_list.json"),
-					object.toJSONString());
 			System.out.println("成功" + ExperResult.numSuc + "个，共" + j + "个: " + ExperResult.numSuc / j);
+
+//			int z = 0;
+//			for (PotentialRFC bfc : pRFCs) {
+//			
+//			}
+
+
 //		TestcaseMigartion tm = new TestcaseMigartion(repo);
 //		tm.testReduce(pRFC);
 		} catch (Exception ex) {

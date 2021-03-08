@@ -60,7 +60,7 @@ public class PotentialBFCDetector {
 		boolean a = false;
 		for (RevCommit commit : commits) {
 			// a 用于从失败的节点重新开始
-			if (commit.getName().equals("28b674e9814902a6bbf472fdf734fcdad1b97df2")) {
+			if (commit.getName().equals("341fc39f1b341ff1574e83c6cf51536cce758fcf")) {
 				a = true;
 			}
 			if (a) {

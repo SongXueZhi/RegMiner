@@ -1,0 +1,19 @@
+package gitwalk.collector;
+
+import java.util.List;
+
+import org.junit.Test;
+
+import collector.migrate.BICFinder;
+
+public class TestBICFinder {
+	@Test
+	public void test() {
+		BICFinder bicFinder = new BICFinder("fastjson");
+		List<String> result = bicFinder.revListCommand("975302bdb60e16188163161dad44e82221dcc546");
+		for (String iterable : result) {
+			System.out.println(iterable);
+		}
+	}
+
+}

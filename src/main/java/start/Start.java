@@ -15,7 +15,7 @@ public class Start {
 
 	public static void main(String[] args) throws Exception {
 		long t1 = System.currentTimeMillis();
-		try (Repository repo = new Provider().create(Provider.EXISITING).get(constant.Configuration.LOCAL_PROJECT)) {
+		try (Repository repo = new Provider().create(Provider.EXISITING).get(constant.Conf.LOCAL_PROJECT)) {
 			try (Git git = new Git(repo)) {
 				try {
 					PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(repo, git);

@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.eclipse.jgit.lib.Repository;
 
+import constant.Conf;
 import exec.TestExecutor;
 import model.ChangedFile.Type;
 import model.ExperResult;
@@ -25,8 +26,7 @@ public class TestReducer {
 	Repository repo;
 	TestExecutor exec = new TestExecutor();
 	String projectName = "fastjson";
-	String metaPath = "/home/sxz/Documents/meta/";
-	String cachePath = "/home/sxz/Documents/cache/";
+
 
 	public TestReducer(Repository repo) {
 		this.repo = repo;
@@ -34,7 +34,7 @@ public class TestReducer {
 
 	public Set<String> reducer(PotentialRFC pRFC) throws Exception {
 
-		// 1.准备两份源码，一份BFC，一份BFC-1
+		// 1.准备BFC
 		String commitId = pRFC.getCommit().getName();
 		System.out.println(commitId + "开始执行测试约减");
 		File bfcDirectory = checkout(commitId, "bfc");
@@ -42,25 +42,31 @@ public class TestReducer {
 			emptyCache();
 			return null;
 		}
-		File bfcpDirectory = checkout(pRFC.getCommit().getParent(0).getName(), "bfcp");
-		// 2.将BFC中所有被更改的测试文件迁移到BFC-1
-		copyToTarget(pRFC, bfcpDirectory);
-		// 3.编译BFC
+		// 2.编译BFC
 		if (!comiple(bfcDirectory)) {
 			System.out.println("BFC构建失败");
 			emptyCache();
 			return null;
 		}
-		// 4 测试BFC中的每一个待测试方法
+		// 3 测试BFC中的每一个待测试方法
 		Set<String> realTestCase = testBFC(bfcDirectory, pRFC);
 		if (realTestCase.size() <= 0) {
 			System.out.println("BFC 没有测试成功的方法");
 			emptyCache();
 			return null;
 		}
+		File bfcpDirectory = checkout(pRFC.getCommit().getParent(0).getName(), "bfcp");
+
+		if (!comiple(bfcpDirectory)) {
+			System.out.println("BFCp本身编译失败");
+			emptyCache();
+			return null;
+		}
+		// 4.将BFC中所有被更改的测试文件迁移到BFC-1
+		copyToTarget(pRFC, bfcpDirectory);
 		//5.编译BFCP
 		if (!comiple(bfcpDirectory)) {
-			System.out.println("BFCp ！构建失败");
+			System.out.println("BFCp迁移后编译失败");
 			emptyCache();
 			return null;
 		}
@@ -69,6 +75,7 @@ public class TestReducer {
 
 		if (realTestCase.size() > 0) {
 			ExperResult.numSuc++;
+			pRFC.setTestCaseSet(realTestCase);
 			System.out.println("迁移成功" + result.toString());
 		} else {
 			System.out.println("迁移失败" + result.toString());
@@ -82,7 +89,7 @@ public class TestReducer {
 
 	public boolean comiple(File file) throws Exception {
 		exec.setDirectory(file);
-		return exec.execBuildWithResult("mvn  install -DskipTests");
+		return exec.execBuildWithResult("mvn compile test-compile");
 	}
 
 	public Set<String> testBFC(File file, PotentialRFC pRFC) throws Exception {
@@ -133,13 +140,13 @@ public class TestReducer {
 
 
 	public File checkout(String commitId, String version) {
-		String cacheFile = cachePath + commitId + File.separator + version + File.separator
+		String cacheFile = Conf.cachePath + commitId + File.separator + version + File.separator
 				+ UUID.randomUUID().toString();
 		File file = new File(cacheFile);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
-		exec.execPrintln("cp -rf " + metaPath + projectName + " " + cacheFile);
+		exec.execPrintln("cp -rf " + Conf.metaPath + projectName + " " + cacheFile);
 		File result = new File(cacheFile + File.separator + projectName);
 		exec.setDirectory(result);
 		exec.execPrintln("git checkout -f " + commitId);
@@ -170,7 +177,7 @@ public class TestReducer {
 	}
 
 	public void emptyCache() {
-		exec.setDirectory(new File(cachePath));
+		exec.setDirectory(new File(Conf.cachePath));
 		exec.exec("rm -rf * ");
 	}
 

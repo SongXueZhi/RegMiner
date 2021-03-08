@@ -1,6 +1,7 @@
 package model;
 
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -9,6 +10,7 @@ public class PotentialRFC {
 	private int priority;
 	private List<NormalFile> normalJavaFiles;
 	private List<TestFile> testCaseFiles;
+	private Set<String> testCaseSet;
 
 //	private List<PotentialTestCase> potentialTestcases;
 
@@ -54,6 +56,14 @@ public class PotentialRFC {
 
 	public void setPriority(int priority) {
 		this.priority = priority;
+	}
+
+	public Set<String> getTestCaseSet() {
+		return testCaseSet;
+	}
+
+	public void setTestCaseSet(Set<String> testCaseSet) {
+		this.testCaseSet = testCaseSet;
 	}
 
 
