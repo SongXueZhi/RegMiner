@@ -17,6 +17,7 @@ public class BICFinder {
 	TestExecutor exec = new TestExecutor();
 	TestMigrater testMigrater = new TestMigrater(projectName);
 	PotentialRFC pRFC;
+	int[] status;
 
 	public BICFinder(String projectName) {
 
@@ -70,9 +71,25 @@ public class BICFinder {
 		Collections.reverse(candidateList);
 		// candidateList.stream().forEach(System.out::println);
 		String[] arr = candidateList.toArray(new String[candidateList.size()]);
+		// 针对每一个BFC使用一个status数组记录状态，测试过的不再测试
+		status = new int[arr.length];
+		for (int i = 0; i < status.length; i++) {
+			status[i] = -1000;
+		}
 		recursionBinarySearch(arr, 1, arr.length - 1);
 	}
 
+	public int getTestResult(String bic, int index, boolean fromStatus) {
+		if (fromStatus) {
+			if (status[index] != -1000) {
+				return status[index];
+			} else {
+				return test(bic);
+			}
+		} else {
+			return test(bic);
+		}
+	}
 	public int test(String bic) {
 		try {
 			return testMigrater.migrate(pRFC, bic);

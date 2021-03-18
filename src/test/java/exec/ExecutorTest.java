@@ -11,7 +11,7 @@ public class ExecutorTest {
 	@Test
 	public void testExec() throws Exception {
 		exec.setDirectory(new File("/home/sxz/Documents/code/codecache/fastjson"));
-		boolean cc = exec.execBuildWithResult("mvn compile");
+		boolean cc = exec.execBuildWithResult("mvn compile", false);
 		System.out.println(cc);
 		exec.execPrintln("git show;mvn compile");
 	}

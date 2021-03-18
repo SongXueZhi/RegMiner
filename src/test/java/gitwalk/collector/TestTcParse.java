@@ -75,6 +75,11 @@ public class TestTcParse {
 				}
 			}
 			System.out.println("成功" + ExperResult.numSuc + "个，共" + j + "个: " + ExperResult.numSuc / j);
+			System.out.println(
+					"classNotFind " + ExperResult.classNotFind + "methodNotFind " + ExperResult.methodNotFind
+							+ "packageNotExits " + ExperResult.packageNotExits + "packageNotFind "
+							+ ExperResult.packageNotFind + "symbolNotFind " + ExperResult.symbolNotFind
+							+ "unknow " + ExperResult.unknow + "variableNotFind " + ExperResult.variableNotFind);
 
 //			int z = 0;
 //			for (PotentialRFC bfc : pRFCs) {

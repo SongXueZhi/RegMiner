@@ -37,13 +37,13 @@ public class TestReducer {
 		// 1.准备BFC
 		String commitId = pRFC.getCommit().getName();
 		System.out.println(commitId + "开始执行测试约减");
-		File bfcDirectory = checkout(commitId, "bfc");
+		File bfcDirectory = checkout(commitId, commitId, "bfc");
 		if (pRFC.getCommit().getParentCount() <= 0) {
 			emptyCache();
 			return null;
 		}
 		// 2.编译BFC
-		if (!comiple(bfcDirectory)) {
+		if (!comiple(bfcDirectory, false)) {
 			System.out.println("BFC构建失败");
 			emptyCache();
 			return null;
@@ -55,9 +55,9 @@ public class TestReducer {
 			emptyCache();
 			return null;
 		}
-		File bfcpDirectory = checkout(pRFC.getCommit().getParent(0).getName(), "bfcp");
+		File bfcpDirectory = checkout(commitId, pRFC.getCommit().getParent(0).getName(), "bfcp");
 
-		if (!comiple(bfcpDirectory)) {
+		if (!comiple(bfcpDirectory, false)) {
 			System.out.println("BFCp本身编译失败");
 			emptyCache();
 			return null;
@@ -65,7 +65,7 @@ public class TestReducer {
 		// 4.将BFC中所有被更改的测试文件迁移到BFC-1
 		copyToTarget(pRFC, bfcpDirectory);
 		//5.编译BFCP
-		if (!comiple(bfcpDirectory)) {
+		if (!comiple(bfcpDirectory, true)) {
 			System.out.println("BFCp迁移后编译失败");
 			emptyCache();
 			return null;
@@ -87,9 +87,9 @@ public class TestReducer {
 //		ExperResult.numSuc++;
 	}
 
-	public boolean comiple(File file) throws Exception {
+	public boolean comiple(File file, boolean record) throws Exception {
 		exec.setDirectory(file);
-		return exec.execBuildWithResult("mvn compile test-compile");
+		return exec.execBuildWithResult("mvn compile test-compile", record);
 	}
 
 	public Set<String> testBFC(File file, PotentialRFC pRFC) throws Exception {
@@ -139,8 +139,8 @@ public class TestReducer {
 
 
 
-	public File checkout(String commitId, String version) {
-		String cacheFile = Conf.cachePath + commitId + File.separator + version + File.separator
+	public File checkout(String bfc, String commitId, String version) {
+		String cacheFile = Conf.cachePath + bfc + File.separator + commitId + File.separator + version + File.separator
 				+ UUID.randomUUID().toString();
 		File file = new File(cacheFile);
 		if (!file.exists()) {
@@ -177,8 +177,8 @@ public class TestReducer {
 	}
 
 	public void emptyCache() {
-		exec.setDirectory(new File(Conf.cachePath));
-		exec.exec("rm -rf * ");
+//		exec.setDirectory(new File(Conf.cachePath));
+//		exec.exec("rm -rf * ");
 	}
 
 }

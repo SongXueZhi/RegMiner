@@ -1,7 +1,6 @@
 package exec;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -9,14 +8,13 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.commons.io.FileUtils;
-
+import model.ExperResult;
 import model.MigrateItem.MigrateFailureType;
 
 public class TestExecutor extends Executor {
 
 	// 请注意以最小的单元运行任务
-	public boolean execBuildWithResult(String cmd) throws Exception {
+	public boolean execBuildWithResult(String cmd, boolean record) throws Exception {
 		boolean result = false;
 		try {
 			String OS = System.getProperty("os.name").toLowerCase();
@@ -29,14 +27,17 @@ public class TestExecutor extends Executor {
 			InputStreamReader inputStr = new InputStreamReader(process.getInputStream(), "gbk");
 			BufferedReader bufferReader = new BufferedReader(inputStr);
 			String line;
+			StringBuilder sb = new StringBuilder();
 			while ((line = bufferReader.readLine()) != null) {
 				line = line.toLowerCase();
-				FileUtils.writeStringToFile(new File("build_log.txt"), line, true);
+				sb.append(line + "\n");
+		//		FileUtils.writeStringToFile(new File("build_log.txt"), line, true);
 				if (line.contains("success")) {
 					result = true;
 				}
-
-				//
+			}
+			if (record && !result) {
+				record(sb.toString());
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
@@ -44,6 +45,73 @@ public class TestExecutor extends Executor {
 		return result;
 	}
 
+	public void record(String content) {
+		String[] a1 = content.split("compilation error");
+//		if (a1.length < 2) {
+//			a1 = content.split("compilation error");
+//		}
+		if(a1.length < 2) {
+			ExperResult.unknow++;
+			System.out.print("_unknow_length<2");
+			return;
+		}
+		String[] a2 = a1[1].split("\n");
+
+		boolean cannotFindMethod = false;
+		boolean cannotFindClass = false;
+		boolean cannotFindPackage = false;
+		boolean cannotFindVariable = false;
+		boolean packageNotExist = false;
+
+		for (int i = 0; i < a2.length; i++) {
+			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
+					&& a2[i + 1].contains("method")
+					&& !cannotFindMethod) {
+				System.out.print("_cannotFindMethod");
+				ExperResult.methodNotFind++;
+				cannotFindMethod = true;
+				continue;
+			}
+			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
+					&& a2[i + 1].contains("class") && !cannotFindClass) {
+				System.out.print("_cannotFindClass");
+				ExperResult.classNotFind++;
+				cannotFindClass = true;
+				continue;
+			}
+
+			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
+					&& a2[i + 1].contains("package")
+					&& !cannotFindPackage) {
+				System.out.print("_cannotFindPackage");
+				ExperResult.packageNotFind++;
+				cannotFindPackage = true;
+				continue;
+			}
+			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
+					&& a2[i + 1].contains("variable") && !cannotFindVariable) {
+				System.out.print("_cannotFindVariable");
+				ExperResult.variableNotFind++;
+				cannotFindVariable = true;
+				continue;
+			}
+			if (a2[i].contains("package") && a2[i].contains("not exist") && !packageNotExist) {
+				System.out.print("_packageNotExist");
+				ExperResult.packageNotExits++;
+				packageNotExist = true;
+				continue;
+			}
+		}
+		if (!cannotFindMethod && !cannotFindClass && !cannotFindPackage && !packageNotExist && !cannotFindVariable) {
+			if (content.contains("cannnot find symbol")) {
+				System.out.print("_cannnotfindsymbol");
+				ExperResult.symbolNotFind++;
+			} else {
+				System.out.print("_unknow");
+				ExperResult.unknow++;
+			}
+		}
+	}
 	// 请注意以最小的单元运行任务
 	public MigrateFailureType execTestWithResult(String cmd)
 			throws Exception {
@@ -70,7 +138,7 @@ public class TestExecutor extends Executor {
 				if (line.contains("build success")) {
 					t.cancel();
 					return MigrateFailureType.TESTSUCCESS;
-				} else if (line.contains("compilation error")) {
+				} else if (line.contains("compilation error") || line.contains("compilation failure")) {
 					t.cancel();
 					return MigrateFailureType.CompilationFailed;
 				} else if (line.contains("no test")) {

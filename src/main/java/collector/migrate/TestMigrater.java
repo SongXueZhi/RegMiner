@@ -37,15 +37,16 @@ public class TestMigrater {
 
 	public int migrate(PotentialRFC pRFC, String bic) throws Exception {
 		System.out.println("bic:" + bic);
-		File bicDirectory = checkout(bic, "bic");
-		if (!comiple(bicDirectory)) {
+		File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
+		// 第一次编译未copy时候编译尝试
+		if (!comiple(bicDirectory, false)) {
 			emptyCache();
 			System.out.println("本身编译失败");
 			return UNCOMPILE;
 		}
 		copyToTarget(pRFC, bicDirectory);
 		// 编译
-		if (comiple(bicDirectory)) {
+		if (comiple(bicDirectory, true)) {
 			Set<String> rt =pRFC.getTestCaseSet();
 			int a = test(bicDirectory, rt);
 			emptyCache();
@@ -57,14 +58,14 @@ public class TestMigrater {
 		}
 	}
 
-	public boolean comiple(File file) throws Exception {
+	public boolean comiple(File file, boolean record) throws Exception {
 		exec.setDirectory(file);
-		return exec.execBuildWithResult("mvn compile test-compile");
+		return exec.execBuildWithResult("mvn compile test-compile", record);
 	}
 
 	public void emptyCache() {
-		exec.setDirectory(new File(Conf.cachePath));
-		exec.exec("rm -rf * ");
+//		exec.setDirectory(new File(Conf.cachePath));
+//		exec.exec("rm -rf * ");
 	}
 
 	public int test(File file, Set<String> realTestCase) throws Exception {
@@ -99,8 +100,8 @@ public class TestMigrater {
 		return UNRESOLVE;
 	}
 
-	public File checkout(String commitId, String version) {
-		String cacheFile = Conf.cachePath + commitId + File.separator + version + File.separator
+	public File checkout(String bfc, String commitId, String version) {
+		String cacheFile = Conf.cachePath + bfc + File.separator + commitId + File.separator + version + File.separator
 				+ UUID.randomUUID().toString();
 		File file = new File(cacheFile);
 		if (!file.exists()) {
