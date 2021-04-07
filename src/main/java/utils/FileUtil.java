@@ -5,9 +5,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 public class FileUtil {
 
@@ -19,7 +24,7 @@ public class FileUtil {
 	public static String getDirectoryFromPath(String path) {
 		return path.substring(0, path.lastIndexOf("/"));
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public static void log(String line, String path, String header) throws Exception {
 		File file = new File(path);
@@ -55,5 +60,31 @@ public class FileUtil {
 
 		}
 		return result;
+	}
+
+	public static void parseJson(String jsonText) {
+		HashMap<String, String> map = new HashMap<String, String>();
+		JSONArray jarr = JSONArray.parseArray(jsonText);
+		for (Iterator<?> iterator = jarr.iterator(); iterator.hasNext();) {
+			JSONObject job = (JSONObject) iterator.next();
+			if (map.containsKey(job.get(job))) {
+				continue;
+			} else {
+
+			}
+		}
+
+	}
+
+	public static void judgeObj(JSONObject job) {
+//		if (job.get(getUUID())) {
+//
+//		}
+
+	}
+
+	public static void main(String[] args) {
+		String content = readContentFromFile("/home/sxz/data/github1.json");
+		parseJson(content);
 	}
 }

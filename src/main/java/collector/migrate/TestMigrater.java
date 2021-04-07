@@ -16,7 +16,7 @@ import utils.FileUtil;
 public class TestMigrater {
 	public final static int PASS = 0;
 	public final static int FAL = 1;
-	public final static int UNCOMPILE = -1;
+	public final static int CE = -1;
 	public final static int UNRESOLVE = -2;
 	String projectName;
 	TestExecutor exec = new TestExecutor();
@@ -42,7 +42,7 @@ public class TestMigrater {
 		if (!comiple(bicDirectory, false)) {
 			emptyCache();
 			System.out.println("本身编译失败");
-			return UNCOMPILE;
+			return CE;
 		}
 		copyToTarget(pRFC, bicDirectory);
 		// 编译
@@ -54,7 +54,7 @@ public class TestMigrater {
 		} else {
 			emptyCache();
 			System.out.println("迁移后编译失败");
-			return UNCOMPILE;
+			return CE;
 		}
 	}
 
@@ -64,8 +64,8 @@ public class TestMigrater {
 	}
 
 	public void emptyCache() {
-//		exec.setDirectory(new File(Conf.cachePath));
-//		exec.exec("rm -rf * ");
+		exec.setDirectory(new File(Conf.cachePath));
+		exec.exec("rm -rf * ");
 	}
 
 	public int test(File file, Set<String> realTestCase) throws Exception {

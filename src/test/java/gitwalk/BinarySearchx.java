@@ -31,15 +31,12 @@ public class BinarySearchx {
 		if (arr[middle] == -1) {
 			//zhishutiaoy
 			int left = expLeftBoundry(arr, low, middle, 0);
-			int right = expRightBoundry(arr, middle, high, 0);
-			if (left == -1 && right == -1) {
-				return -1;
-			}
 			int a = search(arr, low, left);
-			if (a == -1 && right !=-1) {
-				return search(arr, right, high);
-			} else {
+			if (a != -1) {
 				return a;
+			} else {
+				int right = expRightBoundry(arr, middle, high, 0);
+				return search(arr, right, high);
 			}
 		} else if (arr[middle] == 1) {
 			return search(arr, middle + 1, high); // 向右
@@ -81,7 +78,7 @@ public class BinarySearchx {
 		int right = low;
 		int status = 0;
 		int pos = 0;
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 18; i++) {
 			if (right > high) {
 				System.out.println("LEFT right try end " + right);
 				return right;
@@ -108,7 +105,7 @@ public class BinarySearchx {
 		int left = high;
 		int status = 0;
 		int pos = 0;
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 18; i++) {
 			if (left < low) {
 				return left;
 			} else {

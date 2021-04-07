@@ -17,7 +17,8 @@ public class BICFinder {
 	TestExecutor exec = new TestExecutor();
 	TestMigrater testMigrater = new TestMigrater(projectName);
 	PotentialRFC pRFC;
-	int[] status;
+	final int level = 0;
+	int[] status; // 切勿直接访问该数组
 
 	public BICFinder(String projectName) {
 
@@ -74,56 +75,202 @@ public class BICFinder {
 		// 针对每一个BFC使用一个status数组记录状态，测试过的不再测试
 		status = new int[arr.length];
 		for (int i = 0; i < status.length; i++) {
-			status[i] = -1000;
+			status[i] = -2000;
 		}
-		recursionBinarySearch(arr, 1, arr.length - 1);
+		// recursionBinarySearch(arr, 1, arr.length - 1);
+		search(arr, 1, arr.length - 1);
 	}
 
-	public int getTestResult(String bic, int index, boolean fromStatus) {
-		if (fromStatus) {
-			if (status[index] != -1000) {
-				return status[index];
-			} else {
-				return test(bic);
-			}
+	public int getTestResult(String bic, int index) {
+		if (status[index] != -2000) {
+			return status[index];
 		} else {
-			return test(bic);
+			return test(bic, index);
 		}
 	}
-	public int test(String bic) {
+
+	public int test(String bic,int index) {
 		try {
-			return testMigrater.migrate(pRFC, bic);
+			int result = testMigrater.migrate(pRFC, bic);
+			status[index] = result;
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return -1000;
 	}
-	public int recursionBinarySearch(String[] arr, int low, int high) {
+//	public int recursionBinarySearch(String[] arr, int low, int high) {
+//
+//		if (low > high) {
+//			System.out.println("查找失败");
+//			return -1;
+//		}
+//
+//		int middle = (low + high) / 2; // 初始中间位置
+//
+//		int a = test(arr[middle], middle);
+//		boolean result = (a == TestMigrater.FAL) ? true : false;
+//		int b = test(arr[middle - 1], middle);
+//		boolean result1 = ( b== TestMigrater.PASS) ? true : false;
+//		if (result && result1) {
+//			System.out.println("回归+1");
+//			return middle;
+//		} 
+//		if (result) {
+//			// 测试用例不通过往左走
+//			return recursionBinarySearch(arr, low, middle - 1);
+//
+//		} else {
+//			return recursionBinarySearch(arr, middle + 1, high);
+//		}
+//	}
 
-		if (low > high) {
+	public int search(String[] arr, int low, int high) {
+		// 失败条件
+		if (low > high || low < 0 || high > arr.length - 1) {
 			System.out.println("查找失败");
 			return -1;
 		}
 
-		int middle = (low + high) / 2; // 初始中间位置
+		int middle = (low + high) / 2;
+		// 查找成功条件
+		int statu = getTestResult(arr[middle], middle);
 
-		int a =test(arr[middle]);
-		boolean result = (a == TestMigrater.FAL) ? true : false;
-		int b = test(arr[middle - 1]);
-		boolean result1 = ( b== TestMigrater.PASS) ? true : false;
-		if (result && result1) {
+		if (statu == TestMigrater.FAL && getTestResult(arr[middle - 1], middle - 1) == TestMigrater.PASS) {
+			System.out.println("回归+1");
+			return middle - 1;
+		}
+		if (statu == TestMigrater.PASS && getTestResult(arr[middle + 1], middle + 1) == TestMigrater.FAL) {
 			System.out.println("回归+1");
 			return middle;
-		} 
-		if (result) {
-			// 测试用例不通过往左走
-			return recursionBinarySearch(arr, low, middle - 1);
+		}
 
+		// 查找策略
+		if (statu == TestMigrater.CE) {
+			// 指数跳跃查找
+			int left = expLeftBoundry(arr, low, middle, 0);
+
+			if(left!= -1 && getTestResult(arr[left], left) == TestMigrater.FAL) {
+				int a = search(arr, low, left);
+				if( a!=-1) {
+					return a;
+				}
+			}
+			int right = expRightBoundry(arr, middle, high, 0);
+			
+			if(right!=-1 && getTestResult(arr[right], right) == TestMigrater.PASS ) {
+				int b =search(arr, right, high);
+				if(b!=-1) {
+					return b;
+				}
+			}
+			System.out.println("查找失败");
+			return -1;
+		} else if (statu == TestMigrater.PASS) {
+			return search(arr, middle + 1, high); // 向右
 		} else {
-			return recursionBinarySearch(arr, middle + 1, high);
+			return search(arr, low, middle - 1); // 向左
 		}
 	}
 
+	public int expLeftBoundry(String[] arr, int low, int high, int index) {
+		int left = high;
+		int status = 0;
+		int pos = -1;
+		for (int i = 0; i < 18; i++) {
+			if (left < low) {
+				return -1;
+			} else {
+				pos = left - (int) Math.pow(2, i);
+				if (pos < low) {
+					if (index < level) {
+						return expLeftBoundry(arr, low, left, index + 1);
+					} else {
+						return -1;
+					}
+				}
+				left = pos;
+				status = getTestResult(arr[left], left);
+				if (status != -1) {
+					return rightTry(arr, left, high);
+				}
+			}
+
+		}
+		return -1;
+	}
+
+	public int rightTry(String[] arr, int low, int high) {
+		int right = low;
+		int status = 0;
+		int pos = -1;
+		for (int i = 0; i < 18; i++) {
+			if (right > high) {
+				return right;
+			} else {
+				pos = right + (int) Math.pow(2, i);
+				if (pos > high) {
+					return right;
+				}
+				status = getTestResult(arr[pos], pos);
+				if (status == -1) {
+					return right;
+				} else {
+					right = pos;
+				}
+			}
+		}
+		return right;
+	}
+
+	public int leftTry(String[] arr, int low, int high) {
+		int left = high;
+		int status = 0;
+		int pos = -1;
+		for (int i = 0; i < 18; i++) {
+			if (left < low) {
+				return left;
+			} else {
+				pos = left - (int) Math.pow(2, i);
+				if (pos < low) {
+					return left;
+				}
+				status = getTestResult(arr[pos], pos);
+				if (status == -1) {
+					return left;
+				} else {
+					left = pos;
+				}
+			}
+		}
+		return left;
+	}
+
+	public int expRightBoundry(String[] arr, int low, int high, int index) {
+		int right = low;
+		int status = 0;
+		int pos = -1;
+		for (int i = 0; i < 18; i++) {
+			if (right > high) {
+				return -1;
+			} else {
+				pos = right + (int) Math.pow(2, i);
+				if (pos > high) {
+					if (index < level) {
+						return expRightBoundry(arr, right, high, index + 1);
+					} else {
+						return -1;
+					}
+				}
+				right = pos;
+				status = getTestResult(arr[right], right);
+				if (status != -1) {
+					return leftTry(arr, low, right);
+				}
+			}
+		}
+		return -1;
+	}
 	public List<String> revListCommand(String commitId) {
 		exec.setDirectory(new File(Conf.metaPath + projectName));
 		exec.runCommand("git checkout -f master");

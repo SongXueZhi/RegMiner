@@ -31,7 +31,7 @@ public class TestExecutor extends Executor {
 			while ((line = bufferReader.readLine()) != null) {
 				line = line.toLowerCase();
 				sb.append(line + "\n");
-		//		FileUtils.writeStringToFile(new File("build_log.txt"), line, true);
+				// FileUtils.writeStringToFile(new File("build_log.txt"), line, true);
 				if (line.contains("success")) {
 					result = true;
 				}
@@ -50,7 +50,7 @@ public class TestExecutor extends Executor {
 //		if (a1.length < 2) {
 //			a1 = content.split("compilation error");
 //		}
-		if(a1.length < 2) {
+		if (a1.length < 2) {
 			ExperResult.unknow++;
 			System.out.print("_unknow_length<2");
 			return;
@@ -65,8 +65,7 @@ public class TestExecutor extends Executor {
 
 		for (int i = 0; i < a2.length; i++) {
 			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
-					&& a2[i + 1].contains("method")
-					&& !cannotFindMethod) {
+					&& a2[i + 1].contains("method") && !cannotFindMethod) {
 				System.out.print("_cannotFindMethod");
 				ExperResult.methodNotFind++;
 				cannotFindMethod = true;
@@ -81,8 +80,7 @@ public class TestExecutor extends Executor {
 			}
 
 			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
-					&& a2[i + 1].contains("package")
-					&& !cannotFindPackage) {
+					&& a2[i + 1].contains("package") && !cannotFindPackage) {
 				System.out.print("_cannotFindPackage");
 				ExperResult.packageNotFind++;
 				cannotFindPackage = true;
@@ -112,9 +110,9 @@ public class TestExecutor extends Executor {
 			}
 		}
 	}
+
 	// 请注意以最小的单元运行任务
-	public MigrateFailureType execTestWithResult(String cmd)
-			throws Exception {
+	public MigrateFailureType execTestWithResult(String cmd) throws Exception {
 		try {
 			String OS = System.getProperty("os.name").toLowerCase();
 			if (OS.equals(OS_WINDOWS)) {
@@ -169,8 +167,11 @@ public class TestExecutor extends Executor {
 			while ((line = bufferReader.readLine()) != null) {
 				result.add(line);
 			}
+			int a = process.waitFor();
 		} catch (IOException ex) {
 			ex.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 		return result;
 	}
