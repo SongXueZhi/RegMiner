@@ -25,8 +25,7 @@ public class TestReducer {
 	int j = 0;
 	Repository repo;
 	TestExecutor exec = new TestExecutor();
-	String projectName = "fastjson";
-
+	String projectName = Conf.PROJRCT_NAME;
 
 	public TestReducer(Repository repo) {
 		this.repo = repo;
@@ -64,7 +63,7 @@ public class TestReducer {
 		}
 		// 4.将BFC中所有被更改的测试文件迁移到BFC-1
 		copyToTarget(pRFC, bfcpDirectory);
-		//5.编译BFCP
+		// 5.编译BFCP
 		if (!comiple(bfcpDirectory, true)) {
 			System.out.println("BFCp迁移后编译失败");
 			emptyCache();
@@ -137,8 +136,6 @@ public class TestReducer {
 		return sj.toString();
 	}
 
-
-
 	public File checkout(String bfc, String commitId, String version) {
 		String cacheFile = Conf.cachePath + bfc + File.separator + commitId + File.separator + version + File.separator
 				+ UUID.randomUUID().toString();
@@ -146,8 +143,8 @@ public class TestReducer {
 		if (!file.exists()) {
 			file.mkdirs();
 		}
-		exec.execPrintln("cp -rf " + Conf.metaPath + projectName + " " + cacheFile);
-		File result = new File(cacheFile + File.separator + projectName);
+		exec.execPrintln("cp -rf " + Conf.metaPath + " " + cacheFile);
+		File result = new File(cacheFile + File.separator + "meta");
 		exec.setDirectory(result);
 		exec.execPrintln("git checkout -f " + commitId);
 		return result;

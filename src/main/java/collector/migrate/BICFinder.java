@@ -56,15 +56,15 @@ public class BICFinder {
 		return bICSet;
 	}
 
-	public void searchBIC(PotentialRFC pRFC) {
+	public String searchBIC(PotentialRFC pRFC) {
 		Set<String> rt = pRFC.getTestCaseSet();
 		if (rt == null || rt.size() == 0) {
 			System.out.println("意外的错误：NOTESTSET");
-			return;
+			return null;
 		}
-		if(pRFC.getCommit().getParentCount() <= 0) {
+		if (pRFC.getCommit().getParentCount() <= 0) {
 			System.out.println("searchBIC no Parent");
-			return ;
+			return null;
 		}
 		this.pRFC = pRFC;
 		List<String> candidateList = revListCommand(pRFC.getCommit().getParent(0).getName().toString());
@@ -78,7 +78,13 @@ public class BICFinder {
 			status[i] = -2000;
 		}
 		// recursionBinarySearch(arr, 1, arr.length - 1);
-		search(arr, 1, arr.length - 1);
+		int a = search(arr, 1, arr.length - 1);
+		if (a < 0) {
+			exec.exec("rm -rf " + Conf.cachePath + File.separator + pRFC.getCommit().getName());
+			return null;
+		} else {
+			return arr[a];
+		}
 	}
 
 	public int getTestResult(String bic, int index) {
@@ -89,7 +95,7 @@ public class BICFinder {
 		}
 	}
 
-	public int test(String bic,int index) {
+	public int test(String bic, int index) {
 		try {
 			int result = testMigrater.migrate(pRFC, bic);
 			status[index] = result;
@@ -99,6 +105,7 @@ public class BICFinder {
 		}
 		return -1000;
 	}
+
 //	public int recursionBinarySearch(String[] arr, int low, int high) {
 //
 //		if (low > high) {
@@ -124,7 +131,7 @@ public class BICFinder {
 //			return recursionBinarySearch(arr, middle + 1, high);
 //		}
 //	}
-
+	// if find regression return working index
 	public int search(String[] arr, int low, int high) {
 		// 失败条件
 		if (low > high || low < 0 || high > arr.length - 1) {
@@ -150,26 +157,36 @@ public class BICFinder {
 			// 指数跳跃查找
 			int left = expLeftBoundry(arr, low, middle, 0);
 
-			if(left!= -1 && getTestResult(arr[left], left) == TestMigrater.FAL) {
+			if (left != -1 && getTestResult(arr[left], left) == TestMigrater.FAL) {
+				// 往附近看一眼
+				if (getTestResult(arr[left - 1], left - 1) == TestMigrater.PASS) {
+					return left - 1;
+				}
+				// 左边界开始新的查找
 				int a = search(arr, low, left);
-				if( a!=-1) {
+				if (a != -1) {
 					return a;
 				}
 			}
 			int right = expRightBoundry(arr, middle, high, 0);
-			
-			if(right!=-1 && getTestResult(arr[right], right) == TestMigrater.PASS ) {
-				int b =search(arr, right, high);
-				if(b!=-1) {
+
+			if (right != -1 && getTestResult(arr[right], right) == TestMigrater.PASS) {
+				// 往附近看一眼
+				if (getTestResult(arr[right + 1], right + 1) == TestMigrater.FAL) {
+					return right;
+				}
+				int b = search(arr, right, high);
+				if (b != -1) {
 					return b;
 				}
 			}
 			System.out.println("查找失败");
 			return -1;
 		} else if (statu == TestMigrater.FAL) {
+			// notest 等unresolved的情况都乐观的往右
 			return search(arr, low, middle - 1);// 向左
 		} else {
-			return  search(arr, middle + 1, high); // 向右
+			return search(arr, middle + 1, high); // 向右
 		}
 	}
 
@@ -271,8 +288,9 @@ public class BICFinder {
 		}
 		return -1;
 	}
+
 	public List<String> revListCommand(String commitId) {
-		exec.setDirectory(new File(Conf.metaPath + projectName));
+		exec.setDirectory(new File(Conf.metaPath));
 		exec.runCommand("git checkout -f master");
 		return exec.runCommand("git rev-list " + commitId);
 	}

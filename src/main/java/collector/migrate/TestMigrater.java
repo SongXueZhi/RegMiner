@@ -24,6 +24,7 @@ public class TestMigrater {
 	public TestMigrater(String projectName) {
 		this.projectName = projectName;
 	}
+
 	public void migrate(PotentialRFC pRFC, Set<String> bicSet) {
 		System.out.println(pRFC.getCommit().getName() + " 开始迁移bic");
 		for (String bic : bicSet) {
@@ -47,7 +48,7 @@ public class TestMigrater {
 		copyToTarget(pRFC, bicDirectory);
 		// 编译
 		if (comiple(bicDirectory, true)) {
-			Set<String> rt =pRFC.getTestCaseSet();
+			Set<String> rt = pRFC.getTestCaseSet();
 			int a = test(bicDirectory, rt);
 			emptyCache();
 			return a;
@@ -64,8 +65,8 @@ public class TestMigrater {
 	}
 
 	public void emptyCache() {
-		exec.setDirectory(new File(Conf.cachePath));
-		exec.exec("rm -rf * ");
+//		exec.setDirectory(new File(Conf.cachePath));
+//		exec.exec("rm -rf * ");
 	}
 
 	public int test(File file, Set<String> realTestCase) throws Exception {
@@ -101,14 +102,14 @@ public class TestMigrater {
 	}
 
 	public File checkout(String bfc, String commitId, String version) {
-		String cacheFile = Conf.cachePath + bfc + File.separator + commitId + File.separator + version + File.separator
-				+ UUID.randomUUID().toString();
+		String cacheFile = Conf.cachePath + File.separator + bfc + File.separator + commitId + File.separator + version
+				+ File.separator + UUID.randomUUID().toString();
 		File file = new File(cacheFile);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
-		exec.execPrintln("cp -rf " + Conf.metaPath + projectName + " " + cacheFile);
-		File result = new File(cacheFile + File.separator + projectName);
+		exec.execPrintln("cp -rf " + Conf.metaPath + " " + cacheFile);
+		File result = new File(cacheFile + File.separator + "meta");
 		exec.setDirectory(result);
 		exec.execPrintln("git checkout -f " + commitId);
 		return result;

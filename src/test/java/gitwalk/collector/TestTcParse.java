@@ -2,6 +2,7 @@ package gitwalk.collector;
 
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import collector.Provider;
 import collector.RelatedTestCaseParser;
 import collector.migrate.BICFinder;
 import collector.migrate.TestReducer;
+import constant.Conf;
 import model.ExperResult;
 import model.PotentialRFC;
 
@@ -29,7 +31,7 @@ public class TestTcParse {
 	@Before
 	public void InitCommand() throws Exception {
 		t1 = System.currentTimeMillis();
-		repo = new Provider().create(Provider.EXISITING).get("/home/sxz/Documents/meta/fastjson/.git");
+		repo = new Provider().create(Provider.EXISITING).get(Conf.LOCAL_PROJECT);
 		git = new Git(repo);
 
 	}
@@ -38,7 +40,7 @@ public class TestTcParse {
 	public void testParse() {
 		try {
 
-			PrintStream ps = new PrintStream("/home/sxz/Desktop/result.txt");
+			PrintStream ps = new PrintStream(Conf.LOG_Path);
 			System.setOut(ps);
 			PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(repo, git);
 			List<PotentialRFC> pRFCs = pBFCDetector.detectPotentialBFC();
@@ -51,7 +53,8 @@ public class TestTcParse {
 			float j = (float) pRFCs.size();
 			Iterator<PotentialRFC> iterator = pRFCs.iterator();
 			int z = 0;
-			BICFinder finder = new BICFinder("fastjson");
+			BICFinder finder = new BICFinder(Conf.PROJRCT_NAME);
+			Set<String> setResult = new HashSet<>();
 			while (iterator.hasNext()) {
 				PotentialRFC pRfc = iterator.next();
 				i++;
@@ -71,21 +74,26 @@ public class TestTcParse {
 //
 //					testMigrater.migrate(pRfc, finder.getBICSet());
 //					file.delete();
-					finder.searchBIC(pRfc);
+					String r = finder.searchBIC(pRfc);
+					if (r != null) {
+						setResult.add(pRfc.getCommit().getName() + ";" + r);
+					}
 				}
 			}
 			System.out.println("成功" + ExperResult.numSuc + "个，共" + j + "个: " + ExperResult.numSuc / j);
-			System.out.println(
-					"classNotFind " + ExperResult.classNotFind + "methodNotFind " + ExperResult.methodNotFind
-							+ "packageNotExits " + ExperResult.packageNotExits + "packageNotFind "
-							+ ExperResult.packageNotFind + "symbolNotFind " + ExperResult.symbolNotFind
-							+ "unknow " + ExperResult.unknow + "variableNotFind " + ExperResult.variableNotFind);
+			System.out.println("classNotFind " + ExperResult.classNotFind + "methodNotFind " + ExperResult.methodNotFind
+					+ "packageNotExits " + ExperResult.packageNotExits + "packageNotFind " + ExperResult.packageNotFind
+					+ "symbolNotFind " + ExperResult.symbolNotFind + "unknow " + ExperResult.unknow + "variableNotFind "
+					+ ExperResult.variableNotFind);
+
+			for (String s : setResult) {
+				System.out.println(s);
+			}
 
 //			int z = 0;
 //			for (PotentialRFC bfc : pRFCs) {
 //			
 //			}
-
 
 //		TestcaseMigartion tm = new TestcaseMigartion(repo);
 //		tm.testReduce(pRFC);

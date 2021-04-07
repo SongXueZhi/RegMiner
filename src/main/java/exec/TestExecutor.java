@@ -28,6 +28,8 @@ public class TestExecutor extends Executor {
 			BufferedReader bufferReader = new BufferedReader(inputStr);
 			String line;
 			StringBuilder sb = new StringBuilder();
+//			pb.redirectErrorStream(true);
+//			pb.redirectOutput(Redirect.PIPE);
 			while ((line = bufferReader.readLine()) != null) {
 				line = line.toLowerCase();
 				sb.append(line + "\n");
