@@ -12,7 +12,7 @@ import model.PotentialRFC;
 import utils.FileUtil;
 
 public class BICFinder {
-	String projectName = "fastjson";
+	String projectName = "";
 	private final static String dataPath = "results/fix_and_introducers_pairs.json";
 	TestExecutor exec = new TestExecutor();
 	TestMigrater testMigrater = new TestMigrater(projectName);
@@ -166,10 +166,10 @@ public class BICFinder {
 			}
 			System.out.println("查找失败");
 			return -1;
-		} else if (statu == TestMigrater.PASS) {
-			return search(arr, middle + 1, high); // 向右
+		} else if (statu == TestMigrater.FAL) {
+			return search(arr, low, middle - 1);// 向左
 		} else {
-			return search(arr, low, middle - 1); // 向左
+			return  search(arr, middle + 1, high); // 向右
 		}
 	}
 
