@@ -134,7 +134,7 @@ public class TestMigrater {
 			if (!file1.exists()) {
 				file1.mkdirs();
 			}
-			exec.exec("cp " + file.getAbsolutePath() + " " + file1.getAbsolutePath());
+			exec.exec("cp -rf " + file.getAbsolutePath() + " " + file1.getAbsolutePath());
 
 		}
 	}

@@ -34,7 +34,6 @@ public class PotentialBFCDetector {
 		this.repo = repo;
 	}
 
-
 	public void setGit(Git git) {
 		this.git = git;
 	}
@@ -60,15 +59,15 @@ public class PotentialBFCDetector {
 		boolean a = true;
 		for (RevCommit commit : commits) {
 //			// a 用于从失败的节点重新开始
-//			if (commit.getName().equals("3d2868d8a25dc42b5d82050e841ff7354c971c66")) {
+//			if (commit.getName().equals("e2f9cc6bf31b8da8e020e2f9c559e7b970c53c7b")) {
 //				a = true;
 //			}
 			if (a) {
-			detect(commit, potentialRFCs);
+				detect(commit, potentialRFCs);
 			}
-			if (potentialRFCs.size() == 100) {
-				break;
-			}
+//			if (potentialRFCs.size() == 10) {
+//				break;
+//			}
 			countAll++;
 		}
 		System.out.println("总共分析了" + countAll + "条commit\n");

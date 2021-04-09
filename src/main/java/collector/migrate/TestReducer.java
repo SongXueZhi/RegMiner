@@ -143,6 +143,7 @@ public class TestReducer {
 		if (!file.exists()) {
 			file.mkdirs();
 		}
+		exec.setDirectory(file);
 		exec.execPrintln("cp -rf " + Conf.metaPath + " " + cacheFile);
 		File result = new File(cacheFile + File.separator + "meta");
 		exec.setDirectory(result);
