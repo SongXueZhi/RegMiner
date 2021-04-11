@@ -1,6 +1,9 @@
 package model;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -11,6 +14,7 @@ public class PotentialRFC {
 	private List<NormalFile> normalJavaFiles;
 	private List<TestFile> testCaseFiles;
 	private Set<String> testCaseSet;
+	public Map<String, File> fileMap = new HashMap<>();
 
 //	private List<PotentialTestCase> potentialTestcases;
 
@@ -65,6 +69,5 @@ public class PotentialRFC {
 	public void setTestCaseSet(Set<String> testCaseSet) {
 		this.testCaseSet = testCaseSet;
 	}
-
 
 }

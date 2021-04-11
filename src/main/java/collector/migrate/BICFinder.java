@@ -67,10 +67,10 @@ public class BICFinder {
 			return null;
 		}
 		this.pRFC = pRFC;
+		// 获取BFC到Origin的所有CommitID
 		List<String> candidateList = revListCommand(pRFC.getCommit().getParent(0).getName().toString());
-		// 反转数组
+		// 得到反转数组,即从Origin到Commit
 		Collections.reverse(candidateList);
-		// candidateList.stream().forEach(System.out::println);
 		String[] arr = candidateList.toArray(new String[candidateList.size()]);
 		// 针对每一个BFC使用一个status数组记录状态，测试过的不再测试
 		status = new int[arr.length];

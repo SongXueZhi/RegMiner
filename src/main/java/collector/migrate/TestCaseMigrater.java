@@ -4,22 +4,18 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringJoiner;
-import java.util.UUID;
 
-import constant.Conf;
-import exec.TestExecutor;
 import model.MigrateItem.MigrateFailureType;
 import model.PotentialRFC;
 import model.TestFile;
 import utils.FileUtil;
 
-public class TestCaseMigrater {
+public class TestCaseMigrater extends Migrater {
 	public final static int PASS = 0;
 	public final static int FAL = 1;
 	public final static int CE = -1;
 	public final static int UNRESOLVE = -2;
 	String projectName;
-	TestExecutor exec = new TestExecutor();
 
 	public TestCaseMigrater(String projectName) {
 		this.projectName = projectName;
@@ -39,6 +35,7 @@ public class TestCaseMigrater {
 	public int migrate(PotentialRFC pRFC, String bic) throws Exception {
 		System.out.println("bic:" + bic);
 		File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
+		pRFC.fileMap.put(bic, bicDirectory);
 		// 第一次编译未copy时候编译尝试
 		if (!comiple(bicDirectory, false)) {
 			emptyCache();
@@ -100,20 +97,6 @@ public class TestCaseMigrater {
 		}
 		System.out.println("UNRESOLVE");
 		return UNRESOLVE;
-	}
-
-	public File checkout(String bfc, String commitId, String version) {
-		String cacheFile = Conf.CACHE_PATH + File.separator + bfc + File.separator + commitId + File.separator + version
-				+ File.separator + UUID.randomUUID().toString();
-		File file = new File(cacheFile);
-		if (!file.exists()) {
-			file.mkdirs();
-		}
-		exec.execPrintln("cp -rf " + Conf.META_PATH + " " + cacheFile);
-		File result = new File(cacheFile + File.separator + "meta");
-		exec.setDirectory(result);
-		exec.execPrintln("git checkout -f " + commitId);
-		return result;
 	}
 
 	public void copyToTarget(PotentialRFC pRFC, File targerProjectDirectory) {
