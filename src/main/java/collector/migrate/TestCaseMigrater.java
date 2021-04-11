@@ -13,7 +13,7 @@ import model.PotentialRFC;
 import model.TestFile;
 import utils.FileUtil;
 
-public class TestMigrater {
+public class TestCaseMigrater {
 	public final static int PASS = 0;
 	public final static int FAL = 1;
 	public final static int CE = -1;
@@ -21,7 +21,7 @@ public class TestMigrater {
 	String projectName;
 	TestExecutor exec = new TestExecutor();
 
-	public TestMigrater(String projectName) {
+	public TestCaseMigrater(String projectName) {
 		this.projectName = projectName;
 	}
 
@@ -45,6 +45,7 @@ public class TestMigrater {
 			System.out.println("本身编译失败");
 			return CE;
 		}
+		// 第一次编译成功,则开始
 		copyToTarget(pRFC, bicDirectory);
 		// 编译
 		if (comiple(bicDirectory, true)) {
@@ -102,13 +103,13 @@ public class TestMigrater {
 	}
 
 	public File checkout(String bfc, String commitId, String version) {
-		String cacheFile = Conf.cachePath + File.separator + bfc + File.separator + commitId + File.separator + version
+		String cacheFile = Conf.CACHE_PATH + File.separator + bfc + File.separator + commitId + File.separator + version
 				+ File.separator + UUID.randomUUID().toString();
 		File file = new File(cacheFile);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
-		exec.execPrintln("cp -rf " + Conf.metaPath + " " + cacheFile);
+		exec.execPrintln("cp -rf " + Conf.META_PATH + " " + cacheFile);
 		File result = new File(cacheFile + File.separator + "meta");
 		exec.setDirectory(result);
 		exec.execPrintln("git checkout -f " + commitId);

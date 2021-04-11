@@ -9,6 +9,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 public class GitUtil {
+
 	public static String getContextWithFile(Repository repo, RevCommit commit, String filePath) throws Exception {
 		RevWalk walk = new RevWalk(repo);
 		RevTree revTree = commit.getTree();

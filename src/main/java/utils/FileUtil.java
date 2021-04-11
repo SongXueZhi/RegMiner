@@ -76,13 +76,6 @@ public class FileUtil {
 
 	}
 
-	public static void judgeObj(JSONObject job) {
-//		if (job.get(getUUID())) {
-//
-//		}
-
-	}
-
 	public static void main(String[] args) {
 		String content = readContentFromFile("/home/sxz/data/github1.json");
 		parseJson(content);

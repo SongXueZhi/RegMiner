@@ -16,7 +16,7 @@ import collector.PotentialBFCDetector;
 import collector.Provider;
 import collector.RelatedTestCaseParser;
 import collector.migrate.BICFinder;
-import collector.migrate.TestReducer;
+import collector.migrate.TestCaseDeterminer;
 import constant.Conf;
 import model.ExperResult;
 import model.PotentialRFC;
@@ -31,7 +31,7 @@ public class TestTcParse {
 	@Before
 	public void InitCommand() throws Exception {
 		t1 = System.currentTimeMillis();
-		repo = new Provider().create(Provider.EXISITING).get(Conf.LOCAL_PROJECT);
+		repo = new Provider().create(Provider.EXISITING).get(Conf.LOCAL_PROJECT_GIT);
 		git = new Git(repo);
 
 	}
@@ -39,41 +39,36 @@ public class TestTcParse {
 	@Test
 	public void testParse() {
 		try {
-
+			// 设定标准输出流至文件
 			PrintStream ps = new PrintStream(Conf.LOG_Path);
 			System.setOut(ps);
+			// 检测满足条件的BFC
 			PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(repo, git);
 			List<PotentialRFC> pRFCs = pBFCDetector.detectPotentialBFC();
+			// 工具类准备,1)测试方法查找 2)测试用例确定 3)BIC查找
 			RelatedTestCaseParser rTCParser = new RelatedTestCaseParser(repo);
-			rTCParser.parseTestSuite(pRFCs);
-			TestReducer tm = new TestReducer(repo);
-			// tm.migrate(pRFCs.get(1));
-			float i = 0;
-
-			float j = (float) pRFCs.size();
-			Iterator<PotentialRFC> iterator = pRFCs.iterator();
-			int z = 0;
+			TestCaseDeterminer tm = new TestCaseDeterminer(repo);
 			BICFinder finder = new BICFinder(Conf.PROJRCT_NAME);
+			// 声明一些辅助变量
+			int z = 0;
+			float i = 0;
+			float j = (float) pRFCs.size();
 			Set<String> setResult = new HashSet<>();
+			// 开始遍历每一个 Potential BFC
+			Iterator<PotentialRFC> iterator = pRFCs.iterator();
 			while (iterator.hasNext()) {
 				PotentialRFC pRfc = iterator.next();
 				i++;
 				System.out.println(i / j + "%");
-				Set<String> rTC = tm.reducer(pRfc);
-				if (rTC == null) {
+				// 解析有哪些测试方法
+				rTCParser.parseTestCases(pRfc);
+				// 确定被解析的方法那些是真实的测试用例
+				// TODO 此处的方法和类之间的affix按照mvn的习惯用"#"连接,也没有配置子项目
+				Set<String> rTC = tm.determine(pRfc);
+				if (rTC == null) { // 找不到测试用例直接跳过
 					iterator.remove();
 				} else {
-//					Map<String, SZZBFCObject> map = new HashMap<>();
-//					String time = DATE_FORMAT.format(((long) pRfc.getCommit().getCommitTime()) * 1000).concat(" +0000");
-//					map.put("fastJson" + z, new SZZBFCObject(time, time, pRfc.getCommit().getName(), time));
-//					JSONObject object = new JSONObject();
-//					object.putAll(map);
-//					File file = new File("issue_list.json");
-//					FileUtils.write(file, object.toJSONString());
-//					Thread.sleep(1500);
-//
-//					testMigrater.migrate(pRfc, finder.getBICSet());
-//					file.delete();
+					// 确定测试用例之后开始查找bic
 					String r = finder.searchBIC(pRfc);
 					if (r != null) {
 						setResult.add(pRfc.getCommit().getName() + ";" + r);
@@ -102,4 +97,16 @@ public class TestTcParse {
 		}
 
 	}
+//code for SZZ
+//	Map<String, SZZBFCObject> map = new HashMap<>();
+//	String time = DATE_FORMAT.format(((long) pRfc.getCommit().getCommitTime()) * 1000).concat(" +0000");
+//	map.put("fastJson" + z, new SZZBFCObject(time, time, pRfc.getCommit().getName(), time));
+//	JSONObject object = new JSONObject();
+//	object.putAll(map);
+//	File file = new File("issue_list.json");
+//	FileUtils.write(file, object.toJSONString());
+//	Thread.sleep(1500);
+//
+//	testMigrater.migrate(pRfc, finder.getBICSet());
+//	file.delete();
 }

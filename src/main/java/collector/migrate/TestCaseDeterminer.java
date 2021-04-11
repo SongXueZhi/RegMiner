@@ -20,18 +20,18 @@ import model.RelatedTestCase;
 import model.TestFile;
 import utils.FileUtil;
 
-public class TestReducer {
+public class TestCaseDeterminer {
 	int i = 0;
 	int j = 0;
 	Repository repo;
 	TestExecutor exec = new TestExecutor();
 	String projectName = Conf.PROJRCT_NAME;
 
-	public TestReducer(Repository repo) {
+	public TestCaseDeterminer(Repository repo) {
 		this.repo = repo;
 	}
 
-	public Set<String> reducer(PotentialRFC pRFC) throws Exception {
+	public Set<String> determine(PotentialRFC pRFC) throws Exception {
 
 		// 1.准备BFC
 		String commitId = pRFC.getCommit().getName();
@@ -136,15 +136,15 @@ public class TestReducer {
 		return sj.toString();
 	}
 
-	public File checkout(String bfc, String commitId, String version) {
-		String cacheFile = Conf.cachePath + bfc + File.separator + commitId + File.separator + version + File.separator
+	public File checkout(String bfcId, String commitId, String version) {
+		String cacheFile = Conf.CACHE_PATH + bfcId + File.separator + commitId + File.separator + version + "_"
 				+ UUID.randomUUID().toString();
 		File file = new File(cacheFile);
 		if (!file.exists()) {
 			file.mkdirs();
 		}
 		exec.setDirectory(file);
-		exec.execPrintln("cp -rf " + Conf.metaPath + " " + cacheFile);
+		exec.execPrintln("cp -rf " + Conf.META_PATH + " " + cacheFile);
 		File result = new File(cacheFile + File.separator + "meta");
 		exec.setDirectory(result);
 		exec.execPrintln("git checkout -f " + commitId);

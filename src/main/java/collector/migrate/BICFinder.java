@@ -15,7 +15,7 @@ public class BICFinder {
 	String projectName = "";
 	private final static String dataPath = "results/fix_and_introducers_pairs.json";
 	TestExecutor exec = new TestExecutor();
-	TestMigrater testMigrater = new TestMigrater(projectName);
+	TestCaseMigrater testMigrater = new TestCaseMigrater(projectName);
 	PotentialRFC pRFC;
 	final int level = 0;
 	int[] status; // 切勿直接访问该数组
@@ -80,7 +80,8 @@ public class BICFinder {
 		// recursionBinarySearch(arr, 1, arr.length - 1);
 		int a = search(arr, 1, arr.length - 1);
 		if (a < 0) {
-			exec.exec("rm -rf " + Conf.cachePath + File.separator + pRFC.getCommit().getName());
+//			exec.setDirectory(new File(Conf.CACHE_PATH));
+//			exec.exec("rm -rf " + Conf.CACHE_PATH + File.separator + pRFC.getCommit().getName());
 			return null;
 		} else {
 			return arr[a];
@@ -143,23 +144,23 @@ public class BICFinder {
 		// 查找成功条件
 		int statu = getTestResult(arr[middle], middle);
 
-		if (statu == TestMigrater.FAL && getTestResult(arr[middle - 1], middle - 1) == TestMigrater.PASS) {
+		if (statu == TestCaseMigrater.FAL && getTestResult(arr[middle - 1], middle - 1) == TestCaseMigrater.PASS) {
 			System.out.println("回归+1");
 			return middle - 1;
 		}
-		if (statu == TestMigrater.PASS && getTestResult(arr[middle + 1], middle + 1) == TestMigrater.FAL) {
+		if (statu == TestCaseMigrater.PASS && getTestResult(arr[middle + 1], middle + 1) == TestCaseMigrater.FAL) {
 			System.out.println("回归+1");
 			return middle;
 		}
 
 		// 查找策略
-		if (statu == TestMigrater.CE) {
+		if (statu == TestCaseMigrater.CE) {
 			// 指数跳跃查找
 			int left = expLeftBoundry(arr, low, middle, 0);
 
-			if (left != -1 && getTestResult(arr[left], left) == TestMigrater.FAL) {
+			if (left != -1 && getTestResult(arr[left], left) == TestCaseMigrater.FAL) {
 				// 往附近看一眼
-				if (getTestResult(arr[left - 1], left - 1) == TestMigrater.PASS) {
+				if (getTestResult(arr[left - 1], left - 1) == TestCaseMigrater.PASS) {
 					return left - 1;
 				}
 				// 左边界开始新的查找
@@ -170,9 +171,9 @@ public class BICFinder {
 			}
 			int right = expRightBoundry(arr, middle, high, 0);
 
-			if (right != -1 && getTestResult(arr[right], right) == TestMigrater.PASS) {
+			if (right != -1 && getTestResult(arr[right], right) == TestCaseMigrater.PASS) {
 				// 往附近看一眼
-				if (getTestResult(arr[right + 1], right + 1) == TestMigrater.FAL) {
+				if (getTestResult(arr[right + 1], right + 1) == TestCaseMigrater.FAL) {
 					return right;
 				}
 				int b = search(arr, right, high);
@@ -182,7 +183,7 @@ public class BICFinder {
 			}
 			System.out.println("查找失败");
 			return -1;
-		} else if (statu == TestMigrater.FAL) {
+		} else if (statu == TestCaseMigrater.FAL) {
 			// notest 等unresolved的情况都乐观的往右
 			return search(arr, low, middle - 1);// 向左
 		} else {
@@ -290,7 +291,7 @@ public class BICFinder {
 	}
 
 	public List<String> revListCommand(String commitId) {
-		exec.setDirectory(new File(Conf.metaPath));
+		exec.setDirectory(new File(Conf.META_PATH));
 		exec.runCommand("git checkout -f master");
 		return exec.runCommand("git rev-list " + commitId);
 	}

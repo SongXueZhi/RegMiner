@@ -28,21 +28,21 @@ public class RelatedTestCaseParser {
 		this.repo = repo;
 	}
 
-	public void parseTestSuite(List<PotentialRFC> pRFCList) throws Exception {
-
-		for (PotentialRFC pRFC : pRFCList) {
-			parseTestCases(pRFC);
-		}
-		Iterator<PotentialRFC> iterator = pRFCList.iterator();
-		while (iterator.hasNext()) {
-			PotentialRFC pRFC = iterator.next();
-			if (pRFC.getTestCaseFiles().size() > 3) {
-				iterator.remove();
-				System.out.println("该测试被移除" + pRFC.getCommit().getName());
-			}
-		}
-		System.out.println("被移除后还有的pRFC的数目为：" + pRFCList.size());
-	}
+//	public void parseTestSuite(List<PotentialRFC> pRFCList) throws Exception {
+//
+//		for (PotentialRFC pRFC : pRFCList) {
+//			parseTestCases(pRFC);
+//		}
+//		Iterator<PotentialRFC> iterator = pRFCList.iterator();
+//		while (iterator.hasNext()) {
+//			PotentialRFC pRFC = iterator.next();
+//			if (pRFC.getTestCaseFiles().size() > 3) {
+//				iterator.remove();
+//				System.out.println("该测试被移除" + pRFC.getCommit().getName());
+//			}
+//		}
+//		System.out.println("被移除后还有的pRFC的数目为：" + pRFCList.size());
+//	}
 
 	// 现在每个测试文件被分为测试相关和测试文件。
 	public void parseTestCases(PotentialRFC pRFC) throws Exception {
@@ -69,11 +69,6 @@ public class RelatedTestCaseParser {
 //		cleanEmpty(editList);
 		List<Method> methodList = CompilationUtil.getAllMethod(code);
 		Map<String, RelatedTestCase> testCaseMap = new HashMap<>();
-//		if (justRepalceTypeEdit(editList)) {
-//			// TODO 写运行脚本
-//		} else {
-
-//		}
 		// 现在只要改了的方法就算
 		getRelatedTestCase(editList, methodList, testCaseMap);
 		return testCaseMap;
@@ -82,12 +77,6 @@ public class RelatedTestCaseParser {
 	private void getRelatedTestCase(List<Edit> editList, List<Method> methodList,
 			Map<String, RelatedTestCase> testCaseMap) {
 		for (Edit edit : editList) {
-			// (暂时取消该功能)如果是insert暂时认为是插入了新的测试用例
-//			if (Edit.Type.INSERT == edit.getType()) {
-//
-//			} else {
-//
-//			}
 			matchAll(edit, methodList, testCaseMap);
 		}
 	}
@@ -105,7 +94,7 @@ public class RelatedTestCaseParser {
 
 		int methodStart = method.getStartLine();
 		int methodStop = method.getStopLine();
-		
+
 		if (editStart <= methodStart && editEnd >= methodStop || editStart >= methodStart && editEnd <= methodStop
 				|| editEnd >= methodStart && editEnd <= methodStop
 				|| editStart >= methodStart && editStart <= methodStop) {
@@ -120,26 +109,6 @@ public class RelatedTestCaseParser {
 		}
 
 	}
-
-//	private boolean justRepalceTypeEdit(List<Edit> editList) {
-//		for (Edit edit : editList) {
-//			if (edit.getType() == Edit.Type.INSERT) {
-//				return false;
-//			}
-//		}
-//		return true;
-//	}
-
-//	private void cleanEmpty(List<Edit> editList) {
-//		Iterator<Edit> iterator = editList.iterator();
-//		while (iterator.hasNext()) {
-//			Edit edit = iterator.next();
-//			// 如果是insert暂时认为是插入了新的测试用例
-//			if (Edit.Type.EMPTY == edit.getType()) {
-//				iterator.remove();
-//			}
-//		}
-//	}
 
 	private boolean isTestSuite(String code) {
 		if (code.contains("junit") || code.contains("@Test")) {
