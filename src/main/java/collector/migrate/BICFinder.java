@@ -81,8 +81,8 @@ public class BICFinder {
 		// recursionBinarySearch(arr, 1, arr.length - 1);
 		int a = search(arr, 1, arr.length - 1);
 		if (a < 0) {
-//			exec.setDirectory(new File(Conf.CACHE_PATH));
-//			exec.exec("rm -rf " + Conf.CACHE_PATH + File.separator + pRFC.getCommit().getName());
+			exec.setDirectory(new File(Conf.CACHE_PATH));
+			exec.exec("rm -rf " + Conf.CACHE_PATH + File.separator + pRFC.getCommit().getName());
 			return null;
 		} else {
 			return arr[a];
