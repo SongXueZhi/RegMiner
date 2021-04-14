@@ -38,6 +38,7 @@ public class TestTcParse {
 
 	@Test
 	public void testParse() {
+
 		try {
 			// 设定标准输出流至文件
 			PrintStream ps = new PrintStream(Conf.LOG_Path);
