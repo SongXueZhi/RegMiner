@@ -2,38 +2,32 @@ package ast;
 
 import java.util.ArrayList;
 
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
-public class MemberRetriever extends ASTVisitor{
-	private ArrayList<ASTNode> nodeList = new ArrayList<>();
-
-//	public boolean visit(TypeDeclaration type) {
-//		boolean isInnerClass = false;
-//		ASTNode parent = type.getParent();
-//		while (!(parent instanceof CompilationUnit)) {
-//			if (parent instanceof TypeDeclaration) {
-//				isInnerClass = true;
-//				break;
-//			}
-//			parent = parent.getParent();
-//		}
-//
-//		if (isInnerClass) {
-//			nodeList.add(type);
-//			return false;
-//		} else {
-//			return true;
-//		}
-//	}
+public class MemberRetriever extends ASTVisitor {
+	private ArrayList<MethodDeclaration> nodeList = new ArrayList<>();
 
 	public boolean visit(MethodDeclaration method) {
 		this.nodeList.add(method);
 		return false;
 	}
 
-	public ArrayList<ASTNode> getMemberList() {
+	public ArrayList<MethodDeclaration> getMemberList() {
 		return this.nodeList;
+	}
+
+	public void a(String a, int ac) {
+
+	}
+
+	@SuppressWarnings("unlikely-arg-type")
+	public MethodDeclaration getMethodDeclabyName(String name) {
+		for (MethodDeclaration md : nodeList) {
+			if (md.getName().toString().equals(name)) {
+				return md;
+			}
+		}
+		return null;
 	}
 }

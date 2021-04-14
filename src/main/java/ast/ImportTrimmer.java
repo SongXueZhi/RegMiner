@@ -17,9 +17,10 @@ import org.eclipse.text.edits.MalformedTreeException;
 public class ImportTrimmer {
 	// 修剪AST的import
 	public ASTRewrite prune(CompilationUnit unit) throws IOException, MalformedTreeException, BadLocationException {
+
+		ASTRewrite rewriter = ASTRewrite.create(unit.getAST());
 		List<ImportDeclaration> importNodeList = unit.imports();
 		List<TypeDeclaration> types = unit.types();
-		ASTRewrite rewriter = ASTRewrite.create(unit.getAST());
 		for (ImportDeclaration importDeclaration : importNodeList) {
 			String str = importDeclaration.getName().toString();
 			String pattern = str.substring(str.lastIndexOf(".") + 1, str.length());

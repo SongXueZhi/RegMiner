@@ -7,7 +7,7 @@ import org.junit.Test;
 import utils.FileUtil;
 
 public class TestUtils {
-	
+
 	@Test
 	public void testGetDirectory() {
 		String filePath = "/home/sxz/document/mmmmm-ddahkdak989/123.java";

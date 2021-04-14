@@ -11,7 +11,7 @@ import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.lib.Repository;
 
 import model.ChangedFile.Type;
-import model.Method;
+import model.Methodx;
 import model.PotentialRFC;
 import model.RelatedTestCase;
 import model.TestFile;
@@ -27,22 +27,6 @@ public class RelatedTestCaseParser {
 	public RelatedTestCaseParser(Repository repo) {
 		this.repo = repo;
 	}
-
-//	public void parseTestSuite(List<PotentialRFC> pRFCList) throws Exception {
-//
-//		for (PotentialRFC pRFC : pRFCList) {
-//			parseTestCases(pRFC);
-//		}
-//		Iterator<PotentialRFC> iterator = pRFCList.iterator();
-//		while (iterator.hasNext()) {
-//			PotentialRFC pRFC = iterator.next();
-//			if (pRFC.getTestCaseFiles().size() > 3) {
-//				iterator.remove();
-//				System.out.println("该测试被移除" + pRFC.getCommit().getName());
-//			}
-//		}
-//		System.out.println("被移除后还有的pRFC的数目为：" + pRFCList.size());
-//	}
 
 	// 现在每个测试文件被分为测试相关和测试文件。
 	public void parseTestCases(PotentialRFC pRFC) throws Exception {
@@ -67,28 +51,27 @@ public class RelatedTestCaseParser {
 	private Map<String, RelatedTestCase> parse(TestFile file, String code) throws Exception {
 		List<Edit> editList = file.getEditList();
 //		cleanEmpty(editList);
-		List<Method> methodList = CompilationUtil.getAllMethod(code);
+		List<Methodx> methodList = CompilationUtil.getAllMethod(code);
 		Map<String, RelatedTestCase> testCaseMap = new HashMap<>();
-		// 现在只要改了的方法就算
 		getRelatedTestCase(editList, methodList, testCaseMap);
 		return testCaseMap;
 	}
 
-	private void getRelatedTestCase(List<Edit> editList, List<Method> methodList,
+	private void getRelatedTestCase(List<Edit> editList, List<Methodx> methodList,
 			Map<String, RelatedTestCase> testCaseMap) {
 		for (Edit edit : editList) {
 			matchAll(edit, methodList, testCaseMap);
 		}
 	}
 
-	private void matchAll(Edit edit, List<Method> methods, Map<String, RelatedTestCase> testCaseMap) {
-		for (Method method : methods) {
+	private void matchAll(Edit edit, List<Methodx> methods, Map<String, RelatedTestCase> testCaseMap) {
+		for (Methodx method : methods) {
 			match(edit, method, testCaseMap);
 		}
 	}
 
 	//
-	private void match(Edit edit, Method method, Map<String, RelatedTestCase> testCaseMap) {
+	private void match(Edit edit, Methodx method, Map<String, RelatedTestCase> testCaseMap) {
 		int editStart = edit.getBeginB();
 		int editEnd = edit.getEndB();
 
@@ -98,7 +81,7 @@ public class RelatedTestCaseParser {
 		if (editStart <= methodStart && editEnd >= methodStop || editStart >= methodStart && editEnd <= methodStop
 				|| editEnd >= methodStart && editEnd <= methodStop
 				|| editStart >= methodStart && editStart <= methodStop) {
-			String name = method.getSimpleName();
+			String name = method.getSignature();
 			if (!testCaseMap.containsKey(name)) {
 				RelatedTestCase testCase = new RelatedTestCase();
 				// 暂时不设定方法的类型

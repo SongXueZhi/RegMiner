@@ -3,6 +3,7 @@ package utils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
@@ -13,7 +14,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 import ast.MemberRetriever;
 import ast.TypeRetriever;
-import model.Method;
+import model.Methodx;
 
 public class CompilationUtil {
 	public static CompilationUnit parseCompliationUnit(String fileContent) {
@@ -29,25 +30,25 @@ public class CompilationUtil {
 		return result;
 	}
 
-	public static List<Method> getAllMethod(String codeContent) {
-		List<Method> methods = new ArrayList<>();
+	public static List<Methodx> getAllMethod(String codeContent) {
+		List<Methodx> methods = new ArrayList<>();
 		MemberRetriever retriever = new MemberRetriever();
 		CompilationUnit unit = parseCompliationUnit(codeContent);
 		unit.accept(retriever);
-		List<ASTNode> methodNodes = retriever.getMemberList();
+		List<MethodDeclaration> methodNodes = retriever.getMemberList();
 		for (ASTNode node : methodNodes) {
 			MethodDeclaration methodDeclaration = (MethodDeclaration) node;
 			String simpleName = methodDeclaration.getName().toString();
-			StringBuilder sb = new StringBuilder(simpleName);
 			List<ASTNode> parameters = methodDeclaration.parameters();
 			// SingleVariableDeclaration
+			StringJoiner sj = new StringJoiner(",", simpleName + "(", ")");
 			for (ASTNode param : parameters) {
-				sb.append("[").append(param.toString()).append("]");
+				sj.add(param.toString());
 			}
-			String signature = sb.toString();
+			String signature = sj.toString();
 			int startLine = unit.getLineNumber(methodDeclaration.getStartPosition()) - 1;
 			int endLine = unit.getLineNumber(methodDeclaration.getStartPosition() + node.getLength()) - 1;
-			methods.add(new Method(signature, startLine, endLine, simpleName));
+			methods.add(new Methodx(signature, startLine, endLine, simpleName, methodDeclaration));
 		}
 		return methods;
 	}

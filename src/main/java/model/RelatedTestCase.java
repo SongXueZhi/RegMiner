@@ -1,7 +1,7 @@
 package model;
 
 public class RelatedTestCase {
-	Method method;
+	Methodx method;
 	Type type;
 
 	public Type getType() {
@@ -12,11 +12,11 @@ public class RelatedTestCase {
 		this.type = type;
 	}
 
-	public Method getMethod() {
+	public Methodx getMethod() {
 		return method;
 	}
 
-	public void setMethod(Method method) {
+	public void setMethod(Methodx method) {
 		this.method = method;
 	}
 

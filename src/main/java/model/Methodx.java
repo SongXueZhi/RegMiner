@@ -1,21 +1,26 @@
 package model;
 
-public class Method {
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+
+public class Methodx {
 
 	private String signature;
 	private int startLine;
 	private int stopLine;
 	private String simpleName;
+	private MethodDeclaration methodDeclaration;
 
-	public Method(String signature) {
+	public Methodx(String signature) {
 		this.signature = signature;
 	}
 
-	public Method(String signature, int startLine, int stopLine, String simpleName) {
+	public Methodx(String signature, int startLine, int stopLine, String simpleName,
+			MethodDeclaration methodDeclaration) {
 		this.signature = signature;
 		this.startLine = startLine;
 		this.stopLine = stopLine;
 		this.simpleName = simpleName;
+		this.methodDeclaration = methodDeclaration;
 	}
 
 	public String getSignature() {
@@ -48,6 +53,14 @@ public class Method {
 
 	public void setSimpleName(String simpleName) {
 		this.simpleName = simpleName;
+	}
+
+	public MethodDeclaration getMethodDeclaration() {
+		return methodDeclaration;
+	}
+
+	public void setMethodDeclaration(MethodDeclaration methodDeclaration) {
+		this.methodDeclaration = methodDeclaration;
 	}
 
 }

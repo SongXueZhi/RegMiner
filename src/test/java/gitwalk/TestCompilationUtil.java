@@ -2,18 +2,17 @@ package gitwalk;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.junit.Before;
 import org.junit.Test;
 
+import ast.FieldRetriever;
 import ast.ImportTrimmer;
-import model.Method;
+import collector.migrate.TestCaseMigrater;
 import utils.CompilationUtil;
 
 public class TestCompilationUtil {
@@ -39,7 +38,7 @@ public class TestCompilationUtil {
 	}
 
 	@Test
-	public void testGetAllImport() throws MalformedTreeException, IOException, BadLocationException {
+	public void testGetAllImport() throws MalformedTreeException, IOException {
 		ImportTrimmer itm = new ImportTrimmer();
 //		ASTRewrite rewriter = itm.prune(CompilationUtil.parseCompliationUnit(fileContent));
 //		Document doc = new Document(fileContent);
@@ -48,28 +47,35 @@ public class TestCompilationUtil {
 //		FileUtils.write(new File("Solution.java"), doc.get());
 		CompilationUnit unit = CompilationUtil.parseCompliationUnit(fileContent);
 		TypeDeclaration type = (TypeDeclaration) unit.types().get(0);
+		FieldRetriever fr = new FieldRetriever();
+		unit.accept(fr);
 
 		MethodDeclaration[] m = type.getMethods();
-		MethodDeclaration method = m[2];
+		MethodDeclaration method = m[3];
+		System.out.println(method.getBody().toString());
 		itm.getMethodCallGraph(method, unit);
 	}
 
-	// @Test
-	public void testGetMethodList() {
-
-		List<Method> methodList = CompilationUtil.getAllMethod(fileContent);
-		for (Method method : methodList) {
-			String name = method.getSignature();
-			int p = method.getStartLine();
-			int q = method.getStopLine();
-			System.out.println(name + " " + p + " --> " + q);
-		}
+//
+//	// @Test
+//	public void testGetMethodList() {
+//
+//		List<Methodx> methodList = CompilationUtil.getAllMethod(fileContent);
+//		for (Methodx method : methodList) {
+//			String name = method.getSignature();
+//			int p = method.getStartLine();
+//			int q = method.getStopLine();
+//			System.out.println(name + " " + p + " --> " + q);
+//		}
+//	}
+//
+//	// @Test
+//	public void testGetClassName() {
+//		String ss = CompilationUtil.getQualityClassName(fileContent);
+//		System.out.println(ss);
+//	}
+	@Test
+	public void testPruneMethod() throws Exception {
+		TestCaseMigrater tm = new TestCaseMigrater("");
 	}
-
-	// @Test
-	public void testGetClassName() {
-		String ss = CompilationUtil.getQualityClassName(fileContent);
-		System.out.println(ss);
-	}
-
 }

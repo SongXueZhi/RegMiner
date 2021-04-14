@@ -1,10 +1,9 @@
 package collector.migrate;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringJoiner;
 
 import org.eclipse.jgit.lib.Repository;
@@ -28,7 +27,7 @@ public class TestCaseDeterminer extends Migrater {
 		this.repo = repo;
 	}
 
-	public Set<String> determine(PotentialRFC pRFC) throws Exception {
+	public void determine(PotentialRFC pRFC) throws Exception {
 
 		// 1.准备BFC
 		String bfcID = pRFC.getCommit().getName();
@@ -36,53 +35,51 @@ public class TestCaseDeterminer extends Migrater {
 		File bfcDirectory = checkout(bfcID, bfcID, "bfc");
 		pRFC.fileMap.put(bfcID, bfcDirectory); // 管理每一个commit的文件路径
 
-		if (pRFC.getCommit().getParentCount() <= 0) {
+		// 2.准备BFCP
+		if (pRFC.getCommit().getParentCount() <= 0) { // 首先判断BFCP是否存在
 			emptyCache(bfcID);
-			return null;
-		}
-		// 2.编译BFC
-		if (!comiple(bfcDirectory, false)) {
-			System.out.println("BFC构建失败");
-			emptyCache(bfcID);
-			return null;
-		}
-		// 3 测试BFC中的每一个待测试方法
-		Set<String> realTestCase = testBFC(bfcDirectory, pRFC);
-		if (realTestCase.size() <= 0) {
-			System.out.println("BFC 没有测试成功的方法");
-			emptyCache(bfcID);
-			return null;
 		}
 		String bfcpID = pRFC.getCommit().getParent(0).getName();
 		File bfcpDirectory = checkout(bfcID, bfcpID, "bfcp");// 管理每一个commit的文件路径
 		pRFC.fileMap.put(bfcpID, bfcpDirectory);
 
+		// 3.第一次尝试编译 BFCP
 		if (!comiple(bfcpDirectory, false)) {
 			System.out.println("BFCp本身编译失败");
 			emptyCache(bfcID);
-			return null;
 		}
-		// 4.将BFC中所有被更改的测试文件迁移到BFC-1
+		// 4.将BFC中所有与测试相关的文件迁移到BFCP,与BIC查找中的迁移略有不同
+		// BFC到BFCP的迁移不做依赖分析,相关就迁移
+		// 因为后续BFC的测试用例确认会删除一些TESTFILE,所以先迁移
 		copyToTarget(pRFC, bfcpDirectory);
-		// 5.编译BFCP
+
+		// 4.编译BFC
+		if (!comiple(bfcDirectory, false)) {
+			System.out.println("BFC构建失败");
+			emptyCache(bfcID);
+		}
+		// 5. 测试BFC中的每一个待测试方法
+		testBFC(bfcDirectory, pRFC);
+		if (pRFC.getTestCaseFiles().size() <= 0) {
+			System.out.println("BFC 没有测试成功的方法");
+			emptyCache(bfcID);
+		}
+
+		// 7.编译并测试BFCP
 		if (!comiple(bfcpDirectory, true)) {
 			System.out.println("BFCp迁移后编译失败");
 			emptyCache(bfcID);
-			return null;
 		}
 		// 6.测试BFCP
-		String result = testBFCP(bfcpDirectory, realTestCase);
+		String result = testBFCP(bfcpDirectory, pRFC.getTestCaseFiles());
 
-		if (realTestCase.size() > 0) {
+		if (pRFC.getTestCaseFiles().size() > 0) {
 			ExperResult.numSuc++;
-			pRFC.setTestCaseSet(realTestCase);
 			System.out.println("迁移成功" + result.toString());
 		} else {
 			System.out.println("迁移失败" + result.toString());
 			emptyCache(bfcID);
-			return null;
 		}
-		return realTestCase;
 //		ExperResult.numSuc++;
 	}
 
@@ -91,49 +88,69 @@ public class TestCaseDeterminer extends Migrater {
 		return exec.execBuildWithResult("mvn compile test-compile", record);
 	}
 
-	public Set<String> testBFC(File file, PotentialRFC pRFC) throws Exception {
+	public void testBFC(File file, PotentialRFC pRFC) throws Exception {
 		// 一定要先设置当前文件路径
 		exec.setDirectory(file);
 		// 开始测试
-		Set<String> result = new HashSet<>();
-		for (TestFile testFile : pRFC.getTestCaseFiles()) {
+		Iterator<TestFile> iter = pRFC.getTestCaseFiles().iterator();
+		while (iter.hasNext()) {
+			TestFile testFile = (TestFile) iter.next();
+
 			if (testFile.getType() == Type.TEST_SUITE) {
-				testSuite(testFile, result);
+				testSuite(testFile);
+			} else {
+				iter.remove();// 只保留测试文件
+			}
+			if (testFile.getTestMethodMap().size() == 0) {
+				iter.remove(); // 如果该测试文件中没有测试成功的方法,则该TestFile移除
 			}
 		}
-		return result;
 	}
 
-	public void testSuite(TestFile testFile, Set<String> result) throws Exception {
+	public void testSuite(TestFile testFile) throws Exception {
 		Map<String, RelatedTestCase> methodMap = testFile.getTestMethodMap();
 		if (methodMap != null && methodMap.size() > 0) {
-			testMethod(methodMap.keySet(), testFile.getQualityClassName(), result);
+			testMethod(methodMap, testFile.getQualityClassName());
 		}
 	}
 
-	public void testMethod(Set<String> methodSet, String qualityClassName, Set<String> result) throws Exception {
-		for (String method : methodSet) {
-			String testCase = qualityClassName + "#" + method;
+	public void testMethod(Map<String, RelatedTestCase> methodMap, String qualityClassName) throws Exception {
+		// 遍历BFC测试文件中的每一个方法,并执行测试,测试失败即移除
+		for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext();) {
+			Map.Entry<String, RelatedTestCase> entry = it.next();
+			String testCase = qualityClassName + "#" + entry.getKey().split("[(]")[0];
 			MigrateFailureType type = exec.execTestWithResult("mvn test -Dtest=" + testCase);
-			if (type == MigrateFailureType.TESTSUCCESS) {
-				result.add(testCase);
+			if (type != MigrateFailureType.TESTSUCCESS) {
+				it.remove();
 			}
 		}
 	}
 
-	public String testBFCP(File file, Set<String> realTestCase) throws Exception {
+	public String testBFCP(File file, List<TestFile> realTestCase) throws Exception {
 		exec.setDirectory(file);
 		StringJoiner sj = new StringJoiner(";", "[", "]");
-		Iterator<String> iterator = realTestCase.iterator();
+		Iterator<TestFile> iterator = realTestCase.iterator();
 		while (iterator.hasNext()) {
-			String testCase = iterator.next();
-			MigrateFailureType type = exec.execTestWithResult("mvn test -Dtest=" + testCase);
-			sj.add(testCase + ":" + type.getName());
-			if (type != MigrateFailureType.NONE) {
+			TestFile testSuite = iterator.next();
+			testBFCPMethod(testSuite, sj);
+			if (testSuite.getTestMethodMap().size() == 0) {
 				iterator.remove();
 			}
 		}
 		return sj.toString();
+	}
+
+	public void testBFCPMethod(TestFile testSuite, StringJoiner sj) throws Exception {
+		Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
+		for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext();) {
+			Map.Entry<String, RelatedTestCase> entry = it.next();
+			String testCase = testSuite.getQualityClassName() + "#" + entry.getKey().split("[(]")[0];
+			MigrateFailureType type = exec.execTestWithResult("mvn test -Dtest=" + testCase);
+			sj.add(testCase + ":" + type.getName());
+			if (type != MigrateFailureType.NONE) {
+				it.remove();
+			}
+		}
 	}
 
 	public void copyToTarget(PotentialRFC pRFC, File targerProjectDirectory) {
