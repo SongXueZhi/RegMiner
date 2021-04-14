@@ -6,7 +6,7 @@ public class Conf {
 
 	// basic config
 
-	public final static String PROJRCT_NAME = "jodatime";
+	public final static String PROJRCT_NAME = "fastjson";
 	public final static String ROOT_DIR = "/home/sxz/Documents/pcode/";
 
 	public final static String PROJECT_PATH = ROOT_DIR + File.separator + PROJRCT_NAME;

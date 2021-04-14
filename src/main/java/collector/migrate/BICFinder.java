@@ -9,6 +9,7 @@ import java.util.Set;
 import constant.Conf;
 import exec.TestExecutor;
 import model.PotentialRFC;
+import model.TestFile;
 import utils.FileUtil;
 
 public class BICFinder {
@@ -57,9 +58,9 @@ public class BICFinder {
 	}
 
 	public String searchBIC(PotentialRFC pRFC) {
-		Set<String> rt = pRFC.getTestCaseSet();
-		if (rt == null || rt.size() == 0) {
-			System.out.println("意外的错误：NOTESTSET");
+		List<TestFile> testSuites = pRFC.getTestCaseFiles();
+		if (testSuites == null || testSuites.size() == 0) {
+			System.out.println("意外的错误：NOSET");
 			return null;
 		}
 		if (pRFC.getCommit().getParentCount() <= 0) {

@@ -64,8 +64,8 @@ public class TestTcParse {
 				rTCParser.parseTestCases(pRfc);
 				// 确定被解析的方法那些是真实的测试用例
 				// TODO 此处的方法和类之间的affix按照mvn的习惯用"#"连接,也没有配置子项目
-				Set<String> rTC = tm.determine(pRfc);
-				if (rTC == null) { // 找不到测试用例直接跳过
+				tm.determine(pRfc);
+				if (pRfc.getTestCaseFiles().size() == 0) { // 找不到测试用例直接跳过
 					iterator.remove();
 				} else {
 					// 确定测试用例之后开始查找bic
@@ -93,7 +93,7 @@ public class TestTcParse {
 //		TestcaseMigartion tm = new TestcaseMigartion(repo);
 //		tm.testReduce(pRFC);
 		} catch (Exception ex) {
-
+			System.out.print("");
 		}
 
 	}
