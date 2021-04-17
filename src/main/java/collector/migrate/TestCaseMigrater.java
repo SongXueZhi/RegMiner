@@ -1,6 +1,7 @@
 package collector.migrate;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -24,9 +25,9 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.text.edits.TextEdit;
 
 import ast.FieldRetriever;
-import ast.ImportTrimmer;
 import ast.MemberRetriever;
 import ast.MethodCaller;
+import constant.Conf;
 import model.CallNode;
 import model.MigrateItem.MigrateFailureType;
 import model.PotentialRFC;
@@ -41,10 +42,8 @@ public class TestCaseMigrater extends Migrater {
 	public final static int FAL = 1;
 	public final static int CE = -1;
 	public final static int UNRESOLVE = -2;
-	String projectName;
 
-	public TestCaseMigrater(String projectName) {
-		this.projectName = projectName;
+	public TestCaseMigrater() {
 	}
 
 	public void migrate(PotentialRFC pRFC, Set<String> bicSet) {
@@ -64,7 +63,6 @@ public class TestCaseMigrater extends Migrater {
 		pRFC.fileMap.put(bic, bicDirectory);
 		// 第一次编译未copy时候编译尝试
 		if (!comiple(bicDirectory, false)) {
-			emptyCache();
 			System.out.println("本身编译失败");
 			return CE;
 		}
@@ -74,10 +72,8 @@ public class TestCaseMigrater extends Migrater {
 		// 编译
 		if (comiple(bicDirectory, true)) {
 			int a = testSuite(bicDirectory, pRFC.getTestCaseFiles());
-			emptyCache();
 			return a;
 		} else {
-			emptyCache();
 			System.out.println("迁移后编译失败");
 			return CE;
 		}
@@ -85,12 +81,7 @@ public class TestCaseMigrater extends Migrater {
 
 	public boolean comiple(File file, boolean record) throws Exception {
 		exec.setDirectory(file);
-		return exec.execBuildWithResult("mvn compile test-compile", record);
-	}
-
-	public void emptyCache() {
-//		exec.setDirectory(new File(Conf.cachePath));
-//		exec.exec("rm -rf * ");
+		return exec.execBuildWithResult(Conf.compileLine, record);
 	}
 
 	public int testSuite(File file, List<TestFile> testSuites) throws Exception {
@@ -124,8 +115,9 @@ public class TestCaseMigrater extends Migrater {
 		Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
 		for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext();) {
 			Map.Entry<String, RelatedTestCase> entry = it.next();
-			String testCase = testSuite.getQualityClassName() + "#" + entry.getKey().split("[(]")[0];
-			MigrateFailureType type = exec.execTestWithResult("mvn test -Dtest=" + testCase);
+			String testCase = testSuite.getQualityClassName() + Conf.methodClassLinkSymbolForTest
+					+ entry.getKey().split("[(]")[0];
+			MigrateFailureType type = exec.execTestWithResult(Conf.testLine + testCase);
 			sj.add(testCase + ":" + type.getName());
 
 			if (type == MigrateFailureType.NONE) {
@@ -166,26 +158,58 @@ public class TestCaseMigrater extends Migrater {
 				copyAndPruneNoUsedMethod(bfcPath, bfcClassPath, tDir, bfcDir, tc.getTestMethodMap());
 			} else {
 				// 只把方法
-				String content = FileUtil.readContentFromFile(tDir.getAbsolutePath() + File.separator + tpath);
-				CompilationUnit unit = CompilationUtil.parseCompliationUnit(content);
+				String contentTo = FileUtil.readContentFromFile(tDir.getAbsolutePath() + File.separator + tpath);
+				CompilationUnit unitTo = CompilationUtil.parseCompliationUnit(contentTo);
+				// TODO 往回查找老的版本该方法存在的最老版本
+				String contenFrom = FileUtil
+						.readContentFromFile(bfcDir.getAbsolutePath() + File.separator + tc.getNewPath());
+				CompilationUnit unitFrom = CompilationUtil.parseCompliationUnit(contenFrom);
+				List<ImportDeclaration> imports = unitFrom.imports();
+				Map<String, ImportDeclaration> needToCopyImport = new HashMap<>();
 				for (Map.Entry<String, RelatedTestCase> entry : tc.getTestMethodMap().entrySet()) {
 					MethodDeclaration md = entry.getValue().getMethod().getMethodDeclaration();
 					MemberRetriever mr = new MemberRetriever();
-					unit.accept(mr);
+					unitTo.accept(mr);
 					if (whetherMehothdExits(mr.getMemberList(), md)) {
 						continue;
 					}
-
-					ASTNode.copySubtree(unit.getAST(), md);
-
+					// 方法不存在,确定方法依赖的import
+					for (ImportDeclaration impo : imports) {
+						String str = impo.getName().toString();
+						String pattern = str.substring(str.lastIndexOf(".") + 1, str.length());
+						if (md.toString().contains(pattern)) {
+							needToCopyImport.put(str, impo);
+						}
+					}
+					// copy 方法
+					ASTNode.copySubtree(unitTo.getAST(), md);
 				}
-				unit.recordModifications();
+				// copy所有方法依赖的import
+				List<ImportDeclaration> importsTO = unitTo.imports();
+				for (Map.Entry<String, ImportDeclaration> entry : needToCopyImport.entrySet()) {
+					// 如果需要copy的import在Ci中不存在,则copy
+					if (whetherImportExits(importsTO, entry.getValue())) {
+						continue;
+					}
+					ASTNode.copySubtree(unitTo.getAST(), entry.getValue());
+				}
+				unitTo.recordModifications();
 				Document document = new Document();
-				TextEdit edits = unit.rewrite(document, null);
+				TextEdit edits = unitTo.rewrite(document, null);
 				edits.apply(document);
 				FileUtils.write(new File(tDir, tpath), document.get());
 			}
 		}
+	}
+
+	// Ci没有建图的原因是因为,我无法从bcel构建Ci将测试用例迁过去的图
+	public boolean whetherImportExits(List<ImportDeclaration> imports, ImportDeclaration im) {
+		for (ImportDeclaration iim : imports) {
+			if (iim.toString().equals(im.toString())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean whetherMehothdExits(List<MethodDeclaration> mLsit, MethodDeclaration md) {
@@ -220,8 +244,6 @@ public class TestCaseMigrater extends Migrater {
 				}
 			}
 		}
-		// 开始删除无引用方法
-		ImportTrimmer itm = new ImportTrimmer();
 		MemberRetriever mr = new MemberRetriever();
 		unit.accept(mr);
 		ASTRewrite rewriter = ASTRewrite.create(unit.getAST());
@@ -334,8 +356,8 @@ public class TestCaseMigrater extends Migrater {
 		// copy
 		String targetPath = null;
 		for (TestFile testFile : pRFC.getTestCaseFiles()) {
-			File file = new File(
-					"tmp" + File.separator + pRFC.getCommit().getName() + File.separator + testFile.getNewPath());
+			File file = new File(Conf.TMP_FILE + File.separator + pRFC.getCommit().getName() + File.separator
+					+ testFile.getNewPath());
 			// 测试文件是被删除则什么也不作。
 			if (testFile.getNewPath().contains("/dev/null")) {
 				continue;

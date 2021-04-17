@@ -1,4 +1,4 @@
-package model;
+package constant;
 
 public class ExperResult {
 	public static float numSuc = 0;

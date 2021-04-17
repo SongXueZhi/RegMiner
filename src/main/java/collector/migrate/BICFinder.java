@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import constant.Conf;
 import exec.TestExecutor;
+import model.Methodx;
 import model.PotentialRFC;
 import model.TestFile;
 import utils.FileUtil;
@@ -16,14 +18,12 @@ public class BICFinder {
 	String projectName = "";
 	private final static String dataPath = "results/fix_and_introducers_pairs.json";
 	TestExecutor exec = new TestExecutor();
-	TestCaseMigrater testMigrater = new TestCaseMigrater(projectName);
+	TestCaseMigrater testMigrater = new TestCaseMigrater();
 	PotentialRFC pRFC;
 	final int level = 0;
 	int[] status; // 切勿直接访问该数组
 
-	public BICFinder(String projectName) {
-
-		this.projectName = projectName;
+	public BICFinder() {
 	}
 
 	public Set<String> getBICSet() {
@@ -81,11 +81,18 @@ public class BICFinder {
 		// recursionBinarySearch(arr, 1, arr.length - 1);
 		int a = search(arr, 1, arr.length - 1);
 		if (a < 0) {
-			exec.setDirectory(new File(Conf.CACHE_PATH));
+			exec.setDirectory(new File(Conf.PROJECT_PATH));
 			exec.exec("rm -rf " + Conf.CACHE_PATH + File.separator + pRFC.getCommit().getName());
 			return null;
 		} else {
-			return arr[a];
+			exec.setDirectory(new File(Conf.PROJECT_PATH));
+			StringJoiner sj = new StringJoiner(";", "", "");
+			for (TestFile tc : pRFC.getTestCaseFiles()) {
+				for (Methodx mx : tc.getMethods()) {
+					sj.add(tc.getQualityClassName() + Conf.methodClassLinkSymbolForTest + mx.getSimpleName());
+				}
+			}
+			return arr[a] + "," + arr[a + 1] + "," + sj.toString();
 		}
 	}
 

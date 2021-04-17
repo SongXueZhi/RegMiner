@@ -39,4 +39,5 @@ public class BlameNode {
 		BlameNode node = (BlameNode) obj;
 		return node.commit.equals(this.commit) && node.line == this.line;
 	}
+
 }

@@ -1,19 +1,11 @@
 package gitwalk;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.text.edits.MalformedTreeException;
 import org.junit.Before;
 import org.junit.Test;
 
-import ast.FieldRetriever;
-import ast.ImportTrimmer;
 import collector.migrate.TestCaseMigrater;
-import utils.CompilationUtil;
 
 public class TestCompilationUtil {
 	String fileContent = "";
@@ -37,25 +29,6 @@ public class TestCompilationUtil {
 		}
 	}
 
-	@Test
-	public void testGetAllImport() throws MalformedTreeException, IOException {
-		ImportTrimmer itm = new ImportTrimmer();
-//		ASTRewrite rewriter = itm.prune(CompilationUtil.parseCompliationUnit(fileContent));
-//		Document doc = new Document(fileContent);
-//		TextEdit edits = rewriter.rewriteAST(doc, null);
-//		edits.apply(doc);
-//		FileUtils.write(new File("Solution.java"), doc.get());
-		CompilationUnit unit = CompilationUtil.parseCompliationUnit(fileContent);
-		TypeDeclaration type = (TypeDeclaration) unit.types().get(0);
-		FieldRetriever fr = new FieldRetriever();
-		unit.accept(fr);
-
-		MethodDeclaration[] m = type.getMethods();
-		MethodDeclaration method = m[3];
-		System.out.println(method.getBody().toString());
-		itm.getMethodCallGraph(method, unit);
-	}
-
 //
 //	// @Test
 //	public void testGetMethodList() {
@@ -76,6 +49,6 @@ public class TestCompilationUtil {
 //	}
 	@Test
 	public void testPruneMethod() throws Exception {
-		TestCaseMigrater tm = new TestCaseMigrater("");
+		TestCaseMigrater tm = new TestCaseMigrater();
 	}
 }

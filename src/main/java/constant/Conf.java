@@ -11,11 +11,16 @@ public class Conf {
 		Configs.refresh();
 	}
 
-	public final static String PROJRCT_NAME = "fastjson";
-	public final static String ROOT_DIR = "/home/sxz/Documents/pcode/";
+	public static String PROJRCT_NAME = Configs.projectName;
+	public static String ROOT_DIR = Configs.rootDir;
+
+	public static String compileLine = Configs.compileLine;
+	public static String methodClassLinkSymbolForTest = Configs.testSymbol;
+	public static String testLine = Configs.testLine;
 
 	public static String PROJECT_PATH = ROOT_DIR + File.separator + PROJRCT_NAME;
 	public static String META_PATH = PROJECT_PATH + File.separator + "meta/";
+	public static String TMP_FILE = PROJECT_PATH + File.separator + "tmp/";
 
 	public static String LOCAL_PROJECT_GIT = META_PATH + File.separator + ".git";
 

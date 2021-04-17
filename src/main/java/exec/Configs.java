@@ -16,9 +16,9 @@ import java.util.Properties;
  * @author knightsong
  */
 public class Configs {
-
-	public final static String PROJRCT_NAME = "project_name";
-	public final static String ROOT_DIR = "root_dir";
+	final static Class<Configs> here = Configs.class;
+	private final static String PROJRCT_NAME = "project_name";
+	private final static String ROOT_DIR = "root_dir";
 	private static Properties prop = new Properties();
 	private final static String KEY_PATH = "path";
 	private final static String KEY_JAVA_HOME = "JAVA_HOME";
@@ -27,9 +27,22 @@ public class Configs {
 	public static String projectName = "";
 	public static String rootDir = "";
 	private final static String CONFIGPATH = "env.properties";
+	private final static String COMMAND_LINE = "command_line";
+	private final static String TEST_LINE = "test_line";
+	private final static String TEST_SYMBOL = "test_symbol";
+	public static String compileLine = "";
+	public static String testLine = "";
+	public static String testSymbol = "";
 
 	public static void refresh() {
-		try (InputStream inStream = new FileInputStream(new File(CONFIGPATH));) {
+//		String path = System.getProperty("java.class.path");
+//		int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
+//		int lastIndex = path.lastIndexOf(File.separator) + 1;
+//		path = path.substring(firstIndex, lastIndex);
+//		System.out.println("env.pro " + path);
+		String pathx = CONFIGPATH;
+//		pathx = path + File.separator + CONFIGPATH;
+		try (InputStream inStream = new FileInputStream(new File(pathx));) {
 			prop.load(inStream);
 		} catch (IOException ex) {
 			System.out.println(ex.getMessage());
@@ -38,6 +51,9 @@ public class Configs {
 		JAVA_HONE = prop.getProperty(KEY_JAVA_HOME);
 		projectName = prop.getProperty(PROJRCT_NAME);
 		rootDir = prop.getProperty(ROOT_DIR);
+		compileLine = prop.getProperty(COMMAND_LINE);
+		testLine = prop.getProperty(TEST_LINE);
+		testSymbol = prop.getProperty(TEST_SYMBOL);
 		envPath = JAVA_HONE + ";" + envPath;
 	}
 

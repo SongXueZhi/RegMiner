@@ -18,7 +18,7 @@ import collector.RelatedTestCaseParser;
 import collector.migrate.BICFinder;
 import collector.migrate.TestCaseDeterminer;
 import constant.Conf;
-import model.ExperResult;
+import constant.ExperResult;
 import model.PotentialRFC;
 
 public class TestTcParse {
@@ -49,7 +49,7 @@ public class TestTcParse {
 			// 工具类准备,1)测试方法查找 2)测试用例确定 3)BIC查找
 			RelatedTestCaseParser rTCParser = new RelatedTestCaseParser(repo);
 			TestCaseDeterminer tm = new TestCaseDeterminer(repo);
-			BICFinder finder = new BICFinder(Conf.PROJRCT_NAME);
+			BICFinder finder = new BICFinder();
 			// 声明一些辅助变量
 			int z = 0;
 			float i = 0;

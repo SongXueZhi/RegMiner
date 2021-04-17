@@ -9,8 +9,8 @@ import java.util.StringJoiner;
 import org.eclipse.jgit.lib.Repository;
 
 import constant.Conf;
+import constant.ExperResult;
 import model.ChangedFile.Type;
-import model.ExperResult;
 import model.MigrateItem.MigrateFailureType;
 import model.PotentialRFC;
 import model.RelatedTestCase;
@@ -47,6 +47,7 @@ public class TestCaseDeterminer extends Migrater {
 		if (!comiple(bfcpDirectory, false)) {
 			System.out.println("BFCp本身编译失败");
 			emptyCache(bfcID);
+			return;
 		}
 		// 4.将BFC中所有与测试相关的文件迁移到BFCP,与BIC查找中的迁移略有不同
 		// BFC到BFCP的迁移不做依赖分析,相关就迁移
@@ -57,18 +58,21 @@ public class TestCaseDeterminer extends Migrater {
 		if (!comiple(bfcDirectory, false)) {
 			System.out.println("BFC构建失败");
 			emptyCache(bfcID);
+			return;
 		}
 		// 5. 测试BFC中的每一个待测试方法
 		testBFC(bfcDirectory, pRFC);
 		if (pRFC.getTestCaseFiles().size() <= 0) {
 			System.out.println("BFC 没有测试成功的方法");
 			emptyCache(bfcID);
+			return;
 		}
 
 		// 7.编译并测试BFCP
 		if (!comiple(bfcpDirectory, true)) {
 			System.out.println("BFCp迁移后编译失败");
 			emptyCache(bfcID);
+			return;
 		}
 		// 6.测试BFCP
 		String result = testBFCP(bfcpDirectory, pRFC.getTestCaseFiles());
@@ -79,13 +83,15 @@ public class TestCaseDeterminer extends Migrater {
 		} else {
 			System.out.println("迁移失败" + result.toString());
 			emptyCache(bfcID);
+			return;
 		}
+		exec.setDirectory(new File(Conf.PROJECT_PATH));
 //		ExperResult.numSuc++;
 	}
 
 	public boolean comiple(File file, boolean record) throws Exception {
 		exec.setDirectory(file);
-		return exec.execBuildWithResult("mvn compile test-compile", record);
+		return exec.execBuildWithResult(Conf.compileLine, record);
 	}
 
 	public void testBFC(File file, PotentialRFC pRFC) throws Exception {
@@ -101,7 +107,8 @@ public class TestCaseDeterminer extends Migrater {
 			} else {
 				iter.remove();// 只保留测试文件
 			}
-			if (testFile.getTestMethodMap().size() == 0) {
+			Map testMethodsMap = testFile.getTestMethodMap();
+			if (testMethodsMap == null || testMethodsMap.size() == 0) {
 				iter.remove(); // 如果该测试文件中没有测试成功的方法,则该TestFile移除
 			}
 		}
@@ -118,8 +125,8 @@ public class TestCaseDeterminer extends Migrater {
 		// 遍历BFC测试文件中的每一个方法,并执行测试,测试失败即移除
 		for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext();) {
 			Map.Entry<String, RelatedTestCase> entry = it.next();
-			String testCase = qualityClassName + "#" + entry.getKey().split("[(]")[0];
-			MigrateFailureType type = exec.execTestWithResult("mvn test -Dtest=" + testCase);
+			String testCase = qualityClassName + Conf.methodClassLinkSymbolForTest + entry.getKey().split("[(]")[0];
+			MigrateFailureType type = exec.execTestWithResult(Conf.testLine + testCase);
 			if (type != MigrateFailureType.TESTSUCCESS) {
 				it.remove();
 			}
@@ -144,8 +151,9 @@ public class TestCaseDeterminer extends Migrater {
 		Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
 		for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext();) {
 			Map.Entry<String, RelatedTestCase> entry = it.next();
-			String testCase = testSuite.getQualityClassName() + "#" + entry.getKey().split("[(]")[0];
-			MigrateFailureType type = exec.execTestWithResult("mvn test -Dtest=" + testCase);
+			String testCase = testSuite.getQualityClassName() + Conf.methodClassLinkSymbolForTest
+					+ entry.getKey().split("[(]")[0];
+			MigrateFailureType type = exec.execTestWithResult(Conf.testLine + testCase);
 			sj.add(testCase + ":" + type.getName());
 			if (type != MigrateFailureType.NONE) {
 				it.remove();
@@ -157,8 +165,8 @@ public class TestCaseDeterminer extends Migrater {
 		// copy
 		String targetPath = null;
 		for (TestFile testFile : pRFC.getTestCaseFiles()) {
-			File file = new File(
-					"tmp" + File.separator + pRFC.getCommit().getName() + File.separator + testFile.getNewPath());
+			File file = new File(Conf.TMP_FILE + File.separator + pRFC.getCommit().getName() + File.separator
+					+ testFile.getNewPath());
 			// 测试文件是被删除则什么也不作。
 			if (testFile.getNewPath().contains("/dev/null")) {
 				continue;

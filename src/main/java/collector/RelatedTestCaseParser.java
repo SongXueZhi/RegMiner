@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.lib.Repository;
 
+import constant.Conf;
 import model.ChangedFile.Type;
 import model.Methodx;
 import model.PotentialRFC;
@@ -34,8 +35,8 @@ public class RelatedTestCaseParser {
 		while (iterator.hasNext()) {
 			TestFile file = iterator.next();
 			String code = GitUtil.getContextWithFile(repo, pRFC.getCommit(), file.getNewPath());
-			FileUtils.writeStringToFile(
-					new File("tmp" + File.separator + pRFC.getCommit().getName() + File.separator + file.getNewPath()),
+			FileUtils.writeStringToFile(new File(
+					Conf.TMP_FILE + File.separator + pRFC.getCommit().getName() + File.separator + file.getNewPath()),
 					code);
 			if (!isTestSuite(code)) {
 				file.setType(Type.TEST_RELATE);

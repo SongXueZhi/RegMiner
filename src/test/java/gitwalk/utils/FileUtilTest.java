@@ -10,7 +10,7 @@ public class FileUtilTest {
 
 	@Test
 	public void testGetBICSet() {
-		BICFinder bic = new BICFinder(null);
+		BICFinder bic = new BICFinder();
 		Set<String> bicSet = bic.readBICSetFromFile();
 		for (String b : bicSet) {
 			System.out.println(b);
