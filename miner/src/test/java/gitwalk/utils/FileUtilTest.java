@@ -1,0 +1,20 @@
+package gitwalk.utils;
+
+import java.util.Set;
+
+import org.junit.Test;
+
+import miner.migrate.BICFinder;
+
+public class FileUtilTest {
+
+	@Test
+	public void testGetBICSet() {
+		BICFinder bic = new BICFinder();
+		Set<String> bicSet = bic.readBICSetFromFile();
+		for (String b : bicSet) {
+			System.out.println(b);
+		}
+	}
+
+}
