@@ -13,8 +13,7 @@ RegMiner:
 	 		|--- env.properties: Related configuration information of the project that needs to be mined.
 			|--- szz_find_bug_introducers-0.1.jar: Implementation of SZZUnleashed[1].
 			|--- issues: SZZUnleashed input demo.
-			|
-        |--- results: SZZUnleashed output demo.
+                        |--- results: SZZUnleashed output demo.
 			|
 	|--- pre_compile: Precompile the target project and boost the model.
 	|--- bfc_detector: Tool for detecting the number of BFC in the target project.
