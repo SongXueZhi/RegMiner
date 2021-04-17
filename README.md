@@ -4,7 +4,7 @@ A Mining Approach towards Automating Regression Dataset Construction from Code E
 
 ## Catalog
 
-```basic
+```
 RegMiner:
 	|
 	|--- miner: Implementation of the core algorithm for searching bugs.
