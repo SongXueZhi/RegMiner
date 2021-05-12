@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 
@@ -18,6 +19,7 @@ import miner.RelatedTestCaseParser;
 import miner.migrate.BICFinder;
 import miner.migrate.TestCaseDeterminer;
 import model.PotentialRFC;
+import utils.FileUtilx;
 
 public class Start {
 
@@ -62,8 +64,12 @@ public class Start {
 				} else {
 					// 确定测试用例之后开始查找bic
 					String r = finder.searchBIC(pRfc);
+					String item = pRfc.getCommit().getName() + "," + r;
 					if (r != null) {
-						setResult.add(pRfc.getCommit().getName() + ";" + r);
+						if(!setResult.contains(item)) {
+							FileUtilx.log(item);
+						}
+						setResult.add(item);
 					}
 				}
 			}
@@ -72,10 +78,6 @@ public class Start {
 					+ "packageNotExits " + ExperResult.packageNotExits + "packageNotFind " + ExperResult.packageNotFind
 					+ "symbolNotFind " + ExperResult.symbolNotFind + "unknow " + ExperResult.unknow + "variableNotFind "
 					+ ExperResult.variableNotFind);
-
-			for (String s : setResult) {
-				System.out.println(s);
-			}
 
 		} catch (Exception ex) {
 			ex.printStackTrace();

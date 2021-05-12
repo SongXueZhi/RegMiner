@@ -14,7 +14,9 @@ import org.apache.commons.io.FileUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-public class FileUtil {
+import constant.Conf;
+
+public class FileUtilx {
 
 	public void createdNewDirectory(String path) {
 
@@ -26,14 +28,9 @@ public class FileUtil {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void log(String line, String path, String header) throws Exception {
-		File file = new File(path);
-		if (!file.isDirectory()) {
-			file.delete();
-			file.mkdirs();
-		}
-		File file1 = new File(file.getAbsoluteFile() + File.separator + header + "_" + ".txt");
-		FileUtils.writeStringToFile(file1, line, true);
+	public static void log(String line) throws Exception {
+		File file = new File(Conf.RESULT_Path);
+		FileUtils.writeStringToFile(file, line, true);
 	}
 
 	public static String getUUID() {

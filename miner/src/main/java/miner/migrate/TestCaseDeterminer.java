@@ -15,7 +15,7 @@ import model.MigrateItem.MigrateFailureType;
 import model.PotentialRFC;
 import model.RelatedTestCase;
 import model.TestFile;
-import utils.FileUtil;
+import utils.FileUtilx;
 
 public class TestCaseDeterminer extends Migrater {
 	int i = 0;
@@ -174,7 +174,7 @@ public class TestCaseDeterminer extends Migrater {
 
 			targetPath = testFile.getNewPath();
 			// 测试文件不是删除，则copy
-			targetPath = FileUtil.getDirectoryFromPath(targetPath);
+			targetPath = FileUtilx.getDirectoryFromPath(targetPath);
 			File file1 = new File(targerProjectDirectory.getAbsoluteFile() + File.separator + targetPath);
 			if (!file1.exists()) {
 				file1.mkdirs();

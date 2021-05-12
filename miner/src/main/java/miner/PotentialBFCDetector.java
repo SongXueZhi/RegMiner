@@ -65,6 +65,9 @@ public class PotentialBFCDetector {
 			if (a) {
 				detect(commit, potentialRFCs);
 			}
+			if(potentialRFCs.size()>100) {
+				break;
+			}
 			countAll++;
 		}
 		System.out.println("总共分析了" + countAll + "条commit\n");

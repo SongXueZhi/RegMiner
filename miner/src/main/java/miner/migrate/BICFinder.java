@@ -3,7 +3,9 @@ package miner.migrate;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -11,8 +13,9 @@ import constant.Conf;
 import exec.TestExecutor;
 import model.Methodx;
 import model.PotentialRFC;
+import model.RelatedTestCase;
 import model.TestFile;
-import utils.FileUtil;
+import utils.FileUtilx;
 
 public class BICFinder {
 	String projectName = "";
@@ -45,7 +48,7 @@ public class BICFinder {
 	}
 
 	public Set<String> readBICSetFromFile() {
-		String originData = FileUtil.readContentFromFile(dataPath);
+		String originData = FileUtilx.readContentFromFile(dataPath);
 		originData = originData.replace("[", "").replace("]", "").replace("\"", "").replace("\n", "");
 		String[] originDataArray = originData.split(",");
 		Set<String> bICSet = new HashSet<>();
@@ -88,8 +91,14 @@ public class BICFinder {
 			exec.setDirectory(new File(Conf.PROJECT_PATH));
 			StringJoiner sj = new StringJoiner(";", "", "");
 			for (TestFile tc : pRFC.getTestCaseFiles()) {
-				for (Methodx mx : tc.getMethods()) {
-					sj.add(tc.getQualityClassName() + Conf.methodClassLinkSymbolForTest + mx.getSimpleName());
+				Map<String, RelatedTestCase> methodMap =tc.getTestMethodMap();
+				if( methodMap == null) {
+					continue;
+				}
+				for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext();) {
+					Map.Entry<String, RelatedTestCase> entry = it.next();
+					String testCase = tc.getQualityClassName() + Conf.methodClassLinkSymbolForTest + entry.getKey().split("[(]")[0];
+					sj.add(testCase);
 				}
 			}
 			return arr[a] + "," + arr[a + 1] + "," + sj.toString();

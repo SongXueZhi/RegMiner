@@ -35,7 +35,7 @@ import model.RelatedTestCase;
 import model.TestFile;
 import utils.CodeUtil;
 import utils.CompilationUtil;
-import utils.FileUtil;
+import utils.FileUtilx;
 
 public class TestCaseMigrater extends Migrater {
 	public final static int PASS = 0;
@@ -158,10 +158,10 @@ public class TestCaseMigrater extends Migrater {
 				copyAndPruneNoUsedMethod(bfcPath, bfcClassPath, tDir, bfcDir, tc.getTestMethodMap());
 			} else {
 				// 只把方法
-				String contentTo = FileUtil.readContentFromFile(tDir.getAbsolutePath() + File.separator + tpath);
+				String contentTo = FileUtilx.readContentFromFile(tDir.getAbsolutePath() + File.separator + tpath);
 				CompilationUnit unitTo = CompilationUtil.parseCompliationUnit(contentTo);
 				// TODO 往回查找老的版本该方法存在的最老版本
-				String contenFrom = FileUtil
+				String contenFrom = FileUtilx
 						.readContentFromFile(bfcDir.getAbsolutePath() + File.separator + tc.getNewPath());
 				CompilationUnit unitFrom = CompilationUtil.parseCompliationUnit(contenFrom);
 				List<ImportDeclaration> imports = unitFrom.imports();
@@ -224,7 +224,7 @@ public class TestCaseMigrater extends Migrater {
 	public void copyAndPruneNoUsedMethod(String javaFilepath, String classFile, File tDir, File bfcDir,
 			Map<String, RelatedTestCase> methodMap) throws Exception {
 		MethodCaller mcaller = new MethodCaller();
-		String content = FileUtil.readContentFromFile(bfcDir.getAbsolutePath() + File.separator + javaFilepath);
+		String content = FileUtilx.readContentFromFile(bfcDir.getAbsolutePath() + File.separator + javaFilepath);
 		CompilationUnit unit = CompilationUtil.parseCompliationUnit(content);
 		JavaClass clazz = CodeUtil.lookupClassbyFile(bfcDir.getAbsolutePath() + File.separator + classFile);
 		Method[] methods = clazz.getMethods();
@@ -366,7 +366,7 @@ public class TestCaseMigrater extends Migrater {
 			targetPath = testFile.getNewPath();
 			// System.out.println("迁移的文件有：" + targetPath);
 			// 测试文件不是删除，则copy
-			targetPath = FileUtil.getDirectoryFromPath(targetPath);
+			targetPath = FileUtilx.getDirectoryFromPath(targetPath);
 			File file1 = new File(targerProjectDirectory.getAbsoluteFile() + File.separator + targetPath);
 			if (!file1.exists()) {
 				file1.mkdirs();

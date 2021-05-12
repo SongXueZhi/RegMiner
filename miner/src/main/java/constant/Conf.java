@@ -27,6 +27,7 @@ public class Conf {
 	public static String CACHE_PATH = PROJECT_PATH + File.separator + "cache/";
 
 	public static String LOG_Path = PROJECT_PATH + File.separator + "log.txt";
+	public static String RESULT_Path = PROJECT_PATH + File.separator + "regression.csv";
 
 	// extra with clone
 	public static String CLONE_URL = "";
