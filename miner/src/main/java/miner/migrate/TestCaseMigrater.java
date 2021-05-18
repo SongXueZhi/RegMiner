@@ -60,12 +60,12 @@ public class TestCaseMigrater extends Migrater {
 	public int migrate(PotentialRFC pRFC, String bic) throws Exception {
 		System.out.println("bic:" + bic);
 		File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
-		pRFC.fileMap.put(bic, bicDirectory);
-		// 第一次编译未copy时候编译尝试
-		if (!comiple(bicDirectory, false)) {
-			System.out.println("本身编译失败");
-			return CE;
-		}
+//		pRFC.fileMap.put(bic, bicDirectory);
+//		// 第一次编译未copy时候编译尝试
+//		if (!comiple(bicDirectory, false)) {
+//			System.out.println("本身编译失败");
+//			return CE;
+//		}
 		File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
 		// 第一次编译成功,则开始依赖图匹配
 		copyTestCase(pRFC, bicDirectory, bfcDir);

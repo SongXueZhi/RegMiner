@@ -1,6 +1,7 @@
 package miner.migrate;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,7 +12,7 @@ import java.util.StringJoiner;
 
 import constant.Conf;
 import exec.TestExecutor;
-import model.Methodx;
+import finalize.SycFileCleanup;
 import model.PotentialRFC;
 import model.RelatedTestCase;
 import model.TestFile;
@@ -83,25 +84,31 @@ public class BICFinder {
 		}
 		// recursionBinarySearch(arr, 1, arr.length - 1);
 		int a = search(arr, 1, arr.length - 1);
+		// 处理search结果
+		// TODO 重构需要方法查分
+		String bfcName = pRFC.getCommit().getName();
+		File bfcFile = new File(Conf.CACHE_PATH + File.separator + pRFC.getCommit().getName());
 		if (a < 0) {
-			exec.setDirectory(new File(Conf.PROJECT_PATH));
-			exec.exec("rm -rf " + Conf.CACHE_PATH + File.separator + pRFC.getCommit().getName());
+			new SycFileCleanup().cleanDirectory(bfcFile);
 			return null;
 		} else {
 			exec.setDirectory(new File(Conf.PROJECT_PATH));
 			StringJoiner sj = new StringJoiner(";", "", "");
 			for (TestFile tc : pRFC.getTestCaseFiles()) {
-				Map<String, RelatedTestCase> methodMap =tc.getTestMethodMap();
-				if( methodMap == null) {
+				Map<String, RelatedTestCase> methodMap = tc.getTestMethodMap();
+				if (methodMap == null) {
 					continue;
 				}
 				for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext();) {
 					Map.Entry<String, RelatedTestCase> entry = it.next();
-					String testCase = tc.getQualityClassName() + Conf.methodClassLinkSymbolForTest + entry.getKey().split("[(]")[0];
+					String testCase = tc.getQualityClassName() + Conf.methodClassLinkSymbolForTest
+							+ entry.getKey().split("[(]")[0];
 					sj.add(testCase);
 				}
 			}
-			return arr[a] + "," + arr[a + 1] + "," + sj.toString();
+
+			new SycFileCleanup().cleanDirectoryOnFilter(bfcFile, Arrays.asList(bfcName, arr[a + 1], arr[a]));// 删除在regression定义以外的项目文件
+			return arr[a + 1] + "," + arr[a] + "," + sj.toString();
 		}
 	}
 

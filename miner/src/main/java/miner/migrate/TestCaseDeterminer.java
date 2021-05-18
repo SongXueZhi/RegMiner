@@ -41,14 +41,14 @@ public class TestCaseDeterminer extends Migrater {
 		}
 		String bfcpID = pRFC.getCommit().getParent(0).getName();
 		File bfcpDirectory = checkout(bfcID, bfcpID, "bfcp");// 管理每一个commit的文件路径
-		pRFC.fileMap.put(bfcpID, bfcpDirectory);
+//		pRFC.fileMap.put(bfcpID, bfcpDirectory);
 
-		// 3.第一次尝试编译 BFCP
-		if (!comiple(bfcpDirectory, false)) {
-			System.out.println("BFCp本身编译失败");
-			emptyCache(bfcID);
-			return;
-		}
+//		// 3.第一次尝试编译 BFCP
+//		if (!comiple(bfcpDirectory, false)) {
+//			System.out.println("BFCp本身编译失败");
+//			emptyCache(bfcID);
+//			return;
+//		}
 		// 4.将BFC中所有与测试相关的文件迁移到BFCP,与BIC查找中的迁移略有不同
 		// BFC到BFCP的迁移不做依赖分析,相关就迁移
 		// 因为后续BFC的测试用例确认会删除一些TESTFILE,所以先迁移
