@@ -45,7 +45,7 @@ public class ClassVisitor extends EmptyVisitor {
 				continue;
 			if (constant.getTag() == 7) {
 				String referencedClass = constantPool.constantToString(constant);
-				System.out.println(String.format(classReferenceFormat, referencedClass));
+				// FileUtilx.log(String.format(classReferenceFormat, referencedClass));
 			}
 		}
 	}

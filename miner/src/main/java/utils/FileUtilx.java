@@ -3,6 +3,7 @@ package utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -28,9 +29,23 @@ public class FileUtilx {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void log(String line) throws Exception {
+	public static synchronized void apendResult(String line) {
 		File file = new File(Conf.RESULT_Path);
-		FileUtils.writeStringToFile(file, line, true);
+		try {
+			FileUtils.writeStringToFile(file, line, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public static synchronized void log(String block) {
+		File file = new File(Conf.PROJECT_PATH + File.separator + "log" + Thread.currentThread().getName());
+		try {
+			FileUtils.writeStringToFile(file, block + "\n", true);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static String getUUID() {

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import utils.FileUtilx;
+
 /**
  *
  * @author knightsong
@@ -40,13 +42,13 @@ public class ConfigLoader {
 //		int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
 //		int lastIndex = path.lastIndexOf(File.separator) + 1;
 //		path = path.substring(firstIndex, lastIndex);
-//		System.out.println("env.pro " + path);
+//		FileUtilx.log("env.pro " + path);
 		String pathx = CONFIGPATH;
 //		pathx = path + File.separator + CONFIGPATH;
 		try (InputStream inStream = new FileInputStream(new File(pathx));) {
 			prop.load(inStream);
 		} catch (IOException ex) {
-			System.out.println(ex.getMessage());
+			FileUtilx.log(ex.getMessage());
 		}
 		envPath = prop.getProperty(KEY_PATH);
 		JAVA_HONE = prop.getProperty(KEY_JAVA_HOME);

@@ -14,6 +14,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import model.BlameNode;
 import model.NormalFile;
 import model.PotentialRFC;
+import utils.FileUtilx;
 
 public class Traverler {
 
@@ -48,7 +49,7 @@ public class Traverler {
 		Type editType = edit.getType();
 
 		if (editType == Edit.Type.INSERT || editType == Edit.Type.EMPTY) {
-			System.out.println("not replace or delete ");
+			FileUtilx.log("not replace or delete ");
 			return null;
 		}
 		for (int i = edit.getBeginA(); i < edit.getEndA(); i++) {

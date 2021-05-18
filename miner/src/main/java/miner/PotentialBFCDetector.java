@@ -24,6 +24,7 @@ import model.NormalFile;
 import model.PotentialRFC;
 import model.PotentialTestCase;
 import model.TestFile;
+import utils.FileUtilx;
 
 public class PotentialBFCDetector {
 
@@ -50,7 +51,7 @@ public class PotentialBFCDetector {
 	public List<PotentialRFC> detectPotentialBFC() throws Exception {
 		// 定义需要记录的实验数据
 		int countAll = 0;
-		List<PotentialRFC> potentialRFCs = new ArrayList<>();
+		List<PotentialRFC> potentialRFCs = new LinkedList<PotentialRFC>();
 		// 获取一个库，库的获取可以是本地和使用gitclone从github中获取
 
 		// 获取所有的commit，我们需要对所有的commit进行分析
@@ -59,21 +60,21 @@ public class PotentialBFCDetector {
 		boolean a = true;
 		for (RevCommit commit : commits) {
 //			// a 用于从失败的节点重新开始
-//			if (commit.getName().equals("e2f9cc6bf31b8da8e020e2f9c559e7b970c53c7b")) {
+//			if (commit.getName().equals("2fa8ee07e55b476f778a63633f556bbf6b023ab7")) {
 //				a = true;
 //			}
 			if (a) {
 				detect(commit, potentialRFCs);
 			}
-			if(potentialRFCs.size()>100) {
-				break;
-			}
+//			if (potentialRFCs.size() > 1) {
+//				break;
+//			}
 			countAll++;
 		}
-		System.out.println("总共分析了" + countAll + "条commit\n");
-		System.out.println("pRFC in total :" + potentialRFCs.size());
+		FileUtilx.log("总共分析了" + countAll + "条commit\n");
+		FileUtilx.log("pRFC in total :" + potentialRFCs.size());
 //		for (PotentialRFC pRFC : potentialRFCs) {
-//			System.out.println(pRFC.getNormalJavaFiles().size() + " " + pRFC.getTestCaseFiles().size() + " "
+//			FileUtilx.log(pRFC.getNormalJavaFiles().size() + " " + pRFC.getTestCaseFiles().size() + " "
 //					+ pRFC.getCommit().getName());
 //		}
 		return potentialRFCs;

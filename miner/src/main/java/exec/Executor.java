@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
+import utils.FileUtilx;
+
 /**
  *
  * @author knightsong
@@ -74,7 +76,7 @@ public class Executor {
 			BufferedReader bufferReader = new BufferedReader(inputStr);
 			String line;
 			while ((line = bufferReader.readLine()) != null) {
-				System.out.println(line);
+				FileUtilx.log(line);
 			}
 			try {
 				a = process.waitFor();

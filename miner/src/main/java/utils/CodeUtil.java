@@ -40,7 +40,7 @@ public class CodeUtil {
 		for (Method method : ms) {
 			String s = method.getSignature();
 			String ss = method.toString();
-			System.out.println("");
+			FileUtilx.log("");
 		}
 		return null;
 	}

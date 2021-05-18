@@ -47,7 +47,7 @@ public class TestCaseMigrater extends Migrater {
 	}
 
 	public void migrate(PotentialRFC pRFC, Set<String> bicSet) {
-		System.out.println(pRFC.getCommit().getName() + " 开始迁移bic");
+		FileUtilx.log(pRFC.getCommit().getName() + " 开始迁移bic");
 		for (String bic : bicSet) {
 			try {
 				migrate(pRFC, bic);
@@ -58,12 +58,12 @@ public class TestCaseMigrater extends Migrater {
 	}
 
 	public int migrate(PotentialRFC pRFC, String bic) throws Exception {
-		System.out.println("bic:" + bic);
+		FileUtilx.log("bic:" + bic);
 		File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
 //		pRFC.fileMap.put(bic, bicDirectory);
 //		// 第一次编译未copy时候编译尝试
 //		if (!comiple(bicDirectory, false)) {
-//			System.out.println("本身编译失败");
+//			FileUtilx.log("本身编译失败");
 //			return CE;
 //		}
 		File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
@@ -74,7 +74,7 @@ public class TestCaseMigrater extends Migrater {
 			int a = testSuite(bicDirectory, pRFC.getTestCaseFiles());
 			return a;
 		} else {
-			System.out.println("迁移后编译失败");
+			FileUtilx.log("迁移后编译失败");
 			return CE;
 		}
 	}
@@ -127,16 +127,16 @@ public class TestCaseMigrater extends Migrater {
 				result1 = true;
 			}
 		}
-		System.out.println("测试bic " + sj);
+		FileUtilx.log("测试bic " + sj);
 		if (result1) {
-			System.out.println("PASS");
+			FileUtilx.log("PASS");
 			return PASS;
 		}
 		if (result) {
-			System.out.println("FAL");
+			FileUtilx.log("FAL");
 			return FAL;
 		}
-		System.out.println("UNRESOLVE");
+		FileUtilx.log("UNRESOLVE");
 		return UNRESOLVE;
 	}
 
@@ -362,7 +362,7 @@ public class TestCaseMigrater extends Migrater {
 			}
 
 			targetPath = testFile.getNewPath();
-			// System.out.println("迁移的文件有：" + targetPath);
+			// FileUtilx.log("迁移的文件有：" + targetPath);
 			// 测试文件不是删除，则copy
 			targetPath = FileUtilx.getDirectoryFromPath(targetPath);
 			File file1 = new File(targerProjectDirectory.getAbsoluteFile() + File.separator + targetPath);

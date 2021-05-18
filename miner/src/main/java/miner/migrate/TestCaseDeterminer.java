@@ -10,6 +10,7 @@ import org.eclipse.jgit.lib.Repository;
 
 import constant.Conf;
 import constant.ExperResult;
+import finalize.SycFileCleanup;
 import model.ChangedFile.Type;
 import model.MigrateItem.MigrateFailureType;
 import model.PotentialRFC;
@@ -31,7 +32,7 @@ public class TestCaseDeterminer extends Migrater {
 
 		// 1.准备BFC
 		String bfcID = pRFC.getCommit().getName();
-		System.out.println(bfcID + "开始执行测试约减");
+		FileUtilx.log(bfcID + "开始执行测试约减");
 		File bfcDirectory = checkout(bfcID, bfcID, "bfc");
 		pRFC.fileMap.put(bfcID, bfcDirectory); // 管理每一个commit的文件路径
 
@@ -45,7 +46,7 @@ public class TestCaseDeterminer extends Migrater {
 
 //		// 3.第一次尝试编译 BFCP
 //		if (!comiple(bfcpDirectory, false)) {
-//			System.out.println("BFCp本身编译失败");
+//			FileUtilx.log("BFCp本身编译失败");
 //			emptyCache(bfcID);
 //			return;
 //		}
@@ -57,14 +58,14 @@ public class TestCaseDeterminer extends Migrater {
 		// 4.编译BFC
 		if (!comiple(bfcDirectory, false)) {
 			pRFC.getTestCaseFiles().clear();
-			System.out.println("BFC构建失败");
+			FileUtilx.log("BFC构建失败");
 			emptyCache(bfcID);
 			return;
 		}
 		// 5. 测试BFC中的每一个待测试方法
 		testBFC(bfcDirectory, pRFC);
 		if (pRFC.getTestCaseFiles().size() <= 0) {
-			System.out.println("BFC 没有测试成功的方法");
+			FileUtilx.log("BFC 没有测试成功的方法");
 			emptyCache(bfcID);
 			return;
 		}
@@ -72,7 +73,7 @@ public class TestCaseDeterminer extends Migrater {
 		// 7.编译并测试BFCP
 		if (!comiple(bfcpDirectory, true)) {
 			pRFC.getTestCaseFiles().clear();
-			System.out.println("BFCp迁移后编译失败");
+			FileUtilx.log("BFCp迁移后编译失败");
 			emptyCache(bfcID);
 			return;
 		}
@@ -81,9 +82,9 @@ public class TestCaseDeterminer extends Migrater {
 
 		if (pRFC.getTestCaseFiles().size() > 0) {
 			ExperResult.numSuc++;
-			System.out.println("迁移成功" + result.toString());
+			FileUtilx.log("迁移成功" + result.toString());
 		} else {
-			System.out.println("迁移失败" + result.toString());
+			FileUtilx.log("迁移失败" + result.toString());
 			emptyCache(bfcID);
 			return;
 		}
@@ -188,8 +189,8 @@ public class TestCaseDeterminer extends Migrater {
 	}
 
 	public void emptyCache(String bfcID) {
-		exec.setDirectory(new File(Conf.CACHE_PATH));
-		exec.exec("rm -rf " + Conf.CACHE_PATH + File.separator + bfcID);
+		File bfcFile = new File(Conf.CACHE_PATH + File.separator + bfcID);
+		new SycFileCleanup().cleanDirectory(bfcFile);
 	}
 
 }

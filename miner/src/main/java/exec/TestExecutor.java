@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import constant.ExperResult;
 import model.MigrateItem.MigrateFailureType;
 
 public class TestExecutor extends Executor {
@@ -48,69 +47,69 @@ public class TestExecutor extends Executor {
 	}
 
 	public void record(String content) {
-		String[] a1 = content.split("compilation error");
+//		String[] a1 = content.split("compilation error");
+////		if (a1.length < 2) {
+////			a1 = content.split("compilation error");
+////		}
 //		if (a1.length < 2) {
-//			a1 = content.split("compilation error");
+//			ExperResult.unknow++;
+//			System.out.print("_unknow_length<2");
+//			return;
 //		}
-		if (a1.length < 2) {
-			ExperResult.unknow++;
-			System.out.print("_unknow_length<2");
-			return;
-		}
-		String[] a2 = a1[1].split("\n");
-
-		boolean cannotFindMethod = false;
-		boolean cannotFindClass = false;
-		boolean cannotFindPackage = false;
-		boolean cannotFindVariable = false;
-		boolean packageNotExist = false;
-
-		for (int i = 0; i < a2.length; i++) {
-			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
-					&& a2[i + 1].contains("method") && !cannotFindMethod) {
-				System.out.print("_cannotFindMethod");
-				ExperResult.methodNotFind++;
-				cannotFindMethod = true;
-				continue;
-			}
-			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
-					&& a2[i + 1].contains("class") && !cannotFindClass) {
-				System.out.print("_cannotFindClass");
-				ExperResult.classNotFind++;
-				cannotFindClass = true;
-				continue;
-			}
-
-			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
-					&& a2[i + 1].contains("package") && !cannotFindPackage) {
-				System.out.print("_cannotFindPackage");
-				ExperResult.packageNotFind++;
-				cannotFindPackage = true;
-				continue;
-			}
-			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
-					&& a2[i + 1].contains("variable") && !cannotFindVariable) {
-				System.out.print("_cannotFindVariable");
-				ExperResult.variableNotFind++;
-				cannotFindVariable = true;
-				continue;
-			}
-			if (a2[i].contains("package") && a2[i].contains("not exist") && !packageNotExist) {
-				System.out.print("_packageNotExist");
-				ExperResult.packageNotExits++;
-				packageNotExist = true;
-				continue;
-			}
-		}
-		if (!cannotFindMethod && !cannotFindClass && !cannotFindPackage && !packageNotExist && !cannotFindVariable) {
-			if (content.contains("cannnot find symbol")) {
-				System.out.print("_cannnotfindsymbol");
-				ExperResult.symbolNotFind++;
-			} else {
-				System.out.print("_unknow");
-				ExperResult.unknow++;
-			}
-		}
+//		String[] a2 = a1[1].split("\n");
+//
+//		boolean cannotFindMethod = false;
+//		boolean cannotFindClass = false;
+//		boolean cannotFindPackage = false;
+//		boolean cannotFindVariable = false;
+//		boolean packageNotExist = false;
+//
+//		for (int i = 0; i < a2.length; i++) {
+//			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
+//					&& a2[i + 1].contains("method") && !cannotFindMethod) {
+//				System.out.print("_cannotFindMethod");
+//				ExperResult.methodNotFind++;
+//				cannotFindMethod = true;
+//				continue;
+//			}
+//			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
+//					&& a2[i + 1].contains("class") && !cannotFindClass) {
+//				System.out.print("_cannotFindClass");
+//				ExperResult.classNotFind++;
+//				cannotFindClass = true;
+//				continue;
+//			}
+//
+//			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
+//					&& a2[i + 1].contains("package") && !cannotFindPackage) {
+//				System.out.print("_cannotFindPackage");
+//				ExperResult.packageNotFind++;
+//				cannotFindPackage = true;
+//				continue;
+//			}
+//			if (a2[i].contains("cannot") && a2[i].contains("find") && a2[i + 1].contains("symbol:")
+//					&& a2[i + 1].contains("variable") && !cannotFindVariable) {
+//				System.out.print("_cannotFindVariable");
+//				ExperResult.variableNotFind++;
+//				cannotFindVariable = true;
+//				continue;
+//			}
+//			if (a2[i].contains("package") && a2[i].contains("not exist") && !packageNotExist) {
+//				System.out.print("_packageNotExist");
+//				ExperResult.packageNotExits++;
+//				packageNotExist = true;
+//				continue;
+//			}
+//		}
+//		if (!cannotFindMethod && !cannotFindClass && !cannotFindPackage && !packageNotExist && !cannotFindVariable) {
+//			if (content.contains("cannnot find symbol")) {
+//				System.out.print("_cannnotfindsymbol");
+//				ExperResult.symbolNotFind++;
+//			} else {
+//				System.out.print("_unknow");
+//				ExperResult.unknow++;
+//			}
+//		}
 	}
 
 	// 请注意以最小的单元运行任务

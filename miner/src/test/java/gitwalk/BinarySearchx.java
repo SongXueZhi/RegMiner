@@ -4,10 +4,10 @@ import org.junit.Test;
 
 public class BinarySearchx {
 
-	public static int[] target = new int[] { -1, -1, -1, -1, 1, 0, -1, -1, 0, 0, -1, -1, -1, -1, -1, -1, -1, 1, -1,
-			-1,
+	public static int[] target = new int[] { -1, -1, -1, -1, 1, 0, -1, -1, 0, 0, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1,
 			-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 	final int level = 3;
+
 	@Test
 	public void test() {
 		System.out.println(target.length);
@@ -16,20 +16,20 @@ public class BinarySearchx {
 	}
 
 	public int search(int[] arr, int low, int high) {
-		//失败条件
-		if (low > high ||low <0||high>arr.length-1) {
+		// 失败条件
+		if (low > high || low < 0 || high > arr.length - 1) {
 			return -1;
 		}
-		
+
 		int middle = (low + high) / 2;
 		System.out.println("index" + middle + ": " + arr[middle]);
-		//成功条件
-		if(arr[middle] == 0 && arr[middle-1] ==1) {
-			return middle-1;
+		// 成功条件
+		if (arr[middle] == 0 && arr[middle - 1] == 1) {
+			return middle - 1;
 		}
-		//查找策略
+		// 查找策略
 		if (arr[middle] == -1) {
-			//zhishutiaoy
+			// zhishutiaoy
 			int left = expLeftBoundry(arr, low, middle, 0);
 			int a = search(arr, low, left);
 			if (a != -1) {
@@ -56,7 +56,7 @@ public class BinarySearchx {
 				pos = left - (int) Math.pow(2, i);
 				if (pos < low) {
 					if (index < level) {
-					return expLeftBoundry(arr, low, left,index +1);
+						return expLeftBoundry(arr, low, left, index + 1);
 					} else {
 						return -1;
 					}
@@ -99,7 +99,7 @@ public class BinarySearchx {
 		}
 		System.out.println("LEFT right try end " + right);
 		return right;
-   }
+	}
 
 	public int leftTry(int[] arr, int low, int high) {
 		int left = high;
@@ -126,6 +126,7 @@ public class BinarySearchx {
 		System.out.println("RIGHT left try end " + left);
 		return left;
 	}
+
 	public int expRightBoundry(int[] arr, int low, int high, int index) {
 		int right = low;
 		int status = 0;

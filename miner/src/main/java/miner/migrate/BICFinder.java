@@ -55,7 +55,7 @@ public class BICFinder {
 		Set<String> bICSet = new HashSet<>();
 		for (int i = 0; i < originDataArray.length; i++) {
 			bICSet.add(originDataArray[i]);
-			System.out.println(originDataArray[i]);
+			FileUtilx.log(originDataArray[i]);
 		}
 		bICSet.remove(originDataArray[0]);
 		return bICSet;
@@ -64,11 +64,11 @@ public class BICFinder {
 	public String searchBIC(PotentialRFC pRFC) {
 		List<TestFile> testSuites = pRFC.getTestCaseFiles();
 		if (testSuites == null || testSuites.size() == 0) {
-			System.out.println("意外的错误：NOSET");
+			FileUtilx.log("意外的错误：NOSET");
 			return null;
 		}
 		if (pRFC.getCommit().getParentCount() <= 0) {
-			System.out.println("searchBIC no Parent");
+			FileUtilx.log("searchBIC no Parent");
 			return null;
 		}
 		this.pRFC = pRFC;
@@ -134,7 +134,7 @@ public class BICFinder {
 //	public int recursionBinarySearch(String[] arr, int low, int high) {
 //
 //		if (low > high) {
-//			System.out.println("查找失败");
+//			FileUtilx.log("查找失败");
 //			return -1;
 //		}
 //
@@ -145,7 +145,7 @@ public class BICFinder {
 //		int b = test(arr[middle - 1], middle);
 //		boolean result1 = ( b== TestMigrater.PASS) ? true : false;
 //		if (result && result1) {
-//			System.out.println("回归+1");
+//			FileUtilx.log("回归+1");
 //			return middle;
 //		} 
 //		if (result) {
@@ -160,7 +160,7 @@ public class BICFinder {
 	public int search(String[] arr, int low, int high) {
 		// 失败条件
 		if (low > high || low < 0 || high > arr.length - 1) {
-			System.out.println("查找失败");
+			FileUtilx.log("查找失败");
 			return -1;
 		}
 
@@ -169,11 +169,11 @@ public class BICFinder {
 		int statu = getTestResult(arr[middle], middle);
 
 		if (statu == TestCaseMigrater.FAL && getTestResult(arr[middle - 1], middle - 1) == TestCaseMigrater.PASS) {
-			System.out.println("回归+1");
+			FileUtilx.log("回归+1");
 			return middle - 1;
 		}
 		if (statu == TestCaseMigrater.PASS && getTestResult(arr[middle + 1], middle + 1) == TestCaseMigrater.FAL) {
-			System.out.println("回归+1");
+			FileUtilx.log("回归+1");
 			return middle;
 		}
 
@@ -205,7 +205,7 @@ public class BICFinder {
 					return b;
 				}
 			}
-			System.out.println("查找失败");
+			FileUtilx.log("查找失败");
 			return -1;
 		} else if (statu == TestCaseMigrater.FAL) {
 			// notest 等unresolved的情况都乐观的往右
