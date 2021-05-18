@@ -17,10 +17,6 @@ public class MemberRetriever extends ASTVisitor {
 		return this.nodeList;
 	}
 
-	public void a(String a, int ac) {
-
-	}
-
 	@SuppressWarnings("unlikely-arg-type")
 	public MethodDeclaration getMethodDeclabyName(String name) {
 		for (MethodDeclaration md : nodeList) {

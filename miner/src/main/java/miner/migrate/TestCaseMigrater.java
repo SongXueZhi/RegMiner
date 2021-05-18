@@ -309,11 +309,9 @@ public class TestCaseMigrater extends Migrater {
 			for (VariableDeclarationFragment filed : vflist) {
 				boolean flag = false;
 				for (TypeDeclaration type : types) {
-					for (MethodDeclaration md : type.getMethods()) {
-						if (md.getBody().toString().contains(filed.getName().toString())) {
+						if (type.toString().contains(filed.getName().toString())) {
 							flag = true;
 						}
-					}
 				}
 				if (flag == false) {
 					a++;

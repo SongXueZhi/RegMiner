@@ -56,6 +56,7 @@ public class TestCaseDeterminer extends Migrater {
 
 		// 4.编译BFC
 		if (!comiple(bfcDirectory, false)) {
+			pRFC.getTestCaseFiles().clear();
 			System.out.println("BFC构建失败");
 			emptyCache(bfcID);
 			return;
@@ -70,6 +71,7 @@ public class TestCaseDeterminer extends Migrater {
 
 		// 7.编译并测试BFCP
 		if (!comiple(bfcpDirectory, true)) {
+			pRFC.getTestCaseFiles().clear();
 			System.out.println("BFCp迁移后编译失败");
 			emptyCache(bfcID);
 			return;
@@ -106,6 +108,7 @@ public class TestCaseDeterminer extends Migrater {
 				testSuite(testFile);
 			} else {
 				iter.remove();// 只保留测试文件
+				continue;
 			}
 			Map testMethodsMap = testFile.getTestMethodMap();
 			if (testMethodsMap == null || testMethodsMap.size() == 0) {
