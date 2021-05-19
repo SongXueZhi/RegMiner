@@ -108,7 +108,8 @@ public class BICFinder {
 			}
 
 			new SycFileCleanup().cleanDirectoryOnFilter(bfcFile, Arrays.asList(bfcName, arr[a + 1], arr[a]));// 删除在regression定义以外的项目文件
-			return arr[a + 1] + "," + arr[a] + "," + sj.toString();
+			return arr[a + 1] + "," + arr[a] + "," + sj.toString() + "," + pRFC.fileMap.get(bfcName) + ","
+					+ pRFC.fileMap.get(arr[a + 1]) + "," + pRFC.fileMap.get(arr[a]);
 		}
 	}
 
@@ -168,11 +169,13 @@ public class BICFinder {
 		// 查找成功条件
 		int statu = getTestResult(arr[middle], middle);
 
-		if (statu == TestCaseMigrater.FAL && getTestResult(arr[middle - 1], middle - 1) == TestCaseMigrater.PASS) {
+		if (statu == TestCaseMigrater.FAL && middle - 1 > 0
+				&& getTestResult(arr[middle - 1], middle - 1) == TestCaseMigrater.PASS) {
 			FileUtilx.log("回归+1");
 			return middle - 1;
 		}
-		if (statu == TestCaseMigrater.PASS && getTestResult(arr[middle + 1], middle + 1) == TestCaseMigrater.FAL) {
+		if (statu == TestCaseMigrater.PASS && middle + 1 < arr.length
+				&& getTestResult(arr[middle + 1], middle + 1) == TestCaseMigrater.FAL) {
 			FileUtilx.log("回归+1");
 			return middle;
 		}
@@ -184,7 +187,7 @@ public class BICFinder {
 
 			if (left != -1 && getTestResult(arr[left], left) == TestCaseMigrater.FAL) {
 				// 往附近看一眼
-				if (getTestResult(arr[left - 1], left - 1) == TestCaseMigrater.PASS) {
+				if (middle - 1 > 0 && getTestResult(arr[left - 1], left - 1) == TestCaseMigrater.PASS) {
 					return left - 1;
 				}
 				// 左边界开始新的查找
@@ -197,7 +200,7 @@ public class BICFinder {
 
 			if (right != -1 && getTestResult(arr[right], right) == TestCaseMigrater.PASS) {
 				// 往附近看一眼
-				if (getTestResult(arr[right + 1], right + 1) == TestCaseMigrater.FAL) {
+				if (middle + 1 < arr.length && getTestResult(arr[right + 1], right + 1) == TestCaseMigrater.FAL) {
 					return right;
 				}
 				int b = search(arr, right, high);

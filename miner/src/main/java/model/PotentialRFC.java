@@ -1,6 +1,7 @@
 package model;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ public class PotentialRFC {
 	private int priority;
 	private List<NormalFile> normalJavaFiles;
 	private List<TestFile> testCaseFiles;
+	private List<TestFile> testSuites = new ArrayList<TestFile>();
+	private List<TestFile> testRelates = new ArrayList<TestFile>();
 	private Set<String> testCaseSet;
 	public Map<String, File> fileMap = new HashMap<>();
 
@@ -68,6 +71,22 @@ public class PotentialRFC {
 
 	public void setTestCaseSet(Set<String> testCaseSet) {
 		this.testCaseSet = testCaseSet;
+	}
+
+	public List<TestFile> getTestSuites() {
+		return testSuites;
+	}
+
+	public void setTestSuites(List<TestFile> testSuites) {
+		this.testSuites = testSuites;
+	}
+
+	public List<TestFile> getTestRelates() {
+		return testRelates;
+	}
+
+	public void setTestRelates(List<TestFile> testRelates) {
+		this.testRelates = testRelates;
 	}
 
 }

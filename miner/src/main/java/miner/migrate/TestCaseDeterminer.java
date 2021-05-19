@@ -42,7 +42,7 @@ public class TestCaseDeterminer extends Migrater {
 		}
 		String bfcpID = pRFC.getCommit().getParent(0).getName();
 		File bfcpDirectory = checkout(bfcID, bfcpID, "bfcp");// 管理每一个commit的文件路径
-//		pRFC.fileMap.put(bfcpID, bfcpDirectory);
+		pRFC.fileMap.put(bfcpID, bfcpDirectory);
 
 //		// 3.第一次尝试编译 BFCP
 //		if (!comiple(bfcpDirectory, false)) {

@@ -40,6 +40,8 @@ public class RelatedTestCaseParser {
 					code);
 			if (!isTestSuite(code)) {
 				file.setType(Type.TEST_RELATE);
+				pRFC.getTestRelates().add(file);
+
 			} else {
 				file.setType(Type.TEST_SUITE);
 				file.setQualityClassName(CompilationUtil.getQualityClassName(code));

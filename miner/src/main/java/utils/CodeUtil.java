@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,16 +24,22 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 public class CodeUtil {
 
-	public static JavaClass lookupClassbyFile(String resourceName) throws Exception {
+	public static JavaClass lookupClassbyFile(String resourceName) {
 		byte[] b = new byte[(int) new File(resourceName).length()];
-		InputStream in = new FileInputStream(resourceName);
-		new DataInputStream(in).readFully(b);
-		in.close();
-		ClassParser parser = new ClassParser(new ByteArrayInputStream(b), resourceName);
-		boolean parsedClass = false;
-		JavaClass javaClass = parser.parse();
-		parsedClass = true;
-		return javaClass;
+		InputStream in;
+		try {
+			in = new FileInputStream(resourceName);
+			new DataInputStream(in).readFully(b);
+			in.close();
+			ClassParser parser = new ClassParser(new ByteArrayInputStream(b), resourceName);
+			JavaClass javaClass = parser.parse();
+			return javaClass;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static Method getMethodByName(JavaClass clazz, String methodName) {

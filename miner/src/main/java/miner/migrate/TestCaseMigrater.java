@@ -1,6 +1,7 @@
 package miner.migrate;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,7 +22,9 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
+import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 
 import ast.FieldRetriever;
@@ -37,6 +40,11 @@ import utils.CodeUtil;
 import utils.CompilationUtil;
 import utils.FileUtilx;
 
+/**
+ * 
+ * @author sxz
+ *
+ */
 public class TestCaseMigrater extends Migrater {
 	public final static int PASS = 0;
 	public final static int FAL = 1;
@@ -60,7 +68,7 @@ public class TestCaseMigrater extends Migrater {
 	public int migrate(PotentialRFC pRFC, String bic) throws Exception {
 		FileUtilx.log("bic:" + bic);
 		File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
-//		pRFC.fileMap.put(bic, bicDirectory);
+		pRFC.fileMap.put(bic, bicDirectory);
 //		// 第一次编译未copy时候编译尝试
 //		if (!comiple(bicDirectory, false)) {
 //			FileUtilx.log("本身编译失败");
@@ -69,6 +77,7 @@ public class TestCaseMigrater extends Migrater {
 		File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
 		// 第一次编译成功,则开始依赖图匹配
 		copyTestCase(pRFC, bicDirectory, bfcDir);
+		copyTestRelates(pRFC, bicDirectory, bfcDir);
 		// 编译
 		if (comiple(bicDirectory, true)) {
 			int a = testSuite(bicDirectory, pRFC.getTestCaseFiles());
@@ -140,7 +149,37 @@ public class TestCaseMigrater extends Migrater {
 		return UNRESOLVE;
 	}
 
-	public void copyTestCase(PotentialRFC pRFC, File tDir, File bfcDir) throws Exception {
+	public void copyTestRelates(PotentialRFC pRFC, File tDir, File bfcDir) {
+		List<TestFile> testRelates = pRFC.getTestRelates();
+		for (TestFile testRelate : testRelates) {
+			// 测试文件是被删除则什么也不作。
+			if (testRelate.getNewPath().contains("/dev/null")) {
+				continue;
+			}
+			File file = new File(Conf.TMP_FILE + File.separator + pRFC.getCommit().getName() + File.separator
+					+ testRelate.getNewPath());
+			// 测试文件是被删除则什么也不作。
+
+			String targetPath = testRelate.getNewPath();
+			// 测试文件不是删除，则copy
+			targetPath = FileUtilx.getDirectoryFromPath(targetPath);
+			File file1 = new File(tDir.getAbsoluteFile() + File.separator + targetPath);
+			if (!file1.exists()) {
+				file1.mkdirs();
+			}
+			exec.exec("cp " + file.getAbsolutePath() + " " + file1.getAbsolutePath());
+
+		}
+	}
+
+	/**
+	 * 当前只迁移了tessuite，因此针对testrelated需要其他的策略
+	 * 
+	 * @param pRFC
+	 * @param tDir
+	 * @param bfcDir
+	 */
+	public void copyTestCase(PotentialRFC pRFC, File tDir, File bfcDir) {
 		List<TestFile> tcs = pRFC.getTestCaseFiles();
 		String[] tFiles = CodeUtil.getJavaFiles(tDir);
 		String[] bfcFils = CodeUtil.getJavaFiles(bfcDir);
@@ -167,6 +206,7 @@ public class TestCaseMigrater extends Migrater {
 				List<ImportDeclaration> imports = unitFrom.imports();
 				Map<String, ImportDeclaration> needToCopyImport = new HashMap<>();
 				for (Map.Entry<String, RelatedTestCase> entry : tc.getTestMethodMap().entrySet()) {
+					// 注意此处的MemberRetriever的实现并不会访问内部类中的方法，所以内部类中的方法将不会被影响
 					MethodDeclaration md = entry.getValue().getMethod().getMethodDeclaration();
 					MemberRetriever mr = new MemberRetriever();
 					unitTo.accept(mr);
@@ -196,8 +236,13 @@ public class TestCaseMigrater extends Migrater {
 				unitTo.recordModifications();
 				Document document = new Document();
 				TextEdit edits = unitTo.rewrite(document, null);
-				edits.apply(document);
-				FileUtils.write(new File(tDir, tpath), document.get());
+				try {
+					edits.apply(document);
+					FileUtils.write(new File(tDir, tpath), document.get());
+				} catch (MalformedTreeException | BadLocationException | IOException e) {
+					FileUtilx.log(e.getMessage() + "\n bfcdir: " + bfcDir + "\n tdir: " + tDir);
+				}
+
 			}
 		}
 	}
@@ -222,7 +267,7 @@ public class TestCaseMigrater extends Migrater {
 	}
 
 	public void copyAndPruneNoUsedMethod(String javaFilepath, String classFile, File tDir, File bfcDir,
-			Map<String, RelatedTestCase> methodMap) throws Exception {
+			Map<String, RelatedTestCase> methodMap) {
 		MethodCaller mcaller = new MethodCaller();
 		String content = FileUtilx.readContentFromFile(bfcDir.getAbsolutePath() + File.separator + javaFilepath);
 		CompilationUnit unit = CompilationUtil.parseCompliationUnit(content);
@@ -230,7 +275,6 @@ public class TestCaseMigrater extends Migrater {
 		Method[] methods = clazz.getMethods();
 		Set<String> methodsSet = new HashSet<>();
 		// 获取每个方法,加每个方法在该类中的调用
-
 		for (Map.Entry<String, RelatedTestCase> entry : methodMap.entrySet()) {
 			Method method = CodeUtil.methodMatch(methods, entry.getValue().getMethod().getMethodDeclaration());
 			CallNode node = mcaller.getMethodCall(method, clazz);
@@ -261,15 +305,18 @@ public class TestCaseMigrater extends Migrater {
 		unit.recordModifications();
 		Document doc = new Document(content);
 		TextEdit edits = rewriter.rewriteAST(doc, null);
-		edits.apply(doc);
-		// 删除无关字段和import
-		String code = pruneImport(pruneField(doc.get()));
-
-		FileUtils.write(new File(tDir, javaFilepath), code);
-
+		try {
+			edits.apply(doc);
+			// 删除无关字段和import
+			String code;
+			code = pruneImport(pruneField(doc.get()));
+			FileUtils.write(new File(tDir, javaFilepath), code);
+		} catch (MalformedTreeException | BadLocationException | IOException e) {
+			FileUtilx.log(e.getMessage() + "\n bfcdir: " + bfcDir + "\n tdir: " + tDir);
+		}
 	}
 
-	public String pruneImport(String content) throws Exception {
+	public String pruneImport(String content) throws MalformedTreeException, BadLocationException {
 		CompilationUnit unit = CompilationUtil.parseCompliationUnit(content);
 		ASTRewrite rewriter = ASTRewrite.create(unit.getAST());
 		// 删除无用的import
@@ -295,10 +342,11 @@ public class TestCaseMigrater extends Migrater {
 		return doc.get();
 	}
 
-	public String pruneField(String content) throws Exception {
+	public String pruneField(String content) throws MalformedTreeException, BadLocationException {
 		CompilationUnit unit = CompilationUtil.parseCompliationUnit(content);
 		ASTRewrite rewriter = ASTRewrite.create(unit.getAST());
 		List<TypeDeclaration> types = unit.types();
+		// 与MethodRetriever不同FieldRetriever可以访问到内部类中的字段声明
 		FieldRetriever fr = new FieldRetriever();
 		unit.accept(fr);
 		Map<FieldDeclaration, List<VariableDeclarationFragment>> filedMap = fr.fieldMap;
@@ -309,9 +357,9 @@ public class TestCaseMigrater extends Migrater {
 			for (VariableDeclarationFragment filed : vflist) {
 				boolean flag = false;
 				for (TypeDeclaration type : types) {
-						if (type.toString().contains(filed.getName().toString())) {
-							flag = true;
-						}
+					if (type.toString().contains(filed.getName().toString())) {
+						flag = true;
+					}
 				}
 				if (flag == false) {
 					a++;
