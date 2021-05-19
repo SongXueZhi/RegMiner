@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.eclipse.platform:org.eclipse.core.jobs:3.10.1100">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/platform/org.eclipse.core.jobs/3.10.1100/org.eclipse.core.jobs-3.10.1100.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/platform/org.eclipse.core.jobs/3.10.1100/org.eclipse.core.jobs-3.10.1100-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/eclipse/platform/org.eclipse.core.jobs/3.10.1100/org.eclipse.core.jobs-3.10.1100-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

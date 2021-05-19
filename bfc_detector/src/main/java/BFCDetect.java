@@ -6,11 +6,21 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Repository;
 
 public class BFCDetect {
 
 	public static void main(String[] args) throws Exception {
+		String clientPath=args[0];
+		Repository repo = new FileRepository(clientPath);
+		PotentialBFCDetector detecor = new PotentialBFCDetector(repo, new Git(repo));
+		int num = detecor.detectPotentialBFC().size();
+		System.out.println("bfc num :"+num);
+	}
+
+	//从文件列表中批量处理
+	public void batchHandle(){
 		TestExecutor exec = new TestExecutor();
 		File csv = new File("passsite.csv"); // CSV文件路径
 		BufferedReader br = null;
@@ -38,11 +48,9 @@ public class BFCDetect {
 				System.out.println(line + "," + num);
 			}
 			System.out.println("End!");
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
+		}  finally {
 		}
-
 	}
-
 }
