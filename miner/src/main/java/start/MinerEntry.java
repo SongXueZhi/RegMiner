@@ -51,7 +51,7 @@ public class MinerEntry {
 
 	public static void mutilThreadHandle() {
 		int cpuSize = ThreadPoolUtil.cpuIntesivePoolSize();
-		for (int i = 0; i <= 1; i++) {
+		for (int i = 0; i <= cpuSize; i++) {
 			new SycTaskHandle().start();
 		}
 	}
@@ -106,7 +106,6 @@ public class MinerEntry {
 		}
 
 		public void threadCoreTask() {
-			;
 			RelatedTestCaseParser rTCParser = new RelatedTestCaseParser(repo);
 			TestCaseDeterminer tm = new TestCaseDeterminer(repo);
 			BICFinder finder = new BICFinder();
