@@ -17,6 +17,7 @@ import miner.RelatedTestCaseParser;
 import miner.migrate.BICFinder;
 import miner.migrate.TestCaseDeterminer;
 import model.PotentialRFC;
+import monitor.ProgressMonitor;
 import utils.FileUtilx;
 import utils.ThreadPoolUtil;
 
@@ -36,10 +37,13 @@ public class MinerEntry {
 		final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 		repo = new Provider().create(Provider.EXISITING).get(Conf.LOCAL_PROJECT_GIT);
 		git = new Git(repo);
+		ProgressMonitor.load(); // 加载断点
+
 		try {
 			// 检测满足条件的BFC
 			PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(repo, git);
 			pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC();
+			ProgressMonitor.rePlan(pRFCs);
 			// 开始每一个bfc所对应的bic，查找任务。
 			singleThreadHandle(); // 单线程处理模式
 //			mutilThreadHandle();// 多线程模式
@@ -90,6 +94,7 @@ public class MinerEntry {
 					setResult.add(item);
 				}
 			}
+			ProgressMonitor.addDone(pRfc.getCommit().getName());
 		}
 		FileUtilx.log("成功" + ExperResult.numSuc + "个，共" + j + "个: " + ExperResult.numSuc / j);
 		FileUtilx.log("classNotFind " + ExperResult.classNotFind + "methodNotFind " + ExperResult.methodNotFind
