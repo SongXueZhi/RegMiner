@@ -95,8 +95,9 @@ if __name__ == "__main__":
                         continue
                     print(fullname)
                     num = bfc_detect(url)
+                    res = findAllFile("/home/sxz/cache/meta")
                     dict = {"_id":fullname,"full_name":fullname,
-                            "repo_size": repo.size,"clone_url":url,"bfc_num":num}
+                            "repo_size": repo.size,"clone_url":url,"bfc_num":num,"mvn_num":res["pom_num"],"gradle_num":res["gradle_num"]}
                     mycol.save(dict)
         except Exception as ex:
             print(ex)
