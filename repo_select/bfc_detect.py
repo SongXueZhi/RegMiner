@@ -6,8 +6,8 @@ import time
 import pymongo
 
 work_space ='/home/sxz/cache'
-myclient = pymongo.MongoClient("mongodb://10.176.34.95:27017/")
-mydb = myclient["gitdata_2"]
+myclient = pymongo.MongoClient("mongodb://root:1@3.129.210.235:27017/")
+mydb = myclient["repo"]
 mycol = mydb["repo2"]
 g = Github("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", per_page=100)
 
@@ -45,19 +45,20 @@ def exec(cmd):
         file_object.close()
         os.system("rm -rf log")
         return lines
+
 def clone(url):
     i =0; 
     while True:
         exec("rm -rf meta")
-        exec("export ALL_PROXY=socks5://127.0.0.1:7891 && git clone "+url+" meta")
-        my_file = Path("/home/sxz/cache/meta")
-        if  my_file.is_dir and len(os.listdir("/home/sxz/cache/meta")) > 0:
+        exec("git clone "+url+" meta")
+        my_file = Path(work_space+os.sep+"meta")
+        if  my_file.is_dir and len(os.listdir(work_space+os.sep+"meta")) > 0:
             print("clone 成功")
             return
         else:
             i =i +1
             if i>30:
-                os.system("bash fd-net-auth.sh")
+                #os.system("bash fd-net-auth.sh")
 def bfc_detect(url):
     clone(url)
     lines = exec("java -jar BFCDetect.jar meta/.git")
@@ -92,17 +93,18 @@ if __name__ == "__main__":
                     url = repo.clone_url;
                     res = mycol.count_documents({'_id':fullname}) # 可以理解为数据在mongo中出现的次数
                     if res != 0: 
+                        print(fullname+"已入库")
                         continue
                     print(fullname)
                     num = bfc_detect(url)
-                    res = findAllFile("/home/sxz/cache/meta")
+                    res = findAllFile(work_space+os.sep+"meta")
                     dict = {"_id":fullname,"full_name":fullname,
-                            "repo_size": repo.size,"clone_url":url,"bfc_num":num,"mvn_num":res["pom_num"],"gradle_num":res["gradle_num"]}
+                            "repo_size": repo.size,"clone_url":url,"bfc_num":num,"mvn_num":res["pom_num"],"gradle_num":res["gradle_num"],"status":0}
                     mycol.save(dict)
         except Exception as ex:
             print(ex)
             time.sleep(86400)
-            exec('bash fd-net-auth.sh')
+            #exec('bash fd-net-auth.sh')
     end = time.time()
     print("total time use " + str(end - start))
    

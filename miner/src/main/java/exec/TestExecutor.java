@@ -121,7 +121,7 @@ public class TestExecutor extends Executor {
 			} else {
 				pb.command("bash", "-c", cmd);
 			}
-			Process process = pb.start();
+			final Process process = pb.start();
 			Timer t = new Timer();
 			t.schedule(new TimerTask() {
 				@Override
