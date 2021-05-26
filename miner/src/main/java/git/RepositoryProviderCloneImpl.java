@@ -7,7 +7,7 @@ import org.eclipse.jgit.lib.Repository;
 
 public class RepositoryProviderCloneImpl implements RepositoryProvider {
 
-	private String repoPath;
+	private final String repoPath;
     public RepositoryProviderCloneImpl(String repoPath) {
         this.repoPath = repoPath;
     }

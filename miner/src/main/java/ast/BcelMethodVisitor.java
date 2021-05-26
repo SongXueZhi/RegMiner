@@ -30,16 +30,16 @@ import utils.CodeUtil;
  * 
  * Class copied with modifications from CJKM: http://www.spinellis.gr/sw/ckjm/
  */
-public class MethodVisitor extends EmptyVisitor {
+public class BcelMethodVisitor extends EmptyVisitor {
 
 	JavaClass visitedClass;
-	private MethodGen mg;
-	private ConstantPoolGen cp;
+	private final MethodGen mg;
+	private final ConstantPoolGen cp;
 	private String format;
-	private List<String> methodCalls = new ArrayList<>();
+	private final List<String> methodCalls = new ArrayList<>();
 	public CallNode node = new CallNode();
 
-	public MethodVisitor(MethodGen m, JavaClass jc) {
+	public BcelMethodVisitor(MethodGen m, JavaClass jc) {
 		visitedClass = jc;
 		mg = m;
 		cp = mg.getConstantPool();
@@ -125,19 +125,19 @@ public class MethodVisitor extends EmptyVisitor {
 		node.childList.add(child);
 	}
 
-	@Override
-	public void visitGETFIELD(final GETFIELD i) {
-		CallNode child = new CallNode();
-		child.setType(CallNode.Type.filed);
-		child.setFiledName(i.getFieldName(cp));
-		node.childList.add(child);
-	}
-
-	@Override
-	public void visitGETSTATIC(final GETSTATIC i) {
-		CallNode child = new CallNode();
-		child.setType(CallNode.Type.filed);
-		child.setFiledName(i.getFieldName(cp));
-		node.childList.add(child);
-	}
+//	@Override
+//	public void visitGETFIELD(final GETFIELD i) {
+//		CallNode child = new CallNode();
+//		child.setType(CallNode.Type.filed);
+//		child.setFiledName(i.getFieldName(cp));
+//		node.childList.add(child);
+//	}
+//
+//	@Override
+//	public void visitGETSTATIC(final GETSTATIC i) {
+//		CallNode child = new CallNode();
+//		child.setType(CallNode.Type.filed);
+//		child.setFiledName(i.getFieldName(cp));
+//		node.childList.add(child);
+//	}
 }

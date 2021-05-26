@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,7 +62,7 @@ public class FileUtilx {
 		try {
 			InputStream is = new FileInputStream(file);
 			if (file.exists() && file.isFile()) {
-				BufferedReader br = new BufferedReader(new InputStreamReader(is, "utf-8"));
+				BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 				StringBuffer sb2 = new StringBuffer();
 				String line = null;
 				while ((line = br.readLine()) != null) {
@@ -82,7 +83,7 @@ public class FileUtilx {
 		try {
 			InputStream is = new FileInputStream(file);
 			if (file.exists() && file.isFile()) {
-				BufferedReader br = new BufferedReader(new InputStreamReader(is, "utf-8"));
+				BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 				String line = null;
 				while ((line = br.readLine()) != null) {
 					result.add(line);

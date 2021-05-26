@@ -16,8 +16,8 @@ public class CallNode {
 	public List<CallNode> childList = new ArrayList<>();
 
 	public enum Type {
-		filed, method;
-	}
+		filed, method
+    }
 
 	public Type getType() {
 		return type;

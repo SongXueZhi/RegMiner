@@ -82,9 +82,9 @@ public class TestCaseDeterminer extends Migrater {
 
 		if (pRFC.getTestCaseFiles().size() > 0) {
 			ExperResult.numSuc++;
-			FileUtilx.log("迁移成功" + result.toString());
+			FileUtilx.log("迁移成功" + result);
 		} else {
-			FileUtilx.log("迁移失败" + result.toString());
+			FileUtilx.log("迁移失败" + result);
 			emptyCache(bfcID);
 			return;
 		}
@@ -103,7 +103,7 @@ public class TestCaseDeterminer extends Migrater {
 		// 开始测试
 		Iterator<TestFile> iter = pRFC.getTestCaseFiles().iterator();
 		while (iter.hasNext()) {
-			TestFile testFile = (TestFile) iter.next();
+			TestFile testFile = iter.next();
 
 			if (testFile.getType() == Type.TEST_SUITE) {
 				testSuite(testFile);

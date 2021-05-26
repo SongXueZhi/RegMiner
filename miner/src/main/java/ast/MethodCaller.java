@@ -11,7 +11,7 @@ public class MethodCaller {
 
 	public CallNode getMethodCall(Method method, JavaClass clazz) {
 		MethodGen mg = new MethodGen(method, clazz.getClassName(), new ConstantPoolGen(clazz.getConstantPool()));
-		MethodVisitor visitor = new MethodVisitor(mg, clazz);
+		BcelMethodVisitor visitor = new BcelMethodVisitor(mg, clazz);
 		return visitor.got();
 	}
 

@@ -11,7 +11,7 @@ public class Migrater {
 
 	public File checkout(String bfcId, String commitId, String version) {
 		String cacheFile = Conf.CACHE_PATH + File.separator + bfcId + File.separator + commitId + File.separator
-				+ version + "_" + UUID.randomUUID().toString();
+				+ version + "_" + UUID.randomUUID();
 		File file = new File(cacheFile);
 		if (!file.exists()) {
 			file.mkdirs();

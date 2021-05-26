@@ -8,7 +8,7 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.junit.Test;
 
-import ast.FieldRetriever;
+import ast.JdtFieldRetriever;
 
 public class CompilationUtilTest {
 
@@ -40,7 +40,7 @@ public class CompilationUtilTest {
 				+ "            \"    \\\"id\\\": 1\\n\" +\n" + "            \"}\";\n" + "}";
 
 		CompilationUnit unit = CompilationUtil.parseCompliationUnit(classContent);
-		FieldRetriever mr = new FieldRetriever();
+		JdtFieldRetriever mr = new JdtFieldRetriever();
 		unit.accept(mr);
 		for (Entry<FieldDeclaration, List<VariableDeclarationFragment>> entry : mr.fieldMap.entrySet()) {
 			FieldDeclaration fd = entry.getKey();

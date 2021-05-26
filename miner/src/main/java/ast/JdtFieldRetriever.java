@@ -9,7 +9,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
-public class FieldRetriever extends ASTVisitor {
+public class JdtFieldRetriever extends ASTVisitor {
 	public Map<FieldDeclaration, List<VariableDeclarationFragment>> fieldMap = new HashMap<>();
 
 	public boolean visit(FieldDeclaration field) {

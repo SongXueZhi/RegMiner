@@ -73,7 +73,7 @@ public class BICFinder {
 		}
 		this.pRFC = pRFC;
 		// 获取BFC到Origin的所有CommitID
-		List<String> candidateList = revListCommand(pRFC.getCommit().getParent(0).getName().toString());
+		List<String> candidateList = revListCommand(pRFC.getCommit().getParent(0).getName());
 		// 得到反转数组,即从Origin到Commit
 		Collections.reverse(candidateList);
 		String[] arr = candidateList.toArray(new String[candidateList.size()]);
@@ -108,7 +108,7 @@ public class BICFinder {
 			}
 
 			new SycFileCleanup().cleanDirectoryOnFilter(bfcFile, Arrays.asList(bfcName, arr[a + 1], arr[a]));// 删除在regression定义以外的项目文件
-			return arr[a + 1] + "," + arr[a] + "," + sj.toString() + "," + pRFC.fileMap.get(bfcName) + ","
+			return arr[a + 1] + "," + arr[a] + "," + sj + "," + pRFC.fileMap.get(bfcName) + ","
 					+ pRFC.fileMap.get(arr[a + 1]) + "," + pRFC.fileMap.get(arr[a]);
 		}
 	}

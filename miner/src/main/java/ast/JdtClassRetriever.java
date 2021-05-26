@@ -10,8 +10,8 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-public class TypeRetriever extends ASTVisitor {
-	private List<TypeDeclaration> nodeList = new ArrayList<>();
+public class JdtClassRetriever extends ASTVisitor {
+	private final List<TypeDeclaration> nodeList = new ArrayList<>();
 	private String packageName;
 
 	public boolean visit(TypeDeclaration type) {

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
-public class MemberRetriever extends ASTVisitor {
-	private ArrayList<MethodDeclaration> nodeList = new ArrayList<>();
+public class JdtMethodRetriever extends ASTVisitor {
+	private final ArrayList<MethodDeclaration> nodeList = new ArrayList<>();
 
 	public boolean visit(MethodDeclaration method) {
 		this.nodeList.add(method);

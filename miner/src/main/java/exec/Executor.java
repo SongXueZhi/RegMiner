@@ -26,7 +26,7 @@ public class Executor {
 		setEnviroment(toolPaths);
 	}
 
-	public static void setEnviroment(String args[]) {
+	public static void setEnviroment(String[] args) {
 
 		Map<String, String> map = pb.environment();
 		StringBuilder PATH = new StringBuilder(map.get("PATH"));

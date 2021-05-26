@@ -11,14 +11,14 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.MethodGen;
 
-public class ClassVisitor extends EmptyVisitor {
-	private JavaClass clazz;
-	private ConstantPoolGen constants;
-	private String classReferenceFormat;
+public class BcelClassVisitor extends EmptyVisitor {
+	private final JavaClass clazz;
+	private final ConstantPoolGen constants;
+	private final String classReferenceFormat;
 	private final DynamicCallManager DCManager = new DynamicCallManager();
-	private List<String> methodCalls = new ArrayList<>();
+	private final List<String> methodCalls = new ArrayList<>();
 
-	public ClassVisitor(JavaClass jc) {
+	public BcelClassVisitor(JavaClass jc) {
 		clazz = jc;
 		constants = new ConstantPoolGen(clazz.getConstantPool());
 		classReferenceFormat = "C:" + clazz.getClassName() + " %s";
@@ -45,7 +45,7 @@ public class ClassVisitor extends EmptyVisitor {
 				continue;
 			if (constant.getTag() == 7) {
 				String referencedClass = constantPool.constantToString(constant);
-				// FileUtilx.log(String.format(classReferenceFormat, referencedClass));
+				System.out.println(String.format(classReferenceFormat, referencedClass));
 			}
 		}
 	}
@@ -53,11 +53,11 @@ public class ClassVisitor extends EmptyVisitor {
 	@Override
 	public void visitMethod(Method method) {
 		MethodGen mg = new MethodGen(method, clazz.getClassName(), constants);
-		MethodVisitor visitor = new MethodVisitor(mg, clazz);
+		BcelMethodVisitor visitor = new BcelMethodVisitor(mg, clazz);
 		methodCalls.addAll(visitor.start());
 	}
 
-	public ClassVisitor start() {
+	public BcelClassVisitor start() {
 		visitJavaClass(clazz);
 		return this;
 	}

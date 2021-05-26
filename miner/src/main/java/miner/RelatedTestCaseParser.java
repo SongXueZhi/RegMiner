@@ -23,7 +23,7 @@ import utils.GitUtil;
 //如果不包含junit或者@test则移除
 //过滤完成后，如果若有测试文件都被移除，则pRFC移除
 public class RelatedTestCaseParser {
-	private Repository repo;
+	private final Repository repo;
 
 	public RelatedTestCaseParser(Repository repo) {
 		this.repo = repo;
@@ -97,10 +97,7 @@ public class RelatedTestCaseParser {
 	}
 
 	private boolean isTestSuite(String code) {
-		if (code.contains("junit") || code.contains("@Test")) {
-			return true;
-		}
-		return false;
-	}
+        return code.contains("junit") || code.contains("@Test");
+    }
 
 }

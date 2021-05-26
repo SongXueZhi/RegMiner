@@ -21,7 +21,7 @@ public class ConfigLoader {
 	final static Class<ConfigLoader> here = ConfigLoader.class;
 	private final static String PROJRCT_NAME = "project_name";
 	private final static String ROOT_DIR = "root_dir";
-	private static Properties prop = new Properties();
+	private static final Properties prop = new Properties();
 	private final static String KEY_PATH = "path";
 	private final static String KEY_JAVA_HOME = "JAVA_HOME";
 	private static String JAVA_HONE = "";
@@ -38,14 +38,14 @@ public class ConfigLoader {
 
 	public static void refresh() {
 //		发布release版本时候请解除注释
-		String path = System.getProperty("java.class.path");
-		int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
-		int lastIndex = path.lastIndexOf(File.separator) + 1;
-		path = path.substring(firstIndex, lastIndex);
-		FileUtilx.log("env.pro " + path);
+//		String path = System.getProperty("java.class.path");
+//		int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
+//		int lastIndex = path.lastIndexOf(File.separator) + 1;
+//		path = path.substring(firstIndex, lastIndex);
+//		FileUtilx.log("env.pro " + path);
 		String pathx = CONFIGPATH;
-		pathx = path + File.separator + CONFIGPATH;
-		try (InputStream inStream = new FileInputStream(new File(pathx));) {
+//		pathx = path + File.separator + CONFIGPATH;
+		try (InputStream inStream = new FileInputStream(new File(pathx))) {
 			prop.load(inStream);
 		} catch (IOException ex) {
 			FileUtilx.log(ex.getMessage());
@@ -59,23 +59,4 @@ public class ConfigLoader {
 		testSymbol = prop.getProperty(TEST_SYMBOL);
 		envPath = JAVA_HONE + ";" + envPath;
 	}
-
-//    public  static void setConfig(String javaPath,String toolPath,String gitPath){
-//        FileOutputStream outputStream  =null;
-//        try {
-//            outputStream = new FileOutputStream(new File(CONFIGPATH));
-//            prop.setProperty(KEY_JDK, javaPath);
-//            prop.setProperty(KEY_BUILD_TOOL, toolPath);
-//            prop.setProperty(KEY_GIT, gitPath);
-//            prop.store(outputStream,"");
-//        } catch (Exception ex) {
-//            Logger.getLogger(ConfigLoader.class.getName()).log(Level.SEVERE, null, ex);
-//        } finally {
-//            try {
-//                outputStream.close();
-//            } catch (IOException ex) {
-//                Logger.getLogger(ConfigLoader.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//    }
 }

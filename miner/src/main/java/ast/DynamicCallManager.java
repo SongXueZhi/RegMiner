@@ -45,6 +45,7 @@ public class DynamicCallManager {
 			int calledIndex = bootMethod.getBootstrapArguments()[CALL_HANDLE_INDEX_ARGUMENT];
 			String calledName = getMethodNameFromHandleIndex(cp, calledIndex);
 			String callerName = method.getName();
+			System.out.println(calledName+";"+callerName);
 			dynamicCallers.put(calledName, callerName);
 		}
 	}
