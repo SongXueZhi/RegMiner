@@ -11,7 +11,7 @@ import org.eclipse.jgit.lib.Repository;
 
 import constant.Conf;
 import constant.ExperResult;
-import git.Provider;
+import git.provider.Provider;
 import miner.PotentialBFCDetector;
 import miner.RelatedTestCaseParser;
 import miner.migrate.BICFinder;
@@ -24,7 +24,7 @@ import utils.ThreadPoolUtil;
 /**
  * 
  * @author sxz
- *
+ * 方法入口
  */
 public class MinerEntry {
 	static Repository repo = null;
@@ -33,12 +33,10 @@ public class MinerEntry {
 	static Set<String> setResult = new HashSet<>();
 
 	public static void main(String[] args) throws Exception {
-
 		final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 		repo = new Provider().create(Provider.EXISITING).get(Conf.LOCAL_PROJECT_GIT);
 		git = new Git(repo);
 		ProgressMonitor.load(); // 加载断点
-
 		try {
 			// 检测满足条件的BFC
 			PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(repo, git);
@@ -52,14 +50,6 @@ public class MinerEntry {
 		}
 
 	}
-
-	public static void mutilThreadHandle() {
-		int cpuSize = ThreadPoolUtil.cpuIntesivePoolSize();
-		for (int i = 0; i <= cpuSize; i++) {
-			new SycTaskHandle().start();
-		}
-	}
-
 	public static void singleThreadHandle() throws Exception {
 		// 工具类准备,1)测试方法查找 2)测试用例确定 3)BIC查找
 		RelatedTestCaseParser rTCParser = new RelatedTestCaseParser(repo);
@@ -103,6 +93,18 @@ public class MinerEntry {
 				+ ExperResult.variableNotFind);
 	}
 
+	public static void mutilThreadHandle() {
+		int cpuSize = ThreadPoolUtil.cpuIntesivePoolSize();
+		for (int i = 0; i <= cpuSize; i++) {
+			new SycTaskHandle().start();
+		}
+	}
+	/**
+	 * @author sxz
+	 * 此类当前禁用
+	 * 多线程模式proces无法确定工作目录
+	 * 此类计划应用于CPU密集任务
+	 */
 	static class SycTaskHandle extends Thread {
 
 		@Override

@@ -1,4 +1,4 @@
-package ast;
+package callgraph;
 
 import java.util.HashMap;
 import java.util.Map;

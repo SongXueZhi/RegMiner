@@ -2,6 +2,10 @@ package model;
 
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
+/**
+ * @author sxz
+ * 该类进一步的封装了MethodDeclaration
+ */
 public class Methodx {
 
 	private String signature;

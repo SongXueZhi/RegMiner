@@ -11,11 +11,16 @@ import org.eclipse.jgit.diff.Edit.Type;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import model.BlameNode;
+import szz.model.BlameNode;
 import model.NormalFile;
 import model.PotentialRFC;
 import utils.FileUtilx;
 
+/**
+ * @author sxz
+ * 该功能模块当前属于放弃阶段，本来想自己写szz
+ * 现在使用szz_find_bug_introduces.jar完成该部分功能
+ */
 public class Traverler {
 
 	BlameCommand blamer;

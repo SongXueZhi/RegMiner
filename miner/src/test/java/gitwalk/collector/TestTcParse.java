@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import constant.Conf;
 import constant.ExperResult;
-import git.Provider;
+import git.provider.Provider;
 import miner.PotentialBFCDetector;
 import miner.RelatedTestCaseParser;
 import miner.migrate.BICFinder;

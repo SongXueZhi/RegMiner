@@ -30,7 +30,7 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.junit.Before;
 import org.junit.Test;
 
-import git.Provider;
+import git.provider.Provider;
 
 public class TestDiffEntry {
 	Repository repo = null;

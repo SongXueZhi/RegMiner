@@ -1,4 +1,4 @@
-package model;
+package szz.model;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 

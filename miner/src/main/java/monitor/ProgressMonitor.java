@@ -1,17 +1,20 @@
 package monitor;
 
+import constant.Conf;
+import model.PotentialRFC;
+import org.apache.commons.io.FileUtils;
+import utils.FileUtilx;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
-
-import constant.Conf;
-import model.PotentialRFC;
-import utils.FileUtilx;
-
+/**
+ * @author sxz
+ * 加入断点
+ */
 public class ProgressMonitor {
 
 	public static Set<String> doneTaskList;

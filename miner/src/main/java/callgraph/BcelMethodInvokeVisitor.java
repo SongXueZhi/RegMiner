@@ -1,4 +1,4 @@
-package ast;
+package callgraph;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,8 +8,6 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.ConstantPushInstruction;
 import org.apache.bcel.generic.EmptyVisitor;
-import org.apache.bcel.generic.GETFIELD;
-import org.apache.bcel.generic.GETSTATIC;
 import org.apache.bcel.generic.INVOKEDYNAMIC;
 import org.apache.bcel.generic.INVOKEINTERFACE;
 import org.apache.bcel.generic.INVOKESPECIAL;
@@ -21,7 +19,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.MethodGen;
 import org.apache.bcel.generic.ReturnInstruction;
 
-import model.CallNode;
+import callgraph.model.CallNode;
 import utils.CodeUtil;
 
 /**
@@ -30,7 +28,7 @@ import utils.CodeUtil;
  * 
  * Class copied with modifications from CJKM: http://www.spinellis.gr/sw/ckjm/
  */
-public class BcelMethodVisitor extends EmptyVisitor {
+public class BcelMethodInvokeVisitor extends EmptyVisitor {
 
 	JavaClass visitedClass;
 	private final MethodGen mg;
@@ -39,7 +37,7 @@ public class BcelMethodVisitor extends EmptyVisitor {
 	private final List<String> methodCalls = new ArrayList<>();
 	public CallNode node = new CallNode();
 
-	public BcelMethodVisitor(MethodGen m, JavaClass jc) {
+	public BcelMethodInvokeVisitor(MethodGen m, JavaClass jc) {
 		visitedClass = jc;
 		mg = m;
 		cp = mg.getConstantPool();

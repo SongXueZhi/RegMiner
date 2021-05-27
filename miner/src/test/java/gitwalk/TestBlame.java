@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import git.Provider;
+import git.provider.Provider;
 import miner.PotentialBFCDetector;
 import model.PotentialRFC;
 

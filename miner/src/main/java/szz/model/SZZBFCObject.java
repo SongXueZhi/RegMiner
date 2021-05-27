@@ -1,4 +1,4 @@
-package model;
+package szz.model;
 
 public class SZZBFCObject {
 	String creationdate;

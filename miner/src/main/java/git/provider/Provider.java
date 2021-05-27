@@ -1,4 +1,4 @@
-package git;
+package git.provider;
 
 
 import constant.Conf;

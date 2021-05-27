@@ -2,9 +2,9 @@ package miner.migrate;
 
 import ast.JdtFieldRetriever;
 import ast.JdtMethodRetriever;
-import ast.MethodCaller;
+import callgraph.MethodCaller;
 import constant.Conf;
-import model.CallNode;
+import callgraph.model.CallNode;
 import model.MigrateItem.MigrateFailureType;
 import model.PotentialRFC;
 import model.RelatedTestCase;

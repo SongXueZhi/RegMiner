@@ -1,4 +1,4 @@
-package ast;
+package callgraph;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class BcelClassVisitor extends EmptyVisitor {
 	@Override
 	public void visitMethod(Method method) {
 		MethodGen mg = new MethodGen(method, clazz.getClassName(), constants);
-		BcelMethodVisitor visitor = new BcelMethodVisitor(mg, clazz);
+		BcelMethodInvokeVisitor visitor = new BcelMethodInvokeVisitor(mg, clazz);
 		methodCalls.addAll(visitor.start());
 	}
 
