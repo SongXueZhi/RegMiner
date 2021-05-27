@@ -37,14 +37,14 @@ public class ConfigLoader {
 	public static String testSymbol = "";
 
 	public static void refresh() {
-//		发布release版本时候请解除注释
-//		String path = System.getProperty("java.class.path");
-//		int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
-//		int lastIndex = path.lastIndexOf(File.separator) + 1;
-//		path = path.substring(firstIndex, lastIndex);
-//		FileUtilx.log("env.pro " + path);
+		//发布release版本时候请解除注释
+		String path = System.getProperty("java.class.path");
+		int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
+		int lastIndex = path.lastIndexOf(File.separator) + 1;
+		path = path.substring(firstIndex, lastIndex);
+		FileUtilx.log("env.pro " + path);
 		String pathx = CONFIGPATH;
-//		pathx = path + File.separator + CONFIGPATH;
+		pathx = path + File.separator + CONFIGPATH;
 		try (InputStream inStream = new FileInputStream(new File(pathx))) {
 			prop.load(inStream);
 		} catch (IOException ex) {

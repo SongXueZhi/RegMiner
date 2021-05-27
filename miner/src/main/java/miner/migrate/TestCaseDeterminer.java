@@ -207,8 +207,10 @@ public class TestCaseDeterminer extends Migrater {
                 Set<String> testCaseSet = testFile.getTestMethodMap().keySet();
                 List<TypeDeclaration> types = unit.types();
                 for (TypeDeclaration type : types) {
-                    for (MethodDeclaration method : type.getMethods()) {
-                    	String name = method.getName().toString();
+                    MethodDeclaration[] mdArray =  type.getMethods();
+                    for (int i =0 ;i<mdArray.length;i++) {
+                        MethodDeclaration method = mdArray[i];
+                        String name = method.getName().toString();
                         List<ASTNode> parameters = method.parameters();
                         // SingleVariableDeclaration
                         StringJoiner sj = new StringJoiner(",", name + "(", ")");
@@ -222,7 +224,13 @@ public class TestCaseDeterminer extends Migrater {
                     }
                 }
                 List<ImportDeclaration> imports = unit.imports();
-                for(ImportDeclaration importDeclaration : imports ){
+                int len = imports.size();
+                ImportDeclaration[] importDeclarations =new ImportDeclaration[len];
+                for(int i =0;i<len;i++){
+                    importDeclarations[i]=imports.get(i);
+                }
+
+               for(ImportDeclaration importDeclaration:importDeclarations){
                     String importName = importDeclaration.getName().getFullyQualifiedName();
                     if(importName.lastIndexOf(".")>-1){
                         importName = importName.substring(importName.lastIndexOf(".")+1,importName.length());
@@ -236,7 +244,7 @@ public class TestCaseDeterminer extends Migrater {
                             flag =true;
                         }
                     }
-                    if (!(flag || importName.equals("*"))){
+                    if (!(flag || importDeclaration.toString().contains("*"))){
                         importDeclaration.delete();
                     }
                 }

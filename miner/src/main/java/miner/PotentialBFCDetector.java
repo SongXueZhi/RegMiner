@@ -57,18 +57,18 @@ public class PotentialBFCDetector {
 		// 获取所有的commit，我们需要对所有的commit进行分析
 		Iterable<RevCommit> commits = git.log().all().call();
 		// 开始迭代每一个commit
-		boolean a = false;
+		boolean a = true;
 		for (RevCommit commit : commits) {
 //			// a 用于从失败的节点重新开始
-			if (commit.getName().equals("5ca2b3bd42add17fe2c4ff56d88ea5cfd457ae30")) {
-				a = true;
-			}
+//			if (commit.getName().equals("5ca2b3bd42add17fe2c4ff56d88ea5cfd457ae30")) {
+//				a = true;
+//			}
 			if (a) {
 				detect(commit, potentialRFCs);
 			}
-			if (potentialRFCs.size() >= 1) {
-				break;
-			}
+//			if (potentialRFCs.size() >= 1) {
+//				break;
+//			}
 			countAll++;
 		}
 		FileUtilx.log("总共分析了" + countAll + "条commit\n");
