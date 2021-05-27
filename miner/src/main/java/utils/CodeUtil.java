@@ -71,13 +71,13 @@ public class CodeUtil {
 				.getInstance(new ClassPath(ClassPath.SYSTEM_CLASS_PATH, meta.getAbsolutePath()));
 		for (int i = 0; i < files.length; i++) {
 			File f = new File(meta, files[i]);
-			JavaClass oldclazz = extractClass(f, repository);
+			JavaClass oldclazz = getJavaClassFromFile(f, repository);
 			repository.storeClass(oldclazz);
 		}
 		return repository;
 	}
 
-	public static String[] getJavaFiles(File meta) {
+	public static String[] getJavaAndClassFiles(File meta) {
 		DirectoryScanner scanner = new DirectoryScanner();
 		scanner.setBasedir(meta);
 		scanner.setIncludes(new String[] { "**/*.java", "**/*.class" });
@@ -87,7 +87,7 @@ public class CodeUtil {
 		return files;
 	}
 
-	private static JavaClass extractClass(File f, Repository repository) {
+	private static JavaClass getJavaClassFromFile(File f, Repository repository) {
 		InputStream is = null;
 		try {
 			is = new FileInputStream(f);

@@ -3,9 +3,7 @@ package utils;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.*;
 import org.junit.Test;
 
 import ast.JdtFieldRetriever;
@@ -40,7 +38,7 @@ public class CompilationUtilTest {
 				+ "            \"    \\\"id\\\": 1\\n\" +\n" + "            \"}\";\n" + "}";
 
 		CompilationUnit unit = CompilationUtil.parseCompliationUnit(classContent);
-		JdtFieldRetriever mr = new JdtFieldRetriever();
+		JdtFieldRetriever mr =new JdtFieldRetriever();
 		unit.accept(mr);
 		for (Entry<FieldDeclaration, List<VariableDeclarationFragment>> entry : mr.fieldMap.entrySet()) {
 			FieldDeclaration fd = entry.getKey();
@@ -50,6 +48,55 @@ public class CompilationUtilTest {
 				System.out.println(filed);
 			}
 		}
+	}
+	@Test
+	public void testCompliationUnitTypes(){
+		String code = "public class Demo {\n" +
+				"\tint i,b;\n" +
+				"\tstatic int j;\n" +
+				"\tfinal static String aString = \"ss\";\n" +
+				"\t\n" +
+				"\tpublic void foo() {\n" +
+				"\t\tint  h =i+j;\n" +
+				"\t\tString s = aString;\n" +
+				"\t\tInDemo ii =new InDemo();\n" +
+				"\t\th = ii.l;\n" +
+				"\t\tfoo1(InDemo.class);\n" +
+				"\t\t\n" +
+				"\t} \n" +
+				"\tpublic void foo1(Class clazz) {\n" +
+				"\tInDemo ii =new InDemo();\n" +
+				"\tii.fooin();\n" +
+				"\t} \n" +
+				"\t\n" +
+				"\tclass InDemo{\n" +
+				"\t\tint l =0;\n" +
+				"\t\tpublic void fooin(){\n" +
+				"\t\t\tint n = l+j;\n" +
+				"\t\t}\n" +
+				"\t}\n" +
+				"}\n" +
+				"\n" +
+				"class Demo1{\n" +
+				"int idemo1;\n" +
+				"class InDemo{\n" +
+				"\t\t\n" +
+				"\t}\n" +
+				"}\n";
+		CompilationUnit unit = CompilationUtil.parseCompliationUnit(code);
+		List<TypeDeclaration> list = unit.types();
+		TypeDeclaration type = list.get(0);
+		String sampleName = type.getName().getFullyQualifiedName();
+		FieldDeclaration fieldDeclaration = type.getFields()[0];
+		List<VariableDeclarationFragment> fragments =fieldDeclaration.fragments();
+		List<ImportDeclaration> list1 =unit.imports();
+		System.out.println("");
+	}
+@Test
+	public  void  testsubString(){
+		String name ="com.xxx.zzz.ccc";
+		name = name.substring(name.lastIndexOf(".")+1);
+		System.out.println(name);
 	}
 
 }
