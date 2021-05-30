@@ -150,7 +150,7 @@ if __name__ == "__main__":
             if flag:
                 item['commit_num'] = commit_num
                 item['failed_ratio'] = failed_ratio
-                item['value_prediction'] = item['bfc_num'] * failed_ratio
+                item['value_prediction'] = item['bfc_num'] * (1 - failed_ratio)
                 item['status'] = 1
             else:
                 item['status'] = -2
