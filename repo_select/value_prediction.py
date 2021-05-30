@@ -19,7 +19,11 @@ gradle_compile_cmd = "./gradlew compileJava compileTestJava"
 
 # 将repo2中的repo同步到repo_with_value中，支持增量同步
 # 只有bfc_num存在，且大于min_bfc_num的repo才会被同步过去
-def synchronizeRepo():
+def synchronizeRepo(all=False):
+    if all:
+        print("Synchronized all repos from raw collection")
+        raw_col.update_many({}, {'$unset': {"synchronized": 1}})
+
     count = 0
     for item in raw_col.find({"synchronized": {"$exists": False}, "bfc_num": {"$exists": True}}):
         if not item['bfc_num']:
@@ -89,7 +93,7 @@ def compile(path):
     return True
 
 # TODO: compile一次commit后，对working dir的改变，会影响到checkout到其他的commit吗？
-# TODO; 添加时间限制。计算第一次commit编译的时间，然后总限制时间除以编译的时间就是能尝试编译的次数(每次编译的时间大概会恒定吗)
+# TODO; 添加时间限制(或按照bfc大小排序)。计算第一次commit编译的时间，然后总限制时间除以编译的时间就是能尝试编译的次数(每次编译的时间大概会恒定吗)
 # TODO; 第一次commit编译失败，就直接将这个项目抛弃？感觉可能存在较大问题(例如编译命令不对，jdk版本不对等)
 # return: (isSuccess, commit_num, sample_failed_ratio)
 def compile_sample_commits(path):
@@ -118,17 +122,28 @@ def compile_sample_commits(path):
         total_compile_count += 1
         pre_commit = commit
         i += compile_step
-    return True, len(commits), failed_compile_count/total_compile_count
+    failed_ratio = failed_compile_count/total_compile_count
+    print("sample compile repo %s success. failed_ratio: %f" % (path, failed_ratio))
+    return True, len(commits), failed_ratio
     
 if __name__ == "__main__":
-    # synchronizeRepo()
+    synchronizeRepo(False)
 
     # TODO: prediction value如何计算？几个参数[bfc_num, commit_num, failed_compile_ratio]
     # value = bfc_num * (1- failed_compile_ratio)
-    items = value_col.find({"value_prediction": {"$exists": False}, "failed_clone": {"$exists": False}, "failed_sample_compile": {"$exists": False}})
-    for item in items.sort('bfc_num', pymongo.DESCENDING):
+    # status字段用来描述repo的状态
+    #   - 未设置：未被处理
+    #   - 0: 正在被处理
+    #   - -1: clone失败
+    #   - -2: sample compile失败(由于checkout导致)
+    #   - 1: 成功执行sample compile，获取value_prediction值
+    value_col.update_many({}, {'$unset': {'status': 1}})
+    items = value_col.find({"value_prediction": {"$exists": False}, 'status': {"$exists": False}})
+    for item in items.sort('repo_size', pymongo.ASCENDING):
+        #保证多进程同时执行时，不重复领任务
+        value_col.update_one({'_id': item["_id"]}, {'$set': {'status': 0}})
         if not clone(item["clone_url"], item["full_name"]):
-            item['failed_clone'] = True
+            item['status']= -1
         else:
             repo_path = getRepoPath(item['full_name'])
             flag, commit_num, failed_ratio = compile_sample_commits(repo_path)
@@ -136,6 +151,7 @@ if __name__ == "__main__":
                 item['commit_num'] = commit_num
                 item['failed_ratio'] = failed_ratio
                 item['value_prediction'] = item['bfc_num'] * failed_ratio
+                item['status'] = 1
             else:
-                item['failed_sample_compile'] = True
+                item['status'] = -2
         value_col.update_one({'_id': item["_id"]}, {'$set': item})
