@@ -10,13 +10,14 @@ import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Repository;
 
 public class BFCDetect {
-
+public static int numpp =0;
 	public static void main(String[] args) throws Exception {
 		String clientPath=args[0];
 		Repository repo = new FileRepository(clientPath);
 		PotentialBFCDetector detecor = new PotentialBFCDetector(repo, new Git(repo));
-		int num = detecor.detectPotentialBFC().size();
-		System.out.println("bfc num :"+num);
+		int num1 = detecor.detectPotentialBFC().size();
+		System.out.println("bfc num :"+num1);
+		System.out.println("潜在测试用例bfc num :"+numpp);
 	}
 
 	//从文件列表中批量处理

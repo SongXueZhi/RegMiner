@@ -254,9 +254,11 @@ public class PotentialBFCDetector {
 			} else if (justNormalJavaFile(files)) {
 //				针对只标题只包含fix但是修改的文件路径中没有测试用例的提交 
 //				我们将在(c-3,c+3) 的范围内检索可能的测试用例 
-//				[TODO] songxuezhi			
-//				List<PotentialTestCase> pls = findTestCommit(commit, repo);
-//				if (pls.size() > 0) {
+				//[TODO] songxuezhi			
+				List<PotentialTestCase> pls = findTestCommit(commit);
+				if (pls.size() > 0) {
+					BFCDetect.numpp+=pls.size();
+				}
 //							PotentialRFC pRFC = new PotentialRFC(commit.getName());
 //							pRFC.setNormalJavaFiles(normalJavaFiles);
 //							pRFC.setPotentialTestcases(pls);
