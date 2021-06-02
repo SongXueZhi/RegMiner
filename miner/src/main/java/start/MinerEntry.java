@@ -69,7 +69,7 @@ public class MinerEntry {
 			// 解析有哪些测试方法
 			rTCParser.parseTestCases(pRfc);
 			// 确定被解析的方法那些是真实的测试用例
-			// TODO 此处的方法和类之间的affix按照mvn的习惯用"#"连接,也没有配置子项目
+			// TODO 此处的方法和类之间的affix按照mvn的习惯用"#"连接,没有配置子项目
 			tm.determine(pRfc);
 			if (pRfc.getTestCaseFiles().size() == 0) { // 找不到测试用例直接跳过
 				iterator.remove();
@@ -86,11 +86,12 @@ public class MinerEntry {
 			}
 			ProgressMonitor.addDone(pRfc.getCommit().getName());
 		}
+		//此处log的bfc到bfc-1的数量成功率
 		FileUtilx.log("成功" + ExperResult.numSuc + "个，共" + j + "个: " + ExperResult.numSuc / j);
-		FileUtilx.log("classNotFind " + ExperResult.classNotFind + "methodNotFind " + ExperResult.methodNotFind
-				+ "packageNotExits " + ExperResult.packageNotExits + "packageNotFind " + ExperResult.packageNotFind
-				+ "symbolNotFind " + ExperResult.symbolNotFind + "unknow " + ExperResult.unknow + "variableNotFind "
-				+ ExperResult.variableNotFind);
+//		FileUtilx.log("classNotFind " + ExperResult.classNotFind + "methodNotFind " + ExperResult.methodNotFind
+//				+ "packageNotExits " + ExperResult.packageNotExits + "packageNotFind " + ExperResult.packageNotFind
+//				+ "symbolNotFind " + ExperResult.symbolNotFind + "unknow " + ExperResult.unknow + "variableNotFind "
+//				+ ExperResult.variableNotFind);
 	}
 
 	public static void mutilThreadHandle() {

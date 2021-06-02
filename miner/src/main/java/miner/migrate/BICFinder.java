@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
+import org.jetbrains.annotations.NotNull;
+
 import constant.Conf;
 import exec.TestExecutor;
 import finalize.SycFileCleanup;
@@ -30,6 +32,9 @@ public class BICFinder {
 	public BICFinder() {
 	}
 
+	// ================================
+	// SZZ BLOCK CODE 方法目前只在linux上使用
+	// ================================
 	public Set<String> getBICSet() {
 		createBICLog();
 		return readBICSetFromFile();
@@ -61,16 +66,29 @@ public class BICFinder {
 		return bICSet;
 	}
 
-	public String searchBIC(PotentialRFC pRFC) {
+	// ==========================
+	// SZZ BLOCK CODE END
+	// ==============================
+
+	/**
+	 * 
+	 * @param pRFC
+	 * @return
+	 */
+	public String searchBIC(@NotNull PotentialRFC pRFC) {
+		// 预防方法被错误的调用
+		// 情况1 search时候bfc没有确定的测试用例
 		List<TestFile> testSuites = pRFC.getTestCaseFiles();
 		if (testSuites == null || testSuites.size() == 0) {
 			FileUtilx.log("意外的错误：NOSET");
 			return null;
 		}
+		// 情况2 BFC没有parent，没必要search
 		if (pRFC.getCommit().getParentCount() <= 0) {
 			FileUtilx.log("searchBIC no Parent");
 			return null;
 		}
+		// 方法主要逻辑
 		this.pRFC = pRFC;
 		// 获取BFC到Origin的所有CommitID
 		List<String> candidateList = revListCommand(pRFC.getCommit().getParent(0).getName());
@@ -82,10 +100,9 @@ public class BICFinder {
 		for (int i = 0; i < status.length; i++) {
 			status[i] = -2000;
 		}
-		// recursionBinarySearch(arr, 1, arr.length - 1);
-		int a = search(arr, 1, arr.length - 1);
+		// recursionBinarySearch(arr, 1, arr.length - 1);//乐观二分查找，只要不能编译，就往最新的时间走
+		int a = search(arr, 1, arr.length - 1); // 指数跳跃二分查找
 		// 处理search结果
-		// TODO 重构需要方法查分
 		String bfcName = pRFC.getCommit().getName();
 		File bfcFile = new File(Conf.CACHE_PATH + File.separator + pRFC.getCommit().getName());
 		if (a < 0) {
@@ -132,31 +149,31 @@ public class BICFinder {
 		return -1000;
 	}
 
-//	public int recursionBinarySearch(String[] arr, int low, int high) {
-//
-//		if (low > high) {
-//			FileUtilx.log("查找失败");
-//			return -1;
-//		}
-//
-//		int middle = (low + high) / 2; // 初始中间位置
-//
-//		int a = test(arr[middle], middle);
-//		boolean result = (a == TestMigrater.FAL) ? true : false;
-//		int b = test(arr[middle - 1], middle);
-//		boolean result1 = ( b== TestMigrater.PASS) ? true : false;
-//		if (result && result1) {
-//			FileUtilx.log("回归+1");
-//			return middle;
-//		} 
-//		if (result) {
-//			// 测试用例不通过往左走
-//			return recursionBinarySearch(arr, low, middle - 1);
-//
-//		} else {
-//			return recursionBinarySearch(arr, middle + 1, high);
-//		}
-//	}
+	// public int recursionBinarySearch(String[] arr, int low, int high) {
+	//
+	// if (low > high) {
+	// FileUtilx.log("查找失败");
+	// return -1;
+	// }
+	//
+	// int middle = (low + high) / 2; // 初始中间位置
+	//
+	// int a = test(arr[middle], middle);
+	// boolean result = (a == TestMigrater.FAL) ? true : false;
+	// int b = test(arr[middle - 1], middle);
+	// boolean result1 = ( b== TestMigrater.PASS) ? true : false;
+	// if (result && result1) {
+	// FileUtilx.log("回归+1");
+	// return middle;
+	// }
+	// if (result) {
+	// // 测试用例不通过往左走
+	// return recursionBinarySearch(arr, low, middle - 1);
+	//
+	// } else {
+	// return recursionBinarySearch(arr, middle + 1, high);
+	// }
+	// }
 	// if find regression return working index
 	public int search(String[] arr, int low, int high) {
 		// 失败条件
