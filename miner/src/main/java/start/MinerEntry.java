@@ -44,7 +44,7 @@ public class MinerEntry {
 			ProgressMonitor.rePlan(pRFCs);
 			// 开始每一个bfc所对应的bic，查找任务。
 			singleThreadHandle(); // 单线程处理模式
-//			mutilThreadHandle();// 多线程模式
+			//mutilThreadHandle();// 多线程模式
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

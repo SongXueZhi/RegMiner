@@ -35,7 +35,7 @@ public class FileUtilx {
 	public static synchronized void apendResult(String line) {
 		File file = new File(Conf.RESULT_Path);
 		try {
-			FileUtils.writeStringToFile(file, line, true);
+			FileUtils.writeStringToFile(file, line+"\n", true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
