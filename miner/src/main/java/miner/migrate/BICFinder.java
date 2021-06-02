@@ -149,32 +149,49 @@ public class BICFinder {
 		return -1000;
 	}
 
-	// public int recursionBinarySearch(String[] arr, int low, int high) {
-	//
-	// if (low > high) {
-	// FileUtilx.log("查找失败");
-	// return -1;
-	// }
-	//
-	// int middle = (low + high) / 2; // 初始中间位置
-	//
-	// int a = test(arr[middle], middle);
-	// boolean result = (a == TestMigrater.FAL) ? true : false;
-	// int b = test(arr[middle - 1], middle);
-	// boolean result1 = ( b== TestMigrater.PASS) ? true : false;
-	// if (result && result1) {
-	// FileUtilx.log("回归+1");
-	// return middle;
-	// }
-	// if (result) {
-	// // 测试用例不通过往左走
-	// return recursionBinarySearch(arr, low, middle - 1);
-	//
-	// } else {
-	// return recursionBinarySearch(arr, middle + 1, high);
-	// }
-	// }
-	// if find regression return working index
+	/**
+	 * 乐观二分查找
+	 * 
+	 * @param arr
+	 * @param low
+	 * @param high
+	 * @return
+	 */
+	public int recursionBinarySearch(String[] arr, int low, int high) {
+
+		if (low > high) {
+			FileUtilx.log("查找失败");
+			return -1;
+		}
+
+		int middle = (low + high) / 2; // 初始中间位置
+
+		int a = test(arr[middle], middle);
+		boolean result = (a == TestCaseMigrater.FAL) ? true : false;
+		int b = test(arr[middle - 1], middle);
+		boolean result1 = (b == TestCaseMigrater.PASS) ? true : false;
+		if (result && result1) {
+			FileUtilx.log("回归+1");
+			return middle;
+		}
+		if (result) {
+			// 测试用例不通过往左走
+			return recursionBinarySearch(arr, low, middle - 1);
+
+		} else {
+			return recursionBinarySearch(arr, middle + 1, high);
+		}
+	}
+
+	/**
+	 * arr数组中的元素是bfc执行rev-list所得到的commitID数组
+	 * 
+	 * @param arr
+	 * @param low
+	 * @param high
+	 * @return if find regression return working index
+	 * 
+	 */
 	public int search(String[] arr, int low, int high) {
 		// 失败条件
 		if (low > high || low < 0 || high > arr.length - 1) {
