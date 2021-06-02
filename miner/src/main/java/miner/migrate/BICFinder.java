@@ -109,25 +109,37 @@ public class BICFinder {
 			new SycFileCleanup().cleanDirectory(bfcFile);
 			return null;
 		} else {
+			// 如果是regression组合一下需要记录的相关数据
+			// 顺便恢复一下exec的目录，防止exec正在的目录已被删除
 			exec.setDirectory(new File(Conf.PROJECT_PATH));
-			StringJoiner sj = new StringJoiner(";", "", "");
-			for (TestFile tc : pRFC.getTestCaseFiles()) {
-				Map<String, RelatedTestCase> methodMap = tc.getTestMethodMap();
-				if (methodMap == null) {
-					continue;
-				}
-				for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext();) {
-					Map.Entry<String, RelatedTestCase> entry = it.next();
-					String testCase = tc.getQualityClassName() + Conf.methodClassLinkSymbolForTest
-							+ entry.getKey().split("[(]")[0];
-					sj.add(testCase);
-				}
-			}
-
+			String testcaseString = combinedRegressionTestResult();
+			// 删除bfc目录下的其他构建测试历史文件
 			new SycFileCleanup().cleanDirectoryOnFilter(bfcFile, Arrays.asList(bfcName, arr[a + 1], arr[a]));// 删除在regression定义以外的项目文件
-			return arr[a + 1] + "," + arr[a] + "," + sj + "," + pRFC.fileMap.get(bfcName) + ","
+			return arr[a + 1] + "," + arr[a] + "," + testcaseString + "," + pRFC.fileMap.get(bfcName) + ","
 					+ pRFC.fileMap.get(arr[a + 1]) + "," + pRFC.fileMap.get(arr[a]);
 		}
+	}
+
+	/**
+	 * 此方法组合regression的最终测试用力文本
+	 * 
+	 * @return
+	 */
+	public String combinedRegressionTestResult() {
+		StringJoiner sj = new StringJoiner(";", "", "");
+		for (TestFile tc : pRFC.getTestCaseFiles()) {
+			Map<String, RelatedTestCase> methodMap = tc.getTestMethodMap();
+			if (methodMap == null) {
+				continue;
+			}
+			for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext();) {
+				Map.Entry<String, RelatedTestCase> entry = it.next();
+				String testCase = tc.getQualityClassName() + Conf.methodClassLinkSymbolForTest
+						+ entry.getKey().split("[(]")[0];
+				sj.add(testCase);
+			}
+		}
+		return sj.toString();
 	}
 
 	public int getTestResult(String bic, int index) {
@@ -150,7 +162,7 @@ public class BICFinder {
 	}
 
 	/**
-	 * 乐观二分查找
+	 * 乐观二分查找，现在已经放弃使用
 	 * 
 	 * @param arr
 	 * @param low
