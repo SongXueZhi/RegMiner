@@ -19,13 +19,15 @@ public class Executor {
     public final static String OS_UNIX = "unix";
 
     static ProcessBuilder pb = new ProcessBuilder();
+    private  static String PATH_AFFIX ="PATH";
     protected static String OS;
 
     static {
-
        OS = System.getProperty("os.name").toLowerCase();
-
-
+        // ubuntu use “PATH” windows use “Path”
+        if (OS.contains(OS_WINDOWS)) {
+            PATH_AFFIX = "Path";
+        }
 //        ConfigLoader.refresh();  //保证不经过main入口的程序也能加载配置
 //		暂时关闭
 //		String[] toolPaths = ConfigLoader.envPath.split(";");
@@ -35,11 +37,12 @@ public class Executor {
     public static void setEnviroment(String[] args) {
 
         Map<String, String> map = pb.environment();
-        StringBuilder PATH = new StringBuilder(map.get("Path"));
+
+        StringBuilder PATH = new StringBuilder(map.get(PATH_AFFIX));
         for (int i = 1; i < args.length; i++) {
             PATH.append(File.pathSeparator).append(args[i]);
         }
-        map.put("PATH", PATH.toString());
+        map.put(PATH_AFFIX, PATH.toString());
     }
 
     public void setDirectory(File file) {
