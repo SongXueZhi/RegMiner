@@ -20,6 +20,7 @@
             </plugin>
         </plugins>
     </build>
+    
 	<modules>
 		<module>samplebuild</module>
 	</modules>
@@ -69,6 +70,13 @@
             <artifactId>annotations-java5</artifactId>
             <version>RELEASE</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency>       
+      <dependency>
+      <groupId>com.sun</groupId>
+      <artifactId>tools</artifactId>
+      <version>1.8.0_144</version>
+      <scope>system</scope>
+	  <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
+ 	</dependency>
     </dependencies>
 </project>

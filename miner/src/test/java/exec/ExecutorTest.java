@@ -10,10 +10,23 @@ public class ExecutorTest {
 
 	@Test
 	public void testExec() throws Exception {
-		exec.setDirectory(new File("/home/sxz/Documents/code/codecache/fastjson"));
+		exec.setDirectory(new File("C:\\Users\\sxzdh\\Documents\\pcode\\fastjson\\fastjson"));
 		boolean cc = exec.execBuildWithResult("mvn compile", false);
 		System.out.println(cc);
 		exec.execPrintln("git show;mvn compile");
 	}
 
+    @Test
+    public void setDirectory() {
+    }
+
+    @Test
+    public void exec() {
+    }
+
+    @Test
+    public void execPrintln() {
+        exec.setDirectory(new File("C:\\Users\\sxzdh\\Documents\\pcode\\fastjson\\fastjson"));
+        exec.execPrintln("git show");
+    }
 }

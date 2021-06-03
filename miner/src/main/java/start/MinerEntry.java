@@ -36,6 +36,7 @@ public class MinerEntry {
 		final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
 		repo = new Provider().create(Provider.EXISITING).get(Conf.LOCAL_PROJECT_GIT);
 		git = new Git(repo);
+		ConfigLoader.refresh();//加载配置
 		ProgressMonitor.load(); // 加载断点
 		try {
 			// 检测满足条件的BFC

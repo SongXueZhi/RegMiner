@@ -19,12 +19,12 @@ public class Conf {
 	public static String testLine = ConfigLoader.testLine;
 
 	public static String PROJECT_PATH = ROOT_DIR + File.separator + PROJRCT_NAME;
-	public static String META_PATH = PROJECT_PATH + File.separator + "meta/";
-	public static String TMP_FILE = PROJECT_PATH + File.separator + "tmp/";
+	public static String META_PATH = PROJECT_PATH + File.separator + "meta";
+	public static String TMP_FILE = PROJECT_PATH + File.separator + "tmp";
 
 	public static String LOCAL_PROJECT_GIT = META_PATH + File.separator + ".git";
 
-	public static String CACHE_PATH = PROJECT_PATH + File.separator + "cache/";
+	public static String CACHE_PATH = PROJECT_PATH + File.separator + "cache";
 
 	public static String LOG_Path = PROJECT_PATH + File.separator + "log.txt";
 	public static String RESULT_Path = PROJECT_PATH + File.separator + "regression.csv";

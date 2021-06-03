@@ -35,5 +35,14 @@
     <orderEntry type="library" name="Maven: org.apache.bcel:bcel:6.2" level="project" />
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations-java5:21.0.1" level="project" />
+    <orderEntry type="module-library">
+      <library name="Maven: com.sun:tools:1.8.0_144">
+        <CLASSES>
+          <root url="jar://C:/Program Files/Java/jdk1.8.0_291/lib/tools.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

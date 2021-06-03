@@ -12,6 +12,7 @@ import model.TestFile;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.*;
 import org.eclipse.jgit.lib.Repository;
+import org.jetbrains.annotations.NotNull;
 import utils.CompilationUtil;
 import utils.FileUtilx;
 
@@ -168,28 +169,6 @@ public class TestCaseDeterminer extends Migrater {
         }
     }
 
-    public void copyToTarget(PotentialRFC pRFC, File targerProjectDirectory) {
-        // copy
-        String targetPath = null;
-        for (TestFile testFile : pRFC.getTestCaseFiles()) {
-            File file = new File(Conf.TMP_FILE + File.separator + pRFC.getCommit().getName() + File.separator
-                    + testFile.getNewPath());
-            // 测试文件是被删除则什么也不作。
-            if (testFile.getNewPath().contains(Constant.NONE_PATH)) {
-                continue;
-            }
-
-            targetPath = testFile.getNewPath();
-            // 测试文件不是删除，则copy
-            targetPath = FileUtilx.getDirectoryFromPath(targetPath);
-            File file1 = new File(targerProjectDirectory.getAbsoluteFile() + File.separator + targetPath);
-            if (!file1.exists()) {
-                file1.mkdirs();
-            }
-            exec.exec("cp " + file.getAbsolutePath() + " " + file1.getAbsolutePath());
-
-        }
-    }
 
     public void emptyCache(String bfcID) {
         File bfcFile = new File(Conf.CACHE_PATH + File.separator + bfcID);
