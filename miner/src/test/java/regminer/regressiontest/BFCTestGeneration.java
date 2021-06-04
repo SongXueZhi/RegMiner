@@ -8,6 +8,9 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.evosuite.EvoSuite;
+import org.evosuite.Properties;
+import org.evosuite.result.TestGenerationResult;
 import org.junit.Test;
 
 import constant.Conf;
@@ -35,6 +38,8 @@ public class BFCTestGeneration {
 			
 			//TODO 1. checkout project version 1, 
 			File f1 = checkout(rfc);
+			
+			// git --work-tree=../project checkout 341fc39f1b34 -- .
 			File f2 = checkout(prevRFC);
 			
 			//TODO 2. target method
@@ -53,6 +58,46 @@ public class BFCTestGeneration {
 			e.printStackTrace();
 		}
 
+	}
+	
+	@Test
+	public void testTestGeneration() {
+		String targetClass = "com.alibaba.fastjson.JSONObject";
+		String targetMethod = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
+		String projectRoot = "D:\\linyun\\git_space\\reg\\subject-repo\\fastjason\\project\\";
+		
+		//TODO we may still need to parse maven class path
+		String cp = projectRoot + File.separator + "target/classes" + File.pathSeparator + 
+				projectRoot + File.separator + "target/test-classes";
+		
+		evoTestSmartSeedMethod(targetClass,  
+				targetMethod, cp, 10, 
+				"generateMOSuite", "MOSUITE", "MOSA");	
+	}
+	
+	public static void evoTestSmartSeedMethod(String targetClass, String targetMethod, String cp,
+			long seconds, 
+			String option,
+			String strategy,
+			String algorithm) {
+		/* configure */
+		EvoSuite evo = new EvoSuite();
+		Properties.TARGET_CLASS = targetClass;
+		Properties.TRACK_COVERED_GRADIENT_BRANCHES = true;
+		String[] args = new String[] {
+				"-"+option,
+				"-Dstrategy", strategy,
+				"-Dalgorithm", algorithm,
+				
+				"-class", targetClass, 
+				"-projectCP", cp,
+				"-Dtarget_method", targetMethod,
+				"-Dsearch_budget", String.valueOf(seconds),
+				"-Dmax_attempts", "100",
+				"-Dassertions", "true",
+		};
+		
+		List<List<TestGenerationResult>> list = (List<List<TestGenerationResult>>) evo.parseCommandLine(args);
 	}
 
 	private String generateTests(String method, File f1) {
