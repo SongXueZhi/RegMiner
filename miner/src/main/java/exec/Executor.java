@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import start.ConfigLoader;
 import utils.FileUtilx;
 
@@ -64,6 +66,8 @@ public class Executor {
             while ((line = bufferReader.readLine()) != null) {
                 builder.append("\n").append(line);
             }
+            IOUtils.close(inputStr,bufferReader);
+            process.destroy();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -89,6 +93,8 @@ public class Executor {
                 a = process.waitFor();
             } catch (InterruptedException ex) {
             }
+            IOUtils.close(inputStr,bufferReader);
+            process.destroy();
         } catch (IOException ex) {
             ex.printStackTrace();
         }

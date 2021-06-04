@@ -89,7 +89,6 @@ public class Migrater {
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}
-
 		}
 
 	}

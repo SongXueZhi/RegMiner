@@ -9,6 +9,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import model.MigrateItem.MigrateFailureType;
+import org.apache.commons.io.IOUtils;
 
 public class TestExecutor extends Executor {
 
@@ -39,6 +40,8 @@ public class TestExecutor extends Executor {
 			if (record && !result) {
 				record(sb.toString());
 			}
+			IOUtils.close(inputStr,bufferReader);
+			process.destroy();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
@@ -79,6 +82,8 @@ public class TestExecutor extends Executor {
 				}
 			}
 			t.cancel();
+			IOUtils.close(inputStr,bufferReader);
+			process.destroy();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
@@ -101,6 +106,8 @@ public class TestExecutor extends Executor {
 				result.add(line);
 			}
 			int a = process.waitFor();
+			IOUtils.close(inputStr,bufferReader);
+			process.destroy();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} catch (InterruptedException e) {

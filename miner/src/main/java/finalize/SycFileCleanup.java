@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.file.PathUtils;
 
 /**
  * 
@@ -67,6 +68,13 @@ public class SycFileCleanup {
 			boolean isDelete = FileUtils.deleteQuietly(dir);
 			if (!isDelete) {
 				try {
+					if(!dir.canRead()){
+						dir.setWritable(true,false);
+					}
+					if (!dir.canWrite()){
+						dir.setWritable(true,false);
+					}
+					System.gc();
 					FileUtils.forceDelete(dir);
 				} catch (IOException e) {
 					e.printStackTrace();
