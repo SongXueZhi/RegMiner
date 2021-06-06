@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.file.PathUtils;
 
 /**
  * 
@@ -15,23 +14,23 @@ import org.apache.commons.io.file.PathUtils;
 public class SycFileCleanup {
 	/**
 	 * 
-	 * @param dir
-	 * @param filter
+	 * @param dir root path to delete
+	 * @param filter don't delete filter
 	 */
 	public void cleanDirectoryOnFilter(File dir, List<String> filter) {
-		new SycCleanner(dir, filter, true).start();
+		new SycCleaner(dir, filter, true).start();
 	}
 
 	public void cleanDirectory(File dir) {
-		new SycCleanner(dir, null, false).start();
+		new SycCleaner(dir, null, false).start();
 	}
 
-	class SycCleanner extends Thread {
+	static class SycCleaner extends Thread {
 		File dir;
 		List<String> filter;
-		boolean onFilter = false;
+		boolean onFilter;
 
-		public SycCleanner(File dir, List<String> filter, boolean onFilter) {
+		public SycCleaner(File dir, List<String> filter, boolean onFilter) {
 			this.dir = dir;
 			this.filter = filter;
 			this.onFilter = onFilter;
@@ -47,8 +46,8 @@ public class SycFileCleanup {
 		}
 
 		public void cleanDirectoryOnFilter() {
-			File[] childsArray = dir.listFiles();
-			for (File file : childsArray) {
+			File[] childrenArray = dir.listFiles();
+			for (File file : childrenArray) {
 				// 如果不在filter中则删除
 				if (filter.contains(file.getName())) {
 					continue;
@@ -64,6 +63,10 @@ public class SycFileCleanup {
 			}
 		}
 
+		/**
+		 * Note that, here I still can't delete directory in windows 10 system
+		 * cause by be occupied
+		 */
 		public void cleanDirectory() {
 			boolean isDelete = FileUtils.deleteQuietly(dir);
 			if (!isDelete) {
