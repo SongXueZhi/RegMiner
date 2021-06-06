@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import start.ConfigLoader;
 
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ import java.util.List;
 public class BFCTestGeneration extends Migrater {
 
     @Before
-    public void setUp(){
+    public void setUp() {
         ConfigLoader.refresh();
     }
 
