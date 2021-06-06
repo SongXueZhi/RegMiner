@@ -62,8 +62,8 @@ public class BFCTestGeneration {
 	
 	@Test
 	public void testTestGeneration() {
-		String targetClass = "com.alibaba.fastjson.JSONObject";
-		String targetMethod = "(Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;";
+		String targetClass = "com.alibaba.fastjson.JSON";
+		String targetMethod = "parseArray(Ljava/lang/String;Lcom/alibaba/fastjson/parser/ParserConfig;)Lcom/alibaba/fastjson/JSONArray;";
 		String projectRoot = "D:\\linyun\\git_space\\reg\\subject-repo\\fastjason\\project\\";
 		
 		//TODO we may still need to parse maven class path
@@ -88,7 +88,7 @@ public class BFCTestGeneration {
 				"-"+option,
 				"-Dstrategy", strategy,
 				"-Dalgorithm", algorithm,
-				
+//				"-Dcriterion", "branch",
 				"-class", targetClass, 
 				"-projectCP", cp,
 				"-Dtarget_method", targetMethod,
