@@ -1,10 +1,10 @@
 package regminer.regressiontest;
 
-import constant.Conf;
-import git.provider.Provider;
-import miner.PotentialBFCDetector;
-import miner.migrate.Migrater;
-import model.PotentialRFC;
+import regminer.constant.Conf;
+import regminer.git.provider.Provider;
+import regminer.miner.PotentialBFCDetector;
+import regminer.miner.migrate.Migrater;
+import regminer.model.PotentialRFC;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
@@ -14,7 +14,7 @@ import org.evosuite.Properties;
 import org.evosuite.result.TestGenerationResult;
 import org.junit.Before;
 import org.junit.Test;
-import start.ConfigLoader;
+import regminer.start.ConfigLoader;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class BFCTestGeneration extends Migrater {
             //              -version_uuid
             // So you can see that intuitively,
             // we copy the original code(in meta directory) into the cache directory
-            // and uniquely identify it with bfcid, then git checkout to the specified commimt.
+            // and uniquely identify it with bfcid, then regminer.git checkout to the specified commimt.
             // So for a specific project we need this structure
             // -project name
             //      - meta （source code here）
