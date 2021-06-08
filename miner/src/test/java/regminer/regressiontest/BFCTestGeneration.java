@@ -2,6 +2,7 @@ package regminer.regressiontest;
 
 import regminer.constant.Conf;
 import regminer.git.provider.Provider;
+import regminer.maven.MavenManager;
 import regminer.miner.PotentialBFCDetector;
 import regminer.miner.migrate.Migrater;
 import regminer.model.PotentialRFC;
@@ -84,12 +85,16 @@ public class BFCTestGeneration extends Migrater {
     }
 
     @Test
-    public void testTestGeneration() {
+    public void testTestGeneration() throws Exception {
         String targetClass = "com.alibaba.fastjson.JSON";
         String targetMethod = "parseArray(Ljava/lang/String;Lcom/alibaba/fastjson/parser/ParserConfig;)Lcom/alibaba/fastjson/JSONArray;";
         String projectRoot = "D:\\linyun\\git_space\\reg\\subject-repo\\fastjason\\project\\";
 
         //TODO we may still need to parse maven class path
+        //FIXME sxz
+        MavenManager mvnManager =new MavenManager();
+        List<String> mvnClassPathList = mvnManager.readAllDependency(new File(Conf.META_PATH+File.separator+"pom.xml"));
+
         String cp = projectRoot + File.separator + "target/classes" + File.pathSeparator +
                 projectRoot + File.separator + "target/test-classes";
 
