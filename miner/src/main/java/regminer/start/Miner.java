@@ -1,14 +1,7 @@
 package regminer.start;
 
-import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
-
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
-
 import regminer.constant.Conf;
 import regminer.constant.ExperResult;
 import regminer.git.provider.Provider;
@@ -21,12 +14,18 @@ import regminer.monitor.ProgressMonitor;
 import regminer.utils.FileUtilx;
 import regminer.utils.ThreadPoolUtil;
 
+import java.text.SimpleDateFormat;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+
 /**
  * 
  * @author sxz
  * 方法入口
  */
-public class MinerEntry {
+public class Miner {
 	static Repository repo = null;
 	static Git git = null;
 	static LinkedList<PotentialRFC> pRFCs;
