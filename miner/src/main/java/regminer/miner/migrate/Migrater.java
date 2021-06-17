@@ -1,14 +1,7 @@
 package regminer.miner.migrate;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
-
 import regminer.constant.Conf;
 import regminer.constant.Constant;
 import regminer.exec.TestExecutor;
@@ -17,6 +10,12 @@ import regminer.model.ChangedFile;
 import regminer.model.PotentialRFC;
 import regminer.model.TestFile;
 import regminer.utils.FileUtilx;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class Migrater {
 	TestExecutor exec = new TestExecutor();
@@ -32,7 +31,7 @@ public class Migrater {
 		FileUtils.copyDirectoryToDirectory(new File(Conf.META_PATH), new File(cacheFile));
 		File result = new File(cacheFile + File.separator + "meta");
 		exec.setDirectory(result);
-		exec.execPrintln("regminer.git checkout -f " + commitId);
+		exec.execPrintln("git checkout -f " + commitId);
 		return result;
 	}
 

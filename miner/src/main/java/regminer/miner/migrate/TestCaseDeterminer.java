@@ -210,9 +210,9 @@ public class TestCaseDeterminer extends Migrater {
                for(ImportDeclaration importDeclaration:importDeclarations){
                     String importName = importDeclaration.getName().getFullyQualifiedName();
                     if(importName.lastIndexOf(".")>-1){
-                        importName = importName.substring(importName.lastIndexOf(".")+1,importName.length());
+                        importName = importName.substring(importName.lastIndexOf(".")+1);
                     }else{
-                        importName =importName.substring(0,importName.length());
+                        importName = importName;
                     }
 
                     boolean flag = false;

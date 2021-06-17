@@ -1,12 +1,11 @@
 package regminer.utils;
 
-import java.util.List;
-import java.util.Map.Entry;
-
 import org.eclipse.jdt.core.dom.*;
 import org.junit.Test;
-
 import regminer.ast.JdtFieldRetriever;
+
+import java.util.List;
+import java.util.Map.Entry;
 
 public class CompilationUtilTest {
 
@@ -90,7 +89,7 @@ public class CompilationUtilTest {
 		FieldDeclaration fieldDeclaration = type.getFields()[0];
 		List<VariableDeclarationFragment> fragments =fieldDeclaration.fragments();
 		List<ImportDeclaration> list1 =unit.imports();
-		System.out.println("");
+		System.out.println();
 	}
 @Test
 	public  void  testsubString(){

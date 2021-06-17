@@ -1,17 +1,6 @@
 package regminer.miner.migrate;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringJoiner;
-
 import org.jetbrains.annotations.NotNull;
-
 import regminer.constant.Conf;
 import regminer.exec.TestExecutor;
 import regminer.finalize.SycFileCleanup;
@@ -19,6 +8,9 @@ import regminer.model.PotentialRFC;
 import regminer.model.RelatedTestCase;
 import regminer.model.TestFile;
 import regminer.utils.FileUtilx;
+
+import java.io.File;
+import java.util.*;
 
 public class BICFinder {
 	String projectName = "";
@@ -179,9 +171,9 @@ public class BICFinder {
 		int middle = (low + high) / 2; // 初始中间位置
 
 		int a = test(arr[middle], middle);
-		boolean result = (a == TestCaseMigrater.FAL) ? true : false;
+		boolean result = a == TestCaseMigrater.FAL;
 		int b = test(arr[middle - 1], middle);
-		boolean result1 = (b == TestCaseMigrater.PASS) ? true : false;
+		boolean result1 = b == TestCaseMigrater.PASS;
 		if (result && result1) {
 			FileUtilx.log("回归+1");
 			return middle;
@@ -365,7 +357,7 @@ public class BICFinder {
 
 	public List<String> revListCommand(String commitId) {
 		exec.setDirectory(new File(Conf.META_PATH));
-		exec.runCommand("regminer.git checkout -f master");
-		return exec.runCommand("regminer.git rev-list " + commitId);
+		exec.runCommand("git checkout -f master");
+		return exec.runCommand("git rev-list " + commitId);
 	}
 }

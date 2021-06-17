@@ -21,7 +21,7 @@ import regminer.start.ConfigLoader;
 
 public class RegMinerTest {
     @Before
-    public void setUp(){
+    public void setUp() throws Exception {
         ConfigLoader.refresh();
     }
 }

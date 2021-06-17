@@ -1,8 +1,8 @@
 package regminer.exec;
 
-import java.io.File;
-
 import org.junit.Test;
+
+import java.io.File;
 
 public class ExecutorTest {
 
@@ -13,7 +13,7 @@ public class ExecutorTest {
 		exec.setDirectory(new File("C:\\Users\\sxzdh\\Documents\\pcode\\fastjson\\fastjson"));
 		boolean cc = exec.execBuildWithResult("mvn compile", false);
 		System.out.println(cc);
-		exec.execPrintln("regminer.git show;mvn compile");
+		exec.execPrintln("git show;mvn compile");
 	}
 
     @Test
@@ -27,6 +27,6 @@ public class ExecutorTest {
     @Test
     public void execPrintln() {
         exec.setDirectory(new File("C:\\Users\\sxzdh\\Documents\\pcode\\fastjson\\fastjson"));
-        exec.execPrintln("regminer.git show");
+        exec.execPrintln("git show");
     }
 }

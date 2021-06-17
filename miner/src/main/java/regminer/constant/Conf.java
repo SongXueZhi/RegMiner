@@ -1,8 +1,8 @@
 package regminer.constant;
 
-import java.io.File;
-
 import regminer.start.ConfigLoader;
+
+import java.io.File;
 
 public class Conf {
 
@@ -22,7 +22,7 @@ public class Conf {
 	public static String META_PATH = PROJECT_PATH + File.separator + "meta";
 	public static String TMP_FILE = PROJECT_PATH + File.separator + "tmp";
 
-	public static String LOCAL_PROJECT_GIT = META_PATH + File.separator + ".regminer.git";
+	public static String LOCAL_PROJECT_GIT = META_PATH + File.separator + ".git";
 
 	public static String CACHE_PATH = PROJECT_PATH + File.separator + "cache";
 

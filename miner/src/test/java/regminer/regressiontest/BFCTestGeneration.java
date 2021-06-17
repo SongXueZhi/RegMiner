@@ -1,13 +1,6 @@
 package regminer.regressiontest;
 
-import regminer.constant.Conf;
-import regminer.git.provider.Provider;
-import regminer.maven.MavenManager;
-import regminer.miner.PotentialBFCDetector;
-import regminer.miner.migrate.Migrater;
-import regminer.model.PotentialRFC;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.evosuite.EvoSuite;
@@ -15,7 +8,14 @@ import org.evosuite.Properties;
 import org.evosuite.result.TestGenerationResult;
 import org.junit.Before;
 import org.junit.Test;
+import regminer.constant.Conf;
+import regminer.git.provider.Provider;
+import regminer.maven.MavenManager;
+import regminer.miner.PotentialBFCDetector;
+import regminer.miner.migrate.Migrater;
+import regminer.model.PotentialRFC;
 import regminer.start.ConfigLoader;
+import regminer.start.Miner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -92,8 +92,8 @@ public class BFCTestGeneration extends Migrater {
 
         //TODO we may still need to parse maven class path
         //FIXME sxz
-        MavenManager mvnManager =new MavenManager();
-        List<String> mvnClassPathList = mvnManager.readAllDependency(new File(Conf.META_PATH+File.separator+"pom.xml"));
+        MavenManager mvnManager = new MavenManager();
+        List<String> mvnClassPathList = mvnManager.readAllDependency(new File(Conf.META_PATH + File.separator + "pom.xml"));
 
         String cp = projectRoot + File.separator + "target/classes" + File.pathSeparator +
                 projectRoot + File.separator + "target/test-classes";
@@ -150,28 +150,13 @@ public class BFCTestGeneration extends Migrater {
 
     @SuppressWarnings("resource")
     private PotentialRFC parseCommit(String commitID) throws Exception {
-        ConfigLoader.refresh();// 加载配置
+        List<String> filter = new ArrayList<>();
+        filter.add(commitID);
         Repository repo = new Provider().create(Provider.EXISITING).get(Conf.LOCAL_PROJECT_GIT);
-        Git git = new Git(repo);
-
-        Iterable<RevCommit> commits = git.log().all().call();
-        // 开始迭代每一个commit
-        boolean a = true;
-        for (RevCommit commit : commits) {
-            ObjectId id = commit.getId();
-
-            if (id.toString().contains(commitID)) {
-
-                PotentialBFCDetector detector = new PotentialBFCDetector(repo, git);
-
-                List<PotentialRFC> potentialRFCs = new ArrayList<>();
-                detector.detect(commit, potentialRFCs);
-
-                return potentialRFCs.get(0);
-            }
-        }
-
-        return null;
+        Git git = new Git(Miner.repo);
+        PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(repo, git);
+        List<PotentialRFC> potentialRFCS = pBFCDetector.detectPotentialBFC(filter);
+        return potentialRFCS == null ? null : potentialRFCS.get(0);
     }
 
 }
