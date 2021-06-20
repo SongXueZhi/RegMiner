@@ -40,7 +40,8 @@ public class MinerTest extends RegMinerTest {
     @Test
     public void testSearchSuccess() throws Exception {
         List<String> filter = new ArrayList<>();
-        filter.add("5ca2b3bd42add17fe2c4ff56d88ea5cfd457ae30");
+        //filter.add("5ca2b3bd42add17fe2c4ff56d88ea5cfd457ae30");
+        filter.add("1eeef23fd9e41e5cbe9fa81a1561a42dbe57fade");
         PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
         Miner.pRFCs = null;
         Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);

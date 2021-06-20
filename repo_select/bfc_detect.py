@@ -10,7 +10,7 @@ myclient = pymongo.MongoClient("mongodb://root:1@3.129.210.235:27017/")
 mydb = myclient["repo"]
 mycol = mydb["repo2"]
 g = Github("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", per_page=100)
-
+g.get_repo()
 def findAllFile(base):
     num = 0
     flagP = False
@@ -91,6 +91,7 @@ if __name__ == "__main__":
                 for repo in repositories:
                     fullname= repo.full_name;
                     url = repo.clone_url;
+                    repo.get
                     res = mycol.count_documents({'_id':fullname}) # 可以理解为数据在mongo中出现的次数
                     if res != 0: 
                         print(fullname+"已入库")

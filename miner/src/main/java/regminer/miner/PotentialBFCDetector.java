@@ -204,6 +204,15 @@ public class PotentialBFCDetector {
         }
         return normalJavaFiles;
     }
+    private List<SourceFile> getSourceFiles(List<ChangedFile> files) {
+        List<SourceFile> sourceFiles = new LinkedList<>();
+        for (ChangedFile file : files) {
+            if (file instanceof SourceFile) {
+                sourceFiles.add((SourceFile) file);
+            }
+        }
+        return sourceFiles;
+    }
 
     private void getChangedFile(DiffEntry entry, List<ChangedFile> files) throws Exception {
         String path = entry.getNewPath();
@@ -215,6 +224,14 @@ public class PotentialBFCDetector {
         }
         if ((!path.contains("test")) && path.endsWith(".java")) {
             ChangedFile file = new NormalFile(entry.getNewPath());
+            file.setOldPath(entry.getOldPath());
+            file.setEditList(getEdits(entry));
+            files.add(file);
+        }
+
+//      if not end with ".java",it may be source file
+        if (!path.endsWith(".java")){
+            ChangedFile file = new SourceFile(entry.getNewPath());
             file.setOldPath(entry.getOldPath());
             file.setEditList(getEdits(entry));
             files.add(file);
@@ -252,17 +269,16 @@ public class PotentialBFCDetector {
             List<ChangedFile> files = getLastDiffFiles(commit);
             List<TestFile> testcaseFiles = getTestFiles(files);
             List<NormalFile> normalJavaFiles = getNormalJavaFiles(files);
+            List<SourceFile> sourceFiles = getSourceFiles(files);
             // 1）若所有路径中存在任意一个路径包含test相关的Java文件则我们认为本次提交中包含测试用例。
             // 2）若所有路径中除了测试用例还包含其他的非测试用例的Java文件则commit符合条件
             if (testcaseFiles.size() > 0 && normalJavaFiles.size() > 0) {
-                // 3de9e92f098d2d9b37011ab3616fa28363afdda6
-
                 PotentialRFC pRFC = new PotentialRFC(commit);
                 pRFC.setTestCaseFiles(testcaseFiles);
                 pRFC.setNormalJavaFiles(normalJavaFiles);
                 pRFC.setPriority(Priority.high);
+                pRFC.setSourceFiles(sourceFiles);
                 potentialRFCs.add(pRFC);
-
             } else if (justNormalJavaFile(files)) {
 //				针对只标题只包含fix但是修改的文件路径中没有测试用例的提交 
 //				我们将在(c-3,c+3) 的范围内检索可能的测试用例 

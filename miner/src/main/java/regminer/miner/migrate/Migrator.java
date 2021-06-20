@@ -8,16 +8,18 @@ import regminer.exec.TestExecutor;
 import regminer.miner.migrate.model.MergeTask;
 import regminer.model.ChangedFile;
 import regminer.model.PotentialRFC;
+import regminer.model.SourceFile;
 import regminer.model.TestFile;
 import regminer.utils.FileUtilx;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class Migrater {
+public class Migrator {
 	TestExecutor exec = new TestExecutor();
 
 	public File checkout(String bfcId, String commitId, String version) throws IOException {
@@ -69,10 +71,11 @@ public class Migrater {
 		List<TestFile> testSuite = pRFC.getTestCaseFiles();
 		// 非测试用例的在测试目录下的其他文件
 		List<TestFile> underTestDirJavaFiles = pRFC.getTestRelates();
+		List<SourceFile> sourceFiles = pRFC.getSourceFiles();
 		// merge测试文件
 		// 整合任务
 		MergeTask mergeJavaFileTask = new MergeTask();
-		mergeJavaFileTask.addAll(testSuite).compute();
+		mergeJavaFileTask.addAll(testSuite).addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();
 		File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
 		for (Map.Entry<String, ChangedFile> entry : mergeJavaFileTask.getMap().entrySet()) {
 			String newPathInBfc = entry.getKey();
@@ -92,21 +95,25 @@ public class Migrater {
 
 	}
 
-	public void copyToTarget(@NotNull PotentialRFC pRFC, File targerProjectDirectory) throws IOException {
+	public void copyToTarget(@NotNull PotentialRFC pRFC, File targetProjectDirectory) throws IOException {
 		// copy
 		String targetPath = null;
-		for (TestFile testFile : pRFC.getTestCaseFiles()) {
-			File file = new File(Conf.TMP_FILE + File.separator + pRFC.getCommit().getName() + File.separator
-					+ testFile.getNewPath());
+		File bfcFile = pRFC.fileMap.get(pRFC.getCommit().getName());
+		List<ChangedFile> taskFiles = new ArrayList<>();
+		//now none test file be remove
+		//test Related file is removed after test bfc
+		taskFiles.addAll(pRFC.getTestCaseFiles());
+		taskFiles.addAll(pRFC.getSourceFiles());
+		for (ChangedFile cFile  : taskFiles) {
+			File file = new File(bfcFile,cFile.getNewPath());
 			// 测试文件是被删除则什么也不作。
-			if (testFile.getNewPath().contains(Constant.NONE_PATH)) {
+			if (cFile.getNewPath().contains(Constant.NONE_PATH)) {
 				continue;
 			}
-
-			targetPath = testFile.getNewPath();
+			targetPath = cFile.getNewPath();
 			// 测试文件不是删除，则copy
 			targetPath = FileUtilx.getDirectoryFromPath(targetPath);
-			File file1 = new File(targerProjectDirectory.getAbsoluteFile() + File.separator + targetPath);
+			File file1 = new File(targetProjectDirectory,targetPath);
 			if (!file1.exists()) {
 				file1.mkdirs();
 			}

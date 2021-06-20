@@ -35,9 +35,6 @@ public class RelatedTestCaseParser {
 		while (iterator.hasNext()) {
 			TestFile file = iterator.next();
 			String code = GitUtil.getContextWithFile(repo, pRFC.getCommit(), file.getNewPath());
-			FileUtils.writeStringToFile(new File(
-					Conf.TMP_FILE + File.separator + pRFC.getCommit().getName() + File.separator + file.getNewPath()),
-					code);
 			if (!isTestSuite(code)) {
 				file.setType(Type.TEST_RELATE);
 				pRFC.getTestRelates().add(file);

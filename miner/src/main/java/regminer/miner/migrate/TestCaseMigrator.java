@@ -14,7 +14,7 @@ import java.util.*;
 /**
  * @author sxz
  */
-public class TestCaseMigrater extends Migrater {
+public class TestCaseMigrator extends Migrator {
     public final static int PASS = 0;
     public final static int FAL = 1;
     public final static int CE = -1;

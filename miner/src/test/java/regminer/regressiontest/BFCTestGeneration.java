@@ -12,7 +12,7 @@ import regminer.constant.Conf;
 import regminer.git.provider.Provider;
 import regminer.maven.MavenManager;
 import regminer.miner.PotentialBFCDetector;
-import regminer.miner.migrate.Migrater;
+import regminer.miner.migrate.Migrator;
 import regminer.model.PotentialRFC;
 import regminer.start.ConfigLoader;
 import regminer.start.Miner;
@@ -21,7 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BFCTestGeneration extends Migrater {
+public class BFCTestGeneration extends Migrator {
 
     @Before
     public void setUp() {
@@ -67,6 +67,7 @@ public class BFCTestGeneration extends Migrater {
             File bfcpDir = checkout(bfcName, bfcCommit.getParent(0).getName(), "bfcp");
 
             //TODO 2. target method
+
             String method = retrieveTargetMethod(pRFC, bfcDir);
 
             //TODO 3. generate test cases

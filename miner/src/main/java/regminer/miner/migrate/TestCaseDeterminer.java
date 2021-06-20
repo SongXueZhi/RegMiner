@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class TestCaseDeterminer extends Migrater {
+public class TestCaseDeterminer extends Migrator {
     int i = 0;
     int j = 0;
     Repository repo;
