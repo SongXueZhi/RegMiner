@@ -79,6 +79,9 @@ public class Migrator {
 		File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
 		for (Map.Entry<String, ChangedFile> entry : mergeJavaFileTask.getMap().entrySet()) {
 			String newPathInBfc = entry.getKey();
+			if(newPathInBfc.contains(Constant.NONE_PATH)){
+				continue;
+			}
 			File bfcFile = new File(bfcDir, newPathInBfc);
 			File tFile = new File(tDir, newPathInBfc);
 			if (tFile.exists()) {

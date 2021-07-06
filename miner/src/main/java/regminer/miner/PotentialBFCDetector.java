@@ -207,6 +207,9 @@ public class PotentialBFCDetector {
     private List<SourceFile> getSourceFiles(List<ChangedFile> files) {
         List<SourceFile> sourceFiles = new LinkedList<>();
         for (ChangedFile file : files) {
+            if(file.getNewPath().contains("pom.xml")){
+                continue;
+            }
             if (file instanceof SourceFile) {
                 sourceFiles.add((SourceFile) file);
             }
@@ -263,8 +266,8 @@ public class PotentialBFCDetector {
      */
     private void detect(RevCommit commit, List<PotentialRFC> potentialRFCs) throws Exception {
         // 1)首先我们将记录所有的标题中包含fix的commti
-        String message1 = commit.getShortMessage().toLowerCase();
-        if (message1.contains("fix") || commit.getFullMessage().contains("Closes")) {
+        String message1 = commit.getFullMessage().toLowerCase();
+        if (message1.contains("fix") || message1.contains("Closes")) {
             // 针对标题包含fix的commit我们进一步分析本次提交修改的文件路径
             List<ChangedFile> files = getLastDiffFiles(commit);
             List<TestFile> testcaseFiles = getTestFiles(files);

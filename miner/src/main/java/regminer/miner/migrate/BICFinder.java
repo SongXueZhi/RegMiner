@@ -16,7 +16,7 @@ public class BICFinder {
 	String projectName = "";
 	private final static String dataPath = "results/fix_and_introducers_pairs.json";
 	TestExecutor exec = new TestExecutor();
-	TestCaseMigrater testMigrater = new TestCaseMigrater();
+	TestCaseMigrator testMigrater = new TestCaseMigrator();
 	PotentialRFC pRFC;
 	final int level = 0;
 	int[] status; // 切勿直接访问该数组
@@ -171,9 +171,9 @@ public class BICFinder {
 		int middle = (low + high) / 2; // 初始中间位置
 
 		int a = test(arr[middle], middle);
-		boolean result = a == TestCaseMigrater.FAL;
+		boolean result = a == TestCaseMigrator.FAL;
 		int b = test(arr[middle - 1], middle);
-		boolean result1 = b == TestCaseMigrater.PASS;
+		boolean result1 = b == TestCaseMigrator.PASS;
 		if (result && result1) {
 			FileUtilx.log("回归+1");
 			return middle;
@@ -207,25 +207,25 @@ public class BICFinder {
 		// 查找成功条件
 		int statu = getTestResult(arr[middle], middle);
 
-		if (statu == TestCaseMigrater.FAL && middle - 1 > 0
-				&& getTestResult(arr[middle - 1], middle - 1) == TestCaseMigrater.PASS) {
+		if (statu == TestCaseMigrator.FAL && middle - 1 > 0
+				&& getTestResult(arr[middle - 1], middle - 1) == TestCaseMigrator.PASS) {
 			FileUtilx.log("回归+1");
 			return middle - 1;
 		}
-		if (statu == TestCaseMigrater.PASS && middle + 1 < arr.length
-				&& getTestResult(arr[middle + 1], middle + 1) == TestCaseMigrater.FAL) {
+		if (statu == TestCaseMigrator.PASS && middle + 1 < arr.length
+				&& getTestResult(arr[middle + 1], middle + 1) == TestCaseMigrator.FAL) {
 			FileUtilx.log("回归+1");
 			return middle;
 		}
 
 		// 查找策略
-		if (statu == TestCaseMigrater.CE) {
+		if (statu == TestCaseMigrator.CE) {
 			// 指数跳跃查找
 			int left = expLeftBoundry(arr, low, middle, 0);
 
-			if (left != -1 && getTestResult(arr[left], left) == TestCaseMigrater.FAL) {
+			if (left != -1 && getTestResult(arr[left], left) == TestCaseMigrator.FAL) {
 				// 往附近看一眼
-				if (middle - 1 > 0 && getTestResult(arr[left - 1], left - 1) == TestCaseMigrater.PASS) {
+				if (middle - 1 > 0 && getTestResult(arr[left - 1], left - 1) == TestCaseMigrator.PASS) {
 					return left - 1;
 				}
 				// 左边界开始新的查找
@@ -236,9 +236,9 @@ public class BICFinder {
 			}
 			int right = expRightBoundry(arr, middle, high, 0);
 
-			if (right != -1 && getTestResult(arr[right], right) == TestCaseMigrater.PASS) {
+			if (right != -1 && getTestResult(arr[right], right) == TestCaseMigrator.PASS) {
 				// 往附近看一眼
-				if (middle + 1 < arr.length && getTestResult(arr[right + 1], right + 1) == TestCaseMigrater.FAL) {
+				if (middle + 1 < arr.length && getTestResult(arr[right + 1], right + 1) == TestCaseMigrator.FAL) {
 					return right;
 				}
 				int b = search(arr, right, high);
@@ -248,7 +248,7 @@ public class BICFinder {
 			}
 			FileUtilx.log("查找失败");
 			return -1;
-		} else if (statu == TestCaseMigrater.FAL) {
+		} else if (statu == TestCaseMigrator.FAL) {
 			// notest 等unresolved的情况都乐观的往右
 			return search(arr, low, middle - 1);// 向左
 		} else {
