@@ -184,6 +184,9 @@ public class PotentialBFCDetector {
      */
     private List<TestFile> getTestFiles(List<ChangedFile> files) {
         List<TestFile> testFiles = new LinkedList<>();
+        if(files == null){
+            return testFiles;
+        }
         for (ChangedFile file : files) {
             if (file instanceof TestFile) {
                 testFiles.add((TestFile) file);
@@ -267,9 +270,11 @@ public class PotentialBFCDetector {
     private void detect(RevCommit commit, List<PotentialRFC> potentialRFCs) throws Exception {
         // 1)首先我们将记录所有的标题中包含fix的commti
         String message1 = commit.getFullMessage().toLowerCase();
-        if (message1.contains("fix") || message1.contains("Closes")) {
+//        if (message1.contains("fix") || message1.contains("close")) {
+            if(true){
             // 针对标题包含fix的commit我们进一步分析本次提交修改的文件路径
             List<ChangedFile> files = getLastDiffFiles(commit);
+            if(files == null) return;
             List<TestFile> testcaseFiles = getTestFiles(files);
             List<NormalFile> normalJavaFiles = getNormalJavaFiles(files);
             List<SourceFile> sourceFiles = getSourceFiles(files);
