@@ -22,21 +22,24 @@ import org.apache.maven.model.*;
 
 import java.io.File;
 
-public class JacocoMaven extends MavenManager {
-
+public class JacocoMaven {
+    final static String GROUP_ID="org.jacoco";
+    final static String ARTIFACT_ID="jacoco-maven-plugin";
+    final static String VERSION="0.8.5";
     public void addJacocoFeatureToMaven(File pomFile) throws Exception {
-     Model pomModel =getPomModel(pomFile);
-     addJacocoDependency(pomModel);
-     addJacocoPlugin(pomModel);
-     saveModel(pomFile,pomModel);
+        MavenManager mvnManager = new MavenManager();
+        Model pomModel = mvnManager.getPomModel(pomFile);
+        addJacocoDependency(pomModel);
+        addJacocoPlugin(pomModel);
+        mvnManager.saveModel(pomFile, pomModel);
     }
 
     private void addJacocoPlugin(Model pomModel) {
 
         Plugin plugin = new Plugin();
-        plugin.setGroupId("org.jacoco");
-        plugin.setArtifactId("jacoco-maven-plugin");
-        plugin.setVersion("0.8.5");
+        plugin.setGroupId(GROUP_ID);
+        plugin.setArtifactId(ARTIFACT_ID);
+        plugin.setVersion(VERSION);
 
         PluginExecution pluginExecution1 = new PluginExecution();
         pluginExecution1.addGoal("prepare-agent");
@@ -59,9 +62,9 @@ public class JacocoMaven extends MavenManager {
 
     private void addJacocoDependency(Model pomModel) {
         Dependency dependency = new Dependency();
-        dependency.setGroupId("org.jacoco");
-        dependency.setArtifactId("jacoco-maven-plugin");
-        dependency.setVersion("0.8.5");
+        dependency.setGroupId(GROUP_ID);
+        dependency.setArtifactId(ARTIFACT_ID);
+        dependency.setVersion(VERSION);
         dependency.setType("maven-plugin");
         pomModel.getDependencies().add(dependency);
     }

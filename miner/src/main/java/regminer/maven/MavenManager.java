@@ -55,15 +55,15 @@ public class MavenManager {
         return  result;
     }
 
-    public Model getPomModel(File pomFile)throws Exception{
+    protected Model getPomModel(File pomFile)throws Exception{
         Model pomModel = mavenReader.read(new FileReader(pomFile));
         return pomModel;
     }
 
-    public void saveModel(File pomFile,Model pomModel) throws Exception {
+    protected void saveModel(File pomFile,Model pomModel) throws Exception {
         mavenXpp3Writer.write(new FileWriter(pomFile),pomModel);
     }
-    private String getUserHomePath() {
+    protected String getUserHomePath() {
         return SystemUtils.getUserHome().toString();
     }
 }
