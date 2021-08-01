@@ -26,20 +26,20 @@ public class PotentialBFCDetector {
     private Repository repo;
     private Git git;
 
-    public void setRepo(Repository repo) {
-        this.repo = repo;
-    }
-
-    public void setGit(Git git) {
-        this.git = git;
-    }
-
     public PotentialBFCDetector() {
 
     }
 
     public PotentialBFCDetector(Repository repo, Git git) {
         this.repo = repo;
+        this.git = git;
+    }
+
+    public void setRepo(Repository repo) {
+        this.repo = repo;
+    }
+
+    public void setGit(Git git) {
         this.git = git;
     }
 
@@ -53,8 +53,8 @@ public class PotentialBFCDetector {
     public List<PotentialRFC> detectPotentialBFC(List<String> commitsFilter) throws Exception {
         // 获取所有的commit，我们需要对所有的commit进行分析
         Iterable<RevCommit> commits = git.log().all().call();
-        return  detectOnFilter(commitsFilter,commits);
-
+        List<PotentialRFC> potentialRFCS = detectOnFilter(commitsFilter, commits);
+        return potentialRFCS;
     }
 
     private List<PotentialRFC> detectAll(Iterable<RevCommit> commits) throws Exception {
@@ -77,7 +77,7 @@ public class PotentialBFCDetector {
         int countAll = 0;
         // 开始迭代每一个commit
         for (RevCommit commit : commits) {
-            if(commitsFilter.contains(commit.getName())){
+            if (commitsFilter.contains(commit.getName())) {
                 detect(commit, potentialRFCs);
                 countAll++;
             }
@@ -184,7 +184,7 @@ public class PotentialBFCDetector {
      */
     private List<TestFile> getTestFiles(List<ChangedFile> files) {
         List<TestFile> testFiles = new LinkedList<>();
-        if(files == null){
+        if (files == null) {
             return testFiles;
         }
         for (ChangedFile file : files) {
@@ -207,10 +207,11 @@ public class PotentialBFCDetector {
         }
         return normalJavaFiles;
     }
+
     private List<SourceFile> getSourceFiles(List<ChangedFile> files) {
         List<SourceFile> sourceFiles = new LinkedList<>();
         for (ChangedFile file : files) {
-            if(file.getNewPath().contains("pom.xml")){
+            if (file.getNewPath().contains("pom.xml")) {
                 continue;
             }
             if (file instanceof SourceFile) {
@@ -236,7 +237,7 @@ public class PotentialBFCDetector {
         }
 
 //      if not end with ".java",it may be source file
-        if (!path.endsWith(".java")){
+        if (!path.endsWith(".java")) {
             ChangedFile file = new SourceFile(entry.getNewPath());
             file.setOldPath(entry.getOldPath());
             file.setEditList(getEdits(entry));
@@ -271,10 +272,10 @@ public class PotentialBFCDetector {
         // 1)首先我们将记录所有的标题中包含fix的commti
         String message1 = commit.getFullMessage().toLowerCase();
 //        if (message1.contains("fix") || message1.contains("close")) {
-            if(true){
+        if (true) {
             // 针对标题包含fix的commit我们进一步分析本次提交修改的文件路径
             List<ChangedFile> files = getLastDiffFiles(commit);
-            if(files == null) return;
+            if (files == null) return;
             List<TestFile> testcaseFiles = getTestFiles(files);
             List<NormalFile> normalJavaFiles = getNormalJavaFiles(files);
             List<SourceFile> sourceFiles = getSourceFiles(files);

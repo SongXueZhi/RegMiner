@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import regminer.utils.FileUtilx;
@@ -49,6 +52,33 @@ public class Executor {
         pb.directory(file);
     }
 
+    public Set<String> execWithSetResult(String cmd){
+       Set<String> result = new HashSet<>();
+        try {
+            if (OS.contains(OS_WINDOWS)) {
+                pb.command("cmd.exe", "/c", cmd);
+            } else {
+                pb.command("bash", "-c", cmd);
+            }
+            Process process = pb.start();
+            InputStreamReader inputStr = new InputStreamReader(process.getInputStream());
+            BufferedReader bufferReader = new BufferedReader(inputStr);
+            String line;
+            while ((line = bufferReader.readLine()) != null) {
+                line = line.trim().replace("\n","");
+                if (line.equals("") || line.equals(" ")){
+                    continue;
+                }else{
+                    result.add(line);
+                }
+            }
+            IOUtils.close(inputStr,bufferReader);
+            process.destroy();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
     public String exec(String cmd) {
         StringBuilder builder = new StringBuilder();
         try {
