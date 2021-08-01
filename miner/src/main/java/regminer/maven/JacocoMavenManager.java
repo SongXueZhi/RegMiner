@@ -26,8 +26,10 @@ public class JacocoMavenManager {
     final static String GROUP_ID="org.jacoco";
     final static String ARTIFACT_ID="jacoco-maven-plugin";
     final static String VERSION="0.8.5";
-    public void addJacocoFeatureToMaven(File pomFile) throws Exception {
+    public void addJacocoFeatureToMaven(File bfcDir) throws Exception {
+        //FIXME SongXuezhi judge whether exits, if true do nothing
         MavenManager mvnManager = new MavenManager();
+        File pomFile = new File(bfcDir,"pom.xml");
         Model pomModel = mvnManager.getPomModel(pomFile);
         addJacocoDependency(pomModel);
         addJacocoPlugin(pomModel);

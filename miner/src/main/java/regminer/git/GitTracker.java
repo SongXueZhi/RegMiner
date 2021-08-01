@@ -18,6 +18,7 @@
 
 package regminer.git;
 
+import org.apache.commons.io.FileUtils;
 import regminer.exec.TestExecutor;
 
 import java.io.File;
@@ -32,7 +33,11 @@ public class GitTracker {
         //add .gitattributes file to bfc
         File gitConfigFile = new File(bfcdir, ".gitattributes");
         try {
+            if(gitConfigFile.exists()){
+                gitConfigFile.deleteOnExit();
+            }
             gitConfigFile.createNewFile();
+            FileUtils.writeStringToFile(gitConfigFile,"*.java\tdiff=java\n");
         } catch (IOException e) {
             return false;
         }
@@ -49,7 +54,7 @@ public class GitTracker {
      */
     public int trackFunctionByGitBlogL(String Method, String file_path, File bfcDir) {
         testExecutor.setDirectory(bfcDir);
-        Set<String> commitHistoryList = testExecutor.execWithSetResult("git log -L:" + Method + ":" + file_path + " --pretty=format:%h --shortstat");
+        Set<String> commitHistoryList = testExecutor.execWithSetResult("git log -L:" + Method + ":" + file_path + " --pretty=format:%h -s");
         return commitHistoryList.size();
     }
 }
