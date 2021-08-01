@@ -1,16 +1,19 @@
 package regminer.miner.migrate;
 
+import org.apache.commons.io.FileUtils;
+import org.eclipse.jdt.core.dom.*;
+import org.eclipse.jgit.lib.Repository;
 import regminer.constant.Conf;
 import regminer.constant.ExperResult;
+import regminer.coverage.CodeCoverage;
+import regminer.coverage.model.CoverNode;
 import regminer.finalize.SycFileCleanup;
+import regminer.maven.JacocoMavenManager;
 import regminer.model.ChangedFile.Type;
 import regminer.model.MigrateItem.MigrateFailureType;
 import regminer.model.PotentialRFC;
 import regminer.model.RelatedTestCase;
 import regminer.model.TestFile;
-import org.apache.commons.io.FileUtils;
-import org.eclipse.jdt.core.dom.*;
-import org.eclipse.jgit.lib.Repository;
 import regminer.utils.CompilationUtil;
 import regminer.utils.FileUtilx;
 
@@ -19,10 +22,14 @@ import java.io.IOException;
 import java.util.*;
 
 public class TestCaseDeterminer extends Migrator {
+    final static int COVER_THRESHOLD = 3;
     int i = 0;
     int j = 0;
     Repository repo;
     String projectName = Conf.PROJRCT_NAME;
+    JacocoMavenManager jacocoMavenManager = new JacocoMavenManager();
+    CodeCoverage codeCoverage = new CodeCoverage();
+    BFCTracker tracker = new BFCTracker();
 
     public TestCaseDeterminer(Repository repo) {
         this.repo = repo;
@@ -44,12 +51,6 @@ public class TestCaseDeterminer extends Migrator {
         File bfcpDirectory = checkout(bfcID, bfcpID, "bfcp");// 管理每一个commit的文件路径
         pRFC.fileMap.put(bfcpID, bfcpDirectory);
 
-//		// 3.第一次尝试编译 BFCP
-//		if (!comiple(bfcpDirectory, false)) {
-//			FileUtilx.log("BFCp本身编译失败");
-//			emptyCache(bfcID);
-//			return;
-//		}
         // 4.将BFC中所有与测试相关的文件迁移到BFCP,与BIC查找中的迁移略有不同
         // BFC到BFCP的迁移不做依赖分析,相关就迁移
         // 因为后续BFC的测试用例确认会删除一些TESTFILE,所以先迁移
@@ -62,8 +63,16 @@ public class TestCaseDeterminer extends Migrator {
             emptyCache(bfcID);
             return;
         }
+
         // 5. 测试BFC中的每一个待测试方法
-        testBFC(bfcDirectory, pRFC);
+        if (Conf.code_cover) {
+           if(!testWithJacoco(bfcDirectory,pRFC)){
+               return;
+           }
+        } else {
+            testBFC(bfcDirectory, pRFC);
+        }
+
         if (pRFC.getTestCaseFiles().size() <= 0) {
             FileUtilx.log("BFC 没有测试成功的方法");
             emptyCache(bfcID);
@@ -83,7 +92,7 @@ public class TestCaseDeterminer extends Migrator {
         if (pRFC.getTestCaseFiles().size() > 0) {
             ExperResult.numSuc++;
             //删除无关的测试用例
-			purgeUnlessTestcase(pRFC.getTestCaseFiles(),pRFC);
+            purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
             FileUtilx.log("迁移成功" + result);
         } else {
             FileUtilx.log("迁移失败" + result);
@@ -92,6 +101,20 @@ public class TestCaseDeterminer extends Migrator {
         }
         exec.setDirectory(new File(Conf.PROJECT_PATH));
 //		ExperResult.numSuc++;
+    }
+
+    public boolean testWithJacoco(File bfcDirectory, PotentialRFC pRFC) throws Exception {
+        //add Jacoco plugin
+        try {
+            jacocoMavenManager.addJacocoFeatureToMaven(bfcDirectory);
+        } catch (Exception e) {
+            return true;
+        }
+        testBFC(bfcDirectory, pRFC);
+        // git test coverage methods
+        List<CoverNode> coverNodeList = codeCoverage.readJacocoReports(bfcDirectory);
+        float cmfr = tracker.effectiveMethodAverageCoverage(tracker.handleTasks(coverNodeList, bfcDirectory));
+        return cmfr > COVER_THRESHOLD;
     }
 
     public boolean comiple(File file, boolean record) throws Exception {
@@ -184,8 +207,8 @@ public class TestCaseDeterminer extends Migrator {
                 Set<String> testCaseSet = testFile.getTestMethodMap().keySet();
                 List<TypeDeclaration> types = unit.types();
                 for (TypeDeclaration type : types) {
-                    MethodDeclaration[] mdArray =  type.getMethods();
-                    for (int i =0 ;i<mdArray.length;i++) {
+                    MethodDeclaration[] mdArray = type.getMethods();
+                    for (int i = 0; i < mdArray.length; i++) {
                         MethodDeclaration method = mdArray[i];
                         String name = method.getName().toString();
                         List<ASTNode> parameters = method.parameters();
@@ -195,38 +218,38 @@ public class TestCaseDeterminer extends Migrator {
                             sj.add(param.toString());
                         }
                         String signature = sj.toString();
-                        if ((method.toString().contains("@Test") || name.startsWith("test") || name.endsWith("test") ) && !testCaseSet.contains(signature)){
-                        	method.delete();
-						}
+                        if ((method.toString().contains("@Test") || name.startsWith("test") || name.endsWith("test")) && !testCaseSet.contains(signature)) {
+                            method.delete();
+                        }
                     }
                 }
                 List<ImportDeclaration> imports = unit.imports();
                 int len = imports.size();
-                ImportDeclaration[] importDeclarations =new ImportDeclaration[len];
-                for(int i =0;i<len;i++){
-                    importDeclarations[i]=imports.get(i);
+                ImportDeclaration[] importDeclarations = new ImportDeclaration[len];
+                for (int i = 0; i < len; i++) {
+                    importDeclarations[i] = imports.get(i);
                 }
 
-               for(ImportDeclaration importDeclaration:importDeclarations){
+                for (ImportDeclaration importDeclaration : importDeclarations) {
                     String importName = importDeclaration.getName().getFullyQualifiedName();
-                    if(importName.lastIndexOf(".")>-1){
-                        importName = importName.substring(importName.lastIndexOf(".")+1);
-                    }else{
+                    if (importName.lastIndexOf(".") > -1) {
+                        importName = importName.substring(importName.lastIndexOf(".") + 1);
+                    } else {
                         importName = importName;
                     }
 
                     boolean flag = false;
-                    for (TypeDeclaration type : types){
-                        if(type.toString().contains(importName)){
-                            flag =true;
+                    for (TypeDeclaration type : types) {
+                        if (type.toString().contains(importName)) {
+                            flag = true;
                         }
                     }
-                    if (!(flag || importDeclaration.toString().contains("*"))){
+                    if (!(flag || importDeclaration.toString().contains("*"))) {
                         importDeclaration.delete();
                     }
                 }
                 FileUtils.forceDeleteOnExit(file);
-                FileUtils.writeStringToFile(file,unit.toString());
+                FileUtils.writeStringToFile(file, unit.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }

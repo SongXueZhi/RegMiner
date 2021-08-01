@@ -25,7 +25,7 @@ import regminer.coverage.model.CoverClass;
 import regminer.coverage.model.CoverMethod;
 import regminer.coverage.model.CoverNode;
 import regminer.coverage.model.CoverPackage;
-import regminer.maven.JacocoMaven;
+import regminer.maven.JacocoMavenManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class CodeCoverage {
 
     public void addJacocoFeatureToProject(File codePath) throws Exception {
         File pomFile = new File(codePath, MAVEN_POM);
-        JacocoMaven jacocoMaven = new JacocoMaven();
+        JacocoMavenManager jacocoMaven = new JacocoMavenManager();
         jacocoMaven.addJacocoFeatureToMaven(pomFile);
     }
 

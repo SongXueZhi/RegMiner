@@ -22,7 +22,7 @@ import org.apache.maven.model.*;
 
 import java.io.File;
 
-public class JacocoMaven {
+public class JacocoMavenManager {
     final static String GROUP_ID="org.jacoco";
     final static String ARTIFACT_ID="jacoco-maven-plugin";
     final static String VERSION="0.8.5";

@@ -39,7 +39,14 @@ public class GitTracker {
         return true;
     }
 
-    // Don't use this feature in Search process
+
+    /**
+     *  Don't use this feature in Search process
+     * @param Method
+     * @param file_path
+     * @param bfcDir
+     * @return
+     */
     public int trackFunctionByGitBlogL(String Method, String file_path, File bfcDir) {
         testExecutor.setDirectory(bfcDir);
         Set<String> commitHistoryList = testExecutor.execWithSetResult("git log -L:" + Method + ":" + file_path + " --pretty=format:%h --shortstat");

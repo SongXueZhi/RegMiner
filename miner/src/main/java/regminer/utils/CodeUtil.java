@@ -87,6 +87,16 @@ public class CodeUtil {
 		return files;
 	}
 
+	public static String[] getJavaFiles(File meta) {
+		DirectoryScanner scanner = new DirectoryScanner();
+		scanner.setBasedir(meta);
+		scanner.setIncludes(new String[] { "**/*.java"});
+		scanner.setCaseSensitive(true);
+		scanner.scan();
+		String[] files = scanner.getIncludedFiles();
+		return files;
+	}
+
 	private static JavaClass getJavaClassFromFile(File f, Repository repository) {
 		InputStream is = null;
 		try {

@@ -37,4 +37,5 @@ public class Conf {
 	// test migrate File
 	public static String BIC_SET_PATH = "bic_set_file";
 
+	public static boolean code_cover =ConfigLoader.code_cover;
 }

@@ -5,12 +5,12 @@ import org.junit.Test;
 
 import java.io.File;
 
-public class JacocoMavenTest {
+public class JacocoMavenManagerTest {
 
     @Test
     public void testAddJacocoFeatureToMaven() throws Exception {
         File file =new File("C:\\Users\\sxzdh\\Desktop\\bfc\\pom.xml");
-        JacocoMaven jacocoMaven =new JacocoMaven();
+        JacocoMavenManager jacocoMaven =new JacocoMavenManager();
         jacocoMaven.addJacocoFeatureToMaven(file);
     }
 }
