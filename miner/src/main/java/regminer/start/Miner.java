@@ -30,6 +30,7 @@ public class Miner {
     public static Set<String> setResult = new HashSet<>();
 
     public static void main(String[] args) throws Exception {
+        long s1 =System.currentTimeMillis();
 		ConfigLoader.refresh();//加载配置
 		ProgressMonitor.load(); // 加载断点
 
@@ -46,7 +47,8 @@ public class Miner {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
+        long s2 = System.currentTimeMillis();
+        System.out.println(s2-s1);
     }
 
     public static void singleThreadHandle() throws Exception {
