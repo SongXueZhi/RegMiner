@@ -10,7 +10,9 @@ import regminer.miner.RelatedTestCaseParser;
 import regminer.miner.migrate.BICFinder;
 import regminer.miner.migrate.TestCaseDeterminer;
 import regminer.model.PotentialRFC;
+import regminer.model.Regression;
 import regminer.monitor.ProgressMonitor;
+import regminer.sql.BugStorage;
 import regminer.utils.FileUtilx;
 import regminer.utils.ThreadPoolUtil;
 
@@ -28,10 +30,10 @@ public class Miner {
     public static Git git = null;
     public static LinkedList<PotentialRFC> pRFCs;
     public static Set<String> setResult = new HashSet<>();
-
+    static BugStorage bugStorage = new BugStorage();
     public static void main(String[] args) throws Exception {
-		ConfigLoader.refresh();//加载配置
-		ProgressMonitor.load(); // 加载断点
+        ConfigLoader.refresh();//加载配置
+        ProgressMonitor.load(); // 加载断点
 
         repo = new Provider().create(Provider.EXISITING).get(Conf.LOCAL_PROJECT_GIT);
         git = new Git(repo);
@@ -74,14 +76,26 @@ public class Miner {
                 iterator.remove();
             } else {
                 // 确定测试用例之后开始查找bic
-                String r = finder.searchBIC(pRfc);
-                String item = pRfc.getCommit().getName() + "," + r;
-                if (r != null) {
-                    if (!setResult.contains(item)) {
-                        FileUtilx.apendResult(item);
-                    }
-                    setResult.add(item);
+                Regression regression = finder.searchBIC(pRfc);
+                if (regression == null) {
+                    continue;
                 }
+                StringBuilder sb = new StringBuilder();
+                sb.append(regression.getBugId()).append(",").append(regression.getBfcId())
+                        .append(",").append(regression.getBuggyId())
+                        .append(",").append(regression.getBicId())
+                        .append(",").append(regression.getWorkId())
+                        .append(",").append(regression.getBfcDirPath())
+                        .append(",").append(regression.getBuggyDirPath())
+                        .append(",").append(regression.getBicDirPath())
+                        .append(",").append(regression.getWorkDirPath())
+                        .append(",").append(regression.getTestCase());
+                String regressionLog = sb.toString();
+                if (!setResult.contains(regressionLog)) {
+                    FileUtilx.apendResult(regressionLog);
+                }
+                setResult.add(regressionLog);
+                bugStorage.saveBug(regression);
             }
             ProgressMonitor.addDone(pRfc.getCommit().getName());
         }
@@ -92,6 +106,7 @@ public class Miner {
 //				+ "symbolNotFind " + ExperResult.symbolNotFind + "unknow " + ExperResult.unknow + "variableNotFind "
 //				+ ExperResult.variableNotFind);
     }
+
     public static void mutilThreadHandle() {
         int cpuSize = ThreadPoolUtil.cpuIntesivePoolSize();
         for (int i = 0; i <= cpuSize; i++) {
@@ -135,17 +150,17 @@ public class Miner {
                     e.printStackTrace();
                 }
 
-                if (pRFC.getTestCaseFiles().size() != 0) { // 找不到测试用例直接跳过
-                    // 确定测试用例之后开始查找bic
-                    String r = finder.searchBIC(pRFC);
-                    String item = pRFC.getCommit().getName() + "," + r;
-                    if (r != null) {
-                        if (!setResult.contains(item)) {
-                            FileUtilx.apendResult(item);
-                        }
-                        setResult.add(item);
-                    }
-                }
+//                if (pRFC.getTestCaseFiles().size() != 0) { // 找不到测试用例直接跳过
+//                    // 确定测试用例之后开始查找bic
+//                    String r = finder.searchBIC(pRFC);
+//                    String item = pRFC.getCommit().getName() + "," + r;
+//                    if (r != null) {
+//                        if (!setResult.contains(item)) {
+//                            FileUtilx.apendResult(item);
+//                        }
+//                        setResult.add(item);
+//                    }
+//                }
             }
         }
     }

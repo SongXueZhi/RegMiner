@@ -36,16 +36,9 @@ public class TestCaseMigrator extends Migrator {
         FileUtilx.log("bic:" + bic);
         File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
         pRFC.fileMap.put(bic, bicDirectory);
-//		// 第一次编译未copy时候编译尝试
-//		if (!comiple(bicDirectory, false)) {
-//			FileUtilx.log("本身编译失败");
-//			return CE;
-//		}
-        // 第一次编译成功,则开始依赖图匹配和merge
         mergeTwoVersion_BaseLine(pRFC,bicDirectory);
-
         // 编译
-        if (comiple(bicDirectory, true)) {
+        if (compile(bicDirectory, true)) {
             int a = testSuite(bicDirectory, pRFC.getTestCaseFiles());
             return a;
         } else {
@@ -54,7 +47,7 @@ public class TestCaseMigrator extends Migrator {
         }
     }
 
-    public boolean comiple(File file, boolean record) throws Exception {
+    public boolean compile(File file, boolean record) throws Exception {
         exec.setDirectory(file);
         return exec.execBuildWithResult(Conf.compileLine, record);
     }

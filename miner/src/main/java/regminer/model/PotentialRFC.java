@@ -3,20 +3,21 @@ package regminer.model;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PotentialRFC {
     public Map<String, File> fileMap = new HashMap<>();
-    private RevCommit commit;
+    private final RevCommit commit;
+    private String buggyCommitId;
     private int priority;
-    private List<NormalFile> normalJavaFiles;
-    private List<TestFile> testCaseFiles;
-    private List<TestFile> testSuites = new ArrayList<TestFile>();
-    private List<TestFile> testRelates = new ArrayList<TestFile>();
-    private List<SourceFile> sourceFiles = new ArrayList<>();
-    private Set<String> testCaseSet;
+    private List<NormalFile> normalJavaFiles; //which contains fix path
+    private List<TestFile> testCaseFiles;    // All File Under test dir
+    private final List<TestFile> testRelates = new ArrayList<TestFile>(); //under test dir but not testcase
+    private List<SourceFile> sourceFiles = new ArrayList<>(); //config file or data for test
 
-//	private List<PotentialTestCase> potentialTestcases;
 
     public PotentialRFC(RevCommit commit) {
         this.commit = commit;
@@ -24,10 +25,6 @@ public class PotentialRFC {
 
     public RevCommit getCommit() {
         return commit;
-    }
-
-    public void setCommit(RevCommit commit) {
-        this.commit = commit;
     }
 
     public List<NormalFile> getNormalJavaFiles() {
@@ -46,45 +43,16 @@ public class PotentialRFC {
         this.testCaseFiles = testCaseFiles;
     }
 
-//	public List<regminer.model.PotentialTestCase> getPotentialTestcases() {
-//		return potentialTestcases;
-//	}
-//
-//	public void setPotentialTestcases(List<regminer.model.PotentialTestCase> potentialTestcases) {
-//		this.potentialTestcases = potentialTestcases;
-//	}
-
-    public int getPriority() {
-        return priority;
-    }
 
     public void setPriority(int priority) {
         this.priority = priority;
     }
 
-    public Set<String> getTestCaseSet() {
-        return testCaseSet;
-    }
-
-    public void setTestCaseSet(Set<String> testCaseSet) {
-        this.testCaseSet = testCaseSet;
-    }
-
-    public List<TestFile> getTestSuites() {
-        return testSuites;
-    }
-
-    public void setTestSuites(List<TestFile> testSuites) {
-        this.testSuites = testSuites;
-    }
 
     public List<TestFile> getTestRelates() {
         return testRelates;
     }
 
-    public void setTestRelates(List<TestFile> testRelates) {
-        this.testRelates = testRelates;
-    }
 
     public List<SourceFile> getSourceFiles() {
         return sourceFiles;
@@ -93,4 +61,13 @@ public class PotentialRFC {
     public void setSourceFiles(List<SourceFile> sourceFiles) {
         this.sourceFiles = sourceFiles;
     }
+
+    public String getBuggyCommitId() {
+        return buggyCommitId;
+    }
+
+    public void setBuggyCommitId(String buggyCommitId) {
+        this.buggyCommitId = buggyCommitId;
+    }
+
 }

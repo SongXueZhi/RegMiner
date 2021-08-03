@@ -99,6 +99,7 @@ public class TestCaseDeterminer extends Migrator {
             emptyCache(bfcID);
             return;
         }
+        pRFC.setBuggyCommitId(bfcpID);
         exec.setDirectory(new File(Conf.PROJECT_PATH));
 //		ExperResult.numSuc++;
     }
