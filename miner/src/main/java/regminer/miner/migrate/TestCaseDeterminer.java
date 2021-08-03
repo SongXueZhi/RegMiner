@@ -114,6 +114,9 @@ public class TestCaseDeterminer extends Migrator {
         testBFC(bfcDirectory, pRFC);
         // git test coverage methods
         List<CoverNode> coverNodeList = codeCoverage.readJacocoReports(bfcDirectory);
+        if(coverNodeList == null){
+            return true;
+        }
         float cmfr = tracker.effectiveMethodAverageCoverage(tracker.handleTasks(coverNodeList, bfcDirectory));
         return cmfr > COVER_THRESHOLD;
     }

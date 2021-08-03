@@ -34,6 +34,7 @@ public class BFCTracker {
     public HashMap<String,Integer> handleTasks(List<CoverNode> coverNodes, File bfcDir) {
         HashMap<String,Integer> methodFrequencyMap =new HashMap<>();
         List<String> javaFiles = Arrays.asList(CodeUtil.getJavaFiles(bfcDir));
+        gitTracker.addJavaAttibuteToGit(bfcDir);
         for (CoverNode coverNode : coverNodes) {
             String methodName = coverNode.getCoverMethod().getName();
             String packageAndClassPath = coverNode.getCoverPackage().getName()+File.separator+coverNode.getCoverClass().getFileName();
@@ -56,11 +57,10 @@ public class BFCTracker {
                sum+=frequency;
            }
         }
-        return sum == 0l ? 0l:(sum+eNum);
+        return sum == 0l ? 0l:(sum/eNum);
     }
     private int  trackBFC(File bfcDir,String classFilePath,String methodName) {
         try {
-            gitTracker.addJavaAttibuteToGit(bfcDir);
             return gitTracker.trackFunctionByGitBlogL(methodName,classFilePath,bfcDir);
         } catch (Exception e) {
             e.printStackTrace();

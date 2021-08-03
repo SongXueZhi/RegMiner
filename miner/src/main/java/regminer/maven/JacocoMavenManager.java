@@ -21,18 +21,23 @@ package regminer.maven;
 import org.apache.maven.model.*;
 
 import java.io.File;
+import java.util.Map;
 
 public class JacocoMavenManager {
-    final static String GROUP_ID="org.jacoco";
-    final static String ARTIFACT_ID="jacoco-maven-plugin";
-    final static String VERSION="0.8.5";
-    public void addJacocoFeatureToMaven(File pomFile) throws Exception {
+    final static String GROUP_ID = "org.jacoco";
+    final static String ARTIFACT_ID = "jacoco-maven-plugin";
+    final static String VERSION = "0.8.5";
+
+    public void addJacocoFeatureToMaven(File bfcDir) throws Exception {
+        //FIXME SongXuezhi judge whether exits, if true do nothing
         MavenManager mvnManager = new MavenManager();
+        File pomFile = new File(bfcDir, "pom.xml");
         Model pomModel = mvnManager.getPomModel(pomFile);
         addJacocoDependency(pomModel);
         addJacocoPlugin(pomModel);
         mvnManager.saveModel(pomFile, pomModel);
     }
+
 
     private void addJacocoPlugin(Model pomModel) {
 
@@ -58,6 +63,17 @@ public class JacocoMavenManager {
             build = pomModel.getBuild();
         }
         build.addPlugin(plugin);
+
+        Map<String, Plugin> map = build.getPluginsAsMap();
+        Plugin surefirePlugin = map.get("org.apache.maven.plugins:maven-surefire-plugin");
+
+        if (surefirePlugin != null) {
+            Plugin newPlugin = new Plugin();
+            newPlugin.setArtifactId(surefirePlugin.getArtifactId());
+            newPlugin.setVersion(surefirePlugin.getVersion());
+            build.removePlugin(surefirePlugin);
+            build.addPlugin(newPlugin);
+        }
     }
 
     private void addJacocoDependency(Model pomModel) {

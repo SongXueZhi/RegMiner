@@ -32,8 +32,9 @@ public class Miner {
     public static Set<String> setResult = new HashSet<>();
     static BugStorage bugStorage = new BugStorage();
     public static void main(String[] args) throws Exception {
-        ConfigLoader.refresh();//加载配置
-        ProgressMonitor.load(); // 加载断点
+        long s1 =System.currentTimeMillis();
+		ConfigLoader.refresh();//加载配置
+		ProgressMonitor.load(); // 加载断点
 
         repo = new Provider().create(Provider.EXISITING).get(Conf.LOCAL_PROJECT_GIT);
         git = new Git(repo);
@@ -48,7 +49,8 @@ public class Miner {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
+        long s2 = System.currentTimeMillis();
+        System.out.println(s2-s1);
     }
 
     public static void singleThreadHandle() throws Exception {
