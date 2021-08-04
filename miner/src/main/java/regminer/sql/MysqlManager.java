@@ -78,7 +78,7 @@ public class MysqlManager {
     public static void executeSql(String sql) {
         try {
             getStatement();
-            statement.executeQuery(sql);
+            statement.executeUpdate(sql);
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
