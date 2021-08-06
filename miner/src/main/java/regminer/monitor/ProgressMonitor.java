@@ -3,6 +3,7 @@ package regminer.monitor;
 import regminer.constant.Conf;
 import regminer.model.PotentialRFC;
 import org.apache.commons.io.FileUtils;
+import regminer.sql.BugRetrieve;
 import regminer.utils.FileUtilx;
 
 import java.io.File;
@@ -21,6 +22,8 @@ public class ProgressMonitor {
 
 	public static void load() {
 		doneTaskList = FileUtilx.readSetFromFile(Conf.PROJECT_PATH + File.separator + "progress.details");
+		Set<String> regressionsInSql =new BugRetrieve().getRegressionsFromDB();
+		doneTaskList.addAll(regressionsInSql);
 	}
 
 	public static void rePlan(List<PotentialRFC> pRFCs) {

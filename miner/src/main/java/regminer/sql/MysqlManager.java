@@ -18,9 +18,14 @@
 
 package regminer.sql;
 
+import com.mysql.cj.protocol.Resultset;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MysqlManager {
 
@@ -75,7 +80,7 @@ public class MysqlManager {
         }
     }
 
-    public static void executeSql(String sql) {
+    public static void executeUpdate(String sql) {
         try {
             getStatement();
             statement.executeUpdate(sql);
@@ -84,5 +89,20 @@ public class MysqlManager {
         }finally {
             closed();
         }
+    }
+    public static Set<String>  executeSql(String sql) {
+        Set<String> result = new HashSet<>();
+        try {
+            getStatement();
+            ResultSet rs = statement.executeQuery(sql);
+            while (rs.next()){
+                result.add(rs.getString("bfc"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            closed();
+        }
+        return result;
     }
 }

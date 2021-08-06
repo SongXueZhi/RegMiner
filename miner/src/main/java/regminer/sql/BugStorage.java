@@ -18,15 +18,14 @@
 
 package regminer.sql;
 
+import regminer.constant.Conf;
 import regminer.model.Regression;
-
-import java.sql.Statement;
 
 public class BugStorage {
     public  void saveBug(Regression regression) {
-        String sql = "INSERT IGNORE INTO regressions (bug_id,bfc,buggy,bic,work,bfc_path,buggy_path,bic_path,work_path,testcase) VALUES "+
-                "('"+regression.getBugId()+"','"+regression.getBfcId()+"','"+regression.getBuggyId()+"','"+regression.getBicId()+"','"+regression.getWorkId()+"','"+regression.getBfcDirPath()+"','"+regression.getBuggyDirPath()+"'," +
+        String sql = "INSERT IGNORE INTO regressions (project_name,bug_id,bfc,buggy,bic,work,bfc_path,buggy_path,bic_path,work_path,testcase) VALUES "+
+                "('"+ Conf.PROJRCT_NAME+"','"+regression.getBugId()+"','"+regression.getBfcId()+"','"+regression.getBuggyId()+"','"+regression.getBicId()+"','"+regression.getWorkId()+"','"+regression.getBfcDirPath()+"','"+regression.getBuggyDirPath()+"'," +
                 "'"+regression.getBicDirPath()+"','"+regression.getWorkDirPath()+"','"+regression.getTestCase()+"')";
-        MysqlManager.executeSql(sql);
+        MysqlManager.executeUpdate(sql);
     }
 }
