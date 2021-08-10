@@ -8,7 +8,7 @@ import regminer.git.provider.Provider;
 import regminer.miner.PotentialBFCDetector;
 import regminer.miner.RelatedTestCaseParser;
 import regminer.miner.migrate.BICFinder;
-import regminer.miner.migrate.TestCaseDeterminer;
+import regminer.miner.migrate.BFCEvaluator;
 import regminer.model.PotentialRFC;
 import regminer.model.Regression;
 import regminer.monitor.ProgressMonitor;
@@ -55,25 +55,26 @@ public class Miner {
 
     public static void singleThreadHandle() throws Exception {
         // 工具类准备,1)测试方法查找 2)测试用例确定 3)BIC查找
-        RelatedTestCaseParser rTCParser = new RelatedTestCaseParser(repo);
-        TestCaseDeterminer tm = new TestCaseDeterminer(repo);
+        RelatedTestCaseParser rTCParser = new RelatedTestCaseParser();
+        BFCEvaluator tm = new BFCEvaluator(repo);
         BICFinder finder = new BICFinder();
         // 声明一些辅助变量
-        int z = 0;
         float i = 0;
         float j = (float) pRFCs.size();
-
+        System.out.println("origin bfc number "+j);
+        FileUtilx.log("###############Start BFC SCORE EVOLUTION###########################");
+        tm.evoluteBFCList(pRFCs);
+        j = (float) pRFCs.size();
+        System.out.println("After evolution bfc number "+j);
+        FileUtilx.log("#######################END EVOLUTION###############################");
         // 开始遍历每一个 Potential BFC
         Iterator<PotentialRFC> iterator = pRFCs.iterator();
+        FileUtilx.log("########################Start################################");
         while (iterator.hasNext()) {
             PotentialRFC pRfc = iterator.next();
             i++;
             FileUtilx.log(i / j + "%");
-            // 解析有哪些测试方法
-            rTCParser.parseTestCases(pRfc);
-            // 确定被解析的方法那些是真实的测试用例
             // TODO 此处的方法和类之间的affix按照mvn的习惯用"#"连接,没有配置子项目
-            tm.determine(pRfc);
             if (pRfc.getTestCaseFiles().size() == 0) { // 找不到测试用例直接跳过
                 iterator.remove();
             } else {
@@ -101,8 +102,8 @@ public class Miner {
             }
             ProgressMonitor.addDone(pRfc.getCommit().getName());
         }
+        FileUtilx.log("########################END SEARCH################################");
         //此处log的bfc到bfc-1的数量成功率
-        FileUtilx.log("成功" + ExperResult.numSuc + "个，共" + j + "个: " + ExperResult.numSuc / j);
 //		FileUtilx.log("classNotFind " + ExperResult.classNotFind + "methodNotFind " + ExperResult.methodNotFind
 //				+ "packageNotExits " + ExperResult.packageNotExits + "packageNotFind " + ExperResult.packageNotFind
 //				+ "symbolNotFind " + ExperResult.symbolNotFind + "unknow " + ExperResult.unknow + "variableNotFind "
@@ -130,8 +131,8 @@ public class Miner {
         }
 
         public void threadCoreTask() {
-            RelatedTestCaseParser rTCParser = new RelatedTestCaseParser(repo);
-            TestCaseDeterminer tm = new TestCaseDeterminer(repo);
+            RelatedTestCaseParser rTCParser = new RelatedTestCaseParser();
+            BFCEvaluator tm = new BFCEvaluator(repo);
             BICFinder finder = new BICFinder();
             while (true) {
                 PotentialRFC pRFC;
@@ -147,7 +148,7 @@ public class Miner {
                     // 确定被解析的方法那些是真实的测试用例
                     // TODO 此处的方法和类之间的affix按照mvn的习惯用"#"连接,也没有配置子项目
                     rTCParser.parseTestCases(pRFC);
-                    tm.determine(pRFC);
+                    tm.evolute(pRFC);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

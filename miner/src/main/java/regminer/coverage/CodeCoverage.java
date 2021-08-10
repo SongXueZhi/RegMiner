@@ -59,6 +59,7 @@ public class CodeCoverage {
             List<Element> methodNodeList = getAllMethodNode(classNodeList);
             return getCoverNodeList(methodNodeList);
         } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
 

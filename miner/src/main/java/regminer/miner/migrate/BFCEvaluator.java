@@ -9,11 +9,10 @@ import regminer.coverage.CodeCoverage;
 import regminer.coverage.model.CoverNode;
 import regminer.finalize.SycFileCleanup;
 import regminer.maven.JacocoMavenManager;
+import regminer.miner.RelatedTestCaseParser;
+import regminer.model.*;
 import regminer.model.ChangedFile.Type;
 import regminer.model.MigrateItem.MigrateFailureType;
-import regminer.model.PotentialRFC;
-import regminer.model.RelatedTestCase;
-import regminer.model.TestFile;
 import regminer.utils.CompilationUtil;
 import regminer.utils.FileUtilx;
 
@@ -21,32 +20,71 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class TestCaseDeterminer extends Migrator {
-    final static int COVER_THRESHOLD = 3;
-    int i = 0;
-    int j = 0;
+public class BFCEvaluator extends Migrator {
+
+    final static double COVER_THRESHOLD = 0.4;
     Repository repo;
     String projectName = Conf.PROJRCT_NAME;
     JacocoMavenManager jacocoMavenManager = new JacocoMavenManager();
     CodeCoverage codeCoverage = new CodeCoverage();
     BFCTracker tracker = new BFCTracker();
+    RelatedTestCaseParser testCaseParser = new RelatedTestCaseParser();
 
-    public TestCaseDeterminer(Repository repo) {
+    public BFCEvaluator(Repository repo) {
         this.repo = repo;
     }
 
-    public void determine(PotentialRFC pRFC) throws Exception {
-
-        // 1.准备BFC
-        String bfcID = pRFC.getCommit().getName();
-        FileUtilx.log(bfcID + "开始执行测试约减");
-        File bfcDirectory = checkout(bfcID, bfcID, "bfc");
-        pRFC.fileMap.put(bfcID, bfcDirectory); // 管理每一个commit的文件路径
-
-        // 2.准备BFCP
-        if (pRFC.getCommit().getParentCount() <= 0) { // 首先判断BFCP是否存在
-            emptyCache(bfcID);
+    /**
+     * Firstly,checkout BFC ,and manage BFC DIR In the map
+     * Then try the code coverage feature
+     * sort BFC
+     *
+     * @param potentialRFCList
+     */
+    public void evoluteBFCList(List<PotentialRFC> potentialRFCList) {
+        Iterator<PotentialRFC> iterator = potentialRFCList.iterator();
+        while (iterator.hasNext()) {
+            PotentialRFC potentialRFC = iterator.next();
+            try {
+                evolute(potentialRFC);
+                if (potentialRFC.getTestCaseFiles().size() <= 0) {
+                    iterator.remove();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                iterator.remove();
+            }
         }
+        if (Conf.code_cover) {
+            Collections.sort(potentialRFCList, new Comparator<PotentialRFC>() {
+                @Override
+                public int compare(PotentialRFC t0, PotentialRFC t1) {
+                    return t1.getScore().compareTo(t0.getScore());
+                }
+            });
+        }
+    }
+
+    public void evolute(PotentialRFC pRFC) throws Exception {
+
+        // 1.checkout bfc
+        String bfcID = pRFC.getCommit().getName();
+        FileUtilx.log(bfcID + " checkout ");
+        File bfcDirectory = checkout(bfcID, bfcID, "bfc");
+        pRFC.fileMap.put(bfcID, bfcDirectory);
+
+        //2. parser Testcase
+        testCaseParser.parseTestCases(pRFC);
+
+        // 3. verity have bfc~1
+        if (pRFC.getCommit().getParentCount() <= 0) {
+            FileUtilx.log("BFC no parent");
+            pRFC.getTestCaseFiles().clear();
+            emptyCache(bfcID);
+            return;
+        }
+
+        //4. checkout bfc~1
         String bfcpID = pRFC.getCommit().getParent(0).getName();
         File bfcpDirectory = checkout(bfcID, bfcpID, "bfcp");// 管理每一个commit的文件路径
         pRFC.fileMap.put(bfcpID, bfcpDirectory);
@@ -56,33 +94,40 @@ public class TestCaseDeterminer extends Migrator {
         // 因为后续BFC的测试用例确认会删除一些TESTFILE,所以先迁移
         copyToTarget(pRFC, bfcpDirectory);
 
-        // 4.编译BFC
+        // 4.compile BFC
         if (!comiple(bfcDirectory, false)) {
             pRFC.getTestCaseFiles().clear();
-            FileUtilx.log("BFC构建失败");
+            FileUtilx.log("BFC compile error");
             emptyCache(bfcID);
             return;
         }
 
         // 5. 测试BFC中的每一个待测试方法
         if (Conf.code_cover) {
-           if(!testWithJacoco(bfcDirectory,pRFC)){
-               return;
-           }
+            double rfcProb = testWithJacoco(bfcDirectory, pRFC);
+            if ( rfcProb < COVER_THRESHOLD) {
+                pRFC.setScore(-1.0);
+                pRFC.getTestCaseFiles().clear();
+                emptyCache(bfcID);
+                FileUtilx.log("rfcScore smaller than 0.4");
+                return;
+            } else {
+                pRFC.setScore(rfcProb);
+            }
         } else {
             testBFC(bfcDirectory, pRFC);
         }
 
         if (pRFC.getTestCaseFiles().size() <= 0) {
-            FileUtilx.log("BFC 没有测试成功的方法");
+            FileUtilx.log("BFC all test fal");
             emptyCache(bfcID);
             return;
         }
 
         // 7.编译并测试BFCP
-        if (!comiple(bfcpDirectory, true)) {
+        if (!comiple(bfcpDirectory, false)) {
             pRFC.getTestCaseFiles().clear();
-            FileUtilx.log("BFCp迁移后编译失败");
+            FileUtilx.log("BFC~1 compile error");
             emptyCache(bfcID);
             return;
         }
@@ -93,32 +138,32 @@ public class TestCaseDeterminer extends Migrator {
             ExperResult.numSuc++;
             //删除无关的测试用例
             purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
-            FileUtilx.log("迁移成功" + result);
+            FileUtilx.log("bfc~1 test fal" + result+" rfcScore: "+pRFC.getScore());
         } else {
-            FileUtilx.log("迁移失败" + result);
+            FileUtilx.log("bfc test success" + result);
             emptyCache(bfcID);
             return;
         }
         pRFC.setBuggyCommitId(bfcpID);
         exec.setDirectory(new File(Conf.PROJECT_PATH));
-//		ExperResult.numSuc++;
     }
 
-    public boolean testWithJacoco(File bfcDirectory, PotentialRFC pRFC) throws Exception {
+
+    public double testWithJacoco(File bfcDirectory, PotentialRFC pRFC) throws Exception {
         //add Jacoco plugin
         try {
             jacocoMavenManager.addJacocoFeatureToMaven(bfcDirectory);
         } catch (Exception e) {
-            return true;
+            e.printStackTrace();
+            return -1;
         }
         testBFC(bfcDirectory, pRFC);
         // git test coverage methods
         List<CoverNode> coverNodeList = codeCoverage.readJacocoReports(bfcDirectory);
-        if(coverNodeList == null){
-            return true;
+        if (coverNodeList == null) {
+            return -1;
         }
-        float cmfr = tracker.effectiveMethodAverageCoverage(tracker.handleTasks(coverNodeList, bfcDirectory));
-        return cmfr > COVER_THRESHOLD;
+        return tracker.regressionProbCalculate(tracker.handleTasks(coverNodeList, bfcDirectory));
     }
 
     public boolean comiple(File file, boolean record) throws Exception {

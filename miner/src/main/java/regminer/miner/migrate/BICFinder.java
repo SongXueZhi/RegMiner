@@ -67,6 +67,7 @@ public class BICFinder {
      * @return
      */
     public Regression searchBIC(@NotNull PotentialRFC pRFC) {
+        FileUtilx.log(pRFC.getCommit().getName()+" Start search");
         // 预防方法被错误的调用
         // 情况1 search时候bfc没有确定的测试用例
         List<TestFile> testSuites = pRFC.getTestCaseFiles();
@@ -164,7 +165,7 @@ public class BICFinder {
     public int recursionBinarySearch(String[] arr, int low, int high) {
 
         if (low > high) {
-            FileUtilx.log("查找失败");
+            FileUtilx.log("search fal");
             return -1;
         }
 
@@ -175,7 +176,7 @@ public class BICFinder {
         int b = test(arr[middle - 1], middle);
         boolean result1 = b == TestCaseMigrator.PASS;
         if (result && result1) {
-            FileUtilx.log("回归+1");
+            FileUtilx.log("regression+1");
             return middle;
         }
         if (result) {
@@ -198,7 +199,7 @@ public class BICFinder {
     public int search(String[] arr, int low, int high) {
         // 失败条件
         if (low > high || low < 0 || high > arr.length - 1) {
-            FileUtilx.log("查找失败");
+            FileUtilx.log("search fal");
             return -1;
         }
 
@@ -208,12 +209,12 @@ public class BICFinder {
 
         if (statu == TestCaseMigrator.FAL && middle - 1 > 0
                 && getTestResult(arr[middle - 1], middle - 1) == TestCaseMigrator.PASS) {
-            FileUtilx.log("回归+1");
+            FileUtilx.log("regression+1");
             return middle - 1;
         }
         if (statu == TestCaseMigrator.PASS && middle + 1 < arr.length
                 && getTestResult(arr[middle + 1], middle + 1) == TestCaseMigrator.FAL) {
-            FileUtilx.log("回归+1");
+            FileUtilx.log("regression+1");
             return middle;
         }
 
@@ -245,7 +246,7 @@ public class BICFinder {
                     return b;
                 }
             }
-            FileUtilx.log("查找失败");
+            FileUtilx.log("search fal");
             return -1;
         } else if (statu == TestCaseMigrator.FAL) {
             // notest 等unresolved的情况都乐观的往右

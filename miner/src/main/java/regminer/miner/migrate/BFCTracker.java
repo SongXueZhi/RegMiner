@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 public class BFCTracker {
+    private final static double PROB_UNIT = 0.005;
+    private double notRegProb = 1-PROB_UNIT;
     GitTracker gitTracker =new GitTracker();
     public HashMap<String,Integer> handleTasks(List<CoverNode> coverNodes, File bfcDir) {
         HashMap<String,Integer> methodFrequencyMap =new HashMap<>();
@@ -47,17 +49,17 @@ public class BFCTracker {
         }
         return methodFrequencyMap;
     }
-    public float effectiveMethodAverageCoverage(HashMap<String,Integer> methodFrequencyMap){
-        float eNum =0l;
-        float sum =0l;
+    public double regressionProbCalculate(HashMap<String,Integer> methodFrequencyMap){
+        double commitNotRFCProb = 1;
         for (Map.Entry<String, Integer> entry : methodFrequencyMap.entrySet()) {
             int frequency = entry.getValue();
-           if(entry.getValue() >2){
-               eNum++;
-               sum+=frequency;
+            if (frequency < 20){
+                continue;
+            }
+             double methodNotRegressionProb = Math.pow(notRegProb,frequency);
+             commitNotRFCProb = commitNotRFCProb*methodNotRegressionProb;
            }
-        }
-        return sum == 0l ? 0l:(sum/eNum);
+        return 1 - commitNotRFCProb;
     }
     private int  trackBFC(File bfcDir,String classFilePath,String methodName) {
         try {

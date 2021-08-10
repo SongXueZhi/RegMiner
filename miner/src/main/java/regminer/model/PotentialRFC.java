@@ -13,11 +13,26 @@ public class PotentialRFC {
     private final RevCommit commit;
     private String buggyCommitId;
     private int priority;
+    private int testcaseFrom;
+    private Double score;
+    public final static int TESTCASE_FROM_SELF = 0;
+    public final static int TESTCASE_FROM_SEARCH =1;
+
     private List<NormalFile> normalJavaFiles; //which contains fix path
     private List<TestFile> testCaseFiles;    // All File Under test dir
     private final List<TestFile> testRelates = new ArrayList<TestFile>(); //under test dir but not testcase
     private List<SourceFile> sourceFiles = new ArrayList<>(); //config file or data for test
 
+    private List<PotentialTestCase> potentialTestCaseList;
+
+
+    public List<PotentialTestCase> getPotentialTestCaseList() {
+        return potentialTestCaseList;
+    }
+
+    public void setPotentialTestCaseList(List<PotentialTestCase> potentialTestCaseList) {
+        this.potentialTestCaseList = potentialTestCaseList;
+    }
 
     public PotentialRFC(RevCommit commit) {
         this.commit = commit;
@@ -43,12 +58,6 @@ public class PotentialRFC {
         this.testCaseFiles = testCaseFiles;
     }
 
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-
     public List<TestFile> getTestRelates() {
         return testRelates;
     }
@@ -61,7 +70,13 @@ public class PotentialRFC {
     public void setSourceFiles(List<SourceFile> sourceFiles) {
         this.sourceFiles = sourceFiles;
     }
+    public Double getScore() {
+        return score;
+    }
 
+    public void setScore(Double score) {
+        this.score = score;
+    }
     public String getBuggyCommitId() {
         return buggyCommitId;
     }
@@ -70,4 +85,11 @@ public class PotentialRFC {
         this.buggyCommitId = buggyCommitId;
     }
 
+    public int getTestcaseFrom() {
+        return testcaseFrom;
+    }
+
+    public void setTestcaseFrom(int testcaseFrom) {
+        this.testcaseFrom = testcaseFrom;
+    }
 }

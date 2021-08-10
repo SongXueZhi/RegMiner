@@ -1,21 +1,19 @@
 package regminer.model;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class PotentialTestCase {
-	String commitId;
+
+
+	List<TestFile> testFiles;
+	List<SourceFile> sourceFiles;
 	int level;
-	
-	public PotentialTestCase(String commitId,int index) {
-		this.commitId=commitId;
+	public Map<String, File> fileMap = new HashMap();
+	public PotentialTestCase(int index) {
 		this.level=index;
-	}
-	
-
-	public String getCommitId() {
-		return commitId;
-	}
-
-	public void setCommitId(String commitId) {
-		this.commitId = commitId;
 	}
 
 	public int getIndex() {
@@ -24,5 +22,21 @@ public class PotentialTestCase {
 
 	public void setIndex(int index) {
 		this.level = index;
+	}
+
+	public List<TestFile> getTestFiles() {
+		return testFiles;
+	}
+
+	public void setTestFiles(List<TestFile> testFiles) {
+		this.testFiles = testFiles;
+	}
+
+	public List<SourceFile> getSourceFiles() {
+		return sourceFiles;
+	}
+
+	public void setSourceFiles(List<SourceFile> sourceFiles) {
+		this.sourceFiles = sourceFiles;
 	}
 }

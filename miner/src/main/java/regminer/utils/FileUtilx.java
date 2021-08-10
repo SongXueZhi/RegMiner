@@ -77,6 +77,26 @@ public class FileUtilx {
         return result;
     }
 
+    public static String readContentFromFile(File file) {
+        String result = null;
+        try {
+            InputStream is = new FileInputStream(file);
+            if (file.exists() && file.isFile()) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                StringBuffer sb2 = new StringBuffer();
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    sb2.append(line + "\n");
+                }
+                br.close();
+                result = sb2.toString();
+            }
+        } catch (Exception e) {
+
+        }
+        return result;
+    }
+
     public static Set<String> readSetFromFile(String path) {
         Set<String> result = new HashSet<>();
         File file = new File(path);

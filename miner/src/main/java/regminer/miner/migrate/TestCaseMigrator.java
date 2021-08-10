@@ -22,7 +22,7 @@ public class TestCaseMigrator extends Migrator {
 
 
     public void migrate(@NotNull PotentialRFC pRFC, @NotNull Set<String> bicSet) {
-        FileUtilx.log(pRFC.getCommit().getName() + " 开始迁移bic");
+        FileUtilx.log("Time index: "+pRFC.getCommit().getName());
         for (String bic : bicSet) {
             try {
                 migrate(pRFC, bic);
@@ -42,7 +42,7 @@ public class TestCaseMigrator extends Migrator {
             int a = testSuite(bicDirectory, pRFC.getTestCaseFiles());
             return a;
         } else {
-            FileUtilx.log("迁移后编译失败");
+            FileUtilx.log(" CE ");
             return CE;
         }
     }
@@ -95,7 +95,7 @@ public class TestCaseMigrator extends Migrator {
                 result1 = true;
             }
         }
-        FileUtilx.log("测试bic " + sj);
+        FileUtilx.log("Test bic " + sj);
         if (result1) {
             FileUtilx.log("PASS");
             return PASS;
