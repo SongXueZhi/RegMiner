@@ -15,7 +15,7 @@ import regminer.utils.FileUtilx;
 //获取每一个测试文件中的测试方法（暂时不用），并且过滤测试文件是否真实
 //如果不包含junit或者@test则移除
 //过滤完成后，如果若有测试文件都被移除，则pRFC移除
-public class RelatedTestCaseParser extends PotentialBFCDetector {
+public class RelatedTestCaseParser  {
 
     public void handlePotentialTestFile(@NotNull List<PotentialTestCase> potentialTestCaseList, File bfcDir,PotentialRFC pRFC){
         for (PotentialTestCase potentialTestCase : potentialTestCaseList) {

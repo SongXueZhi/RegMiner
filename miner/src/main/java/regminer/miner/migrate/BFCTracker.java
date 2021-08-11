@@ -31,48 +31,51 @@ import java.util.Map;
 
 public class BFCTracker {
     private final static double PROB_UNIT = 0.005;
-    private double notRegProb = 1-PROB_UNIT;
-    GitTracker gitTracker =new GitTracker();
-    public HashMap<String,Integer> handleTasks(List<CoverNode> coverNodes, File bfcDir) {
-        HashMap<String,Integer> methodFrequencyMap =new HashMap<>();
+    private double notRegProb = 1 - PROB_UNIT;
+    GitTracker gitTracker = new GitTracker();
+
+    public HashMap<String, Integer> handleTasks(List<CoverNode> coverNodes, File bfcDir) {
+        HashMap<String, Integer> methodFrequencyMap = new HashMap<>();
         List<String> javaFiles = Arrays.asList(CodeUtil.getJavaFiles(bfcDir));
         gitTracker.addJavaAttibuteToGit(bfcDir);
         for (CoverNode coverNode : coverNodes) {
             String methodName = coverNode.getCoverMethod().getName();
-            String packageAndClassPath = coverNode.getCoverPackage().getName()+File.separator+coverNode.getCoverClass().getFileName();
-            String classPath = getJavaFilePath(javaFiles,packageAndClassPath);
+            String packageAndClassPath = coverNode.getCoverPackage().getName() + File.separator + coverNode.getCoverClass().getFileName();
+            String classPath = getJavaFilePath(javaFiles, packageAndClassPath);
             int frequency = 0;
-            if (classPath != null){
-                frequency=trackBFC(bfcDir,classPath,methodName);
+            if (classPath != null) {
+                frequency = trackBFC(bfcDir, classPath, methodName);
             }
-          methodFrequencyMap.put(packageAndClassPath+"#"+methodName,frequency);
+            methodFrequencyMap.put(packageAndClassPath + "#" + methodName, frequency);
         }
         return methodFrequencyMap;
     }
-    public double regressionProbCalculate(HashMap<String,Integer> methodFrequencyMap){
-        double commitNotRFCProb = 1;
+
+    public double regressionProbCalculate(HashMap<String, Integer> methodFrequencyMap) {
+        int sum = 0;
         for (Map.Entry<String, Integer> entry : methodFrequencyMap.entrySet()) {
             int frequency = entry.getValue();
-            if (frequency < 20){
-                continue;
+            if(frequency > 0 ){
+                frequency =frequency-1;
             }
-             double methodNotRegressionProb = Math.pow(notRegProb,frequency);
-             commitNotRFCProb = commitNotRFCProb*methodNotRegressionProb;
-           }
-        return 1 - commitNotRFCProb;
+            sum += frequency;
+        }
+        double methodNotRegressionProb = Math.pow(notRegProb, sum);
+        return 1 - methodNotRegressionProb;
     }
-    private int  trackBFC(File bfcDir,String classFilePath,String methodName) {
+
+    private int trackBFC(File bfcDir, String classFilePath, String methodName) {
         try {
-            return gitTracker.trackFunctionByGitBlogL(methodName,classFilePath,bfcDir);
+            return gitTracker.trackFunctionByGitBlogL(methodName, classFilePath, bfcDir);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return  0;
+        return 0;
     }
 
-    private  String getJavaFilePath(List<String> javaFiles,String packageAndClassPath){
-        for (String filePath : javaFiles){
-            if (filePath.contains(packageAndClassPath)){
+    private String getJavaFilePath(List<String> javaFiles, String packageAndClassPath) {
+        for (String filePath : javaFiles) {
+            if (filePath.contains(packageAndClassPath)) {
                 return filePath;
             }
         }

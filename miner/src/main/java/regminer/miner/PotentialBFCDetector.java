@@ -32,9 +32,6 @@ public class PotentialBFCDetector {
     private Repository repo;
     private Git git;
 
-    public PotentialBFCDetector() {
-
-    }
 
     public PotentialBFCDetector(Repository repo, Git git) {
         this.repo = repo;

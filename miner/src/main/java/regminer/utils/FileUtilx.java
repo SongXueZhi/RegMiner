@@ -40,7 +40,13 @@ public class FileUtilx {
             e.printStackTrace();
         }
     }
-
+    public static synchronized void apendResultToFile(String line,File file) {
+        try {
+            FileUtils.writeStringToFile(file, line + "\n", true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     @SuppressWarnings("deprecation")
     public static synchronized void log(String block) {
         File file = new File(Conf.PROJECT_PATH + File.separator + "log" + Thread.currentThread().getName());

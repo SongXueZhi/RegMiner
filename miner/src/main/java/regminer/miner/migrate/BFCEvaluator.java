@@ -3,6 +3,7 @@ package regminer.miner.migrate;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.*;
 import org.eclipse.jgit.lib.Repository;
+import org.jetbrains.annotations.NotNull;
 import regminer.constant.Conf;
 import regminer.constant.ExperResult;
 import regminer.coverage.CodeCoverage;
@@ -22,7 +23,6 @@ import java.util.*;
 
 public class BFCEvaluator extends Migrator {
 
-    final static double COVER_THRESHOLD = 0.4;
     Repository repo;
     String projectName = Conf.PROJRCT_NAME;
     JacocoMavenManager jacocoMavenManager = new JacocoMavenManager();
@@ -103,20 +103,7 @@ public class BFCEvaluator extends Migrator {
         }
 
         // 5. 测试BFC中的每一个待测试方法
-        if (Conf.code_cover) {
-            double rfcProb = testWithJacoco(bfcDirectory, pRFC);
-            if ( rfcProb < COVER_THRESHOLD) {
-                pRFC.setScore(-1.0);
-                pRFC.getTestCaseFiles().clear();
-                emptyCache(bfcID);
-                FileUtilx.log("rfcScore smaller than 0.4");
-                return;
-            } else {
-                pRFC.setScore(rfcProb);
-            }
-        } else {
-            testBFC(bfcDirectory, pRFC);
-        }
+        testBFC(bfcDirectory, pRFC);
 
         if (pRFC.getTestCaseFiles().size() <= 0) {
             FileUtilx.log("BFC all test fal");
@@ -138,18 +125,41 @@ public class BFCEvaluator extends Migrator {
             ExperResult.numSuc++;
             //删除无关的测试用例
             purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
-            FileUtilx.log("bfc~1 test fal" + result+" rfcScore: "+pRFC.getScore());
+            FileUtilx.log("bfc~1 test fal" + result);
         } else {
             FileUtilx.log("bfc test success" + result);
             emptyCache(bfcID);
             return;
         }
+
+        // Test buggy test in BFC get Method coverage
+        if (Conf.code_cover) {
+            double rfcProb = testWithJacoco(bfcDirectory, pRFC.getTestCaseFiles());
+            pRFC.setScore(rfcProb);
+            FileUtilx.apendResultToFile(bfcID+","+rfcProb+","+combinedRegressionTestResult(pRFC),new File("bfcscore.csv"));
+            emptyCache(bfcID);
+        }
+
         pRFC.setBuggyCommitId(bfcpID);
         exec.setDirectory(new File(Conf.PROJECT_PATH));
     }
-
-
-    public double testWithJacoco(File bfcDirectory, PotentialRFC pRFC) throws Exception {
+    public String combinedRegressionTestResult(PotentialRFC pRFC) {
+        StringJoiner sj = new StringJoiner(";", "", "");
+        for (TestFile tc : pRFC.getTestCaseFiles()) {
+            Map<String, RelatedTestCase> methodMap = tc.getTestMethodMap();
+            if (methodMap == null) {
+                continue;
+            }
+            for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
+                Map.Entry<String, RelatedTestCase> entry = it.next();
+                String testCase = tc.getQualityClassName() + Conf.methodClassLinkSymbolForTest
+                        + entry.getKey().split("[(]")[0];
+                sj.add(testCase);
+            }
+        }
+        return sj.toString();
+    }
+    public double testWithJacoco(File bfcDirectory, List<TestFile> testFiles) throws Exception {
         //add Jacoco plugin
         try {
             jacocoMavenManager.addJacocoFeatureToMaven(bfcDirectory);
@@ -157,7 +167,7 @@ public class BFCEvaluator extends Migrator {
             e.printStackTrace();
             return -1;
         }
-        testBFC(bfcDirectory, pRFC);
+        testSuite(bfcDirectory, testFiles);
         // git test coverage methods
         List<CoverNode> coverNodeList = codeCoverage.readJacocoReports(bfcDirectory);
         if (coverNodeList == null) {
@@ -305,4 +315,23 @@ public class BFCEvaluator extends Migrator {
         }
     }
 
+    public void testSuite(File file, @NotNull List<TestFile> testSuites) throws Exception {
+        exec.setDirectory(file);
+        Iterator<TestFile> iterator = testSuites.iterator();
+        while (iterator.hasNext()) {
+            TestFile testSuite = iterator.next();
+            testMethod(testSuite);
+        }
+
+    }
+
+    public void testMethod(@NotNull TestFile testSuite) throws Exception {
+        Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
+        for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<String, RelatedTestCase> entry = it.next();
+            String testCase = testSuite.getQualityClassName() + Conf.methodClassLinkSymbolForTest
+                    + entry.getKey().split("[(]")[0];
+            exec.execTestWithResult(Conf.testLine + testCase);
+        }
+    }
 }

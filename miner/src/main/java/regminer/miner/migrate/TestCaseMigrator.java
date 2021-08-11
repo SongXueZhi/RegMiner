@@ -52,7 +52,7 @@ public class TestCaseMigrator extends Migrator {
         return exec.execBuildWithResult(Conf.compileLine, record);
     }
 
-    public int testSuite(File file, @org.jetbrains.annotations.NotNull List<TestFile> testSuites) throws Exception {
+    public int testSuite(File file, @NotNull List<TestFile> testSuites) throws Exception {
         exec.setDirectory(file);
         StringJoiner sj = new StringJoiner(";", "[", "]");
         Iterator<TestFile> iterator = testSuites.iterator();
