@@ -294,20 +294,19 @@ public class PotentialBFCDetector {
                 pRFC.setNormalJavaFiles(normalJavaFiles);
                 pRFC.setSourceFiles(sourceFiles);
                 potentialRFCs.add(pRFC);
+            } else if (justNormalJavaFile(files) && (message1.contains("fix") || message1.contains("close"))) {
+//				针对只标题只包含fix但是修改的文件路径中没有测试用例的提交
+//				我们将在(c-3,c+3) 的范围内检索可能的测试用例
+//				[TODO] songxuezhi
+                List<PotentialTestCase> pls = findTestCommit(commit);
+                if (pls != null && pls.size() > 0) {
+                    PotentialRFC pRFC = new PotentialRFC(commit);
+                    pRFC.setNormalJavaFiles(normalJavaFiles);
+                    pRFC.setTestcaseFrom(PotentialRFC.TESTCASE_FROM_SEARCH);
+                    pRFC.setPotentialTestCaseList(pls);
+                    potentialRFCs.add(pRFC);
+                }
             }
-//            } else if (justNormalJavaFile(files) && (message1.contains("fix") || message1.contains("close"))) {
-////				针对只标题只包含fix但是修改的文件路径中没有测试用例的提交
-////				我们将在(c-3,c+3) 的范围内检索可能的测试用例
-////				[TODO] songxuezhi
-//                List<PotentialTestCase> pls = findTestCommit(commit);
-//                if (pls != null && pls.size() > 0) {
-//                    PotentialRFC pRFC = new PotentialRFC(commit);
-//                    pRFC.setNormalJavaFiles(normalJavaFiles);
-//                    pRFC.setTestcaseFrom(PotentialRFC.TESTCASE_FROM_SEARCH);
-//                    pRFC.setPotentialTestCaseList(pls);
-//                    potentialRFCs.add(pRFC);
-//                }
-//            }
         }
     }
 
@@ -369,13 +368,13 @@ public class PotentialBFCDetector {
         potentialTestCase.setSourceFiles(sourceFiles);
 
         if (index > 0) {
-            saveChangedFile(files,commit, potentialTestCase);
+            savePotentialTestFile(files,commit, potentialTestCase);
         }
         potentialTestCaseList.add(potentialTestCase);
 
     }
 
-    private void saveChangedFile(List<ChangedFile> files,RevCommit commit, PotentialTestCase potentialTestCase) {
+    private void savePotentialTestFile(List<ChangedFile> files,RevCommit commit, PotentialTestCase potentialTestCase) {
         for (ChangedFile changedFile : files) {
             String filePath = changedFile.getNewPath();
             if (!filePath.equals(Constant.NONE_PATH)) {
