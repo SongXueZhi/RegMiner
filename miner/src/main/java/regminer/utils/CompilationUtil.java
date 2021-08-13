@@ -6,11 +6,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.*;
 
 import regminer.ast.JdtMethodRetriever;
 import regminer.ast.JdtClassRetriever;
@@ -37,6 +33,9 @@ public class CompilationUtil {
 		unit.accept(retriever);
 		List<MethodDeclaration> methodNodes = retriever.getMemberList();
 		for (ASTNode node : methodNodes) {
+		    if (!(node.getParent().getParent() instanceof CompilationUnit) ){
+		        continue;
+            }
 			MethodDeclaration methodDeclaration = (MethodDeclaration) node;
 			String simpleName = methodDeclaration.getName().toString();
 			List<ASTNode> parameters = methodDeclaration.parameters();
