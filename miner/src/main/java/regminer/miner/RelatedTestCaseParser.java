@@ -94,7 +94,7 @@ public class RelatedTestCaseParser  {
 
     //
     private void match(Edit edit, Methodx method, Map<String, RelatedTestCase> testCaseMap) {
-        int editStart = edit.getBeginB();
+        int editStart = edit.getBeginB()+1;
         int editEnd = edit.getEndB();
 
         int methodStart = method.getStartLine();

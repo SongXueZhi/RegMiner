@@ -207,7 +207,7 @@ public class BICFinder {
         // 查找成功条件
         int statu = getTestResult(arr[middle], middle);
 
-        if (statu == TestCaseMigrator.FAL && middle - 1 > 0
+        if (statu == TestCaseMigrator.FAL && middle - 1 >= 0
                 && getTestResult(arr[middle - 1], middle - 1) == TestCaseMigrator.PASS) {
             FileUtilx.log("regression+1");
             return middle - 1;
@@ -225,7 +225,7 @@ public class BICFinder {
 
             if (left != -1 && getTestResult(arr[left], left) == TestCaseMigrator.FAL) {
                 // 往附近看一眼
-                if (middle - 1 > 0 && getTestResult(arr[left - 1], left - 1) == TestCaseMigrator.PASS) {
+                if (middle - 1 >= 0 && getTestResult(arr[left - 1], left - 1) == TestCaseMigrator.PASS) {
                     return left - 1;
                 }
                 // 左边界开始新的查找
