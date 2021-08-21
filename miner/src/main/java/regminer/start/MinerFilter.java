@@ -31,6 +31,7 @@ public class MinerFilter {
 
     public static void main(String[] args) throws Exception {
         MinerFilter minerFilter = new  MinerFilter();
+        minerFilter.prepare();
         minerFilter.handleTask();
     }
 }
