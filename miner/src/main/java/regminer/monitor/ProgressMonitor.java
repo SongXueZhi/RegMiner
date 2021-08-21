@@ -22,8 +22,8 @@ public class ProgressMonitor {
 
 	public static void load() {
 		doneTaskList = FileUtilx.readSetFromFile(Conf.PROJECT_PATH + File.separator + "progress.details");
-		Set<String> regressionsInSql =new BugRetrieve().getRegressionsFromDB();
-		doneTaskList.addAll(regressionsInSql);
+//		Set<String> regressionsInSql =new BugRetrieve().getRegressionsFromDB();
+//		doneTaskList.addAll(regressionsInSql);
 	}
 
 	public static void rePlan(List<PotentialRFC> pRFCs) {
