@@ -94,15 +94,15 @@ public class RelatedTestCaseParser  {
 
     //
     private void match(Edit edit, Methodx method, Map<String, RelatedTestCase> testCaseMap) {
-        int editStart = edit.getBeginB();
+        int editStart = edit.getBeginB()+1;
         int editEnd = edit.getEndB();
 
         int methodStart = method.getStartLine();
         int methodStop = method.getStopLine();
 
-        if (editStart <= methodStart && editEnd >= methodStop || editStart >= methodStart && editEnd <= methodStop
-                || editEnd >= methodStart && editEnd <= methodStop
-                || editStart >= methodStart && editStart <= methodStop) {
+        if ((editStart <= methodStart && editEnd >= methodStop) || (editStart >= methodStart && editEnd <= methodStop)
+                || (editEnd >= methodStart && editEnd <= methodStop)
+                || (editStart >= methodStart && editStart <= methodStop)) {
             String name = method.getSignature();
             if (!testCaseMap.containsKey(name)) {
                 RelatedTestCase testCase = new RelatedTestCase();

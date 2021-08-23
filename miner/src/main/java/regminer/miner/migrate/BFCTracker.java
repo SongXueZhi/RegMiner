@@ -18,8 +18,11 @@
 
 package regminer.miner.migrate;
 
+import org.eclipse.jgit.diff.Edit;
 import regminer.coverage.model.CoverNode;
 import regminer.git.GitTracker;
+import regminer.model.NormalFile;
+import regminer.model.PotentialRFC;
 import regminer.utils.CodeUtil;
 
 
@@ -33,6 +36,29 @@ public class BFCTracker {
     private final static double PROB_UNIT = 0.005;
     private double notRegProb = 1 - PROB_UNIT;
     GitTracker gitTracker = new GitTracker();
+
+    public int trackBFCNormalFiles(PotentialRFC pRFC) {
+        int sum = 0;
+        List<NormalFile> normalJavaFiles = pRFC.getNormalJavaFiles();
+        for (NormalFile normalFile : normalJavaFiles) {
+            sum += trackHunk(normalFile.getEditList(),normalFile.getNewPath(),pRFC.fileMap.get(pRFC.getCommit().getName()));
+        }
+        return sum;
+    }
+
+    public int trackHunk(List<Edit> edits, String path, File bfcDir) {
+        int sum = 0;
+        for (Edit edit : edits) {
+            int start = edit.getBeginB();
+            int end = edit.getEndB();
+            int freq = gitTracker.trackCodeBlockByLogl(start, end, path, bfcDir,false);
+            if (freq > 0) {
+                freq = freq - 1;
+            }
+            sum += freq;
+        }
+        return sum;
+    }
 
     public HashMap<String, Integer> handleTasks(List<CoverNode> coverNodes, File bfcDir) {
         HashMap<String, Integer> methodFrequencyMap = new HashMap<>();
@@ -51,16 +77,8 @@ public class BFCTracker {
         return methodFrequencyMap;
     }
 
-    public double regressionProbCalculate(HashMap<String, Integer> methodFrequencyMap) {
-        int sum = 0;
-        for (Map.Entry<String, Integer> entry : methodFrequencyMap.entrySet()) {
-            int frequency = entry.getValue();
-            if(frequency > 0 ){
-                frequency =frequency-1;
-            }
-            sum += frequency;
-        }
-        double methodNotRegressionProb = Math.pow(notRegProb, sum);
+    public double regressionProbCalculate(PotentialRFC pRFC) {
+        double methodNotRegressionProb = Math.pow(notRegProb, trackBFCNormalFiles(pRFC));
         return 1 - methodNotRegressionProb;
     }
 

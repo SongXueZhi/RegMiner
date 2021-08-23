@@ -7,7 +7,6 @@ import org.eclipse.jgit.diff.Edit;
 public class ChangedFile {
 	private String newPath;
 	private String oldPath;
-	private List<Methodx> methods;
 	private List<Edit> editList;
 	private Type type;
 
@@ -49,13 +48,6 @@ public class ChangedFile {
 		this.newPath = newPath;
 	}
 
-	public List<Methodx> getMethods() {
-		return methods;
-	}
-
-	public void setMethods(List<Methodx> methods) {
-		this.methods = methods;
-	}
 
 	public enum Type {
 		TEST_SUITE, TEST_RELATE, JAVA_FILE, ANOTHER

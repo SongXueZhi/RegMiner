@@ -18,7 +18,7 @@ public class PotentialRFC {
     public final static int TESTCASE_FROM_SELF = 0;
     public final static int TESTCASE_FROM_SEARCH =1;
 
-    private List<NormalFile> normalJavaFiles; //which contains fix path
+    private List<NormalFile> normalFiles; //which contains fix path
     private List<TestFile> testCaseFiles;    // All File Under test dir
     private final List<TestFile> testRelates = new ArrayList<TestFile>(); //under test dir but not testcase
     private List<SourceFile> sourceFiles = new ArrayList<>(); //config file or data for test
@@ -43,11 +43,11 @@ public class PotentialRFC {
     }
 
     public List<NormalFile> getNormalJavaFiles() {
-        return normalJavaFiles;
+        return normalFiles;
     }
 
-    public void setNormalJavaFiles(List<NormalFile> normalJavaFiles) {
-        this.normalJavaFiles = normalJavaFiles;
+    public void setNormalJavaFiles(List<NormalFile> normalFiles) {
+        this.normalFiles = normalFiles;
     }
 
     public List<TestFile> getTestCaseFiles() {

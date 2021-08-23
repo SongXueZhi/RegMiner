@@ -83,7 +83,11 @@ public class BICFinder {
         // 方法主要逻辑
         this.pRFC = pRFC;
         // 获取BFC到Origin的所有CommitID
-        List<String> candidateList = revListCommand(pRFC.getCommit().getParent(0).getName());
+        List<String> candidateList = new ArrayList<>();
+        candidateList.add("cfab1e4fa19755d65de7b81206d86f9e98622d8e");
+        candidateList.add("9ef322c33c465d8ae9a1d854dfa977f47f629009");
+        candidateList.add("5a7a09256e67ae8fde1a407d51fae326b973af9c");
+
         // 得到反转数组,即从Origin到Commit
         Collections.reverse(candidateList);
         String[] arr = candidateList.toArray(new String[candidateList.size()]);
@@ -207,7 +211,7 @@ public class BICFinder {
         // 查找成功条件
         int statu = getTestResult(arr[middle], middle);
 
-        if (statu == TestCaseMigrator.FAL && middle - 1 > 0
+        if (statu == TestCaseMigrator.FAL && middle - 1 >= 0
                 && getTestResult(arr[middle - 1], middle - 1) == TestCaseMigrator.PASS) {
             FileUtilx.log("regression+1");
             return middle - 1;
@@ -225,7 +229,7 @@ public class BICFinder {
 
             if (left != -1 && getTestResult(arr[left], left) == TestCaseMigrator.FAL) {
                 // 往附近看一眼
-                if (middle - 1 > 0 && getTestResult(arr[left - 1], left - 1) == TestCaseMigrator.PASS) {
+                if (middle - 1 >= 0 && getTestResult(arr[left - 1], left - 1) == TestCaseMigrator.PASS) {
                     return left - 1;
                 }
                 // 左边界开始新的查找

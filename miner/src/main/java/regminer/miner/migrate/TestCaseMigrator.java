@@ -1,11 +1,11 @@
 package regminer.miner.migrate;
 
+import org.jetbrains.annotations.NotNull;
 import regminer.constant.Conf;
 import regminer.model.MigrateItem.MigrateFailureType;
 import regminer.model.PotentialRFC;
 import regminer.model.RelatedTestCase;
 import regminer.model.TestFile;
-import org.jetbrains.annotations.NotNull;
 import regminer.utils.FileUtilx;
 
 import java.io.File;
@@ -22,7 +22,7 @@ public class TestCaseMigrator extends Migrator {
 
 
     public void migrate(@NotNull PotentialRFC pRFC, @NotNull Set<String> bicSet) {
-        FileUtilx.log("Time index: "+pRFC.getCommit().getName());
+        FileUtilx.log("Time index: " + pRFC.getCommit().getName());
         for (String bic : bicSet) {
             try {
                 migrate(pRFC, bic);
@@ -36,10 +36,10 @@ public class TestCaseMigrator extends Migrator {
         FileUtilx.log("bic:" + bic);
         File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
         pRFC.fileMap.put(bic, bicDirectory);
-        mergeTwoVersion_BaseLine(pRFC,bicDirectory);
+        mergeTwoVersion_BaseLine(pRFC, bicDirectory);
         // 编译
         if (compile(bicDirectory, true)) {
-            int a = testSuite(bicDirectory, pRFC.getTestCaseFiles());
+            int a = testSuiteOnClass(bicDirectory, pRFC.getTestCaseFiles());
             return a;
         } else {
             FileUtilx.log(" CE ");
@@ -75,6 +75,26 @@ public class TestCaseMigrator extends Migrator {
         } else {
             return UNRESOLVE;
         }
+    }
+
+    public int testSuiteOnClass(File file, @NotNull List<TestFile> testSuites) throws Exception {
+        exec.setDirectory(file);
+        StringJoiner sj = new StringJoiner(";", "[", "]");
+        Iterator<TestFile> iterator = testSuites.iterator();
+        boolean flag = false;
+        while (iterator.hasNext()) {
+            TestFile testSuite = iterator.next();
+            MigrateFailureType testResult = exec.execTestWithResult(Conf.testLine + testSuite.getQualityClassName());
+            if (testResult == MigrateFailureType.TESTSUCCESS) {
+                flag = true;
+            }
+            sj.add(testSuite.getQualityClassName()+":"+testResult);
+        }
+        FileUtilx.log("Test bic "+sj.toString());
+        if (flag) {
+            return PASS;
+        }
+        return FAL;
     }
 
     public int testBFCPMethod(@NotNull TestFile testSuite, StringJoiner sj) throws Exception {

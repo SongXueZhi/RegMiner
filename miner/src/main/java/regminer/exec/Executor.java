@@ -92,6 +92,9 @@ public class Executor {
             BufferedReader bufferReader = new BufferedReader(inputStr);
             String line;
             while ((line = bufferReader.readLine()) != null) {
+                if(line.trim().equals("") || line.trim().equals("\n")){
+                    continue;
+                }
                 builder.append("\n").append(line);
             }
             IOUtils.close(inputStr,bufferReader);
@@ -101,7 +104,6 @@ public class Executor {
         }
         return builder.toString();
     }
-
     public int execPrintln(String cmd) {
         int a = 1;
         try {

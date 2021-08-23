@@ -134,10 +134,10 @@ public class BFCEvaluator extends Migrator {
 
         // Test buggy test in BFC get Method coverage
         if (Conf.code_cover) {
-            double rfcProb = testWithJacoco(bfcDirectory, pRFC.getTestCaseFiles());
+            double rfcProb = testWithJacoco(bfcDirectory,pRFC);
             pRFC.setScore(rfcProb);
             FileUtilx.apendResultToFile(bfcID+","+rfcProb+","+combinedRegressionTestResult(pRFC),new File("bfcscore.csv"));
-            emptyCache(bfcID);
+           // emptyCache(bfcID);
         }
 
         pRFC.setBuggyCommitId(bfcpID);
@@ -159,7 +159,7 @@ public class BFCEvaluator extends Migrator {
         }
         return sj.toString();
     }
-    public double testWithJacoco(File bfcDirectory, List<TestFile> testFiles) throws Exception {
+    public double testWithJacoco(File bfcDirectory,PotentialRFC pRFC) throws Exception {
         //add Jacoco plugin
         try {
             jacocoMavenManager.addJacocoFeatureToMaven(bfcDirectory);
@@ -167,13 +167,13 @@ public class BFCEvaluator extends Migrator {
             e.printStackTrace();
             return -1;
         }
-        testSuite(bfcDirectory, testFiles);
+        testSuite(bfcDirectory, pRFC.getTestCaseFiles());
         // git test coverage methods
         List<CoverNode> coverNodeList = codeCoverage.readJacocoReports(bfcDirectory);
         if (coverNodeList == null) {
             return -1;
         }
-        return tracker.regressionProbCalculate(tracker.handleTasks(coverNodeList, bfcDirectory));
+        return tracker.regressionProbCalculate(pRFC);
     }
 
     public boolean comiple(File file, boolean record) throws Exception {

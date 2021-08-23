@@ -38,15 +38,9 @@ public class CompilationUtil {
             }
 			MethodDeclaration methodDeclaration = (MethodDeclaration) node;
 			String simpleName = methodDeclaration.getName().toString();
-			List<ASTNode> parameters = methodDeclaration.parameters();
-			// SingleVariableDeclaration
-			StringJoiner sj = new StringJoiner(",", simpleName + "(", ")");
-			for (ASTNode param : parameters) {
-				sj.add(param.toString());
-			}
-			String signature = sj.toString();
-			int startLine = unit.getLineNumber(methodDeclaration.getStartPosition()) - 1;
-			int endLine = unit.getLineNumber(methodDeclaration.getStartPosition() + node.getLength()) - 1;
+			String signature =getSignature(methodDeclaration);
+			int startLine = unit.getLineNumber(methodDeclaration.getStartPosition());
+			int endLine = unit.getLineNumber(methodDeclaration.getStartPosition() + node.getLength());
 			methods.add(new Methodx(signature, startLine, endLine, simpleName, methodDeclaration));
 		}
 		return methods;
@@ -59,5 +53,16 @@ public class CompilationUtil {
 		unit.accept(retriever);
 		result = retriever.getQualityName();
 		return result;
+	}
+
+	public static  String getSignature(MethodDeclaration methodDeclaration){
+		String simpleName = methodDeclaration.getName().toString();
+		List<ASTNode> parameters = methodDeclaration.parameters();
+		// SingleVariableDeclaration
+		StringJoiner sj = new StringJoiner(",", simpleName + "(", ")");
+		for (ASTNode param : parameters) {
+			sj.add(param.toString());
+		}
+		return  sj.toString();
 	}
 }

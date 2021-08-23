@@ -22,4 +22,8 @@ public class FileUtilsTest {
 		FileUtils.copyFileToDirectory(new File(meta),new File(cache));
 	}
 
+	@Test
+	public void test(){
+	System.out.println();
+	}
 }

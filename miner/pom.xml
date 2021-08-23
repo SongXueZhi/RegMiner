@@ -24,6 +24,12 @@
             <version>5.9.0.202009080501-r</version>
         </dependency>
         <dependency>
+            <groupId>com.zhixiangli</groupId>
+            <artifactId>code-similarity</artifactId>
+            <version>0.0.2</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
             <version>1.10.9</version>
@@ -34,15 +40,14 @@
             <version>3.20.0</version>
         </dependency>
         <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-symbol-solver-core</artifactId>
+            <version>3.22.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>1.2.47</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.bcel/bcel -->
-        <dependency>
-            <groupId>org.apache.bcel</groupId>
-            <artifactId>bcel</artifactId>
-            <version>6.2</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -55,6 +60,7 @@
             <artifactId>maven-model</artifactId>
             <version>3.8.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations-java5</artifactId>

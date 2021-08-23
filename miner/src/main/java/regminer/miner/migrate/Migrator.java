@@ -36,6 +36,10 @@ public class Migrator {
 		exec.execPrintln("git checkout -f " + commitId);
 		return result;
 	}
+	public void checkoutInSu(File bfcDir, String commitId) throws IOException {
+		exec.setDirectory(bfcDir);
+		exec.execPrintln("git checkout -f " + commitId);
+	}
 
 	public String findJavaFile(@NotNull String className, @NotNull String[] projectJavaFiles) {
 		String path = className.replace(".", File.separator) + ".java";
