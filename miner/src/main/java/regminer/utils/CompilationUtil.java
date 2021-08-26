@@ -26,7 +26,7 @@ public class CompilationUtil {
 		return result;
 	}
 
-	public static List<Methodx> getAllMethod(String codeContent) {
+	public static List<Methodx> getAllMethodWithoutInner(String codeContent) {
 		List<Methodx> methods = new ArrayList<>();
 		JdtMethodRetriever retriever = new JdtMethodRetriever();
 		CompilationUnit unit = parseCompliationUnit(codeContent);
@@ -38,20 +38,47 @@ public class CompilationUtil {
             }
 			MethodDeclaration methodDeclaration = (MethodDeclaration) node;
 			String simpleName = methodDeclaration.getName().toString();
-			List<ASTNode> parameters = methodDeclaration.parameters();
-			// SingleVariableDeclaration
-			StringJoiner sj = new StringJoiner(",", simpleName + "(", ")");
-			for (ASTNode param : parameters) {
-				sj.add(param.toString());
-			}
-			String signature = sj.toString();
-			int startLine = unit.getLineNumber(methodDeclaration.getStartPosition()) - 1;
-			int endLine = unit.getLineNumber(methodDeclaration.getStartPosition() + node.getLength()) - 1;
+			String signature =getSignature(methodDeclaration);
+			int startLine = unit.getLineNumber(methodDeclaration.getStartPosition());
+			int endLine = unit.getLineNumber(methodDeclaration.getStartPosition() + node.getLength());
 			methods.add(new Methodx(signature, startLine, endLine, simpleName, methodDeclaration));
 		}
 		return methods;
 	}
 
+
+	public static List<Methodx> getAllMethod(String codeContent) {
+		List<Methodx> methods = new ArrayList<>();
+		JdtMethodRetriever retriever = new JdtMethodRetriever();
+		CompilationUnit unit = parseCompliationUnit(codeContent);
+		unit.accept(retriever);
+		List<MethodDeclaration> methodNodes = retriever.getMemberList();
+		for (ASTNode node : methodNodes) {
+			MethodDeclaration methodDeclaration = (MethodDeclaration) node;
+			String simpleName = methodDeclaration.getName().toString();
+			String signature =getSignature(methodDeclaration);
+			int startLine = unit.getLineNumber(methodDeclaration.getStartPosition());
+			int endLine = unit.getLineNumber(methodDeclaration.getStartPosition() + node.getLength());
+			methods.add(new Methodx(signature, startLine, endLine, simpleName, methodDeclaration));
+		}
+		return methods;
+	}
+
+	public static List<Methodx> getAllMethod(CompilationUnit unit) {
+		List<Methodx> methods = new ArrayList<>();
+		JdtMethodRetriever retriever = new JdtMethodRetriever();
+		unit.accept(retriever);
+		List<MethodDeclaration> methodNodes = retriever.getMemberList();
+		for (ASTNode node : methodNodes) {
+			MethodDeclaration methodDeclaration = (MethodDeclaration) node;
+			String simpleName = methodDeclaration.getName().toString();
+			String signature =getSignature(methodDeclaration);
+			int startLine = unit.getLineNumber(methodDeclaration.getStartPosition());
+			int endLine = unit.getLineNumber(methodDeclaration.getStartPosition() + node.getLength());
+			methods.add(new Methodx(signature, startLine, endLine, simpleName, methodDeclaration));
+		}
+		return methods;
+	}
 	public static String getQualityClassName(String codeContent) {
 		String result;
 		CompilationUnit unit = parseCompliationUnit(codeContent);
@@ -59,5 +86,16 @@ public class CompilationUtil {
 		unit.accept(retriever);
 		result = retriever.getQualityName();
 		return result;
+	}
+
+	public static  String getSignature(MethodDeclaration methodDeclaration){
+		String simpleName = methodDeclaration.getName().toString();
+		List<ASTNode> parameters = methodDeclaration.parameters();
+		// SingleVariableDeclaration
+		StringJoiner sj = new StringJoiner(",", simpleName + "(", ")");
+		for (ASTNode param : parameters) {
+			sj.add(param.toString());
+		}
+		return  sj.toString();
 	}
 }

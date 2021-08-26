@@ -26,16 +26,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MavenManager {
-    public final static String M2AFFIX = ".m2"+File.separator+"repository";
-    private  MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-    private  MavenXpp3Writer mavenXpp3Writer =new MavenXpp3Writer();
+    public final static String M2AFFIX = ".m2" + File.separator + "repository";
+    private MavenXpp3Reader mavenReader = new MavenXpp3Reader();
+    private MavenXpp3Writer mavenXpp3Writer = new MavenXpp3Writer();
+
     /**
      * Default find jar from "~/.m2/repository/"
+     *
      * @param pom pom.xml absolutely path
      * @return
      * @throws Exception
      */
-    public  List<String> readAllDependency(File pom) throws Exception {
+    public List<String> readAllDependency(File pom) throws Exception {
         Model pomModel = getPomModel(pom);
         List<Dependency> dependencies = pomModel.getDependencies();
         List<String> result = new ArrayList<>();
@@ -46,23 +48,49 @@ public class MavenManager {
             sb.append(File.separator)
                     .append(M2AFFIX).append(File.separator)
                     .append(dependency.getGroupId().replace(".", File.separator)).append(File.separator)
-                    .append(dependency.getArtifactId()).append(File.separator)
-                    .append(dependency.getVersion()).append(File.separator)
+                    .append(dependency.getArtifactId());
+            String version = dependency.getVersion();
+            if (!version.contains(".")||version.contains("$")){
+                File[] childList = new File(sb.toString()).listFiles();
+                for (int i =0;i<childList.length;i++){
+                    if (childList[i].isDirectory()){
+                        version = childList[i].getName();
+                    }
+                }
+            }
+            sb.append(File.separator).append(version).append(File.separator)
                     .append(dependency.getArtifactId()).append("-")
-                    .append(dependency.getVersion()).append(".").append(dependency.getType());
-            result.add(sb.toString());
+                    .append(version).append(".").append(dependency.getType());
+            String tt = sb.toString();
+            File file =new File(tt);
+            try {
+                if (!file.exists()){
+                    File[] cc = file.getParentFile().listFiles();
+                    for(int j=0;j<cc.length;j++){
+                        if(cc[j].getName().endsWith(".jar")){
+                            tt = cc[j].getAbsolutePath();
+                            break;
+                        }
+                    }
+                }
+            }catch (Exception e){
+
+            }
+
+            result.add(tt);
         }
-        return  result;
+        return result;
     }
 
-    protected Model getPomModel(File pomFile)throws Exception{
+    protected Model getPomModel(File pomFile) throws Exception {
         Model pomModel = mavenReader.read(new FileReader(pomFile));
         return pomModel;
     }
 
-    protected void saveModel(File pomFile,Model pomModel) throws Exception {
-        mavenXpp3Writer.write(new FileWriter(pomFile),pomModel);
+    protected void saveModel(File pomFile, Model pomModel) throws Exception {
+        mavenXpp3Writer.write(new FileWriter(pomFile), pomModel);
     }
+
     protected String getUserHomePath() {
         return SystemUtils.getUserHome().toString();
     }

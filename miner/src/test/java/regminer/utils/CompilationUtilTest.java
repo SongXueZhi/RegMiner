@@ -50,7 +50,7 @@ public class CompilationUtilTest {
 	}
 	@Test
 	public void testCompliationUnitTypes(){
-		String code = "public class Demo {\n" +
+		String code = "public class Demo  extends Demo2{\n" +
 				"\tint i,b;\n" +
 				"\tstatic int j;\n" +
 				"\tfinal static String aString = \"ss\";\n" +

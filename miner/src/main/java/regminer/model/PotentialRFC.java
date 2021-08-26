@@ -1,6 +1,8 @@
 package regminer.model;
 
 import org.eclipse.jgit.revwalk.RevCommit;
+import regminer.coverage.CodeCoverage;
+import regminer.coverage.model.CoverNode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,12 +19,12 @@ public class PotentialRFC {
     private Double score;
     public final static int TESTCASE_FROM_SELF = 0;
     public final static int TESTCASE_FROM_SEARCH =1;
-
-    private List<NormalFile> normalJavaFiles; //which contains fix path
+    private  boolean haveEquipFixPatch=false;
+    private List<NormalFile> normalFiles; //which contains fix path
     private List<TestFile> testCaseFiles;    // All File Under test dir
     private final List<TestFile> testRelates = new ArrayList<TestFile>(); //under test dir but not testcase
     private List<SourceFile> sourceFiles = new ArrayList<>(); //config file or data for test
-
+    public List<CoverNode>  coverNodes;
     private List<PotentialTestCase> potentialTestCaseList;
 
 
@@ -43,11 +45,11 @@ public class PotentialRFC {
     }
 
     public List<NormalFile> getNormalJavaFiles() {
-        return normalJavaFiles;
+        return normalFiles;
     }
 
-    public void setNormalJavaFiles(List<NormalFile> normalJavaFiles) {
-        this.normalJavaFiles = normalJavaFiles;
+    public void setNormalJavaFiles(List<NormalFile> normalFiles) {
+        this.normalFiles = normalFiles;
     }
 
     public List<TestFile> getTestCaseFiles() {
@@ -91,5 +93,13 @@ public class PotentialRFC {
 
     public void setTestcaseFrom(int testcaseFrom) {
         this.testcaseFrom = testcaseFrom;
+    }
+
+    public boolean isHaveEquipFixPatch() {
+        return haveEquipFixPatch;
+    }
+
+    public void setHaveEquipFixPatch(boolean haveEquipFixPatch) {
+        this.haveEquipFixPatch = haveEquipFixPatch;
     }
 }

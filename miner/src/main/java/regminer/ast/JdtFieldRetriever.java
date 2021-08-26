@@ -11,9 +11,10 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 public class JdtFieldRetriever extends ASTVisitor {
 	public Map<FieldDeclaration, List<VariableDeclarationFragment>> fieldMap = new HashMap<>();
-
+	public List<FieldDeclaration> fieldDeclarations = new ArrayList<>();
 	public boolean visit(FieldDeclaration field) {
 		List<VariableDeclarationFragment> nodeList = new ArrayList<>();
+		fieldDeclarations.add(field);
 		for (Object o : field.fragments()) {
 			VariableDeclarationFragment vd = (VariableDeclarationFragment) o;
 			nodeList.add(vd);

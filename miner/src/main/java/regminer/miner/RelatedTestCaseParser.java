@@ -73,7 +73,7 @@ public class RelatedTestCaseParser  {
     private Map<String, RelatedTestCase> parse(TestFile file, String code) throws Exception {
         List<Edit> editList = file.getEditList();
 //		cleanEmpty(editList);
-        List<Methodx> methodList = CompilationUtil.getAllMethod(code);
+        List<Methodx> methodList = CompilationUtil.getAllMethodWithoutInner(code);
         Map<String, RelatedTestCase> testCaseMap = new HashMap<>();
         getTestMethod(editList, methodList, testCaseMap);
         return testCaseMap;
@@ -100,9 +100,9 @@ public class RelatedTestCaseParser  {
         int methodStart = method.getStartLine();
         int methodStop = method.getStopLine();
 
-        if (editStart <= methodStart && editEnd >= methodStop || editStart >= methodStart && editEnd <= methodStop
-                || editEnd >= methodStart && editEnd <= methodStop
-                || editStart >= methodStart && editStart <= methodStop) {
+        if ((editStart <= methodStart && editEnd >= methodStop) || (editStart >= methodStart && editEnd <= methodStop)
+                || (editEnd >= methodStart && editEnd <= methodStop)
+                || (editStart >= methodStart && editStart <= methodStop)) {
             String name = method.getSignature();
             if (!testCaseMap.containsKey(name)) {
                 RelatedTestCase testCase = new RelatedTestCase();

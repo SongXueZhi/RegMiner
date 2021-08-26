@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import regminer.start.ConfigLoader;
 import regminer.utils.FileUtilx;
 
 /**
@@ -31,8 +32,6 @@ public class Executor {
         if (OS.contains(OS_WINDOWS)) {
             PATH_AFFIX = "Path";
         }
-//        ConfigLoader.refresh();  //保证不经过main入口的程序也能加载配置
-//		暂时关闭
 //		String[] toolPaths = ConfigLoader.envPath.split(";");
 //		setEnviroment(toolPaths);
     }
@@ -53,6 +52,7 @@ public class Executor {
     }
 
     public Set<String> execWithSetResult(String cmd){
+        cmd = "export JAVA_HOME=/home/sxz/java/jdk1.7.0_80/;export PATH=${JAVA_HOME}/bin:${PATH};"+cmd;
        Set<String> result = new HashSet<>();
         try {
             if (OS.contains(OS_WINDOWS)) {
@@ -92,6 +92,9 @@ public class Executor {
             BufferedReader bufferReader = new BufferedReader(inputStr);
             String line;
             while ((line = bufferReader.readLine()) != null) {
+                if(line.trim().equals("") || line.trim().equals("\n")){
+                    continue;
+                }
                 builder.append("\n").append(line);
             }
             IOUtils.close(inputStr,bufferReader);
@@ -101,7 +104,6 @@ public class Executor {
         }
         return builder.toString();
     }
-
     public int execPrintln(String cmd) {
         int a = 1;
         try {

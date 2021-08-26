@@ -30,7 +30,6 @@ public class Migrator {
 			file.mkdirs();
 		}
 		exec.setDirectory(file);
-		FileUtils.copyDirectoryToDirectory(new File(Conf.META_PATH), new File(cacheFile));
 		File result = new File(cacheFile + File.separator + "meta");
 		exec.setDirectory(result);
 		exec.execPrintln("git checkout -f " + commitId);

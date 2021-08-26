@@ -10,14 +10,12 @@ import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.patch.HunkHeader;
-import org.eclipse.jgit.patch.Patch;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import regminer.constant.Conf;
 import regminer.constant.Constant;
-import regminer.constant.Priority;
 import regminer.model.*;
 import regminer.utils.FileUtilx;
 import regminer.utils.GitUtil;
@@ -32,6 +30,7 @@ public class PotentialBFCDetector {
     private Repository repo;
     private Git git;
 
+    public PotentialBFCDetector(){}
 
     public PotentialBFCDetector(Repository repo, Git git) {
         this.repo = repo;
@@ -142,7 +141,7 @@ public class PotentialBFCDetector {
      * @return
      * @throws Exception
      */
-    private List<ChangedFile> getDiffFiles(RevCommit oldCommit, RevCommit newCommit) throws Exception {
+    protected List<ChangedFile> getDiffFiles(RevCommit oldCommit, RevCommit newCommit) throws Exception {
         List<ChangedFile> files = new LinkedList<>();
         ObjectId id = newCommit.getTree().getId();
         ObjectId oldId = oldCommit.getTree().getId();
@@ -159,7 +158,6 @@ public class PotentialBFCDetector {
         }
         return files;
     }
-
     /**
      * 判断是否只有测试文件，如果所有的修改文件路径都包含test，认为所有的 被修改文件只与测试用例有关
      *
@@ -205,13 +203,13 @@ public class PotentialBFCDetector {
      * 获取所有普通文件
      */
     private List<NormalFile> getNormalJavaFiles(List<ChangedFile> files) {
-        List<NormalFile> normalJavaFiles = new LinkedList<>();
+        List<NormalFile> normalFiles = new LinkedList<>();
         for (ChangedFile file : files) {
             if (file instanceof NormalFile) {
-                normalJavaFiles.add((NormalFile) file);
+                normalFiles.add((NormalFile) file);
             }
         }
-        return normalJavaFiles;
+        return normalFiles;
     }
 
     private List<SourceFile> getSourceFiles(List<ChangedFile> files) {
@@ -283,15 +281,15 @@ public class PotentialBFCDetector {
             List<ChangedFile> files = getLastDiffFiles(commit);
             if (files == null) return;
             List<TestFile> testcaseFiles = getTestFiles(files);
-            List<NormalFile> normalJavaFiles = getNormalJavaFiles(files);
+            List<NormalFile> normalFiles = getNormalJavaFiles(files);
             List<SourceFile> sourceFiles = getSourceFiles(files);
             // 1）若所有路径中存在任意一个路径包含test相关的Java文件则我们认为本次提交中包含测试用例。
             // 2）若所有路径中除了测试用例还包含其他的非测试用例的Java文件则commit符合条件
-            if (testcaseFiles.size() > 0 && normalJavaFiles.size() > 0) {
+            if (testcaseFiles.size() > 0 && normalFiles.size() > 0) {
                 PotentialRFC pRFC = new PotentialRFC(commit);
                 pRFC.setTestCaseFiles(testcaseFiles);
                 pRFC.setTestcaseFrom(PotentialRFC.TESTCASE_FROM_SELF);
-                pRFC.setNormalJavaFiles(normalJavaFiles);
+                pRFC.setNormalJavaFiles(normalFiles);
                 pRFC.setSourceFiles(sourceFiles);
                 potentialRFCs.add(pRFC);
             } else if (justNormalJavaFile(files) && (message1.contains("fix") || message1.contains("close"))) {
@@ -301,7 +299,7 @@ public class PotentialBFCDetector {
                 List<PotentialTestCase> pls = findTestCommit(commit);
                 if (pls != null && pls.size() > 0) {
                     PotentialRFC pRFC = new PotentialRFC(commit);
-                    pRFC.setNormalJavaFiles(normalJavaFiles);
+                    pRFC.setNormalJavaFiles(normalFiles);
                     pRFC.setTestcaseFrom(PotentialRFC.TESTCASE_FROM_SEARCH);
                     pRFC.setPotentialTestCaseList(pls);
                     potentialRFCs.add(pRFC);

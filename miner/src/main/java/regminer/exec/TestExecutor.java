@@ -15,6 +15,7 @@ public class TestExecutor extends Executor {
 
 	// 请注意以最小的单元运行任务
 	public boolean execBuildWithResult(String cmd, boolean record) throws Exception {
+		cmd = "export JAVA_HOME=/home/sxz/java/jdk1.7.0_80/;export PATH=${JAVA_HOME}/bin:${PATH};"+cmd;
 		boolean result = false;
 		try {
 			if (OS.contains(OS_WINDOWS)) {
@@ -34,14 +35,13 @@ public class TestExecutor extends Executor {
 				sb.append(line + "\n");
 				// FileUtils.writeStringToFile(new File("build_log.txt"), line, true);
 				if (line.contains("success")) {
+					process.destroy();
+					IOUtils.close(inputStr,bufferReader);
 					result = true;
+					return true;
 				}
 			}
-			if (record && !result) {
-				record(sb.toString());
-			}
-			IOUtils.close(inputStr,bufferReader);
-			process.destroy();
+
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
@@ -51,6 +51,7 @@ public class TestExecutor extends Executor {
 
 	// 请注意以最小的单元运行任务
 	public MigrateFailureType execTestWithResult(String cmd) throws Exception {
+		cmd = "export JAVA_HOME=/home/sxz/java/jdk1.7.0_80/;export PATH=${JAVA_HOME}/bin:${PATH};"+cmd;
 		try {
 			if (OS.contains(OS_WINDOWS)) {
 				pb.command("cmd.exe", "/c", cmd);
@@ -181,5 +182,4 @@ public class TestExecutor extends Executor {
 //			}
 //		}
 	}
-
 }

@@ -17,7 +17,6 @@ import java.util.Properties;
  * @author knightsong
  */
 public class ConfigLoader {
-    final static Class<ConfigLoader> here = ConfigLoader.class;
     private final static String PROJRCT_NAME = "project_name";
     private final static String ROOT_DIR = "root_dir";
     private static final Properties prop = new Properties();

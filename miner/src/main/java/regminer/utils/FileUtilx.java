@@ -57,11 +57,6 @@ public class FileUtilx {
         }
     }
 
-    public static String getUUID() {
-        return UUID.randomUUID().toString();
-
-    }
-
     public static String readContentFromFile(String path) {
         File file = new File(path);
         String result = null;

@@ -1,6 +1,9 @@
 package regminer.model;
 
+import com.google.protobuf.Enum;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+
+import java.util.Objects;
 
 /**
  * @author sxz
@@ -13,7 +16,7 @@ public class Methodx {
 	private int stopLine;
 	private String simpleName;
 	private MethodDeclaration methodDeclaration;
-
+	public  EditType editType;
 	public Methodx(String signature) {
 		this.signature = signature;
 	}
@@ -67,4 +70,21 @@ public class Methodx {
 		this.methodDeclaration = methodDeclaration;
 	}
 
+	public enum EditType{
+		INSERT,
+		EDIT;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Methodx methodx = (Methodx) o;
+		return startLine == methodx.startLine && stopLine == methodx.stopLine && Objects.equals(signature, methodx.signature);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(signature, startLine, stopLine);
+	}
 }

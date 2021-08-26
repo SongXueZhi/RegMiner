@@ -23,7 +23,7 @@ import regminer.exec.TestExecutor;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.*;
 
 public class GitTracker {
     TestExecutor testExecutor = new TestExecutor();
@@ -33,11 +33,11 @@ public class GitTracker {
         //add .gitattributes file to bfc
         File gitConfigFile = new File(bfcdir, ".gitattributes");
         try {
-            if(gitConfigFile.exists()){
+            if (gitConfigFile.exists()) {
                 gitConfigFile.deleteOnExit();
             }
             gitConfigFile.createNewFile();
-            FileUtils.writeStringToFile(gitConfigFile,"*.java\tdiff=java\n");
+            FileUtils.writeStringToFile(gitConfigFile, "*.java\tdiff=java\n");
         } catch (IOException e) {
             return false;
         }
@@ -46,7 +46,8 @@ public class GitTracker {
 
 
     /**
-     *  Don't use this feature in Search process
+     * Don't use this feature in Search process
+     *
      * @param Method
      * @param file_path
      * @param bfcDir
@@ -55,6 +56,55 @@ public class GitTracker {
     public int trackFunctionByGitBlogL(String Method, String file_path, File bfcDir) {
         testExecutor.setDirectory(bfcDir);
         Set<String> commitHistoryList = testExecutor.execWithSetResult("git log -L:" + Method + ":" + file_path + " --pretty=format:%h -s");
+        return commitHistoryList.size();
+    }
+
+
+    public int trackCodeBlockByLogl(int start, int end, String file_path, File bfcDir, boolean isMethod) {
+        testExecutor.setDirectory(bfcDir);
+        String commitHistoryContent = testExecutor.exec("git log -L " + start + "," + end + ":" + file_path);
+        String[] ss = commitHistoryContent.split("commit ");
+        List<String> commitList = new LinkedList<>();
+        for (String s :ss){
+            if(s.equals("\n")){
+                continue;
+            }
+            commitList.add(s);
+        }
+
+        Iterator<String> it = commitList.iterator();
+        while (it.hasNext()) {
+            String content = it.next();
+            String[] lines = content.split("@@");
+            if (lines.length<2){
+                it.remove();
+                continue;
+            }
+            lines =lines[2].split("\n");
+            int sum =0;
+            for (int i =0;i<lines.length;i++){
+                if (lines[i].equals("")){
+                    continue;
+                }
+                sum++;
+            }
+            if ((end + 1 - start) * 4 <sum ) {
+                it.remove();
+                continue;
+            }
+            if (isMethod && (end + 1 - start)*4<sum){
+                it.remove();
+            }
+        }
+        int freq = commitList.size();
+        if (freq > 0) {
+            freq = freq - 1;
+        }
+        return freq;
+    }
+    public int trackhunkByLogl(int start, int end, String file_path, File bfcDir) {
+        testExecutor.setDirectory(bfcDir);
+        Set<String> commitHistoryList = testExecutor.execWithSetResult("git log -L " + start + "," + end + ":" + file_path+ " --pretty=format:%h -s");
         return commitHistoryList.size();
     }
 }

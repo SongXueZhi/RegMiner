@@ -62,15 +62,20 @@ public class Miner {
         float i = 0;
         float j = (float) pRFCs.size();
         System.out.println("origin bfc number "+j);
+
         FileUtilx.log("###############Start BFC SCORE EVOLUTION###########################");
         tm.evoluteBFCList(pRFCs);
         j = (float) pRFCs.size();
         System.out.println("After evolution bfc number "+j);
         FileUtilx.log("#######################END EVOLUTION###############################");
+
+
         // 开始遍历每一个 Potential BFC
         Iterator<PotentialRFC> iterator = pRFCs.iterator();
         FileUtilx.log("########################Start################################");
+
         while (iterator.hasNext()) {
+            long starttime = System.currentTimeMillis();
             PotentialRFC pRfc = iterator.next();
             i++;
             FileUtilx.log(i / j + "%");
@@ -98,9 +103,11 @@ public class Miner {
                     FileUtilx.apendResult(regressionLog);
                 }
                 setResult.add(regressionLog);
-                bugStorage.saveBug(regression);
+//                bugStorage.saveBug(regression);
             }
             ProgressMonitor.addDone(pRfc.getCommit().getName());
+           long endtime = System.currentTimeMillis();
+           FileUtilx.log("search time :"+(endtime-starttime)/1000+"s");
         }
         FileUtilx.log("########################END SEARCH################################");
         //此处log的bfc到bfc-1的数量成功率

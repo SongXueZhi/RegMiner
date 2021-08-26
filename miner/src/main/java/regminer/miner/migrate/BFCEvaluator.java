@@ -11,9 +11,11 @@ import regminer.coverage.model.CoverNode;
 import regminer.finalize.SycFileCleanup;
 import regminer.maven.JacocoMavenManager;
 import regminer.miner.RelatedTestCaseParser;
-import regminer.model.*;
 import regminer.model.ChangedFile.Type;
 import regminer.model.MigrateItem.MigrateFailureType;
+import regminer.model.PotentialRFC;
+import regminer.model.RelatedTestCase;
+import regminer.model.TestFile;
 import regminer.utils.CompilationUtil;
 import regminer.utils.FileUtilx;
 
@@ -127,53 +129,37 @@ public class BFCEvaluator extends Migrator {
             purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
             FileUtilx.log("bfc~1 test fal" + result);
         } else {
-            FileUtilx.log("bfc test success" + result);
+            FileUtilx.log("bfc test~1 success" + result);
             emptyCache(bfcID);
             return;
         }
 
         // Test buggy test in BFC get Method coverage
         if (Conf.code_cover) {
-            double rfcProb = testWithJacoco(bfcDirectory, pRFC.getTestCaseFiles());
-            pRFC.setScore(rfcProb);
-            FileUtilx.apendResultToFile(bfcID+","+rfcProb+","+combinedRegressionTestResult(pRFC),new File("bfcscore.csv"));
-            emptyCache(bfcID);
+            List<CoverNode> coverNodeList = codeCoverage.readJacocoReports(bfcDirectory);
+            if (coverNodeList == null) {
+                coverNodeList = testWithJacoco(bfcDirectory, pRFC);
+            }
+            pRFC.coverNodes = coverNodeList;
+            pRFC.setScore(0d);
+            // emptyCache(bfcID);
         }
 
         pRFC.setBuggyCommitId(bfcpID);
         exec.setDirectory(new File(Conf.PROJECT_PATH));
     }
-    public String combinedRegressionTestResult(PotentialRFC pRFC) {
-        StringJoiner sj = new StringJoiner(";", "", "");
-        for (TestFile tc : pRFC.getTestCaseFiles()) {
-            Map<String, RelatedTestCase> methodMap = tc.getTestMethodMap();
-            if (methodMap == null) {
-                continue;
-            }
-            for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
-                Map.Entry<String, RelatedTestCase> entry = it.next();
-                String testCase = tc.getQualityClassName() + Conf.methodClassLinkSymbolForTest
-                        + entry.getKey().split("[(]")[0];
-                sj.add(testCase);
-            }
-        }
-        return sj.toString();
-    }
-    public double testWithJacoco(File bfcDirectory, List<TestFile> testFiles) throws Exception {
+
+    public List<CoverNode> testWithJacoco(File bfcDirectory, PotentialRFC pRFC) throws Exception {
         //add Jacoco plugin
         try {
             jacocoMavenManager.addJacocoFeatureToMaven(bfcDirectory);
         } catch (Exception e) {
             e.printStackTrace();
-            return -1;
+            return null;
         }
-        testSuite(bfcDirectory, testFiles);
+        testSuite(bfcDirectory, pRFC.getTestCaseFiles());
         // git test coverage methods
-        List<CoverNode> coverNodeList = codeCoverage.readJacocoReports(bfcDirectory);
-        if (coverNodeList == null) {
-            return -1;
-        }
-        return tracker.regressionProbCalculate(tracker.handleTasks(coverNodeList, bfcDirectory));
+        return codeCoverage.readJacocoReports(bfcDirectory);
     }
 
     public boolean comiple(File file, boolean record) throws Exception {

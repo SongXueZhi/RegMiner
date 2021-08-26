@@ -20,6 +20,8 @@ public class BICFinder {
     TestCaseMigrator testMigrater = new TestCaseMigrator();
     PotentialRFC pRFC;
     int[] status; // 切勿直接访问该数组
+    int passPoint = Integer.MIN_VALUE;
+    int falPoint = Integer.MAX_VALUE;
 
     public BICFinder() {
     }
@@ -67,7 +69,9 @@ public class BICFinder {
      * @return
      */
     public Regression searchBIC(@NotNull PotentialRFC pRFC) {
-        FileUtilx.log(pRFC.getCommit().getName()+" Start search");
+        FileUtilx.log(pRFC.getCommit().getName() + " Start search");
+        passPoint = Integer.MIN_VALUE;
+
         // 预防方法被错误的调用
         // 情况1 search时候bfc没有确定的测试用例
         List<TestFile> testSuites = pRFC.getTestCaseFiles();
@@ -87,6 +91,7 @@ public class BICFinder {
         // 得到反转数组,即从Origin到Commit
         Collections.reverse(candidateList);
         String[] arr = candidateList.toArray(new String[candidateList.size()]);
+        falPoint = arr.length - 1;
         // 针对每一个BFC使用一个status数组记录状态，测试过的不再测试
         status = new int[arr.length];
         for (int i = 0; i < status.length; i++) {
@@ -96,11 +101,10 @@ public class BICFinder {
         int a = search(arr, 1, arr.length - 1); // 指数跳跃二分查找
         // 处理search结果
         String bfcId = pRFC.getCommit().getName();
-        File bfcFile = new File(Conf.CACHE_PATH + File.separator + pRFC.getCommit().getName());
-        if (a < 0) {
-            new SycFileCleanup().cleanDirectory(bfcFile);
-            return null;
-        } else {
+        File bfcFile = new File(Conf.CACHE_PATH + File.separator + bfcId);
+
+        if (a >= 0) {
+            FileUtilx.log("regression+1");
             // 如果是regression组合一下需要记录的相关数据
             // 顺便恢复一下exec的目录，防止exec正在的目录已被删除
             exec.setDirectory(new File(Conf.PROJECT_PATH));
@@ -110,6 +114,42 @@ public class BICFinder {
             new SycFileCleanup().cleanDirectoryOnFilter(bfcFile, Arrays.asList(bfcId, bfcpId, arr[a + 1], arr[a]));// 删除在regression定义以外的项目文件
             return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, arr[a + 1], arr[a],
                     pRFC.fileMap.get(bfcId).getPath(), pRFC.fileMap.get(bfcpId).getPath(), pRFC.fileMap.get(arr[a + 1]).getPath(), pRFC.fileMap.get(arr[a]).getPath(), testcaseString);
+        } else if (a < 0 && passPoint >= 0) {
+            if (passPoint > falPoint) {
+                falPoint = arr.length - 1;
+            }
+            if (passPoint < falPoint) {
+                searchStepByStep(arr);
+            }
+            a = passPoint;
+        }
+
+        if (a < 0) {
+            new SycFileCleanup().cleanDirectory(bfcFile);
+            return null;
+        } else {
+            FileUtilx.log("regression+1");
+            exec.setDirectory(new File(Conf.PROJECT_PATH));
+            String testcaseString = combinedRegressionTestResult();
+            String bfcpId = pRFC.getBuggyCommitId();
+            // 删除bfc目录下的其他构建测试历史文件
+            new SycFileCleanup().cleanDirectoryOnFilter(bfcFile, Arrays.asList(bfcId, bfcpId, arr[falPoint], arr[a]));// 删除在regression定义以外的项目文件
+            return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, arr[falPoint], arr[a],
+                    pRFC.fileMap.get(bfcId).getPath(), pRFC.fileMap.get(bfcpId).getPath(), pRFC.fileMap.get(arr[falPoint]).getPath(), pRFC.fileMap.get(arr[a]).getPath(), testcaseString);
+        }
+    }
+
+    public void searchStepByStep(String[] arr) {
+        int now = passPoint + 1;
+        while (now < falPoint) {
+            int a = getTestResult(arr[now], now);
+            if (a == TestCaseMigrator.PASS) {
+                passPoint = now;
+            } else if (a == TestCaseMigrator.FAL) {
+                falPoint = now;
+                return;
+            }
+            ++now;
         }
     }
 
@@ -206,15 +246,19 @@ public class BICFinder {
         int middle = (low + high) / 2;
         // 查找成功条件
         int statu = getTestResult(arr[middle], middle);
+        if (statu == TestCaseMigrator.FAL && middle < falPoint) {
+            falPoint = middle;
+        }
+        if (statu == TestCaseMigrator.PASS && middle > passPoint) {
+            passPoint = middle;
+        }
 
         if (statu == TestCaseMigrator.FAL && middle - 1 >= 0
                 && getTestResult(arr[middle - 1], middle - 1) == TestCaseMigrator.PASS) {
-            FileUtilx.log("regression+1");
             return middle - 1;
         }
         if (statu == TestCaseMigrator.PASS && middle + 1 < arr.length
                 && getTestResult(arr[middle + 1], middle + 1) == TestCaseMigrator.FAL) {
-            FileUtilx.log("regression+1");
             return middle;
         }
 
