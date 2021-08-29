@@ -11,9 +11,11 @@ import regminer.coverage.model.CoverNode;
 import regminer.finalize.SycFileCleanup;
 import regminer.maven.JacocoMavenManager;
 import regminer.miner.RelatedTestCaseParser;
-import regminer.model.*;
 import regminer.model.ChangedFile.Type;
 import regminer.model.MigrateItem.MigrateFailureType;
+import regminer.model.PotentialRFC;
+import regminer.model.RelatedTestCase;
+import regminer.model.TestFile;
 import regminer.utils.CompilationUtil;
 import regminer.utils.FileUtilx;
 
@@ -65,84 +67,94 @@ public class BFCEvaluator extends Migrator {
         }
     }
 
-    public void evolute(PotentialRFC pRFC) throws Exception {
-
-        // 1.checkout bfc
+    public void evolute(PotentialRFC pRFC) {
         String bfcID = pRFC.getCommit().getName();
-        FileUtilx.log(bfcID + " checkout ");
-        File bfcDirectory = checkout(bfcID, bfcID, "bfc");
-        pRFC.fileMap.put(bfcID, bfcDirectory);
+        try {
 
-        //2. parser Testcase
-        testCaseParser.parseTestCases(pRFC);
+            // 1.checkout bfc
+            FileUtilx.log(bfcID + " checkout ");
+            File bfcDirectory = checkout(bfcID, bfcID, "bfc");
+            pRFC.fileMap.put(bfcID, bfcDirectory);
 
-        // 3. verity have bfc~1
-        if (pRFC.getCommit().getParentCount() <= 0) {
-            FileUtilx.log("BFC no parent");
+            //2. parser Testcase
+            testCaseParser.parseTestCases(pRFC);
+
+            // 3. verity have bfc~1
+            if (pRFC.getCommit().getParentCount() <= 0) {
+                FileUtilx.log("BFC no parent");
+                pRFC.getTestCaseFiles().clear();
+                emptyCache(bfcID);
+                return;
+            }
+
+            //4. checkout bfc~1
+            String bfcpID = pRFC.getCommit().getParent(0).getName();
+            File bfcpDirectory = checkout(bfcID, bfcpID, "bfcp");// 管理每一个commit的文件路径
+            pRFC.fileMap.put(bfcpID, bfcpDirectory);
+
+            // 4.将BFC中所有与测试相关的文件迁移到BFCP,与BIC查找中的迁移略有不同
+            // BFC到BFCP的迁移不做依赖分析,相关就迁移
+            // 因为后续BFC的测试用例确认会删除一些TESTFILE,所以先迁移
+            copyToTarget(pRFC, bfcpDirectory);
+
+            // 4.compile BFC
+            if (!comiple(bfcDirectory, false)) {
+                pRFC.getTestCaseFiles().clear();
+                FileUtilx.log("BFC compile error");
+                emptyCache(bfcID);
+                return;
+            }
+
+            // 5. 测试BFC中的每一个待测试方法
+            testBFC(bfcDirectory, pRFC);
+
+            if (pRFC.getTestCaseFiles().size() <= 0) {
+                FileUtilx.log("BFC all test fal");
+                emptyCache(bfcID);
+                return;
+            }
+
+            // 7.编译并测试BFCP
+            if (!comiple(bfcpDirectory, false)) {
+                pRFC.getTestCaseFiles().clear();
+                FileUtilx.log("BFC~1 compile error");
+                emptyCache(bfcID);
+                return;
+            }
+            // 6.测试BFCP
+            String result = testBFCP(bfcpDirectory, pRFC.getTestCaseFiles());
+
+            if (pRFC.getTestCaseFiles().size() > 0) {
+                ExperResult.numSuc++;
+                //删除无关的测试用例
+                purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
+                FileUtilx.log("bfc~1 test fal" + result);
+            } else {
+                FileUtilx.log("bfc test success" + result);
+                emptyCache(bfcID);
+                return;
+            }
+
+            // Test buggy test in BFC get Method coverage
+            if (Conf.code_cover) {
+                double rfcProb = testWithJacoco(bfcDirectory, pRFC.getTestCaseFiles());
+                pRFC.setScore(rfcProb);
+                FileUtilx.apendResultToFile(bfcID + "," + rfcProb + "," + combinedRegressionTestResult(pRFC), new File("bfcscore.csv"));
+                emptyCache(bfcID);
+            }
+
+            pRFC.setBuggyCommitId(bfcpID);
+            exec.setDirectory(new File(Conf.PROJECT_PATH));
+        } catch (Exception e) {
+            if (pRFC.getTestCaseFiles()==null){
+                pRFC.setTestCaseFiles(new ArrayList<>());
+            }
             pRFC.getTestCaseFiles().clear();
             emptyCache(bfcID);
-            return;
+            e.printStackTrace();
         }
-
-        //4. checkout bfc~1
-        String bfcpID = pRFC.getCommit().getParent(0).getName();
-        File bfcpDirectory = checkout(bfcID, bfcpID, "bfcp");// 管理每一个commit的文件路径
-        pRFC.fileMap.put(bfcpID, bfcpDirectory);
-
-        // 4.将BFC中所有与测试相关的文件迁移到BFCP,与BIC查找中的迁移略有不同
-        // BFC到BFCP的迁移不做依赖分析,相关就迁移
-        // 因为后续BFC的测试用例确认会删除一些TESTFILE,所以先迁移
-        copyToTarget(pRFC, bfcpDirectory);
-
-        // 4.compile BFC
-        if (!comiple(bfcDirectory, false)) {
-            pRFC.getTestCaseFiles().clear();
-            FileUtilx.log("BFC compile error");
-            emptyCache(bfcID);
-            return;
-        }
-
-        // 5. 测试BFC中的每一个待测试方法
-        testBFC(bfcDirectory, pRFC);
-
-        if (pRFC.getTestCaseFiles().size() <= 0) {
-            FileUtilx.log("BFC all test fal");
-            emptyCache(bfcID);
-            return;
-        }
-
-        // 7.编译并测试BFCP
-        if (!comiple(bfcpDirectory, false)) {
-            pRFC.getTestCaseFiles().clear();
-            FileUtilx.log("BFC~1 compile error");
-            emptyCache(bfcID);
-            return;
-        }
-        // 6.测试BFCP
-        String result = testBFCP(bfcpDirectory, pRFC.getTestCaseFiles());
-
-        if (pRFC.getTestCaseFiles().size() > 0) {
-            ExperResult.numSuc++;
-            //删除无关的测试用例
-            purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
-            FileUtilx.log("bfc~1 test fal" + result);
-        } else {
-            FileUtilx.log("bfc test success" + result);
-            emptyCache(bfcID);
-            return;
-        }
-
-        // Test buggy test in BFC get Method coverage
-        if (Conf.code_cover) {
-            double rfcProb = testWithJacoco(bfcDirectory, pRFC.getTestCaseFiles());
-            pRFC.setScore(rfcProb);
-            FileUtilx.apendResultToFile(bfcID+","+rfcProb+","+combinedRegressionTestResult(pRFC),new File("bfcscore.csv"));
-            emptyCache(bfcID);
-        }
-
-        pRFC.setBuggyCommitId(bfcpID);
-        exec.setDirectory(new File(Conf.PROJECT_PATH));
     }
+
     public String combinedRegressionTestResult(PotentialRFC pRFC) {
         StringJoiner sj = new StringJoiner(";", "", "");
         for (TestFile tc : pRFC.getTestCaseFiles()) {
@@ -159,6 +171,7 @@ public class BFCEvaluator extends Migrator {
         }
         return sj.toString();
     }
+
     public double testWithJacoco(File bfcDirectory, List<TestFile> testFiles) throws Exception {
         //add Jacoco plugin
         try {

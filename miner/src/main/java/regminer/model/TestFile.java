@@ -1,10 +1,11 @@
 package regminer.model;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class TestFile extends ChangedFile {
 	public Type type;
-	private Map<String, RelatedTestCase> testMethodMap;
+	private Map<String, RelatedTestCase> testMethodMap = new HashMap<>();
 	private String qualityClassName;
 
 	

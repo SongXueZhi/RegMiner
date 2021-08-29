@@ -37,7 +37,7 @@
     <orderEntry type="library" name="Maven: commons-io:commons-io:2.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.maven:maven-model:3.8.1" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.plexus:plexus-utils:3.2.1" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains:annotations-java5:21.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains:annotations-java5:22.0.0" level="project" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:8.0.26" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.11.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.12.0" level="project" />

@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.diff.Edit;
 
 import org.jetbrains.annotations.NotNull;
+import regminer.constant.Constant;
 import regminer.model.*;
 import regminer.model.ChangedFile.Type;
 import regminer.utils.CompilationUtil;
@@ -56,7 +57,13 @@ public class RelatedTestCaseParser  {
         Iterator<TestFile> iterator = pRFC.getTestCaseFiles().iterator();
         while (iterator.hasNext()) {
             TestFile file = iterator.next();
+            if (file.getNewPath().equals(Constant.NONE_PATH)){
+                continue;
+            }
             String code = FileUtilx.readContentFromFile(new File(bfcDir,file.getNewPath()));
+            if (code == null){
+                continue;
+            }
             if (!isTestSuite(code)) {
                 file.setType(Type.TEST_RELATE);
                 pRFC.getTestRelates().add(file);
@@ -70,7 +77,7 @@ public class RelatedTestCaseParser  {
         }
     }
 
-    private Map<String, RelatedTestCase> parse(TestFile file, String code) throws Exception {
+    private Map<String, RelatedTestCase> parse(TestFile file, String code) {
         List<Edit> editList = file.getEditList();
 //		cleanEmpty(editList);
         List<Methodx> methodList = CompilationUtil.getAllMethod(code);

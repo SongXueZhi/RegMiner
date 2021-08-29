@@ -62,16 +62,17 @@ public class Miner {
         float i = 0;
         float j = (float) pRFCs.size();
         System.out.println("origin bfc number "+j);
-        FileUtilx.log("###############Start BFC SCORE EVOLUTION###########################");
-        tm.evoluteBFCList(pRFCs);
-        j = (float) pRFCs.size();
-        System.out.println("After evolution bfc number "+j);
-        FileUtilx.log("#######################END EVOLUTION###############################");
-        // 开始遍历每一个 Potential BFC
+//        FileUtilx.log("###############Start BFC SCORE EVOLUTION###########################");
+//        tm.evoluteBFCList(pRFCs);
+//        j = (float) pRFCs.size();
+//        System.out.println("After evolution bfc number "+j);
+//        FileUtilx.log("#######################END EVOLUTION###############################");
+//        // 开始遍历每一个 Potential BFC
         Iterator<PotentialRFC> iterator = pRFCs.iterator();
         FileUtilx.log("########################Start################################");
         while (iterator.hasNext()) {
             PotentialRFC pRfc = iterator.next();
+            tm.evolute(pRfc);
             i++;
             FileUtilx.log(i / j + "%");
             // TODO 此处的方法和类之间的affix按照mvn的习惯用"#"连接,没有配置子项目
@@ -98,7 +99,7 @@ public class Miner {
                     FileUtilx.apendResult(regressionLog);
                 }
                 setResult.add(regressionLog);
-//                bugStorage.saveBug(regression);
+               bugStorage.saveBug(regression);
             }
             ProgressMonitor.addDone(pRfc.getCommit().getName());
         }
