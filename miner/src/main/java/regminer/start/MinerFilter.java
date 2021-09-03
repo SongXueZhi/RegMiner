@@ -5,6 +5,7 @@ import regminer.constant.Conf;
 import regminer.git.provider.Provider;
 import regminer.miner.PotentialBFCDetector;
 import regminer.model.PotentialRFC;
+import regminer.utils.FileUtilx;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -19,15 +20,12 @@ public class MinerFilter {
 
     public void handleTask() throws Exception {
         List<String> filter = new ArrayList<>();
-        filter.add("04babff3798680e012646988841bcc710a9e3c54");
+        filter.add("f627193ce0950f0d55ed1b4f6a2fe9973447853a");
         PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
         Miner.pRFCs = null;
         Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
         Miner.singleThreadHandle();
     }
-
-
-
     public static void main(String[] args) throws Exception {
         MinerFilter minerFilter = new  MinerFilter();
         minerFilter.prepare();

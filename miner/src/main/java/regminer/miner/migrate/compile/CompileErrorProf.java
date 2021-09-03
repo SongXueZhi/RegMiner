@@ -4,12 +4,14 @@ import com.zhixiangli.code.similarity.CodeSimilarity;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.*;
 import regminer.ast.JdtFieldRetriever;
+import regminer.constant.Conf;
 import regminer.coverage.model.CoverMethod;
 import regminer.coverage.model.CoverNode;
 import regminer.miner.BFCFixPatchParser;
 import regminer.model.Methodx;
 import regminer.model.NormalFile;
 import regminer.model.PotentialRFC;
+import regminer.model.TestFile;
 import regminer.utils.CompilationUtil;
 import regminer.utils.FileUtilx;
 
@@ -32,50 +34,78 @@ public class CompileErrorProf {
      * @param coverNodes
      * @throws Exception
      */
-    public void tryRepairCE(PotentialRFC pRFC, File commitDir, List<CoverNode> coverNodes) throws Exception {
-        FileUtilx.log("Compile error and try repair.....");
-        // pRFC need make sure fix patch,which can't mending to commit
-        if (!pRFC.isHaveEquipFixPatch()) {
-            fixPatchParser.equipFixPatchToRFC(pRFC);
+    public void tryRepairCE(PotentialRFC pRFC, File commitDir, List<CoverNode> coverNodes){
+        if (Conf.code_cover == false){
+            try {
+                tryDegradedAPI(pRFC,commitDir);
+            } catch (IOException e) {
+
+            }
+            return;
         }
-        File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
-        List<NormalFile> normalFiles = pRFC.getNormalJavaFiles();
-        // mending missing node  in commit
-        List<String> doneClass = new ArrayList<>();
-        List<CoverNode> doneNode = new ArrayList<>();
-        List<MethodDeclaration> doneMethodDeclarations = new ArrayList<>();
-        for (CoverNode coverNode : coverNodes) { //todo adddone
-            // if cover class not exist in commit c, mending it  to c from bfcdir
-            String packagePath = coverNode.getCoverPackage().getName().replace(".", File.separator);
-            String classPath = packagePath + File.separator
-                    + coverNode.getCoverClass().getFileName();
-            File file = new File(commitDir + File.separator + srcPath + File.separator + classPath);
-            if (!file.exists()) { // whether class in commit
-                mendingClass(classPath, file, bfcDir, commitDir, normalFiles);
-                doneClass.add(file.getAbsolutePath());
-            } else {
-                if (doneClass.contains(file.getAbsolutePath()) || doneNode.contains(coverNode)) {
-                    continue;
-                }
-                // If cover class  exits in commit , judge methodNode
-                // cover method node Also can't in fix Path
-                CoverMethod coverMethod = coverNode.getCoverMethod();
-                if (notMethodInFixPatch(classPath, coverMethod.getName(), coverMethod.getLine(), normalFiles)) {
-                    // mending method
-                    File bfcFile = new File(bfcDir + File.separator + srcPath + File.separator + classPath);
-                    CompilationUnit bfcUnit = CompilationUtil.parseCompliationUnit(FileUtilx.readContentFromFile(bfcFile));
-                    CompilationUnit bicUnit = CompilationUtil.parseCompliationUnit(FileUtilx.readContentFromFile(file));
-                    Methodx methodxInBFC = getMethodDeclarationFromCoverMethod(coverMethod, bfcUnit);
-                    if (doneMethodDeclarations.contains(methodxInBFC.getMethodDeclaration())) {
+        try {
+            FileUtilx.log("Compile error and try repair.....");
+            // pRFC need make sure fix patch,which can't mending to commit
+            if (!pRFC.isHaveEquipFixPatch()) {
+                fixPatchParser.equipFixPatchToRFC(pRFC);
+            }
+            File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
+            List<NormalFile> normalFiles = pRFC.getNormalJavaFiles();
+            // mending missing node  in commit
+            List<String> doneClass = new ArrayList<>();
+            List<CoverNode> doneNode = new ArrayList<>();
+            List<MethodDeclaration> doneMethodDeclarations = new ArrayList<>();
+            for (CoverNode coverNode : coverNodes) { //todo adddone
+                // if cover class not exist in commit c, mending it  to c from bfcdir
+                String packagePath = coverNode.getCoverPackage().getName().replace(".", File.separator);
+                String classPath = packagePath + File.separator
+                        + coverNode.getCoverClass().getFileName();
+                File file = new File(commitDir + File.separator + srcPath + File.separator + classPath);
+                if (!file.exists()) { // whether class in commit
+                    mendingClass(classPath, file, bfcDir, commitDir, normalFiles);
+                    doneClass.add(file.getAbsolutePath());
+                } else {
+                    if (doneClass.contains(file.getAbsolutePath()) || doneNode.contains(coverNode)) {
                         continue;
                     }
-                    if (!methodMatch(bicUnit, methodxInBFC)) {
-                        mendingMethod(file, bicUnit, bfcUnit, methodxInBFC, doneMethodDeclarations);
+                    // If cover class  exits in commit , judge methodNode
+                    // cover method node Also can't in fix Path
+                    CoverMethod coverMethod = coverNode.getCoverMethod();
+                    if (notMethodInFixPatch(classPath, coverMethod.getName(), coverMethod.getLine(), normalFiles)) {
+                        // mending method
+                        File bfcFile = new File(bfcDir + File.separator + srcPath + File.separator + classPath);
+                        CompilationUnit bfcUnit = CompilationUtil.parseCompliationUnit(FileUtilx.readContentFromFile(bfcFile));
+                        CompilationUnit bicUnit = CompilationUtil.parseCompliationUnit(FileUtilx.readContentFromFile(file));
+                        Methodx methodxInBFC = getMethodDeclarationFromCoverMethod(coverMethod, bfcUnit);
+                        if (doneMethodDeclarations.contains(methodxInBFC.getMethodDeclaration())) {
+                            continue;
+                        }
+                        if (!methodMatch(bicUnit, methodxInBFC)) {
+                            mendingMethod(file, bicUnit, bfcUnit, methodxInBFC, doneMethodDeclarations);
+                        }
                     }
                 }
             }
-        }
+        }catch (Exception exception){
 
+        }
+        try {
+            tryDegradedAPI(pRFC,commitDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void tryDegradedAPI(PotentialRFC pRFC, File commitDir) throws IOException {
+        for (TestFile file : pRFC.getTestCaseFiles()) {
+            File testFile = new File(commitDir, file.getNewPath());
+            String content = FileUtilx.readContentFromFile(testFile);
+            content=content.replace("org.junit.jupiter.api.Assertions.*;", "org.junit.Assert.*;")
+            .replace("org.junit.jupiter.api.Test;","org.junit.Test;");
+            testFile.deleteOnExit();
+            testFile.mkdirs();
+            FileUtils.writeStringToFile(testFile,content);
+        }
     }
 
     public void mendingMethod(File commitFile, CompilationUnit bicUnit, CompilationUnit bfcUnit, Methodx methodx, List<MethodDeclaration> doneMethodDeclarations) {

@@ -36,7 +36,6 @@ public class TestCaseMigrator extends Migrator {
     public int migrate(@NotNull PotentialRFC pRFC, String bic) throws Exception {
         FileUtilx.log("bic:" + bic);
         File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
-        CompileErrorProf compileErrorProf = new CompileErrorProf();
         pRFC.fileMap.put(bic, bicDirectory);
         mergeTwoVersion_BaseLine(pRFC, bicDirectory);
         int a = -2000;
@@ -44,6 +43,7 @@ public class TestCaseMigrator extends Migrator {
         if (compile(bicDirectory, true)) {
             a = testSuite(bicDirectory, pRFC.getTestCaseFiles());
         } else {
+            CompileErrorProf compileErrorProf = new CompileErrorProf();
             compileErrorProf.tryRepairCE(pRFC, bicDirectory, pRFC.coverNodes);
             if (compile(bicDirectory, true)) {
                 a = testSuite(bicDirectory, pRFC.getTestCaseFiles());

@@ -211,9 +211,9 @@ public class BICFinder {
 
         int middle = (low + high) / 2; // 初始中间位置
 
-        int a = test(arr[middle], middle);
+        int a = getTestResult(arr[middle], middle);
         boolean result = a == TestCaseMigrator.FAL;
-        int b = test(arr[middle - 1], middle);
+        int b = getTestResult(arr[middle - 1], middle);
         boolean result1 = b == TestCaseMigrator.PASS;
         if (result && result1) {
             FileUtilx.log("regression+1");
