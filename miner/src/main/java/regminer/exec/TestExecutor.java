@@ -15,7 +15,6 @@ public class TestExecutor extends Executor {
 
 	// 请注意以最小的单元运行任务
 	public boolean execBuildWithResult(String cmd, boolean record) throws Exception {
-		boolean result = false;
 		try {
 			if (OS.contains(OS_WINDOWS)) {
 				pb.command("cmd.exe", "/c", cmd);
@@ -34,18 +33,17 @@ public class TestExecutor extends Executor {
 				sb.append(line + "\n");
 				// FileUtils.writeStringToFile(new File("build_log.txt"), line, true);
 				if (line.contains("success")) {
-					result = true;
+					IOUtils.close(inputStr,bufferReader);
+					process.destroy();
+					return  true;
 				}
-			}
-			if (record && !result) {
-				record(sb.toString());
 			}
 			IOUtils.close(inputStr,bufferReader);
 			process.destroy();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		return result;
+		return false;
 	}
 
 
@@ -68,22 +66,29 @@ public class TestExecutor extends Executor {
 			InputStreamReader inputStr = new InputStreamReader(process.getInputStream());
 			BufferedReader bufferReader = new BufferedReader(inputStr);
 			String line;
+			boolean testCE =false;
 			while ((line = bufferReader.readLine()) != null) {
 				line = line.toLowerCase();
 				if (line.contains("build success")) {
 					t.cancel();
+					IOUtils.close(inputStr,bufferReader);
+					process.destroy();
 					return MigrateFailureType.TESTSUCCESS;
 				} else if (line.contains("compilation error") || line.contains("compilation failure")) {
-					t.cancel();
-					return MigrateFailureType.CompilationFailed;
+					testCE =true;
 				} else if (line.contains("no test")) {
 					t.cancel();
+					IOUtils.close(inputStr,bufferReader);
+					process.destroy();
 					return MigrateFailureType.NoTests;
 				}
 			}
-			t.cancel();
-			IOUtils.close(inputStr,bufferReader);
-			process.destroy();
+			if (testCE){
+				t.cancel();
+				IOUtils.close(inputStr,bufferReader);
+				process.destroy();
+				return MigrateFailureType.CompilationFailed;
+			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

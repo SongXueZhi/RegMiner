@@ -46,7 +46,20 @@ public class TestCaseMigrator extends Migrator {
             return CE;
         }
     }
-
+    public int testClass(TestFile testFile) throws Exception {
+        MigrateFailureType type = exec.execTestWithResult(Conf.testLine + testFile.getQualityClassName());
+        FileUtilx.log("try test class");
+        if (type == MigrateFailureType.NONE) {
+            FileUtilx.log("FAL");
+            return FAL;
+        }
+        if (type == MigrateFailureType.TESTSUCCESS) {
+            FileUtilx.log("PASS");
+            return PASS;
+        }
+        FileUtilx.log("UNRESOLVE");
+        return UNRESOLVE;
+    }
     public boolean compile(File file, boolean record) throws Exception {
         exec.setDirectory(file);
         return exec.execBuildWithResult(Conf.compileLine, record);
@@ -80,6 +93,7 @@ public class TestCaseMigrator extends Migrator {
     public int testBFCPMethod(@NotNull TestFile testSuite, StringJoiner sj) throws Exception {
         boolean result = false;
         boolean result1 = false;
+        boolean result2 = false;
         Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
         for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, RelatedTestCase> entry = it.next();
@@ -94,6 +108,9 @@ public class TestCaseMigrator extends Migrator {
             if (type == MigrateFailureType.TESTSUCCESS) {
                 result1 = true;
             }
+            if (type == MigrateFailureType.NoTests) {
+                result2 = true;
+            }
         }
         FileUtilx.log("Test bic " + sj);
         if (result1) {
@@ -103,6 +120,9 @@ public class TestCaseMigrator extends Migrator {
         if (result) {
             FileUtilx.log("FAL");
             return FAL;
+        }
+        if (result2) {
+            return testClass(testSuite);
         }
         FileUtilx.log("UNRESOLVE");
         return UNRESOLVE;

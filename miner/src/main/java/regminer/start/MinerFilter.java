@@ -19,8 +19,7 @@ public class MinerFilter {
 
     public void handleTask() throws Exception {
         List<String> filter = new ArrayList<>();
-        filter.add("5ca2b3bd42add17fe2c4ff56d88ea5cfd457ae30");
-        //filter.add("11ea8be0626d0d8de285ca73b779b074437194e2");
+        filter.add("4bc0c553e40ce1e47d8d2a6a43df5c5923898f8c");
         PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
         Miner.pRFCs = null;
         Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
@@ -31,6 +30,7 @@ public class MinerFilter {
 
     public static void main(String[] args) throws Exception {
         MinerFilter minerFilter = new  MinerFilter();
+        minerFilter.prepare();
         minerFilter.handleTask();
     }
 }
