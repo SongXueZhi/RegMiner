@@ -26,7 +26,6 @@ public class Conf {
 
 	public static String CACHE_PATH = PROJECT_PATH + File.separator + "cache";
 
-	public static String LOG_Path = PROJECT_PATH + File.separator + "log.txt";
 	public static String RESULT_Path = PROJECT_PATH + File.separator + "regression.csv";
 
 	// extra with clone
@@ -38,4 +37,6 @@ public class Conf {
 	public static String BIC_SET_PATH = "bic_set_file";
 
 	public static boolean code_cover =ConfigLoader.code_cover;
+
+	public static boolean auto_compile =ConfigLoader.auto_compile;
 }

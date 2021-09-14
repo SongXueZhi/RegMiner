@@ -33,7 +33,6 @@ public class BICFinder {
     }
 
     public void createBICLog() {
-        exec.setDirectory(new File("/home/sxz/Desktop/RegMiner"));
         exec.exec("rm -rf issues");
         exec.exec("rm -rf results");
         exec.exec(

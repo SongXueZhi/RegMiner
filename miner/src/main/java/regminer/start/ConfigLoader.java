@@ -25,6 +25,7 @@ public class ConfigLoader {
     private final static String KEY_JAVA_HOME = "JAVA_HOME";
     private final static String CONFIGPATH = "env.properties";
     private final static String CODE_COVER = "code_cover";
+    private final static String AUTO_COMPILE = "auto_compile";
     private final static String COMMAND_LINE = "command_line";
     private final static String TEST_LINE = "test_line";
     private final static String TEST_SYMBOL = "test_symbol";
@@ -35,6 +36,7 @@ public class ConfigLoader {
     public static String testLine = "";
     public static String testSymbol = "";
     public static boolean code_cover = false;
+    public static boolean auto_compile = false;
     private static String JAVA_HONE = "";
 
     public static void refresh() {
@@ -66,6 +68,9 @@ public class ConfigLoader {
         envPath = JAVA_HONE + ";" + envPath;
         if (prop.getProperty(CODE_COVER).equals("1")) {
             code_cover = true;
+        }
+        if(prop.getProperty(AUTO_COMPILE).equals("1")){
+            auto_compile =true;
         }
     }
 }
