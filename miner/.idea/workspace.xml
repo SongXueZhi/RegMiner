@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="eaa3034f-5941-4528-a85e-2808f3395b6e" name="Default Changelist" comment="Add new task to SongXueZhi" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="baseline" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="ProjectId" id="1wzKat5MkYx9f7d9WKsXhzdnpkS" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+  </component>
+  <component name="RunManager" selected="Application.MinerFilter">
+    <configuration name="Miner" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="regminer.start.Miner" />
+      <module name="RegMiner" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="regminer.start.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MinerFilter" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="regminer.start.MinerFilter" />
+      <module name="RegMiner" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="regminer.start.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.MinerFilter" />
+        <item itemvalue="Application.Miner" />
+        <item itemvalue="Application.MinerFilter" />
+        <item itemvalue="Application.Miner" />
+        <item itemvalue="Application.MinerFilter" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="eaa3034f-5941-4528-a85e-2808f3395b6e" name="Default Changelist" comment="" />
+      <created>1629456046600</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1629456046600</updated>
+      <workItem from="1629456051423" duration="80000" />
+      <workItem from="1629467459438" duration="25000" />
+      <workItem from="1629524239003" duration="3719000" />
+      <workItem from="1629553183641" duration="9000" />
+      <workItem from="1629644084030" duration="577000" />
+      <workItem from="1629810983788" duration="474000" />
+      <workItem from="1629815799813" duration="69000" />
+      <workItem from="1629959927386" duration="1213000" />
+      <workItem from="1629981613096" duration="601000" />
+      <workItem from="1629986646141" duration="51000" />
+      <workItem from="1630154045979" duration="536000" />
+      <workItem from="1630254478868" duration="2776000" />
+      <workItem from="1630257988071" duration="735000" />
+      <workItem from="1630394081764" duration="540000" />
+      <workItem from="1630397416235" duration="21000" />
+      <workItem from="1630693359950" duration="5717000" />
+      <workItem from="1630699796704" duration="8115000" />
+      <workItem from="1630731612771" duration="1231000" />
+      <workItem from="1630741518367" duration="19000" />
+      <workItem from="1631621084587" duration="351000" />
+      <workItem from="1631621440927" duration="1845000" />
+    </task>
+    <task id="LOCAL-00001" summary="add MinerFilter">
+      <created>1629528631635</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1629528631635</updated>
+    </task>
+    <task id="LOCAL-00002" summary="fix testcase parser null point exception">
+      <created>1630255801052</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1630255801053</updated>
+    </task>
+    <task id="LOCAL-00003" summary="improve">
+      <created>1630693404790</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1630693404790</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add new task to SongXueZhi">
+      <created>1631623088083</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1631623088083</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="add MinerFilter" />
+    <MESSAGE value="fix testcase parser null point exception" />
+    <MESSAGE value="improve" />
+    <MESSAGE value="Add new task to SongXueZhi" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add new task to SongXueZhi" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/regminer/miner/migrate/BICFinder.java</url>
+          <line>208</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/regminer/start/Miner.java</url>
+          <line>105</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/regminer/miner/migrate/BICFinder.java</url>
+          <line>176</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/regminer/miner/migrate/BICFinder.java</url>
+          <line>171</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
