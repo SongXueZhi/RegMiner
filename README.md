@@ -26,7 +26,73 @@ RegMiner:
 			|
 ```
 
+## Contribute to miner
+
+ **Env requirement:**  
+
+ Distinguishing between miner and mined projects, Miner relies on JDK11 and we recommend developing in Ubuntu.  
+
+ **Regression test:**  
+
+ Regression testing needs to be done before submitting the code. Steps are as follow:  
+
+1. Create a workspace for Miner,
+ ``mkdir miner_space``
+
+2. Create a directory of projects to be mined(we used univocity-parsers as the test data in the regression test),
+
+```bash
+  cd miner_space
+  mkdir univocity-parsers
+```
+
+3. Provide metadata for miner on projects,
+
+```bash
+  cd miner_space
+  git clone https://github.com/uniVocity/univocity-parsers.git meta
+```
+
+4. Configure the  workspace of miner and project names for the projects to be mined, and turn off the use of SQL functionality,
+
+```properties
+# Configuration file path : xxx/Regminer/miner/env.properties
+project_name =univocity-parsers
+root_dir =/home/xxx/miner_space/
+# Turn off sql function
+sql_enable =0
+```
+
+Note that! Miner does not reprocess already processed commits, so regression testing requires removing progress files generated in the mined project directory and turning off SQL functionality.
+
+## Contribute regressions
+
+1. Download our latest realase, or install miner by self.
+   
+2. In order to avoid data duplication, we will update the latest batch database files continuously, load our database into local mysql, and set ``SQL_enable =1``.
+
+3. Next add the configuration for local mysql
+   
+```properties
+# Configuration file path : xxx/Regminer/miner/env.properties
+project_name =univocity-parsers
+root_dir =/home/xxx/miner_space/
+################mysql config######################
+sql_enable =1
+sql_url =jdbc:mysql://x.x.x.x:3306/regression?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF8
+username =root
+passwd =xxxx
+```
+
+4. Execute "Regminer/miner/resources/sql/regression.sql" file in mysql to import data.
+
+5. Configure the JDk11 path for the execution file "run.sh"
+   E.g.
+
+   ```bash
+   /usr/lib/jvm/java-11-openjdk-amd64/bin/java -jar ./miner.jar
+   ```
+
 ## Reference
 
 [1] SZZUnleashed : an implementation of the SZZ algorithm , https://github.com/wogscpar/SZZUnleashed, Accessed in  21 March, 2021.
-
