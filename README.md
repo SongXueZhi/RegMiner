@@ -67,7 +67,7 @@ Note that! Miner does not reprocess already processed commits, so regression tes
 
 ## Contribute regressions
 
-1. Download our latest realase, or install miner by self.
+1. Download our latest [realase](https://github.com/SongXueZhi/RegMiner/releases), or install miner by self.
    
 2. In order to avoid data duplication, we will update the latest batch database files continuously, load our database into local mysql, and set ``SQL_enable =1``.
 
