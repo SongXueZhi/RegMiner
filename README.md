@@ -64,6 +64,9 @@ sql_enable =0
 ```
 
 Note that! Miner does not reprocess already processed commits, so regression testing requires removing progress files generated in the mined project directory and turning off SQL functionality.
+```bash
+rm -f xxxx/miner_space/univocity-parsers/progress.details
+```
 
 ## Contribute regressions
 
