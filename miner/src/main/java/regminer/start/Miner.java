@@ -99,7 +99,9 @@ public class Miner {
                     FileUtilx.apendResult(regressionLog);
                 }
                 setResult.add(regressionLog);
-               bugStorage.saveBug(regression);
+                if (Conf.sql_enable){
+                    bugStorage.saveBug(regression);
+                }
             }
             ProgressMonitor.addDone(pRfc.getCommit().getName());
         }

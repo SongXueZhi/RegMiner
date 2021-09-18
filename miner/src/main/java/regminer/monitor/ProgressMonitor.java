@@ -1,8 +1,8 @@
 package regminer.monitor;
 
+import org.apache.commons.io.FileUtils;
 import regminer.constant.Conf;
 import regminer.model.PotentialRFC;
-import org.apache.commons.io.FileUtils;
 import regminer.sql.BugRetrieve;
 import regminer.utils.FileUtilx;
 
@@ -18,33 +18,35 @@ import java.util.Set;
  */
 public class ProgressMonitor {
 
-	public static Set<String> doneTaskList;
+    public static Set<String> doneTaskList;
 
-	public static void load() {
-		doneTaskList = FileUtilx.readSetFromFile(Conf.PROJECT_PATH + File.separator + "progress.details");
-		Set<String> regressionsInSql =new BugRetrieve().getRegressionsFromDB();
-		doneTaskList.addAll(regressionsInSql);
-	}
+    public static void load() {
+        doneTaskList = FileUtilx.readSetFromFile(Conf.PROJECT_PATH + File.separator + "progress.details");
+        if (Conf.sql_enable) {
+            Set<String> regressionsInSql = new BugRetrieve().getRegressionsFromDB();
+            doneTaskList.addAll(regressionsInSql);
+        }
+    }
 
-	public static void rePlan(List<PotentialRFC> pRFCs) {
-		FileUtilx.log("已完成: " + doneTaskList.size());
-		Iterator<PotentialRFC> iterator = pRFCs.iterator();
-		while (iterator.hasNext()) {
-			PotentialRFC pRfc = iterator.next();
-			if (doneTaskList.contains(pRfc.getCommit().getName())) {
-				iterator.remove();
-			}
-		}
-		FileUtilx.log("剩余: " + pRFCs.size());
-	}
+    public static void rePlan(List<PotentialRFC> pRFCs) {
+        FileUtilx.log("Completed: " + doneTaskList.size());
+        Iterator<PotentialRFC> iterator = pRFCs.iterator();
+        while (iterator.hasNext()) {
+            PotentialRFC pRfc = iterator.next();
+            if (doneTaskList.contains(pRfc.getCommit().getName())) {
+                iterator.remove();
+            }
+        }
+        FileUtilx.log("The remaining: " + pRFCs.size());
+    }
 
-	@SuppressWarnings("deprecation")
-	public static void addDone(String name) {
-		try {
-			FileUtils.writeStringToFile(new File(Conf.PROJECT_PATH + File.separator + "progress.details"), name + "\n",
-					true);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    @SuppressWarnings("deprecation")
+    public static void addDone(String name) {
+        try {
+            FileUtils.writeStringToFile(new File(Conf.PROJECT_PATH + File.separator + "progress.details"), name + "\n",
+                    true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

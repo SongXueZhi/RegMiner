@@ -17,12 +17,14 @@
 package regminer.start;
 
 import org.eclipse.jgit.api.Git;
+import org.junit.Ignore;
 import org.junit.Test;
 import regminer.constant.Conf;
 import regminer.git.provider.Provider;
 import regminer.miner.PotentialBFCDetector;
 import regminer.model.PotentialRFC;
 import regminer.testsuite.RegMinerTest;
+import regminer.utils.FileUtilx;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -36,7 +38,17 @@ public class MinerTest extends RegMinerTest {
         Miner.git = new Git(Miner.repo);
 
     }
+    @Ignore
+    @Test
+    public void regressionTest() throws Exception {
+        List<String> filter = new ArrayList<>(FileUtilx.readSetFromFile("resources/regression_for_test.csv"));
+        PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
+        Miner.pRFCs = null;
+        Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
+        Miner.singleThreadHandle();
+    }
 
+    @Ignore
     @Test
     public void testSearchSuccess() throws Exception {
         List<String> filter = new ArrayList<>();
@@ -48,6 +60,7 @@ public class MinerTest extends RegMinerTest {
         Miner.singleThreadHandle();
     }
 
+    @Ignore
     @Test
     public void testSearchFailed() throws Exception {
         List<String> filter = new ArrayList<>();
@@ -165,7 +178,7 @@ public class MinerTest extends RegMinerTest {
  * FAL
  * 回归+1
  * 成功1.0个，共1.0个: 1.0
-  */
+ */
 /**
  * failed case
  * 总共分析了1条commit

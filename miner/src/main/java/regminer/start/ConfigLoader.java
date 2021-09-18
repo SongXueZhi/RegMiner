@@ -5,6 +5,7 @@
  */
 package regminer.start;
 
+import regminer.sql.MysqlManager;
 import regminer.utils.FileUtilx;
 
 import java.io.File;
@@ -17,7 +18,6 @@ import java.util.Properties;
  * @author knightsong
  */
 public class ConfigLoader {
-    final static Class<ConfigLoader> here = ConfigLoader.class;
     private final static String PROJRCT_NAME = "project_name";
     private final static String ROOT_DIR = "root_dir";
     private static final Properties prop = new Properties();
@@ -29,6 +29,10 @@ public class ConfigLoader {
     private final static String COMMAND_LINE = "command_line";
     private final static String TEST_LINE = "test_line";
     private final static String TEST_SYMBOL = "test_symbol";
+    private final static String SQL_URL = "sql_url";
+    private final static String USER_NAME = "username";
+    private final static String PASSWD = "passwd";
+    private final static String SQL_ENABLE = "sql_enable";
     public static String envPath = "";
     public static String projectName = "";
     public static String rootDir = "";
@@ -50,7 +54,7 @@ public class ConfigLoader {
 //		path = path.substring(firstIndex, lastIndex);
 //		FileUtilx.log("env.pro " + path);
 //		pathx = path + File.separator + CONFIGPATH;
-		//#########################
+        //#########################
         // release code end
         //#########################
         try (InputStream inStream = new FileInputStream(new File(pathx))) {
@@ -66,11 +70,20 @@ public class ConfigLoader {
         testLine = prop.getProperty(TEST_LINE);
         testSymbol = prop.getProperty(TEST_SYMBOL);
         envPath = JAVA_HONE + ";" + envPath;
+
+        if (prop.getProperty(SQL_ENABLE).equals("0")) {
+            code_cover = false;
+        } else {
+            MysqlManager.URL = prop.getProperty(SQL_URL);
+            MysqlManager.NAME = prop.getProperty(USER_NAME);
+            MysqlManager.PWD = prop.getProperty(PASSWD);
+        }
+
         if (prop.getProperty(CODE_COVER).equals("1")) {
             code_cover = true;
         }
-        if(prop.getProperty(AUTO_COMPILE).equals("1")){
-            auto_compile =true;
+        if (prop.getProperty(AUTO_COMPILE).equals("1")) {
+            auto_compile = true;
         }
     }
 }

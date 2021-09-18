@@ -4,7 +4,43 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eaa3034f-5941-4528-a85e-2808f3395b6e" name="Default Changelist" comment="Add new task to SongXueZhi" />
+    <list default="true" id="eaa3034f-5941-4528-a85e-2808f3395b6e" name="Default Changelist" comment="Add new task to SongXueZhi">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_commands_3_10_100.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_contenttype_3_8_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_filesystem_1_9_100.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_jobs_3_12_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_resources_3_15_100.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_runtime_3_23_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_equinox_registry_3_11_0.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_osgi_3_17_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_commands_3_10_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_contenttype_3_7_1000.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_expressions_3_7_100.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_expressions_3_8_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_filesystem_1_9_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_jobs_3_11_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_resources_3_15_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_core_runtime_3_22_0.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_equinox_app_1_5_100.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_equinox_app_1_6_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_equinox_preferences_3_8_200.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_equinox_preferences_3_9_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_equinox_registry_3_10_200.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_platform_org_eclipse_osgi_3_16_300.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RegMiner.iml" beforeDir="false" afterPath="$PROJECT_DIR$/RegMiner.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/env.properties" beforeDir="false" afterPath="$PROJECT_DIR$/env.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/evosuite-1.0.6.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/callgraph/BcelClassVisitor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/callgraph/BcelMethodInvokeVisitor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/callgraph/DynamicCallManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/callgraph/MethodCaller.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/constant/Conf.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/regminer/constant/Conf.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/monitor/ProgressMonitor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/regminer/monitor/ProgressMonitor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/sql/MysqlManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/regminer/sql/MysqlManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/start/ConfigLoader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/regminer/start/ConfigLoader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/start/Miner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/regminer/start/Miner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/regminer/start/MinerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/regminer/start/MinerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/.gitignore" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,6 +63,7 @@
     <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="ProjectId" id="1wzKat5MkYx9f7d9WKsXhzdnpkS" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -45,7 +82,7 @@
     <property name="project.structure.proportion" value="0.0" />
     <property name="project.structure.side.proportion" value="0.0" />
   </component>
-  <component name="RunManager" selected="Application.MinerFilter">
+  <component name="RunManager" selected="JUnit.MinerTest.regressionTest">
     <configuration name="Miner" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="regminer.start.Miner" />
       <module name="RegMiner" />
@@ -83,13 +120,29 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="MinerTest.regressionTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="RegMiner" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="regminer.start.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="regminer.start" />
+      <option name="MAIN_CLASS_NAME" value="regminer.start.MinerTest" />
+      <option name="METHOD_NAME" value="regressionTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.MinerTest.regressionTest" />
         <item itemvalue="Application.MinerFilter" />
         <item itemvalue="Application.Miner" />
         <item itemvalue="Application.MinerFilter" />
         <item itemvalue="Application.Miner" />
-        <item itemvalue="Application.MinerFilter" />
       </list>
     </recent_temporary>
   </component>
@@ -122,6 +175,7 @@
       <workItem from="1630741518367" duration="19000" />
       <workItem from="1631621084587" duration="351000" />
       <workItem from="1631621440927" duration="1845000" />
+      <workItem from="1631885186410" duration="7811000" />
     </task>
     <task id="LOCAL-00001" summary="add MinerFilter">
       <created>1629528631635</created>
@@ -198,7 +252,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/regminer/start/Miner.java</url>
-          <line>105</line>
+          <line>107</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
@@ -210,6 +264,11 @@
           <url>file://$PROJECT_DIR$/src/main/java/regminer/miner/migrate/BICFinder.java</url>
           <line>171</line>
           <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/regminer/start/MinerTest.java</url>
+          <line>44</line>
+          <option name="timeStamp" value="16" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

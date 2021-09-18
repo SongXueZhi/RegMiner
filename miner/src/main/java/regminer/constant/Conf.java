@@ -39,4 +39,6 @@ public class Conf {
 	public static boolean code_cover =ConfigLoader.code_cover;
 
 	public static boolean auto_compile =ConfigLoader.auto_compile;
+
+	public static boolean sql_enable =true;
 }

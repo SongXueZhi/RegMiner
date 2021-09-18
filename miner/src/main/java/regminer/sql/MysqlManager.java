@@ -18,8 +18,6 @@
 
 package regminer.sql;
 
-import com.mysql.cj.protocol.Resultset;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -30,9 +28,9 @@ import java.util.Set;
 public class MysqlManager {
 
     public static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    public static final String URL = "jdbc:mysql://10.177.21.183:3306/regression?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF8";
-    public static final String NAME = "root";
-    public static final String PWD = "123456";
+    public static  String URL;
+    public static  String NAME;
+    public static  String PWD;
     private static Connection conn = null;
     private static Statement statement = null;
 
