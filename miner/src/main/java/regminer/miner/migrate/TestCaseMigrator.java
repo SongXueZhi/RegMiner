@@ -74,13 +74,19 @@ public class TestCaseMigrator extends Migrator {
         while (iterator.hasNext()) {
             TestFile testSuite = iterator.next();
             int res = testBFCPMethod(testSuite, sj);
+            if (res == UNRESOLVE){
+                res = testClass(testSuite);
+            }
             if (res == PASS) {
                 result1 = true;
             }
             if (res == FAL) {
                 result = true;
             }
+
         }
+
+        FileUtilx.log("Test bic " + sj);
         if (result1) {
             return PASS;
         } else if (result) {
@@ -108,11 +114,8 @@ public class TestCaseMigrator extends Migrator {
             if (type == MigrateFailureType.TESTSUCCESS) {
                 result1 = true;
             }
-            if (type == MigrateFailureType.NoTests) {
-                result2 = true;
-            }
         }
-        FileUtilx.log("Test bic " + sj);
+
         if (result1) {
             FileUtilx.log("PASS");
             return PASS;
@@ -120,9 +123,6 @@ public class TestCaseMigrator extends Migrator {
         if (result) {
             FileUtilx.log("FAL");
             return FAL;
-        }
-        if (result2) {
-            return testClass(testSuite);
         }
         FileUtilx.log("UNRESOLVE");
         return UNRESOLVE;
