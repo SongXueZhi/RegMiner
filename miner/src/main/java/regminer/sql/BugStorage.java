@@ -20,10 +20,21 @@ package regminer.sql;
 
 import regminer.constant.Conf;
 import regminer.model.Regression;
+import regminer.model.RegressionWithGap;
 
 public class BugStorage {
     public  void saveBug(Regression regression) {
+        if (regression instanceof RegressionWithGap){
+            saveRegressionWithGap((RegressionWithGap) regression);
+            return;
+        }
         String sql = "INSERT IGNORE INTO regressions (project_name,bug_id,bfc,buggy,bic,work,bfc_path,buggy_path,bic_path,work_path,testcase) VALUES "+
+                "('"+ Conf.PROJRCT_NAME+"','"+regression.getBugId()+"','"+regression.getBfcId()+"','"+regression.getBuggyId()+"','"+regression.getBicId()+"','"+regression.getWorkId()+"','"+regression.getBfcDirPath()+"','"+regression.getBuggyDirPath()+"'," +
+                "'"+regression.getBicDirPath()+"','"+regression.getWorkDirPath()+"','"+regression.getTestCase()+"')";
+        MysqlManager.executeUpdate(sql);
+    }
+    public void  saveRegressionWithGap(RegressionWithGap regression){
+        String sql = "INSERT IGNORE INTO regressions_with_gap (project_name,bug_id,bfc,buggy,bic,work,bfc_path,buggy_path,bic_path,work_path,testcase) VALUES "+
                 "('"+ Conf.PROJRCT_NAME+"','"+regression.getBugId()+"','"+regression.getBfcId()+"','"+regression.getBuggyId()+"','"+regression.getBicId()+"','"+regression.getWorkId()+"','"+regression.getBfcDirPath()+"','"+regression.getBuggyDirPath()+"'," +
                 "'"+regression.getBicDirPath()+"','"+regression.getWorkDirPath()+"','"+regression.getTestCase()+"')";
         MysqlManager.executeUpdate(sql);

@@ -130,7 +130,7 @@ public class BFCEvaluator extends Migrator {
                 purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
                 FileUtilx.log("bfc~1 test fal" + result);
             } else {
-                FileUtilx.log("bfc test success" + result);
+                FileUtilx.log("bfc~1 test success" + result);
                 emptyCache(bfcID);
                 return;
             }

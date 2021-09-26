@@ -11,6 +11,7 @@ import regminer.miner.migrate.BICFinder;
 import regminer.miner.migrate.BFCEvaluator;
 import regminer.model.PotentialRFC;
 import regminer.model.Regression;
+import regminer.model.RegressionWithGap;
 import regminer.monitor.ProgressMonitor;
 import regminer.sql.BugStorage;
 import regminer.utils.FileUtilx;
@@ -94,6 +95,11 @@ public class Miner {
                         .append(",").append(regression.getBicDirPath())
                         .append(",").append(regression.getWorkDirPath())
                         .append(",").append(regression.getTestCase());
+                if (regression instanceof RegressionWithGap){
+                    sb .append(",").append(1);
+                }else{
+                    sb .append(",").append(0);
+                }
                 String regressionLog = sb.toString();
                 if (!setResult.contains(regressionLog)) {
                     FileUtilx.apendResult(regressionLog);
