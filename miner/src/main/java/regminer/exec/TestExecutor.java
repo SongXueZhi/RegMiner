@@ -118,8 +118,8 @@ public class TestExecutor extends Executor {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return MigrateFailureType.NONE;
         }
+        return MigrateFailureType.NONE;
     }
 
     public List<String> runCommand(String cmd) {

@@ -63,7 +63,7 @@ public class MinerTest extends RegMinerTest {
     //fastjson_fcp.csv
     @Test
     public void testRegressionInFAlCePass() throws Exception {
-        List<String> filter = new ArrayList<>(FileUtilx.readSetFromFile("fastjson_fcp.csv"));
+        List<String> filter = new ArrayList<>(FileUtilx.readSetFromFile("resources/fastjson_fcp.csv"));
         PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
         Miner.pRFCs = null;
         Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
