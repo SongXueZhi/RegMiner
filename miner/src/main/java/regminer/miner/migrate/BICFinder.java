@@ -105,6 +105,7 @@ public class BICFinder {
                 falPoint = arr.length - 1;
             }
             if (passPoint < falPoint) {
+                FileUtilx.log("start searchStepByStep");
                 searchStepByStep(arr);
             }
             if (passPoint == falPoint) {
@@ -157,7 +158,7 @@ public class BICFinder {
     public void searchStepByStep(String[] arr) {
         int now = passPoint + 1;
         int i = 0;
-        while (now <= falPoint && i < 150) {
+        while (now <= falPoint && i < 50) {
             ++i;
             int a = getTestResult(arr[now], now);
             if (a == TestCaseMigrator.PASS) {
@@ -170,7 +171,7 @@ public class BICFinder {
         }
         now = falPoint - 1;
         i = 0;
-        while (now >= passPoint && i < 150) {
+        while (now >= passPoint && i < 50) {
             ++i;
             int a = getTestResult(arr[now], now);
             if (a == TestCaseMigrator.PASS) {

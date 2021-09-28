@@ -106,6 +106,7 @@ public class Migrator {
         //now none test file be remove
         //test Related file is removed after test bfc
         taskFiles.addAll(pRFC.getTestCaseFiles());
+        taskFiles.addAll(pRFC.getTestRelates());
         taskFiles.addAll(pRFC.getSourceFiles());
         for (ChangedFile cFile : taskFiles) {
             File file = new File(bfcFile, cFile.getNewPath());
