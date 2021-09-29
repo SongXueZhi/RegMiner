@@ -116,19 +116,19 @@ public class BICFinder {
 
         //handle hit result
         if (a >= 0 || (falPoint - passPoint) == 1) {
-            String working="";
-            String bic ="";
+            String working = "";
+            String bic = "";
             if (a >= 0) {
                 working = arr[a];
-                bic = arr[a+1];
-            }else if (a<0 && passPoint>=0 && (falPoint-passPoint)==1){
+                bic = arr[a + 1];
+            } else if (a < 0 && passPoint >= 0 && (falPoint - passPoint) == 1) {
                 working = arr[passPoint];
-                bic =arr[falPoint];
+                bic = arr[falPoint];
             }
-            if (working==""&&bic==""){
+            if (working == "" && bic == "") {
                 FileUtilx.log("work and bic eq empty");
                 System.out.println("work and bic eq empty");
-                return  null;
+                return null;
             }
             FileUtilx.log("regression+1");
             // 如果是regression组合一下需要记录的相关数据
@@ -137,10 +137,10 @@ public class BICFinder {
             String testcaseString = combinedRegressionTestResult();
             String bfcpId = pRFC.getBuggyCommitId();
             // 删除bfc目录下的其他构建测试历史文件
-            new SycFileCleanup().cleanDirectoryOnFilter(bfcFile, Arrays.asList(bfcId, bfcpId, bic,working));// 删除在regression定义以外的项目文件
+            new SycFileCleanup().cleanDirectoryOnFilter(bfcFile, Arrays.asList(bfcId, bfcpId, bic, working));// 删除在regression定义以外的项目文件
             return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, bic, working,
                     pRFC.fileMap.get(bfcId).getPath(), pRFC.fileMap.get(bfcpId).getPath(), pRFC.fileMap.get(bic).getPath(), pRFC.fileMap.get(working).getPath(), testcaseString);
-        }else if(a<0 && passPoint>=0 &&(falPoint-passPoint)>1){
+        } else if (a < 0 && passPoint >= 0 && (falPoint - passPoint) > 1) {
             FileUtilx.log("regression+1,with gap");
             exec.setDirectory(new File(Conf.PROJECT_PATH));
             String testcaseString = combinedRegressionTestResult();
@@ -158,7 +158,7 @@ public class BICFinder {
     public void searchStepByStep(String[] arr) {
         int now = passPoint + 1;
         int i = 0;
-        while (now <= falPoint && i < 50) {
+        while (now <= falPoint && i < 2) {
             ++i;
             int a = getTestResult(arr[now], now);
             if (a == TestCaseMigrator.PASS) {
@@ -171,7 +171,7 @@ public class BICFinder {
         }
         now = falPoint - 1;
         i = 0;
-        while (now >= passPoint && i < 50) {
+        while (now >= passPoint && i < 2) {
             ++i;
             int a = getTestResult(arr[now], now);
             if (a == TestCaseMigrator.PASS) {
@@ -207,11 +207,19 @@ public class BICFinder {
     }
 
     public int getTestResult(String bic, int index) {
+        int statu = -2000;
         if (status[index] != -2000) {
-            return status[index];
+            statu = status[index];
         } else {
-            return test(bic, index);
+            statu = test(bic, index);
         }
+        if (statu == TestCaseMigrator.FAL && index < falPoint) {
+            falPoint = index;
+        }
+        if (statu == TestCaseMigrator.PASS && index > passPoint) {
+            passPoint = index;
+        }
+        return statu;
     }
 
     public int test(String bic, int index) {
@@ -278,7 +286,6 @@ public class BICFinder {
         // 查找成功条件
         int statu = getTestResult(arr[middle], middle);
 
-
         if (statu == TestCaseMigrator.FAL && middle - 1 >= 0
                 && getTestResult(arr[middle - 1], middle - 1) == TestCaseMigrator.PASS) {
             return middle - 1;
@@ -286,12 +293,6 @@ public class BICFinder {
         if (statu == TestCaseMigrator.PASS && middle + 1 < arr.length
                 && getTestResult(arr[middle + 1], middle + 1) == TestCaseMigrator.FAL) {
             return middle;
-        }
-        if (statu == TestCaseMigrator.FAL && middle < falPoint) {
-            falPoint = middle;
-        }
-        if (statu == TestCaseMigrator.PASS && middle > passPoint) {
-            passPoint = middle;
         }
         // 查找策略
         if (statu == TestCaseMigrator.CE) {

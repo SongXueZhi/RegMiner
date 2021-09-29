@@ -47,13 +47,12 @@ public class MinerTest extends RegMinerTest {
         Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
         Miner.singleThreadHandle();
     }
-
     @Ignore
     @Test
     public void testSearchSuccess() throws Exception {
         List<String> filter = new ArrayList<>();
-        filter.add("5ca2b3bd42add17fe2c4ff56d88ea5cfd457ae30");
-        //filter.add("11ea8be0626d0d8de285ca73b779b074437194e2");
+        filter.add("69e1509843f5dd5ea3f91cb3dcd9fdb0fb100147");
+        filter.add("296fbdb5c555c10321e56eebdb62b146b0606d66");
         PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
         Miner.pRFCs = null;
         Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
@@ -61,6 +60,7 @@ public class MinerTest extends RegMinerTest {
     }
 
     //fastjson_fcp.csv
+    @Ignore
     @Test
     public void testRegressionInFAlCePass() throws Exception {
         List<String> filter = new ArrayList<>(FileUtilx.readSetFromFile("resources/fastjson_fcp.csv"));
