@@ -80,7 +80,7 @@ public class BFCEvaluator extends Migrator {
             testCaseParser.parseTestCases(pRFC);
 
             // 3. verity have bfc~1
-            if (pRFC.getCommit().getParentCount() <= 1) {
+            if (pRFC.getCommit().getParentCount() <= 0) {
                 FileUtilx.log("BFC no parent");
                 pRFC.getTestCaseFiles().clear();
                 emptyCache(bfcID);
