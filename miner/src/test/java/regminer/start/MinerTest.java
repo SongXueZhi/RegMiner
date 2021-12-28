@@ -41,7 +41,7 @@ public class MinerTest extends RegMinerTest {
     @Ignore
     @Test
     public void regressionTest() throws Exception {
-        List<String> filter = new ArrayList<>(FileUtilx.readSetFromFile("resources/regression_for_test.csv"));
+        List<String> filter = new ArrayList<>(FileUtilx.readListFromFile("resources/regression_for_test1.csv"));
         PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
         Miner.pRFCs = null;
         Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);

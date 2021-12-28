@@ -89,10 +89,6 @@ public class Miner {
                         .append(",").append(regression.getBuggyId())
                         .append(",").append(regression.getBicId())
                         .append(",").append(regression.getWorkId())
-                        .append(",").append(regression.getBfcDirPath())
-                        .append(",").append(regression.getBuggyDirPath())
-                        .append(",").append(regression.getBicDirPath())
-                        .append(",").append(regression.getWorkDirPath())
                         .append(",").append(regression.getTestCase());
                 if (regression instanceof RegressionWithGap){
                     sb .append(",").append(1);

@@ -7,11 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 
@@ -105,6 +101,25 @@ public class FileUtilx {
 
     public static Set<String> readSetFromFile(String path) {
         Set<String> result = new HashSet<>();
+        File file = new File(path);
+        try {
+            InputStream is = new FileInputStream(file);
+            if (file.exists() && file.isFile()) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    result.add(line);
+                }
+                br.close();
+            }
+        } catch (Exception e) {
+
+        }
+        return result;
+    }
+
+    public static List<String> readListFromFile(String path) {
+        List<String> result = new ArrayList<>();
         File file = new File(path);
         try {
             InputStream is = new FileInputStream(file);

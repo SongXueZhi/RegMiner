@@ -136,19 +136,15 @@ public class BICFinder {
             exec.setDirectory(new File(Conf.PROJECT_PATH));
             String testcaseString = combinedRegressionTestResult();
             String bfcpId = pRFC.getBuggyCommitId();
-            // 删除bfc目录下的其他构建测试历史文件
-            new SycFileCleanup().cleanDirectoryOnFilter(bfcFile, Arrays.asList(bfcId, bfcpId, bic, working));// 删除在regression定义以外的项目文件
-            return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, bic, working,
-                    pRFC.fileMap.get(bfcId).getPath(), pRFC.fileMap.get(bfcpId).getPath(), pRFC.fileMap.get(bic).getPath(), pRFC.fileMap.get(working).getPath(), testcaseString);
+            new SycFileCleanup().cleanDirectory(bfcFile);
+            return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, bic, working,testcaseString);
         } else if (a < 0 && passPoint >= 0 && (falPoint - passPoint) > 1) {
             FileUtilx.log("regression+1,with gap");
             exec.setDirectory(new File(Conf.PROJECT_PATH));
             String testcaseString = combinedRegressionTestResult();
             String bfcpId = pRFC.getBuggyCommitId();
-            // 删除bfc目录下的其他构建测试历史文件
-            new SycFileCleanup().cleanDirectoryOnFilter(bfcFile, Arrays.asList(bfcId, bfcpId, arr[falPoint], arr[passPoint]));// 删除在regression定义以外的项目文件
-            return new RegressionWithGap(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, arr[falPoint], arr[passPoint],
-                    pRFC.fileMap.get(bfcId).getPath(), pRFC.fileMap.get(bfcpId).getPath(), pRFC.fileMap.get(arr[falPoint]).getPath(), pRFC.fileMap.get(arr[passPoint]).getPath(), testcaseString);
+            new SycFileCleanup().cleanDirectory(bfcFile);// 删除在regression定义以外的项目文件
+            return new RegressionWithGap(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, arr[falPoint], arr[passPoint], testcaseString);
         }
         exec.setDirectory(new File(Conf.PROJECT_PATH));
         new SycFileCleanup().cleanDirectory(bfcFile);
