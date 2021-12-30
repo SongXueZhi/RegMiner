@@ -27,22 +27,12 @@ public class MinerFilter {
         Miner.singleThreadHandle();
     }
 
-    public void handleSingleTask() throws Exception {
-        List<String> filter = new ArrayList<>();
-        filter.add("e5210d1f9ef4f1d41ff0a8c4a2ab8e9192d5e087");
-        PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
-        Miner.pRFCs = null;
-        Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
-        Miner.singleThreadHandle();
-    }
-
 
     public static void main(String[] args) throws Exception {
         long s1 =System.currentTimeMillis();
         MinerFilter minerFilter = new  MinerFilter();
         minerFilter.prepare();
-        minerFilter.handleSingleTask();
-        // minerFilter.handleTask();
+        minerFilter.handleTask();
         long s2 = System.currentTimeMillis();
         System.out.println(s2-s1);
     }
