@@ -17,8 +17,12 @@ public class BICFinder {
     TestCaseMigrator testMigrater = new TestCaseMigrator();
     PotentialRFC pRFC;
     int[] status; // 切勿直接访问该数组
+
+    //XXX:CompileErrorSearch block
+    //all related code need involve
     int passPoint = Integer.MIN_VALUE;
     int falPoint = Integer.MAX_VALUE;
+    //block end
 
     public BICFinder() {
     }
