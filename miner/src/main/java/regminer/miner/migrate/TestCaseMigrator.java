@@ -74,13 +74,6 @@ public class TestCaseMigrator extends Migrator {
         while (iterator.hasNext()) {
             TestFile testSuite = iterator.next();
             int res = testBFCPMethod(testSuite, sj);
-
-            // XXX:TestDenpendency block
-            if (res == UNRESOLVE){
-                res = testClass(testSuite);
-            }
-            // block end
-
             if (res == PASS) {
                 result1 = true;
             }
