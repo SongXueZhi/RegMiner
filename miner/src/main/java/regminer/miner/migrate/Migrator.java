@@ -70,12 +70,16 @@ public class Migrator {
         // 相关测试用例
         List<TestFile> testSuite = pRFC.getTestCaseFiles();
         // 非测试用例的在测试目录下的其他文件
+
+        //###XXX:TestDenpendency BlocK
         List<TestFile> underTestDirJavaFiles = pRFC.getTestRelates();
         List<SourceFile> sourceFiles = pRFC.getSourceFiles();
+        //##block end
+
         // merge测试文件
         // 整合任务
         MergeTask mergeJavaFileTask = new MergeTask();
-        mergeJavaFileTask.addAll(testSuite).addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();
+        mergeJavaFileTask.addAll(testSuite).addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();//XXX:TestDenpendency BlocK
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
         for (Map.Entry<String, ChangedFile> entry : mergeJavaFileTask.getMap().entrySet()) {
             String newPathInBfc = entry.getKey();
@@ -98,6 +102,12 @@ public class Migrator {
 
     }
 
+    /**
+     *
+     * @param pRFC
+     * @param targetProjectDirectory
+     * @throws IOException
+     */
     public void copyToTarget(@NotNull PotentialRFC pRFC, File targetProjectDirectory) throws IOException {
         // copy
         String targetPath = null;
@@ -106,8 +116,12 @@ public class Migrator {
         //now none test file be remove
         //test Related file is removed after test bfc
         taskFiles.addAll(pRFC.getTestCaseFiles());
+
+        //###XXX:TestDenpendency BlocK
         taskFiles.addAll(pRFC.getTestRelates());
         taskFiles.addAll(pRFC.getSourceFiles());
+        //####Block end#####
+
         for (ChangedFile cFile : taskFiles) {
             File file = new File(bfcFile, cFile.getNewPath());
             // 测试文件是被删除则什么也不作。

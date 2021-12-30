@@ -94,7 +94,7 @@ public class BICFinder {
             status[i] = -2000;
         }
         // recursionBinarySearch(arr, 1, arr.length - 1);//乐观二分查找，只要不能编译，就往最新的时间走
-        int a = search(arr, 1, arr.length - 1); // 指数跳跃二分查找
+        int a = search(arr, 1, arr.length - 1); // 指数跳跃二分查找 XXX:CompileErrorSearch
         // 处理search结果
         String bfcId = pRFC.getCommit().getName();
         File bfcFile = new File(Conf.CACHE_PATH + File.separator + bfcId);
@@ -137,7 +137,7 @@ public class BICFinder {
             String testcaseString = combinedRegressionTestResult();
             String bfcpId = pRFC.getBuggyCommitId();
             new SycFileCleanup().cleanDirectory(bfcFile);
-            return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, bic, working,testcaseString);
+            return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, bic, working, testcaseString);
         } else if (a < 0 && passPoint >= 0 && (falPoint - passPoint) > 1) {
             FileUtilx.log("regression+1,with gap");
             exec.setDirectory(new File(Conf.PROJECT_PATH));
@@ -228,9 +228,45 @@ public class BICFinder {
         }
         return -1000;
     }
+    // XXX:git bisect
+    public int gitBisect(String[] arr, int low, int high) {
+
+        if (low > high) {
+            FileUtilx.log("search fal");
+            return -1;
+        }
+
+        int middle = (low + high) / 2; // 初始中间位置
+
+        int a = test(arr[middle], middle);
+        boolean result = a == TestCaseMigrator.FAL;
+
+        if (a == TestCaseMigrator.CE || a == TestCaseMigrator.UNRESOLVE) {
+            return -1;
+        }
+        int b = test(arr[middle - 1], middle);
+        boolean result1 = b == TestCaseMigrator.PASS;
+        if (b == TestCaseMigrator.CE || b == TestCaseMigrator.UNRESOLVE) {
+            return -1;
+        }
+        if (result && result1) {
+            FileUtilx.log("regression+1");
+            return middle;
+        }
+        if (result) {
+            // 测试用例不通过往左走
+            return gitBisect(arr, low, middle - 1);
+
+        } else if (result1) {
+            return gitBisect(arr, middle + 1, high);
+        } else {
+            return -1;
+        }
+    }
 
     /**
      * 乐观二分查找，现在已经放弃使用
+     * XXX:Optimism Search
      *
      * @param arr
      * @param low
@@ -263,8 +299,10 @@ public class BICFinder {
         }
     }
 
+
     /**
      * arr数组中的元素是bfc执行rev-list所得到的commitID数组
+     * XXX:CompileErrorSearch
      *
      * @param arr
      * @param low

@@ -127,7 +127,7 @@ public class BFCEvaluator extends Migrator {
             if (pRFC.getTestCaseFiles().size() > 0) {
                 ExperResult.numSuc++;
                 //删除无关的测试用例
-                purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
+                purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);//XXX:TestDenpendency:TEST REDUCE
                 FileUtilx.log("bfc~1 test fal" + result);
             } else {
                 FileUtilx.log("bfc~1 test success" + result);
