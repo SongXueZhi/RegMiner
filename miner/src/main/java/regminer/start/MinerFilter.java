@@ -5,7 +5,9 @@ import regminer.constant.Conf;
 import regminer.git.provider.Provider;
 import regminer.miner.PotentialBFCDetector;
 import regminer.model.PotentialRFC;
+import regminer.utils.FileUtilx;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,8 +20,16 @@ public class MinerFilter {
     }
 
     public void handleTask() throws Exception {
+        List<String> filter = new ArrayList<>(FileUtilx.readSetFromFile(Conf.PROJECT_PATH+ File.separator+"bfc.txt"));
+        PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
+        Miner.pRFCs = null;
+        Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
+        Miner.singleThreadHandle();
+    }
+
+    public void handleSingleTask() throws Exception {
         List<String> filter = new ArrayList<>();
-        filter.add("4bc0c553e40ce1e47d8d2a6a43df5c5923898f8c");
+        filter.add("e5210d1f9ef4f1d41ff0a8c4a2ab8e9192d5e087");
         PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
         Miner.pRFCs = null;
         Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
@@ -27,11 +37,14 @@ public class MinerFilter {
     }
 
 
-
     public static void main(String[] args) throws Exception {
+        long s1 =System.currentTimeMillis();
         MinerFilter minerFilter = new  MinerFilter();
         minerFilter.prepare();
-        minerFilter.handleTask();
+        minerFilter.handleSingleTask();
+        // minerFilter.handleTask();
+        long s2 = System.currentTimeMillis();
+        System.out.println(s2-s1);
     }
 }
 
