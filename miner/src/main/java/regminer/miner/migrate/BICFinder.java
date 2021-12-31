@@ -181,7 +181,7 @@ public class BICFinder {
         }
         if (result && result1) {
             FileUtilx.log("regression+1");
-            return middle;
+            return middle-1;
         }
         if (result) {
             // 测试用例不通过往左走
