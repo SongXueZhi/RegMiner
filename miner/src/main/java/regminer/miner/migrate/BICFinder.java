@@ -4,7 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import regminer.constant.Conf;
 import regminer.exec.TestExecutor;
 import regminer.finalize.SycFileCleanup;
-import regminer.model.*;
+import regminer.model.PotentialRFC;
+import regminer.model.Regression;
+import regminer.model.RelatedTestCase;
+import regminer.model.TestFile;
 import regminer.utils.FileUtilx;
 
 import java.io.File;
@@ -158,6 +161,7 @@ public class BICFinder {
         }
         return -1000;
     }
+
     // XXX:git bisect
     public int gitBisect(String[] arr, int low, int high) {
 
@@ -174,6 +178,10 @@ public class BICFinder {
         if (a == TestCaseMigrator.CE || a == TestCaseMigrator.UNRESOLVE) {
             return -1;
         }
+
+        if (middle - 1 < 0) {
+            return -1;
+        }
         int b = test(arr[middle - 1], middle);
         boolean result1 = b == TestCaseMigrator.PASS;
         if (b == TestCaseMigrator.CE || b == TestCaseMigrator.UNRESOLVE) {
@@ -181,7 +189,7 @@ public class BICFinder {
         }
         if (result && result1) {
             FileUtilx.log("regression+1");
-            return middle-1;
+            return middle - 1;
         }
         if (result) {
             // 测试用例不通过往左走
@@ -193,7 +201,6 @@ public class BICFinder {
             return -1;
         }
     }
-
 
 
     public List<String> revListCommand(String commitId) {
