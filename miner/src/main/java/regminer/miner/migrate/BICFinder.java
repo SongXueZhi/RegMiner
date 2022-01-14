@@ -93,7 +93,7 @@ public class BICFinder {
             status[i] = -2000;
         }
         // recursionBinarySearch(arr, 1, arr.length - 1);//乐观二分查找，只要不能编译，就往最新的时间走
-        int a = gitBisect(arr, 1, arr.length - 1);
+        int a = optimisticBinarySearch(arr, 1, arr.length - 1);
         // 处理search结果
         String bfcId = pRFC.getCommit().getName();
         File bfcFile = new File(Conf.CACHE_PATH + File.separator + bfcId);
@@ -162,8 +162,8 @@ public class BICFinder {
         return -1000;
     }
 
-    // XXX:git bisect
-    public int gitBisect(String[] arr, int low, int high) {
+    // XXX:optimistic binary search
+    public int optimisticBinarySearch(String[] arr, int low, int high) {
 
         if (low > high) {
             FileUtilx.log("search fal");
@@ -172,33 +172,20 @@ public class BICFinder {
 
         int middle = (low + high) / 2; // 初始中间位置
 
-        int a = test(arr[middle], middle);
+        int a = getTestResult(arr[middle], middle);
         boolean result = a == TestCaseMigrator.FAL;
-
-        if (a == TestCaseMigrator.CE || a == TestCaseMigrator.UNRESOLVE) {
-            return -1;
-        }
-
-        if (middle - 1 < 0) {
-            return -1;
-        }
-        int b = test(arr[middle - 1], middle);
+        int b = getTestResult(arr[middle - 1], middle);
         boolean result1 = b == TestCaseMigrator.PASS;
-        if (b == TestCaseMigrator.CE || b == TestCaseMigrator.UNRESOLVE) {
-            return -1;
-        }
         if (result && result1) {
             FileUtilx.log("regression+1");
             return middle - 1;
         }
         if (result) {
             // 测试用例不通过往左走
-            return gitBisect(arr, low, middle - 1);
+            return optimisticBinarySearch(arr, low, middle - 1);
 
-        } else if (result1) {
-            return gitBisect(arr, middle + 1, high);
         } else {
-            return -1;
+            return optimisticBinarySearch(arr, middle + 1, high);
         }
     }
 
