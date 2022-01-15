@@ -5,6 +5,7 @@
  */
 package regminer.start;
 
+import regminer.constant.Conf;
 import regminer.sql.MysqlManager;
 import regminer.utils.FileUtilx;
 
@@ -72,7 +73,7 @@ public class ConfigLoader {
         envPath = JAVA_HONE + ";" + envPath;
 
         if (prop.getProperty(SQL_ENABLE).equals("0")) {
-            code_cover = false;
+            Conf.sql_enable = false;
         } else {
             MysqlManager.URL = prop.getProperty(SQL_URL);
             MysqlManager.NAME = prop.getProperty(USER_NAME);
