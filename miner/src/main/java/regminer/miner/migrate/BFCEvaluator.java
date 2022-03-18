@@ -320,7 +320,9 @@ public class BFCEvaluator extends Migrator {
                         importDeclaration.delete();
                     }
                 }
-                FileUtils.forceDeleteOnExit(file);
+            if (file.exists()){
+                file.delete();
+            }
                 FileUtils.writeStringToFile(file, unit.toString());
             } catch (IOException e) {
                 e.printStackTrace();
