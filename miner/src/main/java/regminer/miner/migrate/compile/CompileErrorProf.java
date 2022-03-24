@@ -242,9 +242,11 @@ public class CompileErrorProf {
             FileUtils.copyToDirectory(fileInBFC, file.getParentFile());
             //mending interface and parentClass
             CompilationUnit unit = CompilationUtil.parseCompliationUnit(FileUtilx.readContentFromFile(fileInBFC));
-            TypeDeclaration typeDeclaration = (TypeDeclaration) unit.types().get(0);
-            List<Type> interfaces = typeDeclaration.superInterfaceTypes();
-            mendingInterfaces(fileInBFC, interfaces, unit.imports(), commitDir, bfcDir);
+            Object typeDeclaration =  unit.types().get(0);
+            if (typeDeclaration instanceof  TypeDeclaration){
+                List<Type> interfaces = ((TypeDeclaration) typeDeclaration).superInterfaceTypes();
+                mendingInterfaces(fileInBFC, interfaces, unit.imports(), commitDir, bfcDir);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
