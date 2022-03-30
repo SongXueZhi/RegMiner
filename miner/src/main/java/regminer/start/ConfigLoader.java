@@ -47,7 +47,7 @@ public class ConfigLoader {
     public static void refresh() {
         String pathx = CONFIGPATH;
         //###########################
-        // 发布release版本时候请解除注释
+        // 使用Eclipse发布release版本时候请解除注释
         //###########################
 //		String path = System.getProperty("java.class.path");
 //		int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
