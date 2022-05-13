@@ -36,9 +36,22 @@ Please follow the process to ensure that everything runs according to expectatio
 ## Folder Structure
 All the folders that are relevant to the project can be found under ```/home/regminer/issta```.
 
-## Close-world Experiment
+## Close-world Experiment + Ablation Study
 
-### RegMiner
+We prepare 50 regression bugs and 50 non-regression bugs where the details can be referred in (//TODO). 
+In this module, given a bug-fixing commit (either regression fixing commit or non-regression fixing commit) and a test case passing this commit, 
+RegMiner is expected to locate
+
+1. For regression fixing commit
+- the regression-inducing commit where the test case fails
+- the working commit where the test case passes
+
+2. For non-regression fixing commit
+- report the result that "this is not a regression"
+
+In the following, we prepare RegMiner and four of its variants (i.e., RegMiner¬TDM, RegMiner¬VEM+bisect, ?, ?) and compare their precision and recall. 
+In addition, our result is a *table* where each row is a bug-fixing commit, each column is an approach, and each entry shows yes/no (if yes, the commit ids of its regression-fixing commit and working commit)
+The whole process take about ? hours (we tested it on a XXX machine).
 
 **Step1:** Enter the working directory of the experiment.
 
@@ -54,71 +67,33 @@ python3 Automation.py
 
 **Step3:** Confirm the experimental results
 
-**Final results**. You can see the *regressions* hit by the method in the `xxx database` and results for each project in the `regression.csv` file in each project code directory.
 
-**Process log.**   You can see each *regression* search process in the `logmain` file under each project directory
-
-### RegMiner¬TDM
-
-**Step1:** Enter the working directory of the experiment.
-
-```bash
-cd /issta/close-world/regminer-tdm
+You can see the running progress as:
 ```
+Start processing RegMiner...
 
-**Step2:** Run the experimental script.
+bug-fixing commit kdh0138 in project XXX is processed, identified as a regression bug,
+its regression-inducing commit is abh0138, and its working commit is abh0169.
 
-```bash
-python3 Automation.py 
+bug-fixing commit kdh0138 in project XXX is processed, not identified as a regression bug.
+
+...
+
+Start processing RegMiner¬TDM...
+
+...
+
 ```
-
-**Step3:** Confirm the experimental results
-
-**Final results**. You can see the *regressions* hit by the method in the `xxx database` and results for each project in the `regression.csv` file in each project code directory.
-
-**Process log.**   You can see each *regression* search process in the `logmain` file under each project directory
-
-### RegMiner¬VEM+bisect
-
-**Step1:** Enter the working directory of the experiment.
-
-```bash
-cd  /issta/close-world/regminer-vem-bisect
-```
-
-**Step2:** Run the experimental script.
-
-```bash
-python3 Automation.py 
-```
-
-**Step3:** Confirm the experimental results
 
 **Final results**. You can see the *regressions* hit by the method in the `xxx database` and results for each project in the `regression.csv` file in each project code directory.
 
 **Process log.**   You can see each *regression* search process in the `logmain` file under each project directory
 
-### RegMiner¬TDM+Bisect
+##  Open-world Experiment + Ablation Study
 
-**Step1:** Enter the working directory of the experiment.
+We run RegMiner and its variants on ??? projects, and observe the regressions mined from those projects. 
+Here, we prepare ??? commits from the ??? projects, we expect that we can mine ??? regressions within ??? hours (we tested it on a XXX machine).
 
-```bash
-cd /issta/close-world/regminer-tdm-bisect
-```
-
-**Step2:** Run the experimental script.
-
-```bash
-python3 Automation.py 
-```
-
-**Step3:** Confirm the experimental results
-
-**Final results**. You can see the *regressions* hit by the method in the `xxx database` and results for each project in the `regression.csv` file in each project code directory.
-
-**Process log.**   You can see each *regression* search process in the `logmain` file under each project directory
-
-##  Open-world Experiment
 To use regminer, navigate to ```Open-World-Experiment/regminer```
 ### Run and Configuration
 **Step 1:** Entry the working dir.
