@@ -1,6 +1,7 @@
 # RegMiner
 
-A Mining Approach towards Automating Regression Dataset Construction from Code Evolution History
+A Mining Approach towards Automating Regression Dataset Construction from Code Evolution History.
+We are refactoring the project in regminer-x in order to make regminer more scalable. You can follow regminer-x for more updates.
 
 ## Catalog
 
