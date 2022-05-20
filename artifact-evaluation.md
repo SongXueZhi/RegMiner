@@ -51,7 +51,7 @@ RegMiner is expected to locate
 
 In the following, we prepare RegMiner and four of its variants (i.e., RegMiner¬TDM, RegMiner¬VEM+bisect, ?, ?) and compare their precision and recall. 
 In addition, our result is a *table* where each row is a bug-fixing commit, each column is an approach, and each entry shows yes/no (if yes, the commit ids of its regression-fixing commit and working commit)
-The whole process take about ? hours (we tested it on a XXX machine).
+The whole process take about 10 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04. ).
 
 **Step1:** Enter the working directory of the experiment.
 
@@ -92,7 +92,7 @@ Start processing RegMiner¬TDM...
 ##  Open-world Experiment + Ablation Study
 
 We run RegMiner and its variants on ??? projects, and observe the regressions mined from those projects. 
-Here, we prepare ??? commits from the ??? projects, we expect that we can mine ??? regressions within ??? hours (we tested it on a XXX machine).
+Here, we prepare ??? commits from the ??? projects, we expect that we can mine 83 regressions within 12 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04.).
 
 To use regminer, navigate to ```Open-World-Experiment/regminer```
 ### Run and Configuration
