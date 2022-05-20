@@ -4,26 +4,27 @@ In this document, we provide three aspects of artifact evaluation.
 
 RegMiner is a tool to retrieve the runnable regressions from code evolution history. Specifically, taking input as a set of git repository, RegMiner can search and isolate a list of *runnable* regressions from those repositories. Each regression is manifested in terms of a test case passing a fixing version, failing a regression version, and passing the previous working version.
 
-We provide RegMiner in a Docker environment. The docker file is regminer-issta.tar.gz.
+We provide RegMiner in a Docker environment. The docker file is issta-artifact.tar.gz.
 
-After downloading the file regminer-issta.tar.gz, please use the following command to unzip the file:
+After downloading the file issta-artifact.tar.gz, please use the following command to unzip the file:
 
+```bash
+tar -zxvf issta-artifact.tar.gz
 ```
-tar -zxvf regminer-issta.tar.gz
-```
 
-Then, import the docker images by:
+Then, build the docker images by:
 
-```
-docker import regminer-issta.tar regminer-issta
+```bash
+cd issta-artifact
+docker build -t issta-artifact .
 ```
 
 Then, build the docker container by:
-```
-docker run -it regminer-issta /bin/bash 
+```bash
+docker run -it issta-artifact
 ```
 
-The working directory is `issta/`
+The working directory is `issta/`. Please allow approximately **50g** of disk space for the container, this is due to the fact that RegMiner will be constantly downloading project dependencies.
 
 # Detailed Description
 
@@ -31,7 +32,7 @@ The working directory is `issta/`
 2. In the open-world experiment, we introduced how to use *RegMiner* to mine *regressions* in open-source projects.
 3. In the dataset tool, we show how a user can use the mined *regressions.*
 
-Please follow the process to ensure that everything runs according to expectation.
+Please follow the process to ensure that everything runs according to expectation. The following experiments are independent of each other, but note that the results may be skewed due to the need to download *runtime dependencies* using tools such as *maven* when compiling.
 
 ## Folder Structure
 All the folders that are relevant to the project can be found under ```/issta/regminer/```.
@@ -51,18 +52,18 @@ RegMiner is expected to locate
 
 In the following, we prepare RegMiner and four of its variants (i.e., RegMiner¬TDM, RegMiner¬VEM+bisect,RegMiner¬TDM+bisect, RegMiner¬TDM+gitblame) and compare their precision and recall. 
 In addition, our result is a *table* where each row is a bug-fixing commit, each column is an approach, and each entry shows yes/no (if yes, the commit ids of its regression-fixing commit and working commit)
-The whole process take about 10 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04. ).
+The whole process take about 8 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04. ).
 
 **Step1:** Enter the working directory of the experiment.
 
 ```bash
-cd /issta/close-world/regminer
+cd /issta/regminer/closed-world
 ```
 
 **Step2:** Run the experimental script.
 
 ```bash
-python3 Automation.py 
+bash start.sh
 ```
 
 **Step3:** Confirm the experimental results
@@ -85,35 +86,39 @@ Start processing RegMiner¬TDM...
 
 ```
 
-**Final results**. You can see the *regressions* hit by the method in the `xxx database` and results for each project in the `regression.csv` file in each project code directory.
+**Process log.**   You can see each *regression* search process in the `logmain` file under each project directory, steps as follow:
 
-**Process log.**   You can see each *regression* search process in the `logmain` file under each project directory
+```bash
+docker exec -it issta-artifact /bin/bash #start a new terminal
+cd /issta/regminer/closed-world
+cat -f projects/apache_commons-lang/logmain  # e.g. look up for apache/commons-lang search process
+```
 
-##  Open-world Experiment + Ablation Study
+##  Open-world Experiment 
 
-We run RegMiner and its variants on ??? projects, and observe the regressions mined from those projects. 
-Here, we prepare ??? commits from the ??? projects, we expect that we can mine 83 regressions within 12 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04.).
+We run RegMiner  on 2 projects, and observe the regressions mined from those projects. 
+Here, we prepare 1237 commits from the 2 projects, we expect that we can mine 83 regressions within 12 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04.).
 
-To use regminer, navigate to ```Open-World-Experiment/regminer```
+To use regminer, navigate to ```open-world/regminer```
 ### Run and Configuration
 **Step 1:** Entry the working dir.
 
 ```
-cd /issta/open-world/regminer
+cd /issta/regminer/open-world/regminer
 ```
 **Step2:** Run the experimental script.
 
 ```bash
 python3 Automation.py 
 ```
-**Step 3:** The results can then be retrieved from regression.csv found in each of the project directory.
+**Step 3:** The results can then be retrieved from ``regression.csv`` found in each of the project directory.
 
 ## Dataset Tool
 To showcase the possible use cases of the tool, we have also provided a command line interface tool that can help to retrieve and checkout the bugs. The tool can be run with 2 simple steps.
 ### Run and Configuration
 **Step 1:**  Entry the working dir.
 ```
-cd /issta/tool
+cd /issta/regminer/tool
 ```
 **Step 2:** Run the tool by running ```CLI.sh```
 ```
