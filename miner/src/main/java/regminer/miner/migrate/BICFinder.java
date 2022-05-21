@@ -1,5 +1,6 @@
 package regminer.miner.migrate;
 
+import org.eclipse.jgit.diff.Edit;
 import regminer.constant.Conf;
 import regminer.exec.TestExecutor;
 import regminer.finalize.SycFileCleanup;
@@ -9,6 +10,7 @@ import regminer.utils.FileUtilx;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BICFinder {
     private final static String dataPath = "results/fix_and_introducers_pairs.json";
@@ -81,10 +83,19 @@ public class BICFinder {
         }
         // 方法主要逻辑
         this.pRFC = pRFC;
+        String bfcId = pRFC.getCommit().getName();
         // 获取BFC到Origin的所有CommitID
-        List<String> candidateList = gitBlame(pRFC);
-        // 得到反转数组,即从Origin到Commit
-        Collections.reverse(candidateList);
+        List<String> blameList = gitBlame(pRFC);
+        FileUtilx.log("blame space "+blameList.size());
+        if ((!Conf.metaMap.containsKey(bfcId)) || (!blameList.contains(Conf.metaMap.get(bfcId)))){
+            exec.setDirectory(new File(Conf.PROJECT_PATH));
+            FileUtilx.log("search fal");
+            return null;
+        }
+        List<String> candidateList = new ArrayList<>(3);
+        candidateList.add(Conf.metaMap.get(bfcId)+"~1");
+        candidateList.add(Conf.metaMap.get(bfcId));
+        candidateList.add(pRFC.getBuggyCommitId());
         String[] arr = candidateList.toArray(new String[candidateList.size()]);
         // 针对每一个BFC使用一个status数组记录状态，测试过的不再测试
         status = new int[arr.length];
@@ -94,7 +105,7 @@ public class BICFinder {
         // recursionBinarySearch(arr, 1, arr.length - 1);//乐观二分查找，只要不能编译，就往最新的时间走
         int a = gitBisect(arr, 1, arr.length - 1);
         // 处理search结果
-        String bfcId = pRFC.getCommit().getName();
+
         File bfcFile = new File(Conf.CACHE_PATH + File.separator + bfcId);
 
         //handle hit result
@@ -205,11 +216,15 @@ public class BICFinder {
     public List<String> gitBlame(PotentialRFC pRFC) {
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
         List<String> res = new ArrayList<>();
-        Map<String, CodeBlock> codeBlockMap = fixMethodParser.handle(pRFC);
-        for (Map.Entry<String, CodeBlock> entry : codeBlockMap.entrySet()){
-            CodeBlock block = entry.getValue();
-            res.addAll(gitTracker.trackhunkByLogl(block.getStartLine(), block.getStopLine(), block.getNewPath(), bfcDir));
+        List<NormalFile> files = pRFC.getNormalJavaFiles();
+        for (NormalFile file :files){
+            List<Edit> edits = file.getEditList();
+            for (Edit edit :edits){
+                res.addAll(gitTracker.trackhunkByLogl(edit.getBeginB(), edit.getEndB(), file.getNewPath(),
+                        bfcDir));
+            }
         }
+
         return res;
 
     }
