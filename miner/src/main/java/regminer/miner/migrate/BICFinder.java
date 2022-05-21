@@ -215,6 +215,7 @@ public class BICFinder {
 
     public List<String> gitBlame(PotentialRFC pRFC) {
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
+        gitTracker.addJavaAttibuteToGit(bfcDir);
         List<String> res = new ArrayList<>();
         List<NormalFile> files = pRFC.getNormalJavaFiles();
         for (NormalFile file :files){
@@ -224,8 +225,6 @@ public class BICFinder {
                         bfcDir));
             }
         }
-
         return res;
-
     }
 }
