@@ -1,14 +1,12 @@
 package regminer.miner.migrate;
 
 import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.NotNull;
 import regminer.constant.Conf;
 import regminer.constant.Constant;
 import regminer.exec.TestExecutor;
 import regminer.miner.migrate.model.MergeTask;
 import regminer.model.ChangedFile;
 import regminer.model.PotentialRFC;
-import regminer.model.SourceFile;
 import regminer.model.TestFile;
 import regminer.utils.FileUtilx;
 
@@ -37,7 +35,7 @@ public class Migrator {
         return result;
     }
 
-    public String findJavaFile(@NotNull String className, @NotNull String[] projectJavaFiles) {
+    public String findJavaFile(String className, String[] projectJavaFiles) {
         String path = className.replace(".", File.separator) + ".java";
         for (String file : projectJavaFiles) {
             if (file.contains(path)) {
@@ -47,7 +45,7 @@ public class Migrator {
         return null;
     }
 
-    public String findClassFile(@NotNull String className, @NotNull String[] projectJavaFiles) {
+    public String findClassFile(String className, String[] projectJavaFiles) {
         String path = className.replace(".", File.separator) + ".class";
         for (String file : projectJavaFiles) {
             if (file.contains(path)) {
@@ -99,12 +97,11 @@ public class Migrator {
     }
 
     /**
-     *
      * @param pRFC
      * @param targetProjectDirectory
      * @throws IOException
      */
-    public void copyToTarget(@NotNull PotentialRFC pRFC, File targetProjectDirectory) throws IOException {
+    public void copyToTarget(PotentialRFC pRFC, File targetProjectDirectory) throws IOException {
         // copy
         String targetPath = null;
         File bfcFile = pRFC.fileMap.get(pRFC.getCommit().getName());
@@ -132,11 +129,11 @@ public class Migrator {
 
     //TODO SongXueZhi
     public void detectCompileWay(File bfcDir) {
-    	File[] files = bfcDir.listFiles();
-    	for (File file : files){
-    		if (file.getName().equals("pom.xml")){
+        File[] files = bfcDir.listFiles();
+        for (File file : files) {
+            if (file.getName().equals("pom.xml")) {
 
-			}
-		}
+            }
+        }
     }
 }

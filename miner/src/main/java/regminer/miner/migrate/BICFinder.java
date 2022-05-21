@@ -1,13 +1,10 @@
 package regminer.miner.migrate;
 
-import org.jetbrains.annotations.NotNull;
 import regminer.constant.Conf;
 import regminer.exec.TestExecutor;
 import regminer.finalize.SycFileCleanup;
-import regminer.model.PotentialRFC;
-import regminer.model.Regression;
-import regminer.model.RelatedTestCase;
-import regminer.model.TestFile;
+import regminer.git.GitTracker;
+import regminer.model.*;
 import regminer.utils.FileUtilx;
 
 import java.io.File;
@@ -18,6 +15,8 @@ public class BICFinder {
     final int level = 0;
     TestExecutor exec = new TestExecutor();
     TestCaseMigrator testMigrater = new TestCaseMigrator();
+    FixMethodParser fixMethodParser  = new FixMethodParser();
+    GitTracker gitTracker = new GitTracker();
     PotentialRFC pRFC;
     int[] status; // 切勿直接访问该数组
 
@@ -65,7 +64,7 @@ public class BICFinder {
      * @param pRFC
      * @return
      */
-    public Regression searchBIC(@NotNull PotentialRFC pRFC) {
+    public Regression searchBIC( PotentialRFC pRFC) {
         FileUtilx.log(pRFC.getCommit().getName() + " Start search");
 
         // 预防方法被错误的调用
@@ -83,7 +82,7 @@ public class BICFinder {
         // 方法主要逻辑
         this.pRFC = pRFC;
         // 获取BFC到Origin的所有CommitID
-        List<String> candidateList = revListCommand(pRFC.getCommit().getParent(0).getName());
+        List<String> candidateList = gitBlame(pRFC);
         // 得到反转数组,即从Origin到Commit
         Collections.reverse(candidateList);
         String[] arr = candidateList.toArray(new String[candidateList.size()]);
@@ -203,9 +202,15 @@ public class BICFinder {
     }
 
 
-    public List<String> revListCommand(String commitId) {
-        exec.setDirectory(new File(Conf.META_PATH));
-        exec.runCommand("git checkout -f master");
-        return exec.runCommand("git rev-list " + commitId);
+    public List<String> gitBlame(PotentialRFC pRFC) {
+        File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
+        List<String> res = new ArrayList<>();
+        Map<String, CodeBlock> codeBlockMap = fixMethodParser.handle(pRFC);
+        for (Map.Entry<String, CodeBlock> entry : codeBlockMap.entrySet()){
+            CodeBlock block = entry.getValue();
+            res.addAll(gitTracker.trackhunkByLogl(block.getStartLine(), block.getStopLine(), block.getNewPath(), bfcDir));
+        }
+        return res;
+
     }
 }

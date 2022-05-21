@@ -5,7 +5,6 @@ import regminer.model.MigrateItem.MigrateFailureType;
 import regminer.model.PotentialRFC;
 import regminer.model.RelatedTestCase;
 import regminer.model.TestFile;
-import org.jetbrains.annotations.NotNull;
 import regminer.utils.FileUtilx;
 
 import java.io.File;
@@ -21,7 +20,7 @@ public class TestCaseMigrator extends Migrator {
     public final static int UNRESOLVE = -2;
 
 
-    public void migrate(@NotNull PotentialRFC pRFC, @NotNull Set<String> bicSet) {
+    public void migrate( PotentialRFC pRFC,  Set<String> bicSet) {
         FileUtilx.log("Time index: "+pRFC.getCommit().getName());
         for (String bic : bicSet) {
             try {
@@ -32,7 +31,7 @@ public class TestCaseMigrator extends Migrator {
         }
     }
 
-    public int migrate(@NotNull PotentialRFC pRFC, String bic) throws Exception {
+    public int migrate( PotentialRFC pRFC, String bic) throws Exception {
         FileUtilx.log("bic:" + bic);
         File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
         pRFC.fileMap.put(bic, bicDirectory);
@@ -65,7 +64,7 @@ public class TestCaseMigrator extends Migrator {
         return exec.execBuildWithResult(Conf.compileLine, record);
     }
 
-    public int testSuite(File file, @NotNull List<TestFile> testSuites) throws Exception {
+    public int testSuite(File file,  List<TestFile> testSuites) throws Exception {
         exec.setDirectory(file);
         StringJoiner sj = new StringJoiner(";", "[", "]");
         Iterator<TestFile> iterator = testSuites.iterator();
@@ -93,7 +92,7 @@ public class TestCaseMigrator extends Migrator {
         }
     }
 
-    public int testBFCPMethod(@NotNull TestFile testSuite, StringJoiner sj) throws Exception {
+    public int testBFCPMethod( TestFile testSuite, StringJoiner sj) throws Exception {
         boolean result = false;
         boolean result1 = false;
         boolean result2 = false;

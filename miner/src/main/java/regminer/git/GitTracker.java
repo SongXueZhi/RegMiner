@@ -23,6 +23,7 @@ import regminer.exec.TestExecutor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 public class GitTracker {
@@ -56,5 +57,10 @@ public class GitTracker {
         testExecutor.setDirectory(bfcDir);
         Set<String> commitHistoryList = testExecutor.execWithSetResult("git log -L:" + Method + ":" + file_path + " --pretty=format:%h -s");
         return commitHistoryList.size();
+    }
+
+    public  List<String> trackhunkByLogl(int start, int end, String file_path, File bfcDir) {
+        testExecutor.setDirectory(bfcDir);
+        return testExecutor.runCommand("git log -L " + start + "," + end + ":" + file_path+ " --pretty=format:%H -s");
     }
 }

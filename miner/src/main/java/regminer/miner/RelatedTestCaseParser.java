@@ -6,7 +6,7 @@ import java.util.*;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.diff.Edit;
 
-import org.jetbrains.annotations.NotNull;
+
 import regminer.constant.Constant;
 import regminer.model.*;
 import regminer.model.ChangedFile.Type;
@@ -18,7 +18,7 @@ import regminer.utils.FileUtilx;
 //过滤完成后，如果若有测试文件都被移除，则pRFC移除
 public class RelatedTestCaseParser  {
 
-    public void handlePotentialTestFile(@NotNull List<PotentialTestCase> potentialTestCaseList, File bfcDir,PotentialRFC pRFC){
+    public void handlePotentialTestFile( List<PotentialTestCase> potentialTestCaseList, File bfcDir,PotentialRFC pRFC){
         for (PotentialTestCase potentialTestCase : potentialTestCaseList) {
             //if index > 0 ,test file in (c,c+2),we need copy test file to bfcdir
             //file map size > 0, meaning have test file need to copy

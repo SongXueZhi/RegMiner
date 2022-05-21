@@ -3,7 +3,7 @@ package regminer.miner.migrate;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.*;
 import org.eclipse.jgit.lib.Repository;
-import org.jetbrains.annotations.NotNull;
+
 import regminer.constant.Conf;
 import regminer.constant.ExperResult;
 import regminer.coverage.CodeCoverage;
@@ -326,7 +326,7 @@ public class BFCEvaluator extends Migrator {
         }
     }
 
-    public void testSuite(File file, @NotNull List<TestFile> testSuites) throws Exception {
+    public void testSuite(File file,  List<TestFile> testSuites) throws Exception {
         exec.setDirectory(file);
         Iterator<TestFile> iterator = testSuites.iterator();
         while (iterator.hasNext()) {
@@ -336,7 +336,7 @@ public class BFCEvaluator extends Migrator {
 
     }
 
-    public void testMethod(@NotNull TestFile testSuite) throws Exception {
+    public void testMethod( TestFile testSuite) throws Exception {
         Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
         for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, RelatedTestCase> entry = it.next();

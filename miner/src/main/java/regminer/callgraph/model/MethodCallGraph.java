@@ -1,6 +1,5 @@
 package regminer.callgraph.model;
 
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -47,9 +46,9 @@ public class MethodCallGraph {
      * @param parent 父亲节点
      * @param node 需要被添加的节点
      * @return
-     * @throws NoParentNodeException 父亲节点不存在，请调用addNode(@NotNull Node<Method> node)，先添加父亲节点
+     * @throws NoParentNodeException 父亲节点不存在，请调用addNode( Node<Method> node)，先添加父亲节点
      */
-    public MethodCallGraph addNode(Node<Method> parent, @NotNull Node<Method> node) throws NoParentNodeException {
+    public MethodCallGraph addNode(Node<Method> parent,Node<Method> node) throws NoParentNodeException {
         //添加节点
         // 1. 首先确认vertexList中是否存在该节点,不存则添加
         //即对应方法 addVertexIfNotContain
@@ -70,7 +69,7 @@ public class MethodCallGraph {
      * @param node 需要被添加的节点
      * @return
      */
-    public MethodCallGraph addNode(@NotNull Node<Method> node) {
+    public MethodCallGraph addNode(Node<Method> node) {
         //添加节点
         // 1. 首先确认vertexList中是否存在该节点,不存则添加
         //即对应方法 addVertexIfNotContain

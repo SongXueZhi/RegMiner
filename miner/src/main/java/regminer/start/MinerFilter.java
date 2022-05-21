@@ -8,9 +8,7 @@ import regminer.model.PotentialRFC;
 import regminer.utils.FileUtilx;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class MinerFilter {
     public void prepare() throws Exception {
@@ -22,6 +20,15 @@ public class MinerFilter {
     public void handleTask() throws Exception {
         List<String> filter = new ArrayList<>(FileUtilx.readSetFromFile(Conf.PROJECT_PATH+ File.separator+"bfc.txt"));
         PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
+        List<String> meta =  FileUtilx.readListFromFile("regression_bfc.csv");
+        Map<String,String> map = new HashMap<>();
+
+        for (String s : meta){
+            String[] ss = s.split(",");
+            map.put(ss[0],ss[1]);
+        }
+
+        Conf.metaMap = map;
         Miner.pRFCs = null;
         Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
         Miner.singleThreadHandle();

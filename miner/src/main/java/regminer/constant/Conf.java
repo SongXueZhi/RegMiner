@@ -3,6 +3,7 @@ package regminer.constant;
 import regminer.start.ConfigLoader;
 
 import java.io.File;
+import java.util.Map;
 
 public class Conf {
 
@@ -41,4 +42,6 @@ public class Conf {
 	public static boolean auto_compile =ConfigLoader.auto_compile;
 
 	public static boolean sql_enable =true;
+
+	public static Map<String,String> metaMap;
 }
