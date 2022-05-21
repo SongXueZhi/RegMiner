@@ -20,14 +20,12 @@ public class MinerFilter {
     public void handleTask() throws Exception {
         List<String> filter = new ArrayList<>(FileUtilx.readSetFromFile(Conf.PROJECT_PATH+ File.separator+"bfc.txt"));
         PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
-        List<String> meta =  FileUtilx.readListFromFile("regression_bfc.csv");
+        List<String> meta =  FileUtilx.readListFromFile(Conf.ROOT_DIR+File.separator+"regression_bfc.csv");
         Map<String,String> map = new HashMap<>();
-
         for (String s : meta){
             String[] ss = s.split(",");
             map.put(ss[0],ss[1]);
         }
-
         Conf.metaMap = map;
         Miner.pRFCs = null;
         Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
