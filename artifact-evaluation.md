@@ -1,3 +1,5 @@
+[TOC]
+
 In this document, we provide three aspects of artifact evaluation.
 
 # Getting Started
