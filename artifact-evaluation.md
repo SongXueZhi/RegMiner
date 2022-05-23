@@ -273,8 +273,10 @@ bash start.sh
 
 You can see the running progress as:
 ```bash
-Start processing RegMiner...
-
+Start processing RegMiner
+...
+Start processing RegMiner¬TDM+blame
+...
 INFO - No results from spring-projects_spring-data-rest
 INFO - spring-projects_spring-data-rest done
 INFO - bug-fixing commit e5210d1f9ef4f1d41ff0a8c4a2ab8e9192d5e087 in project jhy_jsoup is processed.identified as a regression bug,its regression-inducing commit is df272b77c2cf89e9cbe2512bbddf8a3bc28a704b, and its working commit is df272b77c2cf89e9cbe2512bbddf8a3bc28a704b~1.
@@ -286,11 +288,6 @@ INFO - No results from spring-projects_spring-data-commons
 INFO - spring-projects_spring-data-commons done
 Running time: 1185.6796572208405 Seconds
 10/50 regression found!
-
-Start processing RegMiner¬TDM...
-
-...
-
 ```
 
 **Process log.**   You can see each *regression* search process in the `logmain` file under each project directory, steps as follow:
