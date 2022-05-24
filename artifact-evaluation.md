@@ -1,16 +1,16 @@
 [TOC]
 
-In this document, we provide three aspects of artifact evaluation.
+In this document, we provide three aspects of artifact evaluation. RegMiner retrieves the runnable regressions from code evolution history. Specifically, taking input as a set of git repository, RegMiner can search and isolate a list of *runnable* regressions from those repositories. Each regression is manifested in terms of a test case passing a fixing version, failing a regression version, and passing the previous working version. 
 
 # Getting Started
 
 ## Environment
 
-**System**. We recommend running the commands in the documentation on an **ubuntu 18.04+** system, but if you are familiar enough with both windows and ubuntu you can ignore this advice. The system **network** needs to be accessible.
+**System**. We recommend to run on **ubuntu 18.04+** system, the system **network** needs to be accessible.
 
-**Docker.** Make sure you have successfully installed docker according to the official docker [documentation](https://docs.docker.com/engine/install/ubuntu/ ). We  listed some considerations for using docker：
+**Docker.** Make sure you have successfully installed docker according to the official docker [documentation](https://docs.docker.com/engine/install/ubuntu/ ). Here are the setup insturctions to run docker:
 
-1）By default, docker's commands need to be run with **sudo** privileges. You can use the following command to give normal user privileges.
+1）run docker with **sudo** privileges:
 
 ```bash
 sudo groupadd docker # create docker group 
@@ -25,15 +25,13 @@ newgrp docker #refresh
 docker login
 ```
 
-3) Try pulling ubuntu18.04 to make sure the docker is fully functional.
+3）Try pulling ubuntu18.04 to make sure the docker is fully functional.
 
 ```bash
 docker pull ubuntu:18.04
 ```
 
 ## Setup 
-
-RegMiner is a tool to retrieve the runnable regressions from code evolution history. Specifically, taking input as a set of git repository, RegMiner can search and isolate a list of *runnable* regressions from those repositories. Each regression is manifested in terms of a test case passing a fixing version, failing a regression version, and passing the previous working version.
 
 We provide RegMiner in a Docker environment. The docker file is issta-artifact.tar.gz.
 
@@ -56,36 +54,18 @@ docker run --name regminer -it issta-artifact
 ```
 
 The working directory is `issta/`. Please allow approximately **50g** of disk space for the container, this is due to the fact that RegMiner will be constantly downloading project dependencies.
-
-# Detailed Description
-
-1. In the quick start example, we prepare a small dataset running with prompt feedback on RegMiner and four of its variants.
-2. In the dataset tool, we show how a user can use the mined *regressions.*
-3. In the close-world experiment, we introduced the experimental procedure and results.
-4. In the open-world experiment, we introduced how to use *RegMiner* to mine *regressions* in open-source projects.
-
-Please follow the process to ensure that everything runs according to expectation. The following experiments are independent of each other, but note that the results may be skewed due to the need to download *runtime dependencies* using tools such as *maven* when compiling.
-
-Note that! Parts 3 and 4 are time-consuming tasks to restore experimental data for the thesis.
-
-## Folder Structure
 All the folders that are relevant to the project can be found under ```/issta/regminer/```.
 
-## Quick Start Example
+## Make Your Hand Dirty (less than 30min)
 
-We prepared 5 ground-truth regressions and 5 ground-truth non-regressions to verify the functionality of RegMiner, a process that took about **22 minutes** and **3 regressions out**.
+For sake of intuitive understanding, we prepared 6 commits (3 regression-fixing commit and 3 non-regression fixing commits) to verify the functionalities of RegMiner, the process is estimated to take about **XXX minutes**.
 
-Functionally, given a bug-fixing commit (either regression fixing commit or non-regression fixing commit) and a test case passing this commit, RegMiner is expected to locate
 
-1. For regression fixing commit
 
-- the regression-inducing commit where the test case fails
-- the working commit where the test case passes
-- report the result that "search fal"
-
-2. For non-regression fixing commit
-
-- report the result that "search fal". means this is not a regression
+# Detailed Description
+1. In the dataset tool, we show how a user can use the mined *regressions.*
+2. In the close-world experiment, we introduced the experimental procedure and results.
+3. In the open-world experiment, we introduced how to use *RegMiner* to mine *regressions* in open-source projects.
 
 ### Run Step by Step
 
