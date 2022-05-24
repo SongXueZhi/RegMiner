@@ -4,6 +4,34 @@ In this document, we provide three aspects of artifact evaluation.
 
 # Getting Started
 
+## Environment
+
+**System**. We recommend running the commands in the documentation on an **ubuntu 18.04+** system, but if you are familiar enough with both windows and ubuntu you can ignore this advice. The system **network** needs to be accessible.
+
+**Docker.** Make sure you have successfully installed docker according to the official docker [documentation](https://docs.docker.com/engine/install/ubuntu/ ). We  listed some considerations for using docker：
+
+1）By default, docker's commands need to be run with **sudo** privileges. You can use the following command to give normal user privileges.
+
+```bash
+sudo groupadd docker # create docker group 
+sudo gpasswd -a ${USER} docker # add current user to docker group 
+sudo systemctl restart docker # restart docker service
+```
+
+2）When using docker for the first time it is need to login first.
+
+```bash
+docker login
+```
+
+3) Try pulling ubuntu18.04 to make sure the docker is fully functional.
+
+```bash
+docker pull ubuntu:18.04
+```
+
+## Setup 
+
 RegMiner is a tool to retrieve the runnable regressions from code evolution history. Specifically, taking input as a set of git repository, RegMiner can search and isolate a list of *runnable* regressions from those repositories. Each regression is manifested in terms of a test case passing a fixing version, failing a regression version, and passing the previous working version.
 
 We provide RegMiner in a Docker environment. The docker file is issta-artifact.tar.gz.
@@ -44,7 +72,7 @@ All the folders that are relevant to the project can be found under ```/issta/re
 
 ## Quick Start Example
 
-We prepared 5 ground-truth regressions and 5 ground-truth non-regressions to verify the functionality of RegMiner, a process that took about 22 minutes and 3 regressions out.
+We prepared 5 ground-truth regressions and 5 ground-truth non-regressions to verify the functionality of RegMiner, a process that took about **22 minutes** and **3 regressions out**.
 
 Functionally, given a bug-fixing commit (either regression fixing commit or non-regression fixing commit) and a test case passing this commit, RegMiner is expected to locate
 
@@ -227,7 +255,7 @@ rfc directory: /home/regminer/Documents/miner-space/transfer_cache/univocity_uni
 ric directory: /home/regminer/Documents/miner-space/transfer_cache/univocity_univocity-parsers/ric
 ```
 
-**Step 5:** Lastly, the user can run the similarity command to calculate the similarity between the two commits (RFC and RIC). This is done by recording the code coverage of the two commits on the test case and comparing the two runs. More details of this calculation can be found in our paper.
+**Step 5:** Lastly, the user can run the similarity command to calculate the similarity between the two commits (RFC and RIC), about **5 minutes** need. This is done by recording the code coverage of the two commits on the test case and comparing the two runs. More details of this calculation can be found in our paper.
 
 ```
 RegMiner > similarity
@@ -296,6 +324,8 @@ Running time: 1185.6796572208405 Seconds
 docker exec -it regminer /bin/bash #start a new terminal
 cd /issta/regminer/closed-world
 tail -f projects/apache_commons-lang/logmain  # e.g. look up for apache/commons-lang search process
+# or view history search process
+cat projects/apache_commons-lang/logmain 
 ```
 
 **Final Result.** Get final result for RegMiner and four of its variants as follow command :
@@ -320,7 +350,7 @@ To use regminer, navigate to ```open-world/regminer```
 ### Run and Configuration
 **Step 1:** Entry the working dir.
 
-```
+```bash
 cd /issta/regminer/open-world/regminer
 ```
 **Step2:** Run the experimental script.
@@ -328,4 +358,10 @@ cd /issta/regminer/open-world/regminer
 ```bash
 python3 Automation.py 
 ```
-**Step 3:** The results can then be retrieved from ``regression.csv`` found in each of the project directory.
+**Step 3:** The results can then be retrieved from ``regression.csv`` found in each of the project directory by the commands:
+
+```bash
+ cat jsoup/regression.csv
+ cat univocity-parsers/regression.csv
+```
+
