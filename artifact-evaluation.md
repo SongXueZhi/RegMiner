@@ -16,6 +16,7 @@ In this document, we provide three aspects of artifact evaluation.
 sudo groupadd docker # create docker group 
 sudo gpasswd -a ${USER} docker # add current user to docker group 
 sudo systemctl restart docker # restart docker service
+newgrp docker #refresh
 ```
 
 2）When using docker for the first time it is need to login first.
