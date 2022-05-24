@@ -134,8 +134,6 @@ cd /issta/regminer/closed-world
 bash start.sh
 ```
 
-**Step3:** Confirm the experimental results
-
 You can see the running progress as:
 ```bash
 Start processing RegMiner
@@ -155,17 +153,7 @@ Running time: 1185.6796572208405 Seconds
 10/50 regression found!
 ```
 
-**Process log.**   You can see each *regression* search process in the `logmain` file under each project directory, steps as follow:
-
-```bash
-docker exec -it regminer /bin/bash #start a new terminal
-cd /issta/regminer/closed-world
-tail -f projects/apache_commons-lang/logmain  # e.g. look up for apache/commons-lang search process
-# or view history search process
-cat projects/apache_commons-lang/logmain 
-```
-
-**Final Result.** Get final result for RegMiner and four of its variants as follow command :
+**Step3:** Get final result for RegMiner and four of its variants as follow command :
 
 ```bash
 /issta/regminer/closed-world/projects
