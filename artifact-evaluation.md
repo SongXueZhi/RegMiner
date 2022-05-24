@@ -77,7 +77,7 @@ Then, you will see the information on successful running.
 ```bash
 Start processing RegMiner...
 INFO - Input file loaded
-INFO - Executing with 4 processes
+INFO - Executing with 1 processes
 INFO - Running miner on uniVocity_univocity-parsers
 
 ```
