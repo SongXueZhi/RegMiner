@@ -60,15 +60,6 @@ All the folders that are relevant to the project can be found under ```/issta/re
 
 For sake of intuitive understanding, we prepared 6 commits (3 regression-fixing commit and 3 non-regression fixing commits) to verify the functionalities of RegMiner, the process is estimated to take about **XXX minutes**.
 
-
-
-# Detailed Description
-1. In the dataset tool, we show how a user can use the mined *regressions.*
-2. In the close-world experiment, we introduced the experimental procedure and results.
-3. In the open-world experiment, we introduced how to use *RegMiner* to mine *regressions* in open-source projects.
-
-### Run Step by Step
-
 **Step1:** Entry the woking dir.
 
 ```bash
@@ -91,79 +82,164 @@ INFO - Running miner on uniVocity_univocity-parsers
 
 ```
 
-### Monitoring the Process
+**Step3:** Check results
 
-RegMiner's runtime log will be output in a ``logmain`` file under each project. Please open another terminal for docker to monitor the lookup process, steps as follow:
+User can check the generated CSV file at /XXX/XXX/XXX.csv. 
 
-**Step1:**  Open a **new terminal** for docker.
+```
+show regressions /XXX/XXX/XXX.csv
+```
+will give us an overview:
+
+```
+Regression | Project | test case  | regression-fixing commit | regression-inducing commit | working commit
+============================================================================================================
+1          | proj1   |Class.test()| a89401f                  | a89301f                    | a89401d
+============================================================================================================
+2          | proj3   |Class.test()| b89401f                  | c89301f                    | d89401d
+============================================================================================================
+...
+```
+
+We can run the test on regression with id `id` on version regression-fixing commit by:
+```
+run regression -id 1 -rfc
+```
+User can change `rfc` to `ric` or `wc` to observe the test results on regression-inducing commit and working commit.
+
+User can see Section of "Dataset Tool" for more usage.
+
+# Detailed Description (~XXX min)
+1. In the close-world experiment, we compare the mining performance of RegMiner and its variants.
+2. In the open-world experiment, we evaluate the effectiveness of RegMiner to mine regressions in open-source projects.
+3. In the dataset tool, we detail how a user can use the mined *regressions*.
+
+## Close-world Experiment + Ablation Study
+
+We prepare 50 regression-fixing commits and 50 non-regression fixing commits where the details can be referred in ```/issta/regminer/regressions.csv``` and ```/issta/regminer/non-regression.csv```. 
+In this module, given a bug-fixing commit (either regression fixing commit or non-regression fixing commit) and a test case passing this commit, 
+RegMiner is expected to locate
+
+1. For regression fixing commit
+- the regression-inducing commit where the test case fails
+- the working commit where the test case passes
+
+2. For non-regression fixing commit
+- report the result that "search fal". means this is not a regression
+
+In the following, we prepare RegMiner and four of its variants (i.e., RegMiner¬TDM, RegMiner¬VEM+bisect,RegMiner¬TDM+bisect, RegMiner¬TDM+gitblame) and compare their precision and recall. 
+In addition, our result is a *table* where each row is a bug-fixing commit, each column is an approach, and each entry shows yes/no (if yes, the commit ids of its regression-fixing commit and working commit)
+The whole process take about 8 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04. ).
+
+**Step1:** Enter the working directory of the experiment.
 
 ```bash
-docker exec -it regminer /bin/bash
+cd /issta/regminer/closed-world
 ```
 
-**Step2:**  Entry the target project dir.
+**Step2:** Run the experimental script.
 
 ```bash
-cd issta/regminer/demo/projects/uniVocity_univocity-parsers/
+bash start.sh
 ```
 
-**Step3:** Lookup process.
+**Step3:** Confirm the experimental results
 
-You can use `tail` command  to view progress in real time,
+You can see the running progress as:
+```bash
+Start processing RegMiner
+...
+Start processing RegMiner¬TDM+blame
+...
+INFO - No results from spring-projects_spring-data-rest
+INFO - spring-projects_spring-data-rest done
+INFO - bug-fixing commit e5210d1f9ef4f1d41ff0a8c4a2ab8e9192d5e087 in project jhy_jsoup is processed.identified as a regression bug,its regression-inducing commit is df272b77c2cf89e9cbe2512bbddf8a3bc28a704b, and its working commit is df272b77c2cf89e9cbe2512bbddf8a3bc28a704b~1.
+INFO - bug-fixing commit 397a0caeb374c55b8dcb58e09d0faebb6e017252 in project jhy_jsoup is processed.identified as a regression bug,its regression-inducing commit is b934c5d3e30917de86796c89fcb7cd000f642a80, and its working commit is b934c5d3e30917de86796c89fcb7cd000f642a80~1.
+INFO - jhy_jsoup done
+INFO - Processing spring-projects_spring-data-commons
+INFO - Running miner on spring-projects_spring-data-commons
+INFO - No results from spring-projects_spring-data-commons
+INFO - spring-projects_spring-data-commons done
+Running time: 1185.6796572208405 Seconds
+10/50 regression found!
+```
+
+**Process log.**   You can see each *regression* search process in the `logmain` file under each project directory, steps as follow:
 
 ```bash
-tail -f logmain
+docker exec -it regminer /bin/bash #start a new terminal
+cd /issta/regminer/closed-world
+tail -f projects/apache_commons-lang/logmain  # e.g. look up for apache/commons-lang search process
+# or view history search process
+cat projects/apache_commons-lang/logmain 
 ```
 
-or use `cat` command to view history search process,
+**Final Result.** Get final result for RegMiner and four of its variants as follow command :
 
 ```bash
-cat logmain
+/issta/regminer/closed-world/projects
+cat regression-miner.csv  # RegMiner
+cat regression-tdm.csv    #RegMiner¬TDM
+cat regression-vem-bisect.csv #RegMiner¬VEM+bisect
+cat regression-tdm-bisect.csv #RegMiner¬TDM+bisect
+cat regression-tdm-blame.csv #RegMiner¬TDM+blame
+```
+//TODO
+```
+compare-detailed-results
+```
+will give us: (note that R represents regression-fixing commit, NR represents non-regression fixing commit)
+```
+commit      | RegMiner | RegMiner¬TDM | RegMiner¬VEM+bisect | RegMiner¬TDM+bisect | RegMiner¬TDM+blame
+====================================================================================================
+ac9281 (R)  | found    | missed       | found               | missed              | found
+====================================================================================================
+ac928e (NR) | pass     | mis-report   | pass                | mis-report          | pass
+====================================================================================================
+...
+====================================================================================================
+precision   | 100 %    | 92.3 %       | 92.3 %              | 92.3 %               | 92.3 %
+====================================================================================================
+recall      | 100 %    | 100 %        | 100 %               | 100 %                | 100 %
 ```
 
-then you can get the information as like as :
+##  Open-world Experiment 
 
-```
-1.0%
-4bc0c553e40ce1e47d8d2a6a43df5c5923898f8c Start search
-bic:1673f46bde0562d7b77151e65a09cd280d9a522d
-PASS
-Test bic [com.univocity.parsers.issues.github.Github_24#ensureExceptionsAreThrown:TESTSUCCESS]
-bic:587a3d59da055afc533edb7df3874edc267c6db0
-PASS
-Test bic [com.univocity.parsers.issues.github.Github_24#ensureExceptionsAreThrown:TESTSUCCESS]
-bic:5904bbee581a0668adef92259c2c1b385d66ebce
- CE 
-....
-Test bic [com.univocity.parsers.issues.github.Github_24#ensureExceptionsAreThrown:TESTSUCCESS]
-bic:e7c1d0c8b888cc09fe4b6afc61ea6b5f1eb98a72
-FAL
-Test bic [com.univocity.parsers.issues.github.Github_24#ensureExceptionsAreThrown:NONE]
-bic:378f318d7cf64a2b778a47a34bcc6f5a75483c11
-PASS
-Test bic [com.univocity.parsers.issues.github.Github_24#ensureExceptionsAreThrown:TESTSUCCESS]
-regression+1
-########################END SEARCH################################
-```
+We run RegMiner on 2 projects, and observe the regressions mined from those projects. 
+Here, we prepare 1237 commits from the 2 projects, we expect that we can mine 83 regressions within 12 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04.).
 
-### Final result 
-
-After running you can see the message in the run window as like as ：
+To use regminer, navigate to ```open-world/regminer```
+### Run and Configuration
+**Step 1:** Entry the working dir.
 
 ```bash
-Start processing RegMiner...
-INFO - Input file loaded
-INFO - Executing with 4 processes
-INFO - Running miner on uniVocity_univocity-parsers
-INFO - bug-fixing commit da3d425307356d1e8a9a3569839c47e30d51a939 in project uniVocity_univocity-parsers is processed.identified as a regression bug,its regression-inducing commit is 356ce438d31e93785e3cea93e87fa51ea78fb5ad, and its working commit is 25a3715b9ce7b1d2de86af93e97c8cbf2d2c50bb.
-INFO - bug-fixing commit 52e62f8d4d690627a56b8ab084ecdfbc5ae610bd in project uniVocity_univocity-parsers is processed.identified as a regression bug,its regression-inducing commit is abe0de1dc65540e8d8333630b397dae1b694aa34, and its working commit is f13d1d83cb9fa2e30c73b24bd486e613ba6d1820.
-INFO - bug-fixing commit 4bc0c553e40ce1e47d8d2a6a43df5c5923898f8c in project uniVocity_univocity-parsers is processed.identified as a regression bug,its regression-inducing commit is e7c1d0c8b888cc09fe4b6afc61ea6b5f1eb98a72, and its working commit is 378f318d7cf64a2b778a47a34bcc6f5a75483c11.
-INFO - uniVocity_univocity-parsers done
-Running time: 1254.871446609497 Seconds
-3/50 regression found!
+cd /issta/regminer/open-world/regminer
+```
+**Step2:** Run the experimental script.
+
+```bash
+python3 Automation.py 
 ```
 
+//TODO
+**Step3:** Check results
 
+User can check the generated CSV file at /XXX/XXX/XXX.csv. 
+
+```
+show regressions /XXX/XXX/XXX.csv
+```
+will give us an overview:
+
+```
+Regression | Project | test case  | regression-fixing commit | regression-inducing commit | working commit
+============================================================================================================
+1          | proj1   |Class.test()| a89401f                  | a89301f                    | a89401d
+============================================================================================================
+2          | proj3   |Class.test()| b89401f                  | c89301f                    | d89401d
+============================================================================================================
+...
+```
 
 ## Dataset Tool
 
@@ -245,104 +321,3 @@ Calculating similarity score for univocity/univocity-parsers regression bug 10..
 
 Similarity score: 0.6949152542372882
 ```
-
-
-
-## Close-world Experiment + Ablation Study
-
-We prepare 50 regression bugs and 50 non-regression bugs where the details can be referred in ```/issta/regminer/regressions.csv``` and ```/issta/regminer/non-regression.csv```. 
-In this module, given a bug-fixing commit (either regression fixing commit or non-regression fixing commit) and a test case passing this commit, 
-RegMiner is expected to locate
-
-1. For regression fixing commit
-- the regression-inducing commit where the test case fails
-- the working commit where the test case passes
-
-2. For non-regression fixing commit
-- report the result that "search fal". means this is not a regression
-
-In the following, we prepare RegMiner and four of its variants (i.e., RegMiner¬TDM, RegMiner¬VEM+bisect,RegMiner¬TDM+bisect, RegMiner¬TDM+gitblame) and compare their precision and recall. 
-In addition, our result is a *table* where each row is a bug-fixing commit, each column is an approach, and each entry shows yes/no (if yes, the commit ids of its regression-fixing commit and working commit)
-The whole process take about 8 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04. ).
-
-**Step1:** Enter the working directory of the experiment.
-
-```bash
-cd /issta/regminer/closed-world
-```
-
-**Step2:** Run the experimental script.
-
-```bash
-bash start.sh
-```
-
-**Step3:** Confirm the experimental results
-
-
-You can see the running progress as:
-```bash
-Start processing RegMiner
-...
-Start processing RegMiner¬TDM+blame
-...
-INFO - No results from spring-projects_spring-data-rest
-INFO - spring-projects_spring-data-rest done
-INFO - bug-fixing commit e5210d1f9ef4f1d41ff0a8c4a2ab8e9192d5e087 in project jhy_jsoup is processed.identified as a regression bug,its regression-inducing commit is df272b77c2cf89e9cbe2512bbddf8a3bc28a704b, and its working commit is df272b77c2cf89e9cbe2512bbddf8a3bc28a704b~1.
-INFO - bug-fixing commit 397a0caeb374c55b8dcb58e09d0faebb6e017252 in project jhy_jsoup is processed.identified as a regression bug,its regression-inducing commit is b934c5d3e30917de86796c89fcb7cd000f642a80, and its working commit is b934c5d3e30917de86796c89fcb7cd000f642a80~1.
-INFO - jhy_jsoup done
-INFO - Processing spring-projects_spring-data-commons
-INFO - Running miner on spring-projects_spring-data-commons
-INFO - No results from spring-projects_spring-data-commons
-INFO - spring-projects_spring-data-commons done
-Running time: 1185.6796572208405 Seconds
-10/50 regression found!
-```
-
-**Process log.**   You can see each *regression* search process in the `logmain` file under each project directory, steps as follow:
-
-```bash
-docker exec -it regminer /bin/bash #start a new terminal
-cd /issta/regminer/closed-world
-tail -f projects/apache_commons-lang/logmain  # e.g. look up for apache/commons-lang search process
-# or view history search process
-cat projects/apache_commons-lang/logmain 
-```
-
-**Final Result.** Get final result for RegMiner and four of its variants as follow command :
-
-```bash
-/issta/regminer/closed-world/projects
-cat regression-miner.csv  # RegMiner
-cat regression-tdm.csv    #RegMiner¬TDM
-cat regression-vem-bisect.csv #RegMiner¬VEM+bisect
-cat regression-tdm-bisect.csv #RegMiner¬TDM+bisect
-cat regression-tdm-blame.csv #RegMiner¬TDM+blame
-```
-
-
-
-##  Open-world Experiment 
-
-We run RegMiner  on 2 projects, and observe the regressions mined from those projects. 
-Here, we prepare 1237 commits from the 2 projects, we expect that we can mine 83 regressions within 12 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04.).
-
-To use regminer, navigate to ```open-world/regminer```
-### Run and Configuration
-**Step 1:** Entry the working dir.
-
-```bash
-cd /issta/regminer/open-world/regminer
-```
-**Step2:** Run the experimental script.
-
-```bash
-python3 Automation.py 
-```
-**Step 3:** The results can then be retrieved from ``regression.csv`` found in each of the project directory by the commands:
-
-```bash
- cat jsoup/regression.csv
- cat univocity-parsers/regression.csv
-```
-
