@@ -58,7 +58,7 @@ All the folders that are relevant to the project can be found under ```/issta/re
 
 ## Make Your Hands Dirty (less than 30min)
 
-For sake of intuitive understanding, we prepared 6 commits (3 regression-fixing commit and 3 non-regression fixing commits) to verify the functionalities of RegMiner, the process is estimated to take about **XXX minutes**.
+For sake of intuitive understanding, we prepared 6 commits (3 regression-fixing commit and 3 non-regression fixing commits) to verify the functionalities of RegMiner, the process is estimated to take about **15 minutes**.
 
 **Step1:** Entry the woking dir.
 
@@ -84,32 +84,33 @@ INFO - Running miner on uniVocity_univocity-parsers
 
 **Step3:** Check results
 
-User can check the generated CSV file at /XXX/XXX/XXX.csv. 
+User can check the generated CSV file at projects/regression.csv. 
 
-```
-show regressions /XXX/XXX/XXX.csv
+```bash
+python3 show-regressions.py projects/regression.csv
 ```
 will give us an overview:
 
-```
+```bash
 Regression | Project | test case  | regression-fixing commit | regression-inducing commit | working commit
-============================================================================================================
-1          | proj1   |Class.test()| a89401f                  | a89301f                    | a89401d
-============================================================================================================
-2          | proj3   |Class.test()| b89401f                  | c89301f                    | d89401d
-============================================================================================================
-...
+==========================================================================================================
+1          | univocity-parsers | Ticket_13.shouldParseFile() | 52e62f8d4 | abe0de1dc | f13d1d83c
+===========================================================================================================
+2          | univocity-parsers | Github_309.parserFilesTest() | da3d42530 | 356ce438d | 25a3715b9
+===========================================================================================================
+3          | univocity-parsers | Github_24.ensureExceptionsAreThrown() | 4bc0c553e | e7c1d0c8b | 378f318d7
+===========================================================================================================
 ```
 
 We can run the test on regression with id `id` on version regression-fixing commit by:
-```
-run regression -id 1 -rfc
+```bash
+python3 run-regression.py 1 rfc #python run-regression.py {id} {revision}
 ```
 User can change `rfc` to `ric` or `wc` to observe the test results on regression-inducing commit and working commit.
 
 User can see Section of "Dataset Tool" for more usage.
 
-# Detailed Description (~XXX min)
+# Detailed Description (20 hours)
 1. In the close-world experiment, we compare the mining performance of RegMiner and its variants.
 2. In the open-world experiment, we evaluate the effectiveness of RegMiner to mine regressions in open-source projects.
 3. In the dataset tool, we detail how a user can use the mined *regressions*.
@@ -118,9 +119,8 @@ User can see Section of "Dataset Tool" for more usage.
 
 We prepare 50 regression-fixing commits and 50 non-regression fixing commits where the details can be referred in ```/issta/regminer/regressions.csv``` and ```/issta/regminer/non-regression.csv```. 
 
-
 In the following, we prepare RegMiner and four of its variants (i.e., RegMiner¬TDM, RegMiner¬VEM+bisect,RegMiner¬TDM+bisect, RegMiner¬TDM+gitblame) and compare their precision and recall. 
-The whole process take about XXX hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04.).
+The whole process take about 8 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04.).
 
 **Step1:** Enter the working directory of the experiment.
 
@@ -156,30 +156,22 @@ Running time: 1185.6796572208405 Seconds
 **Step3:** Get final result for RegMiner and four of its variants as follow command :
 
 ```bash
-/issta/regminer/closed-world/projects
-cat regression-miner.csv  # RegMiner
-cat regression-tdm.csv    #RegMiner¬TDM
-cat regression-vem-bisect.csv #RegMiner¬VEM+bisect
-cat regression-tdm-bisect.csv #RegMiner¬TDM+bisect
-cat regression-tdm-blame.csv #RegMiner¬TDM+blame
+cd /issta/regminer/closed-world/
+python compare-detailed-results.py 
 ```
-//TODO
-```
-compare-detailed-results
-```
-will give us: (note that R represents regression-fixing commit, NR represents non-regression fixing commit)
+will give us: 
 ```
 commit      | RegMiner | RegMiner¬TDM | RegMiner¬VEM+bisect | RegMiner¬TDM+bisect | RegMiner¬TDM+blame
 ====================================================================================================
-ac9281 (R)  | found    | missed       | found               | missed              | found
-====================================================================================================
-ac928e (NR) | pass     | mis-report   | pass                | mis-report          | pass
-====================================================================================================
+44b2a5cc    | missed    | missed      | missed              | missed              | missed
+18e58ffb    | missed    | missed      | missed              | missed              | missed
 ...
+545a8d40    | missed    | missed       | found               | missed              | missed
+844fece5    | found    | found        | found               | missed              | missed
 ====================================================================================================
-precision   | 100 %    | 92.3 %       | 92.3 %              | 92.3 %               | 92.3 %
+precision   | 100 %    | 100 %        | 100 %               | 100 %                | 100 %
 ====================================================================================================
-recall      | 100 %    | 100 %        | 100 %               | 100 %                | 100 %
+recall      | 56 %     | 32 %         | 47 %                | 4 %                  | 20 %
 ```
 
 ##  Open-world Experiment 
@@ -200,13 +192,13 @@ cd /issta/regminer/open-world/regminer
 python3 Automation.py 
 ```
 
-//TODO
+
 **Step3:** Check results
 
-User can check the generated CSV file at /XXX/XXX/XXX.csv. 
+User can check the generated CSV file at {project name}/regression.csv. 
 
 ```
-show regressions /XXX/XXX/XXX.csv
+python3 show-regressions.py jsoup/regression.csv
 ```
 will give us an overview:
 
