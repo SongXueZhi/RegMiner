@@ -87,7 +87,7 @@ INFO - Running miner on uniVocity_univocity-parsers
 User can check the generated CSV file at projects/regression-miner.csv. 
 
 ```bash
-python3 show-regressions.py projects/regression-miner.csv
+python3 show-regressions.py projects/regression.csv
 ```
 will give us an overview:
 
