@@ -117,19 +117,10 @@ User can see Section of "Dataset Tool" for more usage.
 ## Close-world Experiment + Ablation Study
 
 We prepare 50 regression-fixing commits and 50 non-regression fixing commits where the details can be referred in ```/issta/regminer/regressions.csv``` and ```/issta/regminer/non-regression.csv```. 
-In this module, given a bug-fixing commit (either regression fixing commit or non-regression fixing commit) and a test case passing this commit, 
-RegMiner is expected to locate
 
-1. For regression fixing commit
-- the regression-inducing commit where the test case fails
-- the working commit where the test case passes
-
-2. For non-regression fixing commit
-- report the result that "search fal". means this is not a regression
 
 In the following, we prepare RegMiner and four of its variants (i.e., RegMiner¬TDM, RegMiner¬VEM+bisect,RegMiner¬TDM+bisect, RegMiner¬TDM+gitblame) and compare their precision and recall. 
-In addition, our result is a *table* where each row is a bug-fixing commit, each column is an approach, and each entry shows yes/no (if yes, the commit ids of its regression-fixing commit and working commit)
-The whole process take about 8 hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04. ).
+The whole process take about XXX hours (we tested it on a  Linux server with 8-core 16-thread  Intel(R) Xeon(R) Silver 4208 CPU @ 2.10GHz, 32 Gigabyte RAM, and the operating system of Ubuntu Linux 18.04.).
 
 **Step1:** Enter the working directory of the experiment.
 
