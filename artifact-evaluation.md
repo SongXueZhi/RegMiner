@@ -56,7 +56,7 @@ docker run --name regminer -it issta-artifact
 The working directory is `issta/`. Please allow approximately **50g** of disk space for the container, this is due to the fact that RegMiner will be constantly downloading project dependencies.
 All the folders that are relevant to the project can be found under ```/issta/regminer/```.
 
-## Make Your Hand Dirty (less than 30min)
+## Make Your Hands Dirty (less than 30min)
 
 For sake of intuitive understanding, we prepared 6 commits (3 regression-fixing commit and 3 non-regression fixing commits) to verify the functionalities of RegMiner, the process is estimated to take about **XXX minutes**.
 
