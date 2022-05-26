@@ -96,6 +96,6 @@ passwd =xxxx
    /usr/lib/jvm/java-11-openjdk-amd64/bin/java -jar ./miner.jar
    ```
 
-## Reference
+## Paper
 
-[1] SZZUnleashed : an implementation of the SZZ algorithm , https://github.com/wogscpar/SZZUnleashed, Accessed in  21 March, 2021.
+Xuezhi Song, Yun Lin*, Siang Hwee Ng, Yijian Wu, Xin Peng, Jin Song Dong and Hong Mei. RegMiner: Towards Constructing a Large Regression Dataset from Code Evolution History [⚡ CCF Prototype Competition Award (1st Prize)]
