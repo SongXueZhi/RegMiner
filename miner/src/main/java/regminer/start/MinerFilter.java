@@ -14,12 +14,9 @@ import java.util.List;
 
 public class MinerFilter {
     public static void main(String[] args) throws Exception {
-        long s1 = System.currentTimeMillis();
         MinerFilter minerFilter = new MinerFilter();
         minerFilter.prepare();
         minerFilter.handleTask();
-        long s2 = System.currentTimeMillis();
-        System.out.println(s2 - s1);
     }
 
     public void prepare() throws Exception {

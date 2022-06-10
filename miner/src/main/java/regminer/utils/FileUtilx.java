@@ -45,7 +45,7 @@ public class FileUtilx {
     }
     @SuppressWarnings("deprecation")
     public static synchronized void log(String block) {
-        File file = new File(Conf.PROJECT_PATH + File.separator + "log" + Thread.currentThread().getName());
+        File file = new File(Conf.PROJECT_PATH + File.separator + "miner-log."+Thread.currentThread().getName());
         try {
             FileUtils.writeStringToFile(file, block + "\n", true);
         } catch (IOException e) {

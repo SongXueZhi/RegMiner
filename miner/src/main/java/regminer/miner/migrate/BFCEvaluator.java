@@ -22,6 +22,7 @@ import regminer.utils.FileUtilx;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BFCEvaluator extends Migrator {
 
@@ -43,27 +44,25 @@ public class BFCEvaluator extends Migrator {
      *
      * @param potentialRFCList
      */
-    public void evoluteBFCList(List<PotentialRFC> potentialRFCList) {
+    public void evoluteBFCList(List<PotentialRFC> potentialRFCList, ConcurrentLinkedQueue<PotentialRFC> queue) {
         Iterator<PotentialRFC> iterator = potentialRFCList.iterator();
+        int i =0;
         while (iterator.hasNext()) {
             PotentialRFC potentialRFC = iterator.next();
             try {
                 evolute(potentialRFC);
                 if (potentialRFC.getTestCaseFiles().size() <= 0) {
                     iterator.remove();
+                    continue;
                 }
+                queue.add(potentialRFC);
+                ++i;
+                FileUtilx.log("pRFC total:"+i);
+                iterator.remove();
             } catch (Exception e) {
                 e.printStackTrace();
                 iterator.remove();
             }
-        }
-        if (Conf.code_cover) {
-            Collections.sort(potentialRFCList, new Comparator<PotentialRFC>() {
-                @Override
-                public int compare(PotentialRFC t0, PotentialRFC t1) {
-                    return t1.getScore().compareTo(t0.getScore());
-                }
-            });
         }
     }
 
