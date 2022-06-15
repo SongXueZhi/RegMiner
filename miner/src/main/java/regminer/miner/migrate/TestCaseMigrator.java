@@ -33,7 +33,6 @@ public class TestCaseMigrator extends Migrator {
     }
 
     public int migrate(@NotNull PotentialRFC pRFC, String bic) throws Exception {
-        FileUtilx.log("bic:" + bic);
         File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
         pRFC.fileMap.put(bic, bicDirectory);
         mergeTwoVersion_BaseLine(pRFC,bicDirectory);

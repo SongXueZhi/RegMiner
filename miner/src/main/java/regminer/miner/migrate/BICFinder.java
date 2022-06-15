@@ -88,6 +88,7 @@ public class BICFinder {
         this.pRFC = pRFC;
         // 获取BFC到Origin的所有CommitID
         List<String> candidateList = revListCommand(pRFC.getCommit().getParent(0).getName());
+        FileUtilx.log("Search space size:"+candidateList.size());
         // 得到反转数组,即从Origin到Commit
         Collections.reverse(candidateList);
         String[] arr = candidateList.toArray(new String[candidateList.size()]);
@@ -207,6 +208,7 @@ public class BICFinder {
     }
 
     public int getTestResult(String bic, int index) {
+        FileUtilx.log("index:"+index+":"+bic);
         int statu = -2000;
         if (status[index] != -2000) {
             statu = status[index];
