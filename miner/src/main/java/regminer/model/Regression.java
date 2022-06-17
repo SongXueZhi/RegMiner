@@ -25,6 +25,15 @@ public class Regression {
     String bicId;
     String workId;
     String testCase;
+    int withGap;
+
+    public int getWithGap() {
+        return withGap;
+    }
+
+    public void setWithGap(int withGap) {
+        this.withGap = withGap;
+    }
 
     public String getBugId() {
         return bugId;
@@ -83,12 +92,13 @@ public class Regression {
      * @param workId
      * @param testCase
      */
-    public Regression(String bugId, String bfcId, String buggyId, String bicId, String workId, String testCase) {
+    public Regression(String bugId, String bfcId, String buggyId, String bicId, String workId, String testCase, int withGap) {
         this.bugId = bugId;
         this.bfcId = bfcId;
         this.buggyId = buggyId;
         this.bicId = bicId;
         this.workId = workId;
         this.testCase = testCase;
+        this.withGap = withGap;
     }
 }

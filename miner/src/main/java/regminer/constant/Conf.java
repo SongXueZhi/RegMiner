@@ -1,5 +1,6 @@
 package regminer.constant;
 
+import regminer.model.ProjectEntity;
 import regminer.start.ConfigLoader;
 
 import java.io.File;
@@ -41,4 +42,6 @@ public class Conf {
 	public static boolean auto_compile =ConfigLoader.auto_compile;
 
 	public static boolean sql_enable =true;
+
+	public static ProjectEntity projectEntity;
 }

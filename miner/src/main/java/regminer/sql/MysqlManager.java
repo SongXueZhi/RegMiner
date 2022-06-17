@@ -18,6 +18,8 @@
 
 package regminer.sql;
 
+import regminer.model.ProjectEntity;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -88,6 +90,23 @@ public class MysqlManager {
             closed();
         }
     }
+    public static ProjectEntity getProject(String sql){
+        ProjectEntity projectEntity = null;
+        try {
+            getStatement();
+            ResultSet rs = statement.executeQuery(sql);
+            while (rs.next()){
+                projectEntity.setProjectID(rs.getString("project_uuid"));
+                projectEntity.setOrganization(rs.getNString("organization"));
+                projectEntity.setProject_name("project_name");
+                break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return  projectEntity;
+    }
+
     public static Set<String>  executeSql(String sql) {
         Set<String> result = new HashSet<>();
         try {

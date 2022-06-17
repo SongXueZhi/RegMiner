@@ -5,6 +5,7 @@ import org.eclipse.jgit.lib.Repository;
 import regminer.constant.Conf;
 import regminer.git.provider.Provider;
 import regminer.miner.PotentialBFCDetector;
+import regminer.miner.ProjectManager;
 import regminer.miner.RelatedTestCaseParser;
 import regminer.miner.migrate.BFCEvaluator;
 import regminer.miner.migrate.BICFinder;
@@ -48,6 +49,14 @@ public class Miner {
     }
 
     public static void singleThreadHandle() throws Exception {
+
+        ProjectManager projectManager = new ProjectManager();
+        if (ConfigLoader.organizeName.equals("")){
+            FileUtilx.log("Incorrectly formatted project name, please set project name in {organization}/{project_name}");
+            return;
+        }
+        projectManager.addProject(ConfigLoader.projectFullName);
+
         long s1 = System.currentTimeMillis();
         ConfigLoader.refresh();//加载配置
         // 工具类准备,1)测试方法查找 2)测试用例确定 3)BIC查找
@@ -79,12 +88,8 @@ public class Miner {
                             .append(",").append(regression.getBuggyId())
                             .append(",").append(regression.getBicId())
                             .append(",").append(regression.getWorkId())
-                            .append(",").append(regression.getTestCase());
-                    if (regression instanceof RegressionWithGap) {
-                        sb.append(",").append(1);
-                    } else {
-                        sb.append(",").append(0);
-                    }
+                            .append(",").append(regression.getTestCase())
+                            .append(",").append(regression.getWithGap());
                     String regressionLog = sb.toString();
                     if (!setResult.contains(regressionLog)) {
                         FileUtilx.apendResult(regressionLog);

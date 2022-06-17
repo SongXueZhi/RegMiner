@@ -34,8 +34,11 @@ public class ConfigLoader {
     private final static String USER_NAME = "username";
     private final static String PASSWD = "passwd";
     private final static String SQL_ENABLE = "sql_enable";
+    private final static String SLASH = "/";
     public static String envPath = "";
     public static String projectName = "";
+    public static String projectFullName = "";
+    public static String organizeName = "";
     public static String rootDir = "";
     public static String compileLine = "";
     public static String testLine = "";
@@ -65,7 +68,13 @@ public class ConfigLoader {
         }
         envPath = prop.getProperty(KEY_PATH);
         JAVA_HONE = prop.getProperty(KEY_JAVA_HOME);
-        projectName = prop.getProperty(PROJRCT_NAME);
+        projectFullName = prop.getProperty(PROJRCT_NAME);
+
+        if (projectFullName.contains(SLASH)){
+            String[] items = projectFullName.split("/");
+            projectName = items[1];
+            organizeName =items[0];
+        }
         rootDir = prop.getProperty(ROOT_DIR);
         compileLine = prop.getProperty(COMMAND_LINE);
         testLine = prop.getProperty(TEST_LINE);

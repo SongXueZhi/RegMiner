@@ -1,6 +1,5 @@
 package regminer.miner.migrate;
 
-import org.jetbrains.annotations.NotNull;
 import regminer.constant.Conf;
 import regminer.exec.TestExecutor;
 import regminer.finalize.SycFileCleanup;
@@ -68,7 +67,7 @@ public class BICFinder {
      * @param pRFC
      * @return
      */
-    public Regression searchBIC(@NotNull PotentialRFC pRFC) {
+    public Regression searchBIC(PotentialRFC pRFC) {
         FileUtilx.log(pRFC.getCommit().getName() + " Start search");
         passPoint = Integer.MIN_VALUE;
 
@@ -142,14 +141,15 @@ public class BICFinder {
             String testcaseString = combinedRegressionTestResult();
             String bfcpId = pRFC.getBuggyCommitId();
             new SycFileCleanup().cleanDirectory(bfcFile);
-            return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, bic, working, testcaseString);
+            return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, bic, working, testcaseString,0);
         } else if (a < 0 && passPoint >= 0 && (falPoint - passPoint) > 1) {
             FileUtilx.log("regression+1,with gap");
             exec.setDirectory(new File(Conf.PROJECT_PATH));
             String testcaseString = combinedRegressionTestResult();
             String bfcpId = pRFC.getBuggyCommitId();
             new SycFileCleanup().cleanDirectory(bfcFile);// 删除在regression定义以外的项目文件
-            return new RegressionWithGap(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, arr[falPoint], arr[passPoint], testcaseString);
+            return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, arr[falPoint], arr[passPoint],
+                    testcaseString,1);
         }
         exec.setDirectory(new File(Conf.PROJECT_PATH));
         new SycFileCleanup().cleanDirectory(bfcFile);

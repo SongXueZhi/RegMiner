@@ -1,7 +1,6 @@
 package regminer.miner.migrate;
 
 import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.NotNull;
 import regminer.constant.Conf;
 import regminer.constant.Constant;
 import regminer.exec.TestExecutor;
@@ -37,7 +36,7 @@ public class Migrator {
         return result;
     }
 
-    public String findJavaFile(@NotNull String className, @NotNull String[] projectJavaFiles) {
+    public String findJavaFile( String className, String[] projectJavaFiles) {
         String path = className.replace(".", File.separator) + ".java";
         for (String file : projectJavaFiles) {
             if (file.contains(path)) {
@@ -47,7 +46,7 @@ public class Migrator {
         return null;
     }
 
-    public String findClassFile(@NotNull String className, @NotNull String[] projectJavaFiles) {
+    public String findClassFile( String className,  String[] projectJavaFiles) {
         String path = className.replace(".", File.separator) + ".class";
         for (String file : projectJavaFiles) {
             if (file.contains(path)) {
@@ -108,7 +107,7 @@ public class Migrator {
      * @param targetProjectDirectory
      * @throws IOException
      */
-    public void copyToTarget(@NotNull PotentialRFC pRFC, File targetProjectDirectory) throws IOException {
+    public void copyToTarget(PotentialRFC pRFC, File targetProjectDirectory) throws IOException {
         // copy
         String targetPath = null;
         File bfcFile = pRFC.fileMap.get(pRFC.getCommit().getName());
