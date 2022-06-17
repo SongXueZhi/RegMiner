@@ -19,13 +19,22 @@
 package regminer.sql;
 
 import regminer.constant.Conf;
+import regminer.model.ProjectEntity;
 import regminer.model.Regression;
 import regminer.model.RegressionWithGap;
 
 public class BugStorage {
     public  void saveBug(Regression regression) {
-        String sql = "INSERT IGNORE INTO regression (project_name,bug_id,bfc,buggy,bic,work,testcase,with_gap) VALUES "+
-                "('"+ Conf.PROJRCT_NAME+"','"+regression.getBugId()+"','"+regression.getBfcId()+"','"+regression.getBuggyId()+"','"+regression.getBicId()+"','"+regression.getWorkId()+"','"+regression.getTestCase()+"')";
+        ProjectEntity projectEntity = regression.getProjectEntity();
+        String sql = "INSERT IGNORE INTO regression (regression_uuid,project_uuid,project_full_name," +
+                "bug_id,bfc,buggy,bic," +
+                "work,testcase," +
+                "with_gap) VALUES "+
+                "('"+regression.getRegressionUUID()+"','"+projectEntity.getProjectID()+"','"
+                +projectEntity.getOrganization()+"/"+projectEntity.getProject_name()+"','"
+                +regression.getBugId()+"','"+regression.getBfcId()+"','"
+                +regression.getBuggyId()+"','"+regression.getBicId()+"','"+regression.getWorkId()+"','"
+                +regression.getTestCase()+"')";
         MysqlManager.executeUpdate(sql);
     }
 }

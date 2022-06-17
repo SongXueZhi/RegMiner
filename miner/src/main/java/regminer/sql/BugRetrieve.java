@@ -9,7 +9,7 @@ import java.util.Set;
 public class BugRetrieve {
 
     public Set<String> getRegressionsFromDB() {
-        String sql = "select bfc from regressions where project_name ='" + Conf.PROJRCT_NAME + "'";
+        String sql = "select bfc from regression where project_name ='" + Conf.PROJRCT_NAME + "'";
         Set<String> result = MysqlManager.executeSql(sql);
         return  result;
     }

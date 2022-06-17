@@ -10,6 +10,7 @@ import regminer.miner.RelatedTestCaseParser;
 import regminer.miner.migrate.BFCEvaluator;
 import regminer.miner.migrate.BICFinder;
 import regminer.model.PotentialRFC;
+import regminer.model.ProjectEntity;
 import regminer.model.Regression;
 import regminer.model.RegressionWithGap;
 import regminer.monitor.ProgressMonitor;
@@ -55,7 +56,7 @@ public class Miner {
             FileUtilx.log("Incorrectly formatted project name, please set project name in {organization}/{project_name}");
             return;
         }
-        projectManager.addProject(ConfigLoader.projectFullName);
+       ProjectEntity projectEntity = projectManager.addProject(ConfigLoader.projectFullName);
 
         long s1 = System.currentTimeMillis();
         ConfigLoader.refresh();//加载配置
@@ -96,6 +97,7 @@ public class Miner {
                     }
                     setResult.add(regressionLog);
                     if (Conf.sql_enable) {
+                        regression.setProjectEntity(projectEntity);
                         bugStorage.saveBug(regression);
                     }
 

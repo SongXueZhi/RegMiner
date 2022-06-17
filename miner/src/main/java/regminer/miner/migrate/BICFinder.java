@@ -3,7 +3,10 @@ package regminer.miner.migrate;
 import regminer.constant.Conf;
 import regminer.exec.TestExecutor;
 import regminer.finalize.SycFileCleanup;
-import regminer.model.*;
+import regminer.model.PotentialRFC;
+import regminer.model.Regression;
+import regminer.model.RelatedTestCase;
+import regminer.model.TestFile;
 import regminer.utils.FileUtilx;
 
 import java.io.File;
@@ -38,7 +41,8 @@ public class BICFinder {
         exec.exec("rm -rf issues");
         exec.exec("rm -rf results");
         exec.exec(
-                "java -jar szz_find_bug_introducers-0.1.jar -i issue_list.json -r /home/sxz/Documents/meta/fastjson -d 3 -c 1");
+                "java -jar szz_find_bug_introducers-0.1.jar -i issue_list.json -r /home/sxz/Documents/meta/fastjson " +
+                        "-d 3 -c 1");
         try {
             Thread.sleep(1500);
         } catch (InterruptedException e) {
@@ -87,7 +91,7 @@ public class BICFinder {
         this.pRFC = pRFC;
         // 获取BFC到Origin的所有CommitID
         List<String> candidateList = revListCommand(pRFC.getCommit().getParent(0).getName());
-        FileUtilx.log("Search space size:"+candidateList.size());
+        FileUtilx.log("Search space size:" + candidateList.size());
         // 得到反转数组,即从Origin到Commit
         Collections.reverse(candidateList);
         String[] arr = candidateList.toArray(new String[candidateList.size()]);
@@ -141,15 +145,20 @@ public class BICFinder {
             String testcaseString = combinedRegressionTestResult();
             String bfcpId = pRFC.getBuggyCommitId();
             new SycFileCleanup().cleanDirectory(bfcFile);
-            return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, bic, working, testcaseString,0);
+            return new Regression(UUID.randomUUID().toString(),
+                    Conf.PROJRCT_NAME + "_" + bfcId, bfcId,
+                    bfcpId, bic,
+                    working,
+                    testcaseString, 0);
         } else if (a < 0 && passPoint >= 0 && (falPoint - passPoint) > 1) {
             FileUtilx.log("regression+1,with gap");
             exec.setDirectory(new File(Conf.PROJECT_PATH));
             String testcaseString = combinedRegressionTestResult();
             String bfcpId = pRFC.getBuggyCommitId();
             new SycFileCleanup().cleanDirectory(bfcFile);// 删除在regression定义以外的项目文件
-            return new Regression(Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, arr[falPoint], arr[passPoint],
-                    testcaseString,1);
+            return new Regression(UUID.randomUUID().toString(),
+                    Conf.PROJRCT_NAME + "_" + bfcId, bfcId, bfcpId, arr[falPoint], arr[passPoint],
+                    testcaseString, 1);
         }
         exec.setDirectory(new File(Conf.PROJECT_PATH));
         new SycFileCleanup().cleanDirectory(bfcFile);
@@ -208,7 +217,7 @@ public class BICFinder {
     }
 
     public int getTestResult(String bic, int index) {
-        FileUtilx.log("index:"+index+":"+bic);
+        FileUtilx.log("index:" + index + ":" + bic);
         int statu = -2000;
         if (status[index] != -2000) {
             statu = status[index];
@@ -234,6 +243,7 @@ public class BICFinder {
         }
         return -1000;
     }
+
     // XXX:git bisect
     public int gitBisect(String[] arr, int low, int high) {
 

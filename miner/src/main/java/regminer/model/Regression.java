@@ -19,6 +19,8 @@
 package regminer.model;
 
 public class Regression {
+    String regressionUUID;
+    ProjectEntity projectEntity;
     String bugId;
     String bfcId;
     String buggyId;
@@ -26,6 +28,22 @@ public class Regression {
     String workId;
     String testCase;
     int withGap;
+
+    public ProjectEntity getProjectEntity() {
+        return projectEntity;
+    }
+
+    public void setProjectEntity(ProjectEntity projectEntity) {
+        this.projectEntity = projectEntity;
+    }
+
+    public String getRegressionUUID() {
+        return regressionUUID;
+    }
+
+    public void setRegressionUUID(String regressionUUID) {
+        this.regressionUUID = regressionUUID;
+    }
 
     public int getWithGap() {
         return withGap;
@@ -92,7 +110,11 @@ public class Regression {
      * @param workId
      * @param testCase
      */
-    public Regression(String bugId, String bfcId, String buggyId, String bicId, String workId, String testCase, int withGap) {
+    public Regression(String regressionUUID,String bugId, String bfcId, String buggyId,
+                      String bicId, String workId,
+                      String testCase,
+                      int withGap) {
+        this.regressionUUID= regressionUUID;
         this.bugId = bugId;
         this.bfcId = bfcId;
         this.buggyId = buggyId;
