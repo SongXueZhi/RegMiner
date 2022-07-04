@@ -4,8 +4,7 @@ A Mining Approach towards Automating Regression Dataset Construction from Code E
 
 Now regminer has an interactive visualization platform, you can use our platform to observe the data mining process and the mined regressions.
 The use of the platform is demonstrated as follows:
-<!-- [![RegMiner Data Platform](https://res.cloudinary.com/marcomontalbano/image/upload/v1650532218/video_to_markdown/images/youtube--QtqS8f2yApc-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://youtu.be/yzcM9Y4unok "RegMiner Data Platform") -->
-<iframe width="1022" height="587" src="https://www.youtube.com/embed/yzcM9Y4unok" title="RegMiner: Mining Replicable Regression Dataset from Code Repositories" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![RegMiner Data Platform](https://res.cloudinary.com/marcomontalbano/image/upload/v1650532218/video_to_markdown/images/youtube--QtqS8f2yApc-c05b58ac6eb4c4700831b2b3070cd403.jpg)](https://youtu.be/yzcM9Y4unok "RegMiner Data Platform")
 ## Contribute to miner
 
  **Env requirement:**  
