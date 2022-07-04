@@ -2,7 +2,9 @@
 
 A Mining Approach towards Automating Regression Dataset Construction from Code Evolution History.
 
-
+Now regminer has an interactive visualization platform, you can use our platform to observe the data mining process and the mined regressions.
+The use of the platform is demonstrated as follows:
+[![RegMiner Data Platform](https://github.com/regminer/regminer.github.io/blob/7edbd0dade5edf6b9b614affe7da3a7e2a5dd064/图像_2022-07-04_153628.png)](https://youtu.be/yzcM9Y4unok "RegMiner Data Platform")
 ## Contribute to miner
 
  **Env requirement:**  
