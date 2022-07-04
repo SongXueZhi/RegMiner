@@ -32,7 +32,7 @@ public class ProjectManager {
              file.mkdirs();
          }
          File codeMeta = new File(Conf.META_PATH);
-            FileUtils.copyFile(codeMeta, file);
+            FileUtils.copyDirectory(codeMeta, file);
         }
         return projectEntity;
     }

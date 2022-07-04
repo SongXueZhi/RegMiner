@@ -13,7 +13,7 @@ public class ProjectDao {
     public ProjectEntity checkProjectByName(String name) {
         String organizeName = name.split("/")[0];
         String sql = new StringBuilder("select project_uuid,organization,project_name from project where project_name ='")
-                .append(ConfigLoader.projectName).append("' ").append("and organizeName ='")
+                .append(ConfigLoader.projectName).append("' ").append("and organization ='")
                 .append(organizeName).append("'").toString();
         return MysqlManager.getProject(sql);
     }
@@ -24,7 +24,7 @@ public class ProjectDao {
         String sql = new StringBuilder("insert IGNORE into project (project_uuid,organization,project_name,url) ")
                 .append("VALUES ('").append(projectEntity.getProjectID()).append("','").append(organization)
                 .append("','").append(projectName).append("','").append("https://github.com/").append(organization)
-                .append("/").append(projectName).append(".git'").toString();
+                .append("/").append(projectName).append(".git')").toString();
         MysqlManager.executeUpdate(sql);
     }
 }

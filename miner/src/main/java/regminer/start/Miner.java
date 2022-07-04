@@ -12,7 +12,6 @@ import regminer.miner.migrate.BICFinder;
 import regminer.model.PotentialRFC;
 import regminer.model.ProjectEntity;
 import regminer.model.Regression;
-import regminer.model.RegressionWithGap;
 import regminer.monitor.ProgressMonitor;
 import regminer.sql.BugStorage;
 import regminer.utils.FileUtilx;
@@ -32,8 +31,9 @@ public class Miner {
     static BugStorage bugStorage = new BugStorage();
 
     public static void main(String[] args) throws Exception {
+        ConfigLoader.refresh();//加载配置
         ProgressMonitor.load(); // 加载断点
-
+        System.out.println(Conf.LOCAL_PROJECT_GIT);
         repo = new Provider().create(Provider.EXISITING).get(Conf.LOCAL_PROJECT_GIT);
         git = new Git(repo);
         try {
@@ -50,7 +50,6 @@ public class Miner {
     }
 
     public static void singleThreadHandle() throws Exception {
-
         ProjectManager projectManager = new ProjectManager();
         if (ConfigLoader.organizeName.equals("")){
             FileUtilx.log("Incorrectly formatted project name, please set project name in {organization}/{project_name}");
@@ -59,7 +58,7 @@ public class Miner {
        ProjectEntity projectEntity = projectManager.addProject(ConfigLoader.projectFullName);
 
         long s1 = System.currentTimeMillis();
-        ConfigLoader.refresh();//加载配置
+
         // 工具类准备,1)测试方法查找 2)测试用例确定 3)BIC查找
         RelatedTestCaseParser rTCParser = new RelatedTestCaseParser();
         BFCEvaluator tm = new BFCEvaluator(repo);
@@ -82,6 +81,7 @@ public class Miner {
                     FileUtilx.log("queue size:"+linkedQueue.size());
                     Regression regression = finder.searchBIC(pRfc);
                     if (regression == null) {
+                        ProgressMonitor.addDone(pRfc.getCommit().getName());
                         continue;
                     }
                     StringBuilder sb = new StringBuilder();
@@ -100,7 +100,6 @@ public class Miner {
                         regression.setProjectEntity(projectEntity);
                         bugStorage.saveBug(regression);
                     }
-
                     ProgressMonitor.addDone(pRfc.getCommit().getName());
                 }
             }

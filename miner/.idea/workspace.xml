@@ -4,39 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eaa3034f-5941-4528-a85e-2808f3395b6e" name="Default Changelist" comment="fix a performance bug that some java process not be destroy">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/env.properties" beforeDir="false" afterPath="$PROJECT_DIR$/env.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/fastjson_fcp.csv" beforeDir="false" afterPath="$PROJECT_DIR$/resources/fastjson_fcp.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/exec/TestExecutor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/regminer/exec/TestExecutor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/git/Traverler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/miner/migrate/BFCEvaluator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/regminer/miner/migrate/BFCEvaluator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/regminer/start/Miner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/regminer/start/Miner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/regminer/start/MinerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/regminer/start/MinerTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="5961331d-9a17-4f11-b732-a65e2d2e6ea4" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-      </list>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="$MAVEN_REPOSITORY$" />
+        <option name="mavenHome" value="$USER_HOME$/tool/apache-maven-3.8.3" />
+      </MavenGeneralSettings>
+    </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="downloadAnnotationsAutomatically" value="true" />
+        <option name="downloadDocsAutomatically" value="true" />
+        <option name="downloadSourcesAutomatically" value="true" />
+        <option name="jdkForImporter" value="azul-11" />
+      </MavenImportingSettings>
     </option>
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$/.." value="baseline" />
-      </map>
-    </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
-    <option name="RESET_MODE" value="HARD" />
-  </component>
-  <component name="ProjectId" id="1wzKat5MkYx9f7d9WKsXhzdnpkS" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectId" id="2Ai6tzQEczLKVl4vbZvIysyaqYM" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -44,27 +34,21 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TODO_SCOPE" value="All Places" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="aspect.path.notification.shown" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="node.js.detected.package.eslint" value="true" />
-    <property name="node.js.detected.package.tslint" value="true" />
-    <property name="node.js.selected.package.eslint" value="(autodetect)" />
-    <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="project.structure.last.edited" value="Project" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="MavenSettings" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="regminer.model" />
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.MinerTest.testRegressionInFAlCePass">
+  <component name="RunManager" selected="Application.MinerFilter">
     <configuration name="Miner" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="regminer.start.Miner" />
-      <module name="RegMiner" />
+      <module name="miner" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="regminer.start.*" />
@@ -77,250 +61,59 @@
     </configuration>
     <configuration name="MinerFilter" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="regminer.start.MinerFilter" />
-      <module name="RegMiner" />
+      <module name="miner" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="regminer.start.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="MinerTest.regressionTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="RegMiner" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="regminer.start.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="regminer.start" />
-      <option name="MAIN_CLASS_NAME" value="regminer.start.MinerTest" />
-      <option name="METHOD_NAME" value="regressionTest" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="MinerTest.testRegressionInFAlCePass" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="RegMiner" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="regminer.start.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="regminer.start" />
-      <option name="MAIN_CLASS_NAME" value="regminer.start.MinerTest" />
-      <option name="METHOD_NAME" value="testRegressionInFAlCePass" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.MinerTest.testRegressionInFAlCePass" />
-        <item itemvalue="JUnit.MinerTest.regressionTest" />
         <item itemvalue="Application.MinerFilter" />
         <item itemvalue="Application.Miner" />
-        <item itemvalue="Application.MinerFilter" />
       </list>
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="eaa3034f-5941-4528-a85e-2808f3395b6e" name="Default Changelist" comment="" />
-      <created>1629456046600</created>
+      <changelist id="5961331d-9a17-4f11-b732-a65e2d2e6ea4" name="Changes" comment="" />
+      <created>1655480276868</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1629456046600</updated>
-      <workItem from="1629456051423" duration="80000" />
-      <workItem from="1629467459438" duration="25000" />
-      <workItem from="1629524239003" duration="3719000" />
-      <workItem from="1629553183641" duration="9000" />
-      <workItem from="1629644084030" duration="577000" />
-      <workItem from="1629810983788" duration="474000" />
-      <workItem from="1629815799813" duration="69000" />
-      <workItem from="1629959927386" duration="1213000" />
-      <workItem from="1629981613096" duration="601000" />
-      <workItem from="1629986646141" duration="51000" />
-      <workItem from="1630154045979" duration="536000" />
-      <workItem from="1630254478868" duration="2776000" />
-      <workItem from="1630257988071" duration="735000" />
-      <workItem from="1630394081764" duration="540000" />
-      <workItem from="1630397416235" duration="21000" />
-      <workItem from="1630693359950" duration="5717000" />
-      <workItem from="1630699796704" duration="8115000" />
-      <workItem from="1630731612771" duration="1231000" />
-      <workItem from="1630741518367" duration="19000" />
-      <workItem from="1631621084587" duration="351000" />
-      <workItem from="1631621440927" duration="1845000" />
-      <workItem from="1631885186410" duration="7811000" />
-      <workItem from="1632222822428" duration="761000" />
-      <workItem from="1632402386387" duration="1475000" />
-      <workItem from="1632664755594" duration="4774000" />
-      <workItem from="1632674634205" duration="777000" />
+      <updated>1655480276868</updated>
+      <workItem from="1655480278361" duration="12131000" />
+      <workItem from="1655545911561" duration="2299000" />
+      <workItem from="1655620585814" duration="4817000" />
+      <workItem from="1656297286057" duration="1912000" />
+      <workItem from="1656335792884" duration="1611000" />
     </task>
-    <task id="LOCAL-00001" summary="add MinerFilter">
-      <created>1629528631635</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1629528631635</updated>
-    </task>
-    <task id="LOCAL-00002" summary="fix testcase parser null point exception">
-      <created>1630255801052</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1630255801053</updated>
-    </task>
-    <task id="LOCAL-00003" summary="improve">
-      <created>1630693404790</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1630693404790</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Add new task to SongXueZhi">
-      <created>1631623088083</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1631623088083</updated>
-    </task>
-    <task id="LOCAL-00005" summary="fix a performance bug in test class">
-      <created>1632672112935</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1632672112936</updated>
-    </task>
-    <task id="LOCAL-00006" summary="remove szz feature in  miner">
-      <created>1632672206791</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1632672206791</updated>
-    </task>
-    <task id="LOCAL-00007" summary="add new feature to handle hit pass but not hit regression">
-      <created>1632672614142</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1632672614142</updated>
-    </task>
-    <task id="LOCAL-00008" summary="add  test case for last feature">
-      <created>1632672678490</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1632672678490</updated>
-    </task>
-    <task id="LOCAL-00009" summary="fix a performance bug that some java process not be destroy">
-      <created>1632674008568</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1632674008568</updated>
-    </task>
-    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State>
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="main" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </State>
-          </value>
-        </entry>
-      </map>
-    </option>
-    <option name="oldMeFiltersMigrated" value="true" />
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="add MinerFilter" />
-    <MESSAGE value="fix testcase parser null point exception" />
-    <MESSAGE value="improve" />
-    <MESSAGE value="Add new task to SongXueZhi" />
-    <MESSAGE value="fix a performance bug in test class" />
-    <MESSAGE value="remove szz feature in  miner" />
-    <MESSAGE value="add new feature to handle hit pass but not hit regression" />
-    <MESSAGE value="add  test case for last feature" />
-    <MESSAGE value="fix a performance bug that some java process not be destroy" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix a performance bug that some java process not be destroy" />
-  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/regminer/sql/ProjectDao.java</url>
+          <line>27</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/regminer/start/Miner.java</url>
-          <line>112</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/regminer/miner/migrate/BICFinder.java</url>
-          <line>247</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/regminer/miner/migrate/BICFinder.java</url>
-          <line>242</line>
-          <option name="timeStamp" value="15" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/regminer/start/MinerTest.java</url>
-          <line>44</line>
-          <option name="timeStamp" value="16" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/regminer/miner/migrate/BFCEvaluator.java</url>
-          <line>108</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/regminer/miner/migrate/BFCEvaluator.java</url>
-          <line>228</line>
-          <option name="timeStamp" value="19" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/regminer/exec/TestExecutor.java</url>
-          <line>64</line>
+          <line>82</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/regminer/exec/TestExecutor.java</url>
-          <line>96</line>
-          <option name="timeStamp" value="21" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/regminer/exec/TestExecutor.java</url>
-          <line>89</line>
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/regminer/exec/TestExecutor.java</url>
-          <line>93</line>
+          <url>file://$PROJECT_DIR$/src/main/java/regminer/monitor/ProgressMonitor.java</url>
+          <line>46</line>
           <option name="timeStamp" value="23" />
         </line-breakpoint>
       </breakpoints>

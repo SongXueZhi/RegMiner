@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 import regminer.constant.Conf;
 import regminer.model.PotentialRFC;
 import regminer.sql.BugRetrieve;
+import regminer.start.ConfigLoader;
 import regminer.utils.FileUtilx;
 
 import java.io.File;

@@ -22,18 +22,20 @@ public class Migrator {
     TestExecutor exec = new TestExecutor();
 
     public File checkout(String bfcId, String commitId, String version) throws IOException {
-        String cacheFile = Conf.CACHE_PATH + File.separator + bfcId + File.separator + commitId + File.separator
-                + version + "_" + UUID.randomUUID();
-        File file = new File(cacheFile);
-        if (!file.exists()) {
-            file.mkdirs();
+        synchronized (Conf.META_PATH) {
+            String cacheFile = Conf.CACHE_PATH + File.separator + bfcId + File.separator + commitId + File.separator
+                    + version + "_" + UUID.randomUUID();
+            File file = new File(cacheFile);
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            exec.setDirectory(file);
+            FileUtils.copyDirectoryToDirectory(new File(Conf.META_PATH), new File(cacheFile));
+            File result = new File(cacheFile + File.separator + "meta");
+            exec.setDirectory(result);
+            exec.execPrintln("git checkout -f " + commitId);
+            return result;
         }
-        exec.setDirectory(file);
-        FileUtils.copyDirectoryToDirectory(new File(Conf.META_PATH), new File(cacheFile));
-        File result = new File(cacheFile + File.separator + "meta");
-        exec.setDirectory(result);
-        exec.execPrintln("git checkout -f " + commitId);
-        return result;
     }
 
     public String findJavaFile( String className, String[] projectJavaFiles) {

@@ -18,10 +18,8 @@
 
 package regminer.sql;
 
-import regminer.constant.Conf;
 import regminer.model.ProjectEntity;
 import regminer.model.Regression;
-import regminer.model.RegressionWithGap;
 
 public class BugStorage {
     public  void saveBug(Regression regression) {
@@ -34,7 +32,7 @@ public class BugStorage {
                 +projectEntity.getOrganization()+"/"+projectEntity.getProject_name()+"','"
                 +regression.getBugId()+"','"+regression.getBfcId()+"','"
                 +regression.getBuggyId()+"','"+regression.getBicId()+"','"+regression.getWorkId()+"','"
-                +regression.getTestCase()+"')";
+                +regression.getTestCase()+"','"+regression.getWithGap()+"')";
         MysqlManager.executeUpdate(sql);
     }
 }

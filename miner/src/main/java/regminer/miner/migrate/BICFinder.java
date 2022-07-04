@@ -230,7 +230,20 @@ public class BICFinder {
         if (statu == TestCaseMigrator.PASS && index > passPoint) {
             passPoint = index;
         }
+        logTestStatus(statu);
         return statu;
+    }
+
+    private void logTestStatus(int statu) {
+        if (statu == TestCaseMigrator.PASS) {
+            FileUtilx.log("PASS");
+        } else if (statu == TestCaseMigrator.FAL) {
+            FileUtilx.log("FAL");
+        } else if (statu == TestCaseMigrator.CE) {
+            FileUtilx.log("CE");
+        } else {
+            FileUtilx.log("UNKNOWN");
+        }
     }
 
     public int test(String bic, int index) {
@@ -482,8 +495,10 @@ public class BICFinder {
     }
 
     public List<String> revListCommand(String commitId) {
-        exec.setDirectory(new File(Conf.META_PATH));
-        exec.runCommand("git checkout -f master");
-        return exec.runCommand("git rev-list " + commitId);
+        synchronized (Conf.META_PATH) {
+            exec.setDirectory(new File(Conf.META_PATH));
+            exec.runCommand("git checkout -f master");
+            return exec.runCommand("git rev-list " + commitId);
+        }
     }
 }

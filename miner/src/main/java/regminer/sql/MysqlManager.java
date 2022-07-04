@@ -96,9 +96,10 @@ public class MysqlManager {
             getStatement();
             ResultSet rs = statement.executeQuery(sql);
             while (rs.next()){
+                projectEntity = new ProjectEntity();
                 projectEntity.setProjectID(rs.getString("project_uuid"));
-                projectEntity.setOrganization(rs.getNString("organization"));
-                projectEntity.setProject_name("project_name");
+                projectEntity.setOrganization(rs.getString("organization"));
+                projectEntity.setProject_name(rs.getString("project_name"));
                 break;
             }
         } catch (Exception e) {

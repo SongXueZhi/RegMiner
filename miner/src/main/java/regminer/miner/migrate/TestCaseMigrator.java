@@ -20,18 +20,6 @@ public class TestCaseMigrator extends Migrator {
     public final static int CE = -1;
     public final static int UNRESOLVE = -2;
 
-
-    public void migrate(@NotNull PotentialRFC pRFC, @NotNull Set<String> bicSet) {
-        FileUtilx.log("Time index: "+pRFC.getCommit().getName());
-        for (String bic : bicSet) {
-            try {
-                migrate(pRFC, bic);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public int migrate(@NotNull PotentialRFC pRFC, String bic) throws Exception {
         File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
         pRFC.fileMap.put(bic, bicDirectory);
@@ -41,7 +29,6 @@ public class TestCaseMigrator extends Migrator {
             int a = testSuite(bicDirectory, pRFC.getTestCaseFiles());
             return a;
         } else {
-            FileUtilx.log(" CE ");
             return CE;
         }
     }
@@ -49,14 +36,11 @@ public class TestCaseMigrator extends Migrator {
         MigrateFailureType type = exec.execTestWithResult(Conf.testLine + testFile.getQualityClassName());
         FileUtilx.log("try test class");
         if (type == MigrateFailureType.NONE) {
-            FileUtilx.log("FAL");
             return FAL;
         }
         if (type == MigrateFailureType.TESTSUCCESS) {
-            FileUtilx.log("PASS");
             return PASS;
         }
-        FileUtilx.log("UNRESOLVE");
         return UNRESOLVE;
     }
     public boolean compile(File file, boolean record) throws Exception {
