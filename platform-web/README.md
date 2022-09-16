@@ -1,4 +1,18 @@
-## Run program
+## ENV
+node.js. yarn
+## Quick Start
+
+We suggest use Yarn to manage the the project.
+1. Install dependencies (when first start)
+```
+yarn install
+```
+2. Start the web UI
+```
+yarn start
+```
+
+## Try in Other Way
 
 1. Install dependencies
 
@@ -54,12 +68,6 @@ npm i @ant-design/pro-table@2.61.0 --save
 
 ```
 npm install react-redux@7.2.4
-```
-
-9. Run project (support and suggest to use mock data )
-
-```
-yarn start
 ```
 
 ## Q & A
