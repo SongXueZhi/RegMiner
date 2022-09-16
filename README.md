@@ -6,11 +6,6 @@ Now regminer has an interactive visualization platform, you can use our platform
 The use of the platform is demonstrated as follows:
 
 [![RegMiner Data Platform](https://github.com/SongXueZhi/images/blob/main/regminer/platshow.png)](https://youtu.be/yzcM9Y4unok "RegMiner Data Platform")
-We have included visualization platforms in the latest release of RegMiner, you can also launch them from code:
-
-UI: https://github.com/SongXueZhi/code-annotation-web
-
-Visualization Platforms: https://github.com/SongXueZhi/code-annotation-platform
 
 ## Regressions4J
 We also provide UI-free tools to help users replay test results for each regression bug,get that support in the [regs4J](https://github.com/SongXueZhi/regressions4j) project.
