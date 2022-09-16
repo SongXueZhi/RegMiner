@@ -78,7 +78,7 @@ def generate_config(dir):
         elif is_gradle(dir):
             output.append("### Gradle Configuration ###")
             output.append("command_line=./gradlew compileJava compileTestJava")
-            output.append("test_line=./gradlew test --tests")
+            output.append("test_line=./gradlew test --tests ")
             output.append("test_symbol=.")
         else:
             raise NotSupportedError # not handling multi subproject

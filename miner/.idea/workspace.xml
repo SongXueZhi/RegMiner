@@ -4,11 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5961331d-9a17-4f11-b732-a65e2d2e6ea4" name="Changes" comment="" />
+    <list default="true" id="5961331d-9a17-4f11-b732-a65e2d2e6ea4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../scripts/Automation.py" beforeDir="false" afterPath="$PROJECT_DIR$/../scripts/Automation.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
@@ -27,6 +33,7 @@
     </option>
   </component>
   <component name="ProjectId" id="2Ai6tzQEczLKVl4vbZvIysyaqYM" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -92,6 +99,9 @@
       <workItem from="1655620585814" duration="4817000" />
       <workItem from="1656297286057" duration="1912000" />
       <workItem from="1656335792884" duration="1611000" />
+      <workItem from="1661325455001" duration="537000" />
+      <workItem from="1662445302678" duration="13000" />
+      <workItem from="1662450463137" duration="46000" />
     </task>
     <servers />
   </component>

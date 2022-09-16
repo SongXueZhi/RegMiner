@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fudan.annotation.platform.backend.dao.CriticalChangeMapper">
+
+    <resultMap id="hunk" type="com.fudan.annotation.platform.backend.entity.HunkEntity">
+        <result column="critical_change_id" property="criticalChangeId" jdbcType="INTEGER"/>
+        <result column="new_path" property="newPath" jdbcType="VARCHAR"/>
+        <result column="old_path" property="oldPath" jdbcType="VARCHAR"/>
+        <result column="beginA" property="beginA" jdbcType="INTEGER"/>
+        <result column="beginB" property="beginB" jdbcType="INTEGER"/>
+        <result column="endA" property="endA" jdbcType="INTEGER"/>
+        <result column="endB" property="endB" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="setHunks" >
+        insert into critical_change
+        (regression_uuid, revision_name, new_path, old_path, beginA, beginB, endA, endB, type)
+        values (#{regressionUuid},
+                #{revisionName},
+                #{newPath},
+                #{oldPath},
+                #{beginA},
+                #{beginB},
+                #{endA},
+                #{endB},
+                #{type});
+    </insert>
+
+    <select id="getHunks" resultMap="hunk">
+        select critical_change_id,new_path,old_path,beginA,beginB,endA,endB,type from critical_change
+        <where>
+            regression_uuid = #{regressionUuid} and revision_name = #{revisionName}
+        </where>
+    </select>
+
+    <delete id="deletHunks" >
+        delete from critical_change
+        where regression_uuid = #{regressionUuid} and revision_name = #{revisionName}
+        and critical_change_id = #{criticalChangeId}
+    </delete>
+
+</mapper>

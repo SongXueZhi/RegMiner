@@ -1,0 +1,10 @@
+/target
+/.project
+/.settings
+/.classpath
+/.idea
+/.DS_Store
+*.iml
+/src/test/java/com/alibaba/json/bvt/parser/autoType/
+/bin/
+.DS_Store
