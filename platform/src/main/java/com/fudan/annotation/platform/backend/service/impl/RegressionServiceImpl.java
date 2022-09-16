@@ -47,7 +47,8 @@ public class RegressionServiceImpl implements RegressionService {
     private Migrator migrator;
 
     @Override
-    public List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName, String keyWord) {
+    public List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName,
+                                           String keyWord) {
         return regressionMapper.selectRegression(regressionUuid, regressionStatus, projectName, keyWord);
     }
 
@@ -109,9 +110,12 @@ public class RegressionServiceImpl implements RegressionService {
         String testCase = regression.getTestcase().split(";")[0];
 
         String testCasePath = "NULL";
-        boolean hasTest = modifyCorrelationDetect(bfcFiles, bicFiles, testCase);
-        if (!hasTest) {
+        modifyCorrelationDetect(bfcFiles, bicFiles);
+        testCasePath = detectTestCasePath(bfcFiles,bicFiles,testCase);
+        boolean flag = false;
+        if (testCasePath.equals("")) {
             try {
+                flag =true;
                 testCasePath = sourceCodeManager.getTestCasePath(userToken, regressionUuid, "bfc", testCase);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -122,7 +126,7 @@ public class RegressionServiceImpl implements RegressionService {
         RegressionDetail regressionDetail = new RegressionDetail();
         regressionDetail.setTestFilePath(testCasePath);
 
-        if (!testCasePath.equals("NULL")) {
+        if (flag) {
             String fileName = testCasePath.substring(testCasePath.lastIndexOf("/") + 1);
             ChangedFile bfcFile = new ChangedFile();
             bfcFile.setFilename(fileName);
@@ -165,8 +169,8 @@ public class RegressionServiceImpl implements RegressionService {
         String testCase = regression.getTestcase().split(";")[0];
 
         String testCasePath = "NULL";
-        boolean hasTest = modifyCorrelationDetect(bfcFiles, bicFiles, testCase);
-        if (!hasTest) {
+        modifyCorrelationDetect(bfcFiles, bicFiles);
+        if (testCasePath.equals("NULL")) {
             try {
                 testCasePath = sourceCodeManager.getTestCasePath(userToken, regressionUuid, "bfc", testCase);
             } catch (FileNotFoundException e) {
@@ -208,17 +212,9 @@ public class RegressionServiceImpl implements RegressionService {
         return regressionDetail;
     }
 
-    private boolean modifyCorrelationDetect(List<ChangedFile> bfcFiles, List<ChangedFile> bicFiles,
-                                            String testCaseName) {
-        boolean result = false;
-        testCaseName = testCaseName.substring(0, testCaseName.indexOf("#")).replace(".", "/") + ".java";
-        String finalTestCaseName = testCaseName;
-
+    // TODO select delta debugging result
+    private void modifyCorrelationDetect(List<ChangedFile> bfcFiles, List<ChangedFile> bicFiles) {
         for (ChangedFile changedFile : bfcFiles) {
-            if (changedFile.getNewPath().endsWith(finalTestCaseName)) {
-                changedFile.setType(ChangedFile.Type.TEST_SUITE);
-                result = true;
-            }
             for (ChangedFile bicFile : bicFiles) {
                 if (bicFile.getMatch() == 1) {
                     continue;
@@ -232,7 +228,41 @@ public class RegressionServiceImpl implements RegressionService {
                 bicFile.setMatch(0);
             }
         }
-        return result;
+    }
+
+
+    public String detectTestCasePath(List<ChangedFile> bfcFiles, List<ChangedFile> bicFiles,
+                                     String testCaseName) {
+        String testCasePath = "";
+        testCaseName = testCaseName.substring(0, testCaseName.indexOf("#")).replace(".", "/") + ".java";
+        String finalTestCaseName = testCaseName;
+
+        for (ChangedFile changedFile : bfcFiles) {
+            if (changedFile.getNewPath().endsWith(finalTestCaseName)) {
+                changedFile.setType(ChangedFile.Type.TEST_SUITE);
+                testCasePath = changedFile.getNewPath();
+            }
+        }
+        if (testCasePath.equals("")) {
+            return testCasePath;
+        }
+        boolean flag = false;
+        for (ChangedFile bicFile : bicFiles) {
+            if (bicFile.getNewPath().endsWith(finalTestCaseName)) {
+                bicFile.setType(ChangedFile.Type.TEST_SUITE);
+                flag = true;
+            }
+        }
+
+        if (!flag) {
+            ChangedFile bicFile = new ChangedFile();
+            bicFile.setFilename(finalTestCaseName);
+            bicFile.setNewPath(testCasePath);
+            bicFile.setOldPath(testCasePath);
+            bicFile.setType(ChangedFile.Type.TEST_SUITE);
+            bicFiles.add(bicFile);
+        }
+        return testCasePath;
     }
 
     @Override
@@ -353,8 +383,10 @@ public class RegressionServiceImpl implements RegressionService {
 
     @Override
     public void setCriticalChange(String regressionUuid, String revisionName, HunkEntity hunkEntityDTO) {
-        criticalChangeMapper.setHunks(regressionUuid, revisionName, hunkEntityDTO.getNewPath(), hunkEntityDTO.getOldPath(),
-                hunkEntityDTO.getBeginA(), hunkEntityDTO.getBeginB(), hunkEntityDTO.getEndA(), hunkEntityDTO.getEndB(), hunkEntityDTO.getType());
+        criticalChangeMapper.setHunks(regressionUuid, revisionName, hunkEntityDTO.getNewPath(),
+                hunkEntityDTO.getOldPath(),
+                hunkEntityDTO.getBeginA(), hunkEntityDTO.getBeginB(), hunkEntityDTO.getEndA(),
+                hunkEntityDTO.getEndB(), hunkEntityDTO.getType());
     }
 
     @Override
@@ -373,7 +405,8 @@ public class RegressionServiceImpl implements RegressionService {
     }
 
     @Override
-    public String applyHunks(String userToken, String regressionUuid, String oldRevision, String newRevision, List<HunkEntity> hunkList) throws IOException {
+    public String applyHunks(String userToken, String regressionUuid, String oldRevision, String newRevision,
+                             List<HunkEntity> hunkList) throws IOException {
         //默认hunk来自同一file，并写入同一file
         String insertPath = hunkList.get(0).getNewPath();
         File insertFile = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, newRevision, insertPath);
@@ -400,7 +433,8 @@ public class RegressionServiceImpl implements RegressionService {
     }
 
     @Override
-    public void modifiedCode(String userToken, String regressionUuid, String oldPath, String revisionName, String newCode, Integer coverStatus) throws IOException {
+    public void modifiedCode(String userToken, String regressionUuid, String oldPath, String revisionName,
+                             String newCode, Integer coverStatus) throws IOException {
         HashMap<String, String> revisionMap = new HashMap<>();
         revisionMap.put("bfc", "buggy");
         revisionMap.put("bic", "work");

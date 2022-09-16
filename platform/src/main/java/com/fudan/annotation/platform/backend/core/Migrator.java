@@ -48,6 +48,7 @@ public class Migrator {
             String oldPath = diffEntry.getOldPath();
             String newFile = newPath.substring(newPath.lastIndexOf("/") + 1);
             List<Edit> editList = getEdits(diffEntry,repo);
+            //TODO delete file need to handle
             if (!newFile.equals("null") && !newFile.equals("CHANGES")) {
                 ChangedFile changedFile = new ChangedFile();
                 changedFile.setFilename(newFile);

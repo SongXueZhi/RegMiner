@@ -24,7 +24,8 @@ import java.nio.file.Paths;
 @Component
 public class SourceCodeManager {
 
-    private final static String workSpace = System.getProperty("user.home") + File.separator + "miner_space";
+    private final static String workSpace = System.getProperty("user.home") + File.separator + "data"+File.separator+
+            "miner_space";
 
     public static String metaProjectsDirPath = workSpace + File.separator + "meta_projects";
     public static String cacheProjectsDirPath = workSpace + File.separator + "transfer_cache";
