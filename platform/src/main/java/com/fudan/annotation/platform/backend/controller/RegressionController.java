@@ -288,6 +288,42 @@ public class RegressionController {
 
     }
 
+    @GetMapping(value = "/comments")
+    public ResponseBean<List<Comments>> getCommentsList(
+            @RequestParam(name = "regression_uuid") String regressionUuid){
+         try {
+             List<Comments> commentsList = regressionService.getComment(regressionUuid);
+             return new ResponseBean<>(200, "get comments success", commentsList);
+         } catch (Exception e) {
+             return new ResponseBean<>(401, "get comments failed :" + e.getMessage(), null);
+         }
+    }
+
+    @PostMapping(value = "/comments")
+    public ResponseBean setComment(
+            @RequestParam(name = "regression_uuid") String regressionUuid,
+            @RequestParam(name = "account_name") String accountName,
+            @RequestParam(name = "context") String context) {
+         try {
+             regressionService.setComment(regressionUuid, accountName, context);
+             return new ResponseBean<>(200, "add comment success", null);
+         } catch (Exception e) {
+             return new ResponseBean<>(401, "add comment failed :" + e.getMessage(), null);
+         }
+    }
+
+    @DeleteMapping(value = "/comments")
+    public ResponseBean deleteComments(
+            @RequestParam(name = "regression_uuid") String regressionUuid,
+            @RequestParam(name = "account_name") String accountName,
+            @RequestParam(name = "comment_id") int commentId) {
+        try {
+            regressionService.deleteComments(regressionUuid, accountName, commentId);
+            return new ResponseBean<>(200, "comment deleted", null);
+        } catch (Exception e) {
+            return new ResponseBean<>(401, "deleted failed :" + e.getMessage(), null);
+        }
+    }
 
     @Autowired
     public void setRegressionService(RegressionService regressionService) {

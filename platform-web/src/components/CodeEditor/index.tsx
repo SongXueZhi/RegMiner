@@ -1,18 +1,17 @@
-import { RefObject } from 'react';
+import type { RefObject } from 'react';
 import React, { createRef } from 'react';
 import { monaco, MonacoDiffEditor } from 'react-monaco-editor';
 import { v4 as uuidv4 } from 'uuid';
 import type * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 import type { Directory, Depandency } from './sidebar.d';
-import { ResizeSensor, Divider, Button, ResizeEntry } from '@blueprintjs/core';
+import type { ResizeEntry } from '@blueprintjs/core';
+import { Divider, Button, ResizeSensor } from '@blueprintjs/core';
 import './styles.css';
 import EllipsisMiddle from '../EllipsisMiddle';
 import { Dropdown, Menu, message, Space } from 'antd';
-import { Modal } from 'antd';
-import CodeDetails from '../CodeDetails';
 import type { DiffEditDetailItems, FeedbackList, HunkEntityItems } from '@/pages/editor/data';
-import { postRegressionCodeModified } from '@/pages/editor/service';
 import { DownOutlined } from '@ant-design/icons';
+import { postRegressionRevert, postRegressionUpdateNewCode } from '@/pages/editor/service';
 
 interface IProps {
   title: string;
@@ -32,6 +31,7 @@ interface IProps {
   isRunning: boolean;
   consoleString?: string;
   CriticalChange: HunkEntityItems | undefined;
+  projectFullName: string;
   onRunCode?: (code: string, version: string) => void;
   onFeedbackList?: (feedback: FeedbackList) => void;
   onRevertCode?: (
@@ -214,40 +214,42 @@ class CodeEditor extends React.Component<IProps, IState> {
     this.setState({ modifiedNewCode: v });
   };
   private handleUpdateNewCodeClick = async () => {
-    // console.log('update code');
-    // console.log(this.state.modifiedNewCode);
     const newCode = this.state.modifiedNewCode;
-    postRegressionCodeModified(
+    postRegressionUpdateNewCode(
       {
+        projectFullName: this.props.projectFullName,
         userToken: '123',
-        regression_uuid: this.props.regressionUuid,
-        old_path: this.props.oldPath,
-        revision_name: this.props.title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
-        cover_status: 1,
+        regressionUuid: this.props.regressionUuid,
+        filePath: this.props.oldPath,
+        revisionName: this.props.title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
       },
       newCode ?? ' ',
     )
       .then(() => {
-        message.success('Code updated');
+        this.props.onRevertCode?.call(
+          this,
+          this.props.title === 'Bug Inducing Commit' ? 'BIC' : 'BFC',
+          this.props.filename,
+          this.props.oldPath,
+          this.props.newPath,
+          this.props.diffEditChanges,
+          undefined,
+        );
       })
       .catch(() => {
         message.error('Failed to update, check the code again!');
       });
   };
   private handleRevertCode = async () => {
-    const newCode = ' ';
-    await postRegressionCodeModified(
-      {
-        regression_uuid: this.props.regressionUuid,
-        userToken: '123',
-        old_path: this.props.oldPath,
-        revision_name: this.props.title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
-        cover_status: 0,
-      },
-      newCode,
-    )
+    await postRegressionRevert({
+      projectFullName: this.props.projectFullName,
+      regressionUuid: this.props.regressionUuid,
+      userToken: '123',
+      filePath: this.props.oldPath,
+      revisionName: this.props.title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
+    })
       .then(() => {
-        message.success('Code reverted!');
+        // message.success('Code reverted!');
         this.props.onRevertCode?.call(
           this,
           this.props.title === 'Bug Inducing Commit' ? 'BIC' : 'BFC',
@@ -264,7 +266,6 @@ class CodeEditor extends React.Component<IProps, IState> {
   };
   render() {
     const {
-      regressionUuid,
       filename,
       darkTheme,
       original,
@@ -277,7 +278,7 @@ class CodeEditor extends React.Component<IProps, IState> {
       isRunning,
       CriticalChange,
     } = this.props;
-    const { showConsole, version, showCodeDetails, decorationIds, modifiedNewCode } = this.state;
+    const { showConsole, version, decorationIds, modifiedNewCode } = this.state;
     const { width, height } = this.state.monacoSize;
     const logs = (
       <pre className="log output" style={{ overflow: 'unset' }}>
@@ -297,14 +298,8 @@ class CodeEditor extends React.Component<IProps, IState> {
                 <EllipsisMiddle suffixCount={12}>{title}</EllipsisMiddle>
               </div>
               <div className="regression-file-details-btn">
-                <Button
-                  id="show-code-details"
-                  icon="search"
-                  intent="primary"
-                  style={{ marginLeft: '5px' }}
-                  onClick={() => this.setState({ showCodeDetails: true })}
-                >
-                  Details
+                <Button id="show-code-details" intent="primary" style={{ marginLeft: '5px' }}>
+                  Retrieval
                 </Button>
               </div>
               <div className="update-new-code-btn">
@@ -409,7 +404,7 @@ class CodeEditor extends React.Component<IProps, IState> {
                 original={original}
                 value={modifiedNewCode}
                 onChange={this.handleDiffEditorOnChange}
-                editorDidMount={(diffEditor, diffMonaco) => {
+                editorDidMount={(diffEditor) => {
                   if (CriticalChange !== undefined) {
                     console.log(CriticalChange.beginB);
                     const codeEditor = diffEditor.getModifiedEditor();
@@ -716,7 +711,7 @@ class CodeEditor extends React.Component<IProps, IState> {
             </div>
           </div>
         </ResizeSensor>
-        <Modal
+        {/* <Modal
           width="80%"
           visible={showCodeDetails}
           onCancel={() => this.setState({ showCodeDetails: false })}
@@ -730,7 +725,7 @@ class CodeEditor extends React.Component<IProps, IState> {
             criticalChangeNew={modifiedNewCode}
             fileName={filename}
           />
-        </Modal>
+        </Modal> */}
       </>
     );
   }

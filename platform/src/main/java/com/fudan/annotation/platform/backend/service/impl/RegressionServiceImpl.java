@@ -4,6 +4,7 @@ import com.fudan.annotation.platform.backend.config.Configs;
 import com.fudan.annotation.platform.backend.core.Executor;
 import com.fudan.annotation.platform.backend.core.Migrator;
 import com.fudan.annotation.platform.backend.core.SourceCodeManager;
+import com.fudan.annotation.platform.backend.dao.CommentsMapper;
 import com.fudan.annotation.platform.backend.dao.CriticalChangeMapper;
 import com.fudan.annotation.platform.backend.dao.ProjectMapper;
 import com.fudan.annotation.platform.backend.dao.RegressionMapper;
@@ -45,6 +46,8 @@ public class RegressionServiceImpl implements RegressionService {
     private SourceCodeManager sourceCodeManager;
     @Autowired
     private Migrator migrator;
+    @Autowired
+    private CommentsMapper commentsMapper;
 
     @Override
     public List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName,
@@ -518,6 +521,24 @@ public class RegressionServiceImpl implements RegressionService {
         FileUtils.deleteDirectory(file);
     }
 
+    @Override
+    public List<Comments> getComment(String regressionUuid) {
+        commentsMapper.getComments(regressionUuid);
+        return commentsMapper.getComments(regressionUuid);
+    }
+
+    @Override
+    public void setComment(String regressionUuid, String accountName, String context) {
+        commentsMapper.setComments(regressionUuid, accountName, context);
+    }
+
+    @Override
+    public void deleteComments(String regressionUuid, String accountName, int commentId) {
+        commentsMapper.deleteComments(regressionUuid, accountName, commentId);
+    }
+
+    @Override
+    public void postComment(String userToken, String regressionUuid, String accountName, String context) {}
 
     @Autowired
     public void setRegressionMapper(RegressionMapper regressionMapper) {

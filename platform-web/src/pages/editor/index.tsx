@@ -1,19 +1,30 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import {
+  Comment,
   Button,
   Card,
   Descriptions,
+  List,
   Menu,
   message,
   Popconfirm,
-  Radio,
   Spin,
   Tag,
   Tooltip,
   Typography,
+  Divider,
+  Form,
 } from 'antd';
-import { AppstoreOutlined, UploadOutlined } from '@ant-design/icons';
+import {
+  AppstoreOutlined,
+  DeleteOutlined,
+  DislikeFilled,
+  DislikeOutlined,
+  LikeFilled,
+  LikeOutlined,
+  UploadOutlined,
+} from '@ant-design/icons';
 import DiffEditorTabs from './components/DiffEditorTabs';
 import type { IRouteComponentProps } from 'umi';
 import {
@@ -25,9 +36,17 @@ import {
   getCriticalChangeByUuid,
   putCriticalChangeByUuid,
   deleteCriticalChangeById,
+  postClearCache,
 } from './service';
-import type { CommitItem, DiffEditDetailItems, FeedbackList, HunkEntityItems } from './data';
+import type {
+  CommitItem,
+  DiffEditDetailItems,
+  FeedbackList,
+  HunkEntityItems,
+  RegressionCode,
+} from './data';
 import { parse } from 'query-string';
+import TextArea from 'antd/lib/input/TextArea';
 
 const { SubMenu } = Menu;
 
@@ -57,6 +76,7 @@ export interface FilePaneItem extends CommitFile {
   key: string;
   editList: DiffEditDetailItems[];
   CriticalChange: HunkEntityItems | undefined;
+  project: string;
 }
 
 // function markMatch(
@@ -114,6 +134,60 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   const [BFCFeedbackList, setBFCFeedbackList] = useState<FeedbackList[]>([]);
   const [BICCriticalChanges, setBICCriticalChanges] = useState<HunkEntityItems[]>([]);
   const [BFCCriticalChanges, setBFCCriticalChanges] = useState<HunkEntityItems[]>([]);
+  const [loadingClearCache, setLoadingClearCache] = useState<boolean>(false);
+
+  const deleteComment = () => {
+    message.success('delete');
+  };
+
+  const mockComments = [
+    {
+      actions: [
+        <Tooltip key="comment-delete-btn" title="Delete">
+          <span onClick={deleteComment}>
+            <DeleteOutlined />
+          </span>
+        </Tooltip>,
+      ],
+      author: 'Han Solo',
+      avatar: 'https://joeschmoe.io/api/v1/random',
+      content: (
+        <p>
+          We supply a series of design principles, practical patterns and high quality design
+          resources (Sketch and Axure), to help people create their product prototypes beautifully
+          and efficiently.
+        </p>
+      ),
+      datetime: (
+        <Tooltip title="2016-11-22 11:22:33">
+          <span>8 hours ago</span>
+        </Tooltip>
+      ),
+    },
+    {
+      actions: [
+        <Tooltip key="comment-delete-btn" title="Delete">
+          <span onClick={deleteComment}>
+            <DeleteOutlined />
+          </span>
+        </Tooltip>,
+      ],
+      author: 'Han Solo',
+      avatar: 'https://joeschmoe.io/api/v1/random',
+      content: (
+        <p>
+          We supply a series of design principles, practical patterns and high quality design
+          resources (Sketch and Axure), to help people create their product prototypes beautifully
+          and efficiently.
+        </p>
+      ),
+      datetime: (
+        <Tooltip title="2016-11-22 10:22:33">
+          <span>9 hours ago</span>
+        </Tooltip>
+      ),
+    },
+  ];
 
   const getFile = async (params: {
     commit: string;
@@ -124,27 +198,27 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   }) => {
     if (params.commit === 'BFC') {
       return (
-        queryRegressionCode({
+        (await queryRegressionCode({
           regression_uuid: HISTORY_SEARCH.regressionUuid,
           filename: params.filename,
           userToken: '123',
           new_path: params.newPath,
           old_path: params.oldPath,
           revisionFlag: 'bfc',
-        }) ?? ''
+        })) ?? ''
       );
       // return bicFile;
     }
     if (params.commit === 'BIC') {
       return (
-        queryRegressionCode({
+        (await queryRegressionCode({
           regression_uuid: HISTORY_SEARCH.regressionUuid,
           filename: params.filename,
           userToken: '123',
           new_path: params.newPath,
           old_path: params.oldPath,
           revisionFlag: 'bic',
-        }) ?? ''
+        })) ?? ''
         // return bfcFile;
       );
     }
@@ -281,6 +355,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
       CriticalChange: HunkEntityItems | undefined,
     ) => {
       const key = `${commit}-${filename}`;
+      const project = projectFullName ?? '';
       // const [key, commit] = keyPath;
       // const [_, filename] = key.split(`${commit}-`);
       getFile({
@@ -291,16 +366,37 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         oldPath: oldPath,
       })
         .then((resp: any) => {
+          wait(500);
           if (commit === 'BIC') {
             if (
               panesBIC.some((data) => {
                 return data.key === key;
               })
             ) {
+              const paneBIFIndex = panesBIC.findIndex((data) => {
+                return data.key === key;
+              });
+              panesBIC.splice(paneBIFIndex, 1, {
+                ...resp,
+                key,
+                editList,
+                newPath,
+                oldPath,
+                CriticalChange,
+                project,
+              });
               setPanesBIC(panesBIC);
             } else {
               setPanesBIC(
-                panesBIC.concat({ ...resp, key, editList, newPath, oldPath, CriticalChange }),
+                panesBIC.concat({
+                  ...resp,
+                  key,
+                  editList,
+                  newPath,
+                  oldPath,
+                  CriticalChange,
+                  project,
+                }),
               );
             }
           }
@@ -310,10 +406,30 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
                 return data.key === key;
               })
             ) {
+              const paneBFCIndex = panesBFC.findIndex((data) => {
+                return data.key === key;
+              });
+              panesBFC.splice(paneBFCIndex, 1, {
+                ...resp,
+                key,
+                editList,
+                newPath,
+                oldPath,
+                CriticalChange,
+                project,
+              });
               setPanesBFC(panesBFC);
             } else {
               setPanesBFC(
-                panesBFC.concat({ ...resp, key, editList, newPath, oldPath, CriticalChange }),
+                panesBFC.concat({
+                  ...resp,
+                  key,
+                  editList,
+                  newPath,
+                  oldPath,
+                  CriticalChange,
+                  project,
+                }),
               );
             }
           }
@@ -328,7 +444,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [panesBFC, panesBIC],
+    [panesBFC, panesBIC, projectFullName],
   );
 
   const handleBICRunClick = useCallback(
@@ -476,7 +592,13 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         setBFCCriticalChanges(resp.hunkEntityList);
       }
     });
-  }, [BICFeedbackList, BFCFeedbackList, BICCriticalChanges, BFCCriticalChanges]);
+  }, [
+    BICFeedbackList,
+    BFCFeedbackList,
+    HISTORY_SEARCH.regressionUuid,
+    BICCriticalChanges,
+    BFCCriticalChanges,
+  ]);
 
   const handleWithdrawFeedbacks = useCallback(
     (decorationKey, hunkData, revision) => {
@@ -516,6 +638,26 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
       </Button>
     ),
     features: <Typography.Text strong>N.A.</Typography.Text>,
+  };
+
+  const handleClearCacheClick = async () => {
+    setLoadingClearCache(true);
+    await postClearCache({
+      userToken: '123',
+      regressionUuid: HISTORY_SEARCH.regressionUuid,
+      projectFullName: projectFullName ?? '',
+    })
+      .then(() => {
+        setLoadingClearCache(false);
+      })
+      .catch(() => {
+        message.error('Failed to clear cache');
+        setLoadingClearCache(false);
+      });
+  };
+
+  const onSubmitComment = async () => {
+    console.log();
   };
 
   useEffect(() => {
@@ -603,11 +745,9 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
                     <Typography.Text>{regressionDescription}</Typography.Text>
                   </Descriptions.Item>
                 </Descriptions>
-                <Radio.Group defaultValue="a" buttonStyle="solid">
-                  <Radio.Button value="a">confirmed</Radio.Button>
-                  <Radio.Button value="b">rejected</Radio.Button>
-                  <Radio.Button value="c">undecided</Radio.Button>
-                </Radio.Group>
+                <Button onClick={handleClearCacheClick} loading={loadingClearCache}>
+                  Clear Cache
+                </Button>
               </div>
             ),
           }}
@@ -917,6 +1057,38 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
               />
             ) : null}
           </div>
+          <Card style={{ marginTop: '10px' }} title={`Regression Comments`}>
+            <List
+              className="comment-list"
+              itemLayout="horizontal"
+              dataSource={mockComments}
+              renderItem={(item) => (
+                <li>
+                  <Comment
+                    actions={item.actions}
+                    author={item.author}
+                    avatar={item.avatar}
+                    content={item.content}
+                    datetime={item.datetime}
+                  />
+                  <Divider />
+                </li>
+              )}
+            />
+            <Form.Item>
+              <TextArea
+                rows={2}
+                onChange={(value) => {
+                  console.log(value);
+                }}
+              />
+            </Form.Item>
+            <Form.Item>
+              <Button htmlType="submit" onClick={onSubmitComment} type="primary">
+                Add Comment
+              </Button>
+            </Form.Item>
+          </Card>
         </PageContainer>
       </Spin>
     </>

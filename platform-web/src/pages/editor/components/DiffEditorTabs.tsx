@@ -84,7 +84,7 @@ const DiffEditorTabs: React.FC<IProps> = ({
       onEdit(activeKey, 'remove');
       onRevertCode?.call(this, Commit, filename, oldPath, newPath, editList, CriticalChange);
     },
-    [],
+    [activeKey, onEdit, onRevertCode],
   );
 
   return (
@@ -99,33 +99,36 @@ const DiffEditorTabs: React.FC<IProps> = ({
       onEdit={onEdit}
       hideAdd
     >
-      {panes.map(({ key, oldCode, newCode, editList, newPath, oldPath, CriticalChange }) => {
-        return (
-          <Tabs.TabPane tab={key.split(`${commit}-`)} key={key}>
-            <div style={{ width: '100%', height: '86vh', display: 'flex' }}>
-              <CodeEditor
-                title={commit === 'BIC' ? 'Bug Inducing Commit' : 'Bug Fixing Commit'}
-                regressionUuid={regressionUuid}
-                filename={key.slice(4)}
-                darkTheme={false}
-                original={oldCode}
-                value={newCode}
-                newPath={newPath}
-                oldPath={oldPath}
-                diffEditChanges={editList}
-                oldVersionText={oldVersionText}
-                newVersionText={newVersionText}
-                isRunning={isRunning}
-                consoleString={consoleString}
-                CriticalChange={CriticalChange}
-                onRunCode={onRunCode}
-                onFeedbackList={onFeedbackList}
-                onRevertCode={onRevert}
-              />
-            </div>
-          </Tabs.TabPane>
-        );
-      })}
+      {panes.map(
+        ({ key, oldCode, newCode, editList, newPath, oldPath, CriticalChange, project }) => {
+          return (
+            <Tabs.TabPane tab={key.split(`${commit}-`)} key={key}>
+              <div style={{ width: '100%', height: '86vh', display: 'flex' }}>
+                <CodeEditor
+                  title={commit === 'BIC' ? 'Bug Inducing Commit' : 'Bug Fixing Commit'}
+                  regressionUuid={regressionUuid}
+                  filename={key.slice(4)}
+                  darkTheme={false}
+                  original={oldCode}
+                  value={newCode}
+                  newPath={newPath}
+                  oldPath={oldPath}
+                  diffEditChanges={editList}
+                  oldVersionText={oldVersionText}
+                  newVersionText={newVersionText}
+                  isRunning={isRunning}
+                  consoleString={consoleString}
+                  CriticalChange={CriticalChange}
+                  projectFullName={project}
+                  onRunCode={onRunCode}
+                  onFeedbackList={onFeedbackList}
+                  onRevertCode={onRevert}
+                />
+              </div>
+            </Tabs.TabPane>
+          );
+        },
+      )}
     </Tabs>
   );
 };

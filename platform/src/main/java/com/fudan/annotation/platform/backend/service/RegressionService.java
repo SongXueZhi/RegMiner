@@ -1,6 +1,7 @@
 package com.fudan.annotation.platform.backend.service;
 
 import com.fudan.annotation.platform.backend.entity.*;
+import org.dom4j.Text;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -161,5 +162,40 @@ public interface RegressionService {
      * @param regressionUuid regressionUuid
      */
     void clearCache(String userToken, String projectName, String regressionUuid) throws IOException;
+
+    /**
+     * add Comments by user
+     *
+     * @param regressionUuid regressionUuid
+     */
+    List<Comments> getComment(String regressionUuid);
+
+    /**
+     * add Comments by user
+     *
+     * @param regressionUuid regressionUuid
+     * @param accountName user account
+     * @param context comment context
+     */
+    void setComment(String regressionUuid, String accountName, String context);
+
+    /**
+     * add Comments by user
+     *
+     * @param regressionUuid regressionUuid
+     * @param accountName account Name
+     * @param commentId comment ID
+     */
+    void deleteComments(String regressionUuid, String accountName, int commentId);
+
+    /**
+     * add Comments by user
+     *
+     * @param regressionUuid regressionUuid
+     * @param accountName account Name
+     * @param commentId comment ID
+     * @param context context
+     */
+    void postComment(String regressionUuid, String commentId, String accountName, String context);
 
 }

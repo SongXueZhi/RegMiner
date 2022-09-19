@@ -155,18 +155,39 @@ export async function deleteCriticalChangeById(params: {
   }
 }
 
-export async function postRegressionCodeModified(
+// 传参改为驼峰法
+export async function postRegressionRevert(params: {
+  projectFullName: string;
+  regressionUuid: string;
+  revisionName: string;
+  filePath: string;
+  userToken: string;
+}) {
+  const { code, msg, data } = await request<API.RegResponse<any>>('/api/regression/revert', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    params: { ...params },
+  });
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    message.success(msg);
+    return data;
+  }
+}
+
+export async function postRegressionUpdateNewCode(
   params: {
+    projectFullName: string;
     userToken: string;
-    regression_uuid: string;
-    old_path: string;
-    revision_name: string;
-    // new_code?: string;
-    cover_status: 0 | 1; // 0 - reset the code to original, 1 - cover with new code
+    regressionUuid: string;
+    filePath: string;
+    revisionName: string;
   },
   body: string,
 ) {
-  const { code, msg, data } = await request<API.RegResponse<any>>('/api/regression/modified', {
+  const { code, msg, data } = await request<API.RegResponse<any>>('/api/regression/update', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     params: { ...params },
@@ -177,6 +198,79 @@ export async function postRegressionCodeModified(
     message.error(msg);
     return null;
   } else {
+    message.success(msg);
+    return data;
+  }
+}
+
+export async function postClearCache(params: {
+  userToken: string;
+  projectFullName: string;
+  regressionUuid: string;
+}) {
+  const { code, msg, data } = await request<API.RegResponse<null>>('/api/regression/clearCache', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    params: { ...params },
+  });
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    message.success(msg);
+    return data;
+  }
+}
+
+export async function getCommentList(params: { regression_uuid: string }) {
+  const { code, msg, data } = await request<API.RegResponse<null>>('/api/regression/comments', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    params: { ...params },
+  });
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    message.success(msg);
+    return data;
+  }
+}
+
+export async function addComment(params: {
+  regression_uuid: string;
+  account_name: string;
+  context: string;
+}) {
+  const { code, msg, data } = await request<API.RegResponse<null>>('/api/regression/comments', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    params: { ...params },
+  });
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    message.success(msg);
+    return data;
+  }
+}
+
+export async function deleteComment(params: {
+  regression_uuid: string;
+  account_name: string;
+  comment_id: string;
+}) {
+  const { code, msg, data } = await request<API.RegResponse<null>>('/api/regression/comments', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    params: { ...params },
+  });
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    message.success(msg);
     return data;
   }
 }
