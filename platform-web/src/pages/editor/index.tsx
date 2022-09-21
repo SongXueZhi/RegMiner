@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import {
@@ -15,16 +16,9 @@ import {
   Typography,
   Divider,
   Form,
+  Avatar,
 } from 'antd';
-import {
-  AppstoreOutlined,
-  DeleteOutlined,
-  DislikeFilled,
-  DislikeOutlined,
-  LikeFilled,
-  LikeOutlined,
-  UploadOutlined,
-} from '@ant-design/icons';
+import { AppstoreOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import DiffEditorTabs from './components/DiffEditorTabs';
 import type { IRouteComponentProps } from 'umi';
 import {
@@ -37,13 +31,16 @@ import {
   putCriticalChangeByUuid,
   deleteCriticalChangeById,
   postClearCache,
+  getCommentList,
+  deleteComment,
+  addComment,
 } from './service';
 import type {
+  CommentListItems,
   CommitItem,
   DiffEditDetailItems,
   FeedbackList,
   HunkEntityItems,
-  RegressionCode,
 } from './data';
 import { parse } from 'query-string';
 import TextArea from 'antd/lib/input/TextArea';
@@ -78,6 +75,16 @@ export interface FilePaneItem extends CommitFile {
   CriticalChange: HunkEntityItems | undefined;
   project: string;
 }
+
+export type CommentAPI = {
+  // commentId: string;
+  actions?: ReactNode[];
+  author?: ReactNode;
+  avatar?: ReactNode;
+  children?: ReactNode;
+  content?: ReactNode;
+  datetime?: ReactNode;
+};
 
 // function markMatch(
 //   bic: CommitItem[],
@@ -135,59 +142,45 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   const [BICCriticalChanges, setBICCriticalChanges] = useState<HunkEntityItems[]>([]);
   const [BFCCriticalChanges, setBFCCriticalChanges] = useState<HunkEntityItems[]>([]);
   const [loadingClearCache, setLoadingClearCache] = useState<boolean>(false);
+  const [commentList, setCommentList] = useState<CommentAPI[]>([]);
+  const [newCommentText, setNewCommentText] = useState<string>('');
 
-  const deleteComment = () => {
-    message.success('delete');
-  };
-
-  const mockComments = [
-    {
-      actions: [
-        <Tooltip key="comment-delete-btn" title="Delete">
-          <span onClick={deleteComment}>
-            <DeleteOutlined />
-          </span>
-        </Tooltip>,
-      ],
-      author: 'Han Solo',
-      avatar: 'https://joeschmoe.io/api/v1/random',
-      content: (
-        <p>
-          We supply a series of design principles, practical patterns and high quality design
-          resources (Sketch and Axure), to help people create their product prototypes beautifully
-          and efficiently.
-        </p>
-      ),
-      datetime: (
-        <Tooltip title="2016-11-22 11:22:33">
-          <span>8 hours ago</span>
-        </Tooltip>
-      ),
+  const handleDeleteComment = useCallback(
+    (items: CommentListItems) => {
+      deleteComment({
+        regression_uuid: HISTORY_SEARCH.regressionUuid,
+        account_name: items.accountName,
+        comment_id: items.commentId,
+      }).then(() => {
+        getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
+          if (resp !== null && resp !== undefined) {
+            let currComments: CommentAPI[] = [];
+            currComments = resp.map((data) => {
+              return {
+                actions: [
+                  <Tooltip key="comment-delete-btn" title="Delete">
+                    <span onClick={() => handleDeleteComment(data)}>
+                      <DeleteOutlined />
+                    </span>
+                  </Tooltip>,
+                ],
+                author: data.accountName,
+                avatar: 'https://joeschmoe.io/api/v1/random',
+                content: <p>{data.context}</p>,
+                datetime: (
+                  <Tooltip title={data.createTime}>
+                    <span>{data.createTime}</span>
+                  </Tooltip>
+                ),
+              };
+            });
+            setCommentList(currComments);
+          }
+        });
+      });
     },
-    {
-      actions: [
-        <Tooltip key="comment-delete-btn" title="Delete">
-          <span onClick={deleteComment}>
-            <DeleteOutlined />
-          </span>
-        </Tooltip>,
-      ],
-      author: 'Han Solo',
-      avatar: 'https://joeschmoe.io/api/v1/random',
-      content: (
-        <p>
-          We supply a series of design principles, practical patterns and high quality design
-          resources (Sketch and Axure), to help people create their product prototypes beautifully
-          and efficiently.
-        </p>
-      ),
-      datetime: (
-        <Tooltip title="2016-11-22 10:22:33">
-          <span>9 hours ago</span>
-        </Tooltip>
-      ),
-    },
-  ];
+    [HISTORY_SEARCH.regressionUuid],
+  );
 
   const getFile = async (params: {
     commit: string;
@@ -656,9 +649,40 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
       });
   };
 
-  const onSubmitComment = async () => {
-    console.log();
-  };
+  const handleSubmitComment = useCallback(() => {
+    addComment({
+      regression_uuid: HISTORY_SEARCH.regressionUuid,
+      account_name: 'admin',
+      context: newCommentText,
+    }).then(() => {
+      setNewCommentText('');
+      getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
+        if (resp !== null && resp !== undefined) {
+          let currComments: CommentAPI[] = [];
+          currComments = resp.map((data) => {
+            return {
+              actions: [
+                <Tooltip key="comment-delete-btn" title="Delete">
+                  <span onClick={() => handleDeleteComment(data)}>
+                    <DeleteOutlined />
+                  </span>
+                </Tooltip>,
+              ],
+              author: data.accountName,
+              avatar: 'https://joeschmoe.io/api/v1/random',
+              content: <p>{data.context}</p>,
+              datetime: (
+                <Tooltip title={data.createTime}>
+                  <span>{data.createTime}</span>
+                </Tooltip>
+              ),
+            };
+          });
+          setCommentList(currComments);
+        }
+      });
+    });
+  }, [HISTORY_SEARCH.regressionUuid, handleDeleteComment, newCommentText]);
 
   useEffect(() => {
     regressionCheckout({ regression_uuid: HISTORY_SEARCH.regressionUuid, userToken: '123' }).then(
@@ -699,6 +723,32 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         setBFCCriticalChanges(resp.hunkEntityList);
       }
     });
+    getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
+      if (resp !== null && resp !== undefined) {
+        let currComments: CommentAPI[] = [];
+        currComments = resp.map((data) => {
+          return {
+            actions: [
+              <Tooltip key="comment-delete-btn" title="Delete">
+                <span onClick={() => handleDeleteComment(data)}>
+                  <DeleteOutlined />
+                </span>
+              </Tooltip>,
+            ],
+            author: data.accountName,
+            avatar: 'https://joeschmoe.io/api/v1/random',
+            content: <p>{data.context}</p>,
+            datetime: (
+              <Tooltip title={data.createTime}>
+                <span>{data.createTime}</span>
+              </Tooltip>
+            ),
+          };
+        });
+        setCommentList(currComments);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [HISTORY_SEARCH.regressionUuid]);
 
   return (
@@ -1061,7 +1111,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             <List
               className="comment-list"
               itemLayout="horizontal"
-              dataSource={mockComments}
+              dataSource={commentList}
               renderItem={(item) => (
                 <li>
                   <Comment
@@ -1079,12 +1129,14 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
               <TextArea
                 rows={2}
                 onChange={(value) => {
-                  console.log(value);
+                  setNewCommentText(value.currentTarget.value);
                 }}
+                value={newCommentText}
+                allowClear
               />
             </Form.Item>
             <Form.Item>
-              <Button htmlType="submit" onClick={onSubmitComment} type="primary">
+              <Button htmlType="submit" onClick={handleSubmitComment} type="primary">
                 Add Comment
               </Button>
             </Form.Item>

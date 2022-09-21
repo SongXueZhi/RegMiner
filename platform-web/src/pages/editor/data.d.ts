@@ -99,3 +99,11 @@ export type FeedbackList = {
   feedback: string;
   hunkData: HunkEntityParams;
 };
+
+export type CommentListItems = {
+  commentId: string;
+  accountName: string;
+  regressionUuid: string;
+  context: string;
+  createTime: string;
+};
