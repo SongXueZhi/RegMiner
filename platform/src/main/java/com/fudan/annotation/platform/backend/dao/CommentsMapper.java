@@ -4,13 +4,14 @@ import com.fudan.annotation.platform.backend.entity.Comments;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
 @Mapper
 public interface CommentsMapper {
 
-    void setComments(String regressionUuid, String accountName, String context);
+    void setComments(String regressionUuid, String accountName, String context, Date createTime);
 
     List<Comments> getComments(String regressionUuid);
 

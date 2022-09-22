@@ -12,10 +12,11 @@
 
     <insert id="setComments" >
         insert into comments
-        (regression_uuid, account_name, context)
+        (regression_uuid, account_name, context, create_time)
         values (#{regressionUuid},
                 #{accountName},
-                #{context});
+                #{context},
+                #{createTime});
     </insert>
 
     <select id="getComments" resultMap="comments">

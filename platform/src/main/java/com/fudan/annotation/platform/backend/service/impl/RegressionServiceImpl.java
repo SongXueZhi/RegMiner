@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * description:
@@ -258,9 +255,10 @@ public class RegressionServiceImpl implements RegressionService {
         }
 
         if (!flag) {
+            String finalFileName = finalTestCaseName.substring(testCasePath.lastIndexOf("/") + 1);
+
             ChangedFile bicFile = new ChangedFile();
-//            bicFile.setFilename(finalTestCaseName.substring(testCasePath.lastIndexOf("/") + 1));
-            bicFile.setFilename(finalTestCaseName);
+            bicFile.setFilename(finalFileName);
             bicFile.setNewPath(testCasePath);
             bicFile.setOldPath(testCasePath);
             bicFile.setType(ChangedFile.Type.TEST_SUITE);
@@ -530,7 +528,8 @@ public class RegressionServiceImpl implements RegressionService {
 
     @Override
     public void setComment(String regressionUuid, String accountName, String context) {
-        commentsMapper.setComments(regressionUuid, accountName, context);
+        Date dateTime = new Date();
+        commentsMapper.setComments(regressionUuid, accountName, context, dateTime);
     }
 
     @Override
