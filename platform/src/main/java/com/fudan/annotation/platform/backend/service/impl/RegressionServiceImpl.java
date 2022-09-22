@@ -259,6 +259,7 @@ public class RegressionServiceImpl implements RegressionService {
 
         if (!flag) {
             ChangedFile bicFile = new ChangedFile();
+//            bicFile.setFilename(finalTestCaseName.substring(testCasePath.lastIndexOf("/") + 1));
             bicFile.setFilename(finalTestCaseName);
             bicFile.setNewPath(testCasePath);
             bicFile.setOldPath(testCasePath);
