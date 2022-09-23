@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fudan.annotation.platform.backend.dao.CriticalChangeDDMapper">
+
+    <resultMap id="critical_change_dd" type="com.fudan.annotation.platform.backend.entity.CriticalChangeDD">
+        <result column="critical_change_id" property="criticalChangeId" jdbcType="INTEGER"/>
+        <result column="regression_uuid" property="regressionUuid" jdbcType="VARCHAR"/>
+        <result column="revision_name" property="revisionName" jdbcType="VARCHAR"/>
+        <result column="new_path" property="newPath" jdbcType="VARCHAR"/>
+        <result column="old_path" property="oldPath" jdbcType="VARCHAR"/>
+        <result column="beginA" property="beginA" jdbcType="INTEGER"/>
+        <result column="beginB" property="beginB" jdbcType="INTEGER"/>
+        <result column="endA" property="endA" jdbcType="INTEGER"/>
+        <result column="endB" property="endB" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="tool" property="tool" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getCriticalChangeDD" resultMap="critical_change_dd">
+        select * from critical_change_dd
+        <where>
+            regression_uuid = #{regressionUuid} and revision_name = #{revisionName}
+        </where>
+    </select>
+
+</mapper>

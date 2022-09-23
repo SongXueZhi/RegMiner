@@ -247,7 +247,7 @@ public class RegressionController {
             @RequestParam(name = "revisionName") String revisionName,
             @RequestParam(name = "filePath") String filePath) {
         try {
-            regressionService.updateCode(userToken, code, projectName, regressionUuid,  revisionName, filePath );
+            regressionService.updateCode(userToken, code, projectName, regressionUuid, revisionName, filePath);
             return new ResponseBean<>(200, "update code success", null);
         } catch (Exception e) {
             return new ResponseBean<>(401, "update code failed :" + e.getMessage(), null);
@@ -262,25 +262,26 @@ public class RegressionController {
             @RequestParam(name = "revisionName") String revisionName,
             @RequestParam(name = "filePath") String filePath) {
         try {
-            regressionService.revertCode(userToken, projectName, regressionUuid,  revisionName, filePath );
+            regressionService.revertCode(userToken, projectName, regressionUuid, revisionName, filePath);
             return new ResponseBean<>(200, "revert code success", null);
         } catch (Exception e) {
             return new ResponseBean<>(401, "revert code failed :" + e.getMessage(), null);
         }
     }
+
     /**
      * 接口3 clearCache （前端在后端接口完成后，刷新界面）
-     参数：{projectName，userid，regressionid}
-     delete file({projectName，userid，regressionid，revisionName，filePath})
+     * 参数：{projectName，userid，regressionid}
+     * delete file({projectName，userid，regressionid，revisionName，filePath})
      */
 
-     @PostMapping(value = "/clearCache")
+    @PostMapping(value = "/clearCache")
     public ResponseBean clearCache(
             @RequestParam String userToken,
             @RequestParam(name = "projectFullName") String projectName,
-            @RequestParam(name = "regressionUuid") String regressionUuid){
+            @RequestParam(name = "regressionUuid") String regressionUuid) {
         try {
-            regressionService.clearCache(userToken, projectName, regressionUuid );
+            regressionService.clearCache(userToken, projectName, regressionUuid);
             return new ResponseBean<>(200, "clear cache success", null);
         } catch (Exception e) {
             return new ResponseBean<>(401, "clear cache failed :" + e.getMessage(), null);
@@ -290,13 +291,13 @@ public class RegressionController {
 
     @GetMapping(value = "/comments")
     public ResponseBean<List<Comments>> getCommentsList(
-            @RequestParam(name = "regression_uuid") String regressionUuid){
-         try {
-             List<Comments> commentsList = regressionService.getComment(regressionUuid);
-             return new ResponseBean<>(200, "get comments success", commentsList);
-         } catch (Exception e) {
-             return new ResponseBean<>(401, "get comments failed :" + e.getMessage(), null);
-         }
+            @RequestParam(name = "regression_uuid") String regressionUuid) {
+        try {
+            List<Comments> commentsList = regressionService.getComment(regressionUuid);
+            return new ResponseBean<>(200, "get comments success", commentsList);
+        } catch (Exception e) {
+            return new ResponseBean<>(401, "get comments failed :" + e.getMessage(), null);
+        }
     }
 
     @PostMapping(value = "/comments")
@@ -304,12 +305,12 @@ public class RegressionController {
             @RequestParam(name = "regression_uuid") String regressionUuid,
             @RequestParam(name = "account_name") String accountName,
             @RequestParam(name = "context") String context) {
-         try {
-             regressionService.setComment(regressionUuid, accountName, context);
-             return new ResponseBean<>(200, "add comment success", null);
-         } catch (Exception e) {
-             return new ResponseBean<>(401, "add comment failed :" + e.getMessage(), null);
-         }
+        try {
+            regressionService.setComment(regressionUuid, accountName, context);
+            return new ResponseBean<>(200, "add comment success", null);
+        } catch (Exception e) {
+            return new ResponseBean<>(401, "add comment failed :" + e.getMessage(), null);
+        }
     }
 
     @DeleteMapping(value = "/comments")
@@ -328,5 +329,17 @@ public class RegressionController {
     @Autowired
     public void setRegressionService(RegressionService regressionService) {
         this.regressionService = regressionService;
+    }
+
+    @GetMapping(value = "/criticalChange/review")
+    public ResponseBean getCriticalChangeReview(
+            @RequestParam(name = "regression_uuid") String regressionUuid,
+            @RequestParam(name = "revision_name") String revisionName) {
+        try {
+            List<HunkEntityWithTool> criticalChangeReview = regressionService.getCriticalChangeReview(regressionUuid, revisionName);
+            return new ResponseBean<>(200, "get critical change review success", criticalChangeReview);
+        } catch (Exception e) {
+            return new ResponseBean<>(401, "get critical change review failed: " + e.getMessage(), null);
+        }
     }
 }
