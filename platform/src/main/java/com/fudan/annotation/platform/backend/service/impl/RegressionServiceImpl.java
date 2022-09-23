@@ -4,10 +4,7 @@ import com.fudan.annotation.platform.backend.config.Configs;
 import com.fudan.annotation.platform.backend.core.Executor;
 import com.fudan.annotation.platform.backend.core.Migrator;
 import com.fudan.annotation.platform.backend.core.SourceCodeManager;
-import com.fudan.annotation.platform.backend.dao.CommentsMapper;
-import com.fudan.annotation.platform.backend.dao.CriticalChangeMapper;
-import com.fudan.annotation.platform.backend.dao.ProjectMapper;
-import com.fudan.annotation.platform.backend.dao.RegressionMapper;
+import com.fudan.annotation.platform.backend.dao.*;
 import com.fudan.annotation.platform.backend.entity.*;
 import com.fudan.annotation.platform.backend.service.RegressionService;
 import com.fudan.annotation.platform.backend.util.FileUtil;
@@ -19,10 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * description:
@@ -42,6 +36,10 @@ public class RegressionServiceImpl implements RegressionService {
     private ProjectMapper projectMapper;
     @Autowired
     private CriticalChangeMapper criticalChangeMapper;
+    @Autowired
+    private CriticalChangeDDMapper criticalChangeDDMapper;
+    @Autowired
+    private CriticalChangeReviewMapper criticalChangeReviewMapper;
     @Autowired
     private SourceCodeManager sourceCodeManager;
     @Autowired
@@ -114,11 +112,11 @@ public class RegressionServiceImpl implements RegressionService {
 
         String testCasePath = "NULL";
         modifyCorrelationDetect(bfcFiles, bicFiles);
-        testCasePath = detectTestCasePath(bfcFiles,bicFiles,testCase);
+        testCasePath = detectTestCasePath(bfcFiles, bicFiles, testCase);
         boolean flag = false;
         if (testCasePath.equals("")) {
             try {
-                flag =true;
+                flag = true;
                 testCasePath = sourceCodeManager.getTestCasePath(userToken, regressionUuid, "bfc", testCase);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -258,8 +256,10 @@ public class RegressionServiceImpl implements RegressionService {
         }
 
         if (!flag) {
+            String finalFileName = finalTestCaseName.substring(testCasePath.lastIndexOf("/") + 1);
+
             ChangedFile bicFile = new ChangedFile();
-            bicFile.setFilename(finalTestCaseName);
+            bicFile.setFilename(finalFileName);
             bicFile.setNewPath(testCasePath);
             bicFile.setOldPath(testCasePath);
             bicFile.setType(ChangedFile.Type.TEST_SUITE);
@@ -474,25 +474,25 @@ public class RegressionServiceImpl implements RegressionService {
     }
 
 
-    public void updateCode(String userToken, String code, String projectName, String regressionUuid, String revisionName, String filePath) throws IOException{
+    public void updateCode(String userToken, String code, String projectName, String regressionUuid, String revisionName, String filePath) throws IOException {
 //        HashMap<String, String> revisionMap = new HashMap<>();
 //        revisionMap.put("bfc", "buggy");
 //        revisionMap.put("bic", "work");
 //        String revisionFlag = revisionMap.get(revisionName);
 
         File file = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath);
-        File backupFile = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath  + ".back");
-        if(backupFile.exists()){
+        File backupFile = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath + ".back");
+        if (backupFile.exists()) {
             //有备份文件，直接更新
             FileUtil.writeInFile(file.getPath(), code);
-        }else {
+        } else {
             //没有备份文件，将文件备份后更新
             FileUtil.copyFileStream(file, backupFile);
             FileUtil.writeInFile(file.getPath(), code);
         }
     }
 
-    public void revertCode(String userToken, String projectName, String regressionUuid, String revisionName, String filePath) throws IOException{
+    public void revertCode(String userToken, String projectName, String regressionUuid, String revisionName, String filePath) throws IOException {
 
 //        HashMap<String, String> revisionMap = new HashMap<>();
 //        revisionMap.put("bfc", "buggy");
@@ -500,18 +500,18 @@ public class RegressionServiceImpl implements RegressionService {
 //        String revisionFlag = revisionMap.get(revisionName);
 
         File file = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath);
-        File backupFile = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath  + ".back");
-        if(backupFile.exists()){
+        File backupFile = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath + ".back");
+        if (backupFile.exists()) {
             //有备份文件，将备份文件作为源文件
             FileUtil.DeleteFileByPath(file.getPath());
             FileUtil.copyFileStream(backupFile, file);
-        }else {
+        } else {
             //没有备份文件，报错
             throw new IOException("No backup file");
         }
     }
 
-    public void clearCache(String userToken, String projectName, String regressionUuid) throws IOException{
+    public void clearCache(String userToken, String projectName, String regressionUuid) throws IOException {
 //        String[] revison = {"work", "bic", "buggy", "bfc"};
 //        for (String revisionFlag:  revison) {
 //            File file = sourceCodeManager.getRevisionDir(regressionUuid, userToken, revisionFlag);
@@ -529,7 +529,8 @@ public class RegressionServiceImpl implements RegressionService {
 
     @Override
     public void setComment(String regressionUuid, String accountName, String context) {
-        commentsMapper.setComments(regressionUuid, accountName, context);
+        Date dateTime = new Date();
+        commentsMapper.setComments(regressionUuid, accountName, context, dateTime);
     }
 
     @Override
@@ -538,11 +539,52 @@ public class RegressionServiceImpl implements RegressionService {
     }
 
     @Override
-    public void postComment(String userToken, String regressionUuid, String accountName, String context) {}
+    public void postComment(String userToken, String regressionUuid, String accountName, String context) {
+    }
 
     @Autowired
     public void setRegressionMapper(RegressionMapper regressionMapper) {
         this.regressionMapper = regressionMapper;
     }
+
+//    @Override
+//    public List<CriticalChangeDD> getCriticalChangeDD(String regressionUuid, String revisionName) {
+//        return criticalChangeDDMapper.getCriticalChangeDD(regressionUuid, revisionName);
+//    }
+
+    @Override
+    public List<HunkEntityWithTool> getCriticalChangeReview(String regressionUuid, String revisionName) {
+        List<HunkEntityWithTool> CCReview = criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid, revisionName);
+        if (CCReview.size() != 0) {
+            return CCReview;
+        } else {
+            List<CriticalChangeDD> CC_DD = criticalChangeDDMapper.getCriticalChangeDD(regressionUuid, revisionName);
+            if (CC_DD.size() != 0) {
+                int counter = 0;
+                for (CriticalChangeDD criticalChangeDD : CC_DD) {
+                    if (criticalChangeDD.getTool().equals("ddmin")) {
+                        counter += 1;
+                        criticalChangeReviewMapper.setCriticalChangeReview(criticalChangeDD.getCriticalChangeId(), criticalChangeDD.getRegressionUuid(),
+                                criticalChangeDD.getRevisionName(), criticalChangeDD.getNewPath(), criticalChangeDD.getOldPath(),
+                                criticalChangeDD.getBeginA(), criticalChangeDD.getBeginB(), criticalChangeDD.getEndA(),
+                                criticalChangeDD.getEndB(), criticalChangeDD.getType(), criticalChangeDD.getTool());
+                    }
+                }
+                if (counter == 0) {
+                    for (CriticalChangeDD criticalChangeDD : CC_DD) {
+                        criticalChangeReviewMapper.setCriticalChangeReview(criticalChangeDD.getCriticalChangeId(), criticalChangeDD.getRegressionUuid(),
+                                criticalChangeDD.getRevisionName(), criticalChangeDD.getNewPath(), criticalChangeDD.getOldPath(),
+                                criticalChangeDD.getBeginA(), criticalChangeDD.getBeginB(), criticalChangeDD.getEndA(),
+                                criticalChangeDD.getEndB(), criticalChangeDD.getType(), criticalChangeDD.getTool());
+                    }
+                }
+                return criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid, revisionName);
+            } else {
+                return null;
+            }
+        }
+    }
+
+    ;
 
 }

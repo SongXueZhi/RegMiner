@@ -198,4 +198,11 @@ public interface RegressionService {
      */
     void postComment(String regressionUuid, String commentId, String accountName, String context);
 
+    /**
+     * get Critical change review
+     *
+     * @param regressionUuid regressionUuid
+     * @param revisionName revision name - bic/bfc
+     */
+    List<HunkEntityWithTool> getCriticalChangeReview(String regressionUuid, String revisionName);
 }

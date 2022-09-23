@@ -1,6 +1,7 @@
 import { message } from 'antd';
 import request from 'umi-request';
 import type {
+  CommentListItems,
   HunkEntityParams,
   RegressionCode,
   RegressionCriticalChangeDetail,
@@ -223,16 +224,18 @@ export async function postClearCache(params: {
 }
 
 export async function getCommentList(params: { regression_uuid: string }) {
-  const { code, msg, data } = await request<API.RegResponse<null>>('/api/regression/comments', {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-    params: { ...params },
-  });
+  const { code, msg, data } = await request<API.RegResponse<CommentListItems[]>>(
+    '/api/regression/comments',
+    {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      params: { ...params },
+    },
+  );
   if (code !== 200) {
     message.error(msg);
     return null;
   } else {
-    message.success(msg);
     return data;
   }
 }
@@ -262,7 +265,7 @@ export async function deleteComment(params: {
   comment_id: string;
 }) {
   const { code, msg, data } = await request<API.RegResponse<null>>('/api/regression/comments', {
-    method: 'GET',
+    method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     params: { ...params },
   });
