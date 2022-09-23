@@ -12,7 +12,7 @@ We also provide UI-free tools to help users replay test results for each regress
 
 ## Contribute to miner
 
- **Env requirement:**  
+ **Env requirement: **  
 
  Distinguishing between miner and mined projects, Miner relies on JDK11 and we recommend developing in Ubuntu.  
 
