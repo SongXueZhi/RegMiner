@@ -2,10 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.fudan.annotation.platform.backend.dao.CriticalChangeReviewMapper">
 
-    <resultMap id="critical_change_review" type="com.fudan.annotation.platform.backend.entity.CriticalChangeDD">
+    <resultMap id="critical_change_review" type="com.fudan.annotation.platform.backend.entity.HunkEntityWithTool">
         <result column="critical_change_id" property="criticalChangeId" jdbcType="INTEGER"/>
-        <result column="regression_uuid" property="regressionUuid" jdbcType="VARCHAR"/>
-        <result column="revision_name" property="revisionName" jdbcType="VARCHAR"/>
         <result column="new_path" property="newPath" jdbcType="VARCHAR"/>
         <result column="old_path" property="oldPath" jdbcType="VARCHAR"/>
         <result column="beginA" property="beginA" jdbcType="INTEGER"/>
