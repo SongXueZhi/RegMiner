@@ -11,7 +11,11 @@ import EllipsisMiddle from '../EllipsisMiddle';
 import { Dropdown, Menu, message, Space } from 'antd';
 import type { DiffEditDetailItems, FeedbackList, HunkEntityItems } from '@/pages/editor/data';
 import { DownOutlined } from '@ant-design/icons';
-import { postRegressionRevert, postRegressionUpdateNewCode } from '@/pages/editor/service';
+import {
+  getRetrievalCriticalChangeReviewList,
+  postRegressionRevert,
+  postRegressionUpdateNewCode,
+} from '@/pages/editor/service';
 
 interface IProps {
   title: string;
@@ -54,6 +58,7 @@ interface IState {
   decorationIds: string[];
   modifiedFlag: boolean;
   modifiedNewCode?: string;
+  criticalChangeReview: HunkEntityItems[] | null;
 }
 
 const REVEAL_CONSOLE_HEIHGT = 31;
@@ -110,13 +115,13 @@ class CodeEditor extends React.Component<IProps, IState> {
       decorationIds: [],
       modifiedFlag: false,
       modifiedNewCode: props.value,
+      criticalChangeReview: [],
     };
   }
   componentDidMount() {
     this.uuid = 'editor' + uuidv4();
     this.editor = this.editorRef.current?.editor;
   }
-
   private handleResizeMonacoEditor = (entries: ResizeEntry[]) => {
     const e = entries[0] as ResizeEntry;
     const width = e.contentRect.width;
@@ -130,27 +135,6 @@ class CodeEditor extends React.Component<IProps, IState> {
     } // 显示部分 ConsoleView，固定为 30px
     this.setState({ monacoSize: { width, height } });
   };
-  // private handleVersionChange = ({ target }: RadioChangeEvent) => {
-  //   this.setState({
-  //     version: target.value as 'firstOp' | 'secondOp',
-  //   });
-  // };
-  // private handleRunClick = async () => {
-  //   let content: string | undefined = (
-  //     this.state.version === 'firstOp'
-  //       ? this.editorRef.current?.editor?.getOriginalEditor()
-  //       : this.editorRef.current?.editor?.getModifiedEditor()
-  //   )?.getValue();
-  //   const version =
-  //     this.state.version === 'firstOp'
-  //       ? this.props.oldVersionText ?? 'firstOp'
-  //       : this.props.newVersionText ?? 'secondOp';
-  //   if (typeof content === 'undefined') content = '';
-  //   this.props.onRunCode?.call(this, content, version);
-  //   if (!this.state.showConsole) {
-  //     this.handleShowConsole();
-  //   }
-  // };
   private handleRunClick = async (option: string) => {
     let content: string | undefined = (
       option === 'firstOp'
@@ -264,6 +248,16 @@ class CodeEditor extends React.Component<IProps, IState> {
         message.error('Revert failed, please try again!');
       });
   };
+  private handleRetrivalClick = async () => {
+    console.log('retrival');
+    await getRetrievalCriticalChangeReviewList({
+      regression_uuid: this.props.regressionUuid,
+      revision_name: this.props.title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
+    }).then((resp) => {
+      this.setState({ criticalChangeReview: resp });
+    });
+    console.log(this.state.criticalChangeReview);
+  };
   render() {
     const {
       filename,
@@ -298,7 +292,12 @@ class CodeEditor extends React.Component<IProps, IState> {
                 <EllipsisMiddle suffixCount={12}>{title}</EllipsisMiddle>
               </div>
               <div className="regression-file-details-btn">
-                <Button id="show-code-details" intent="primary" style={{ marginLeft: '5px' }}>
+                <Button
+                  id="show-code-details"
+                  intent="primary"
+                  style={{ marginLeft: '5px' }}
+                  onClick={this.handleRetrivalClick}
+                >
                   Retrieval
                 </Button>
               </div>

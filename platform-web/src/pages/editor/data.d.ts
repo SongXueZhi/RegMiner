@@ -90,6 +90,7 @@ export type HunkEntityItems = {
   endA: number;
   endB: number;
   type: string;
+  tool?: string;
 };
 
 export type FeedbackList = {
