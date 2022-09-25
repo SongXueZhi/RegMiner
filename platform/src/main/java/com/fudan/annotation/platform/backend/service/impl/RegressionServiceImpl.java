@@ -255,10 +255,8 @@ public class RegressionServiceImpl implements RegressionService {
         }
 
         if (!flag) {
-            String finalFileName = finalTestCaseName.substring(testCasePath.lastIndexOf("/") + 1);
-
             ChangedFile bicFile = new ChangedFile();
-            bicFile.setFilename(finalFileName);
+            bicFile.setFilename(finalTestCaseName);
             bicFile.setNewPath(testCasePath);
             bicFile.setOldPath(testCasePath);
             bicFile.setType(ChangedFile.Type.TEST_SUITE);
