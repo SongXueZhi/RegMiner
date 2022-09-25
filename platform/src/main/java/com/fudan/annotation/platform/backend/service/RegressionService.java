@@ -204,5 +204,5 @@ public interface RegressionService {
      * @param regressionUuid regressionUuid
      * @param revisionName revision name - bic/bfc
      */
-    List<HunkEntityWithTool> getCriticalChangeReview(String regressionUuid, String revisionName);
+    CriticalChangeReview getCriticalChangeReview(String regressionUuid, String revisionName);
 }

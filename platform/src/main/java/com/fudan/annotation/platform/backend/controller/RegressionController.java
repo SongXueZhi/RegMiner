@@ -336,7 +336,7 @@ public class RegressionController {
             @RequestParam(name = "regression_uuid") String regressionUuid,
             @RequestParam(name = "revision_name") String revisionName) {
         try {
-            List<HunkEntityWithTool> criticalChangeReview = regressionService.getCriticalChangeReview(regressionUuid, revisionName);
+            CriticalChangeReview criticalChangeReview = regressionService.getCriticalChangeReview(regressionUuid, revisionName);
             return new ResponseBean<>(200, "get critical change review success", criticalChangeReview);
         } catch (Exception e) {
             return new ResponseBean<>(401, "get critical change review failed: " + e.getMessage(), null);

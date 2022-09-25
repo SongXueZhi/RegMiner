@@ -89,7 +89,7 @@ const DiffEditorTabs: React.FC<IProps> = ({
 
   return (
     <Tabs
-      style={{ flex: 1, margin: 10 }}
+      style={{ flex: 1, marginLeft: 10 }}
       tabBarStyle={{
         margin: 0,
       }}
@@ -103,7 +103,7 @@ const DiffEditorTabs: React.FC<IProps> = ({
         ({ key, oldCode, newCode, editList, newPath, oldPath, CriticalChange, project }) => {
           return (
             <Tabs.TabPane tab={key.split(`${commit}-`)} key={key}>
-              <div style={{ width: '100%', height: '86vh', display: 'flex' }}>
+              <div style={{ width: '100%', height: '106vh', display: 'flex' }}>
                 <CodeEditor
                   title={commit === 'BIC' ? 'Bug Inducing Commit' : 'Bug Fixing Commit'}
                   regressionUuid={regressionUuid}
