@@ -16,7 +16,6 @@ import {
   Typography,
   Divider,
   Form,
-  Avatar,
 } from 'antd';
 import { AppstoreOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import DiffEditorTabs from './components/DiffEditorTabs';
