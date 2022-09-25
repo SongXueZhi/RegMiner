@@ -11,11 +11,7 @@ import EllipsisMiddle from '../EllipsisMiddle';
 import { Dropdown, Menu, message, Space } from 'antd';
 import type { DiffEditDetailItems, FeedbackList, HunkEntityItems } from '@/pages/editor/data';
 import { DownOutlined } from '@ant-design/icons';
-import {
-  getRetrievalCriticalChangeReviewList,
-  postRegressionRevert,
-  postRegressionUpdateNewCode,
-} from '@/pages/editor/service';
+import { postRegressionRevert, postRegressionUpdateNewCode } from '@/pages/editor/service';
 
 interface IProps {
   title: string;
@@ -51,8 +47,7 @@ interface IState {
   showConsole: boolean;
   showCodeDetails: boolean;
   feedbackContextList: FeedbackList;
-  version: 'firstOp' | 'secondOp';
-  testversion: string;
+  version: string;
   consoleString?: string | null;
   monacoSize: { width: string | number; height: string | number };
   decorationIds: string[];
@@ -110,7 +105,6 @@ class CodeEditor extends React.Component<IProps, IState> {
         },
       },
       version: 'firstOp',
-      testversion: 'firstOp',
       monacoSize: { width: 0, height: 0 },
       decorationIds: [],
       modifiedFlag: false,
@@ -136,17 +130,18 @@ class CodeEditor extends React.Component<IProps, IState> {
     this.setState({ monacoSize: { width, height } });
   };
   private handleRunClick = async (option: string) => {
+    this.setState({ version: option });
     let content: string | undefined = (
       option === 'firstOp'
         ? this.editorRef.current?.editor?.getOriginalEditor()
         : this.editorRef.current?.editor?.getModifiedEditor()
     )?.getValue();
-    const version =
+    const revisionFlag =
       option === 'firstOp'
         ? this.props.oldVersionText ?? 'firstOp'
         : this.props.newVersionText ?? 'secondOp';
     if (typeof content === 'undefined') content = '';
-    this.props.onRunCode?.call(this, content, version);
+    this.props.onRunCode?.call(this, content, revisionFlag);
     if (!this.state.showConsole) {
       this.handleShowConsole();
     }
@@ -248,16 +243,6 @@ class CodeEditor extends React.Component<IProps, IState> {
         message.error('Revert failed, please try again!');
       });
   };
-  private handleRetrivalClick = async () => {
-    console.log('retrival');
-    await getRetrievalCriticalChangeReviewList({
-      regression_uuid: this.props.regressionUuid,
-      revision_name: this.props.title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
-    }).then((resp) => {
-      this.setState({ criticalChangeReview: resp });
-    });
-    console.log(this.state.criticalChangeReview);
-  };
   render() {
     const {
       filename,
@@ -291,16 +276,6 @@ class CodeEditor extends React.Component<IProps, IState> {
               <div className="project-title">
                 <EllipsisMiddle suffixCount={12}>{title}</EllipsisMiddle>
               </div>
-              <div className="regression-file-details-btn">
-                <Button
-                  id="show-code-details"
-                  intent="primary"
-                  style={{ marginLeft: '5px' }}
-                  onClick={this.handleRetrivalClick}
-                >
-                  Retrieval
-                </Button>
-              </div>
               <div className="update-new-code-btn">
                 <Button
                   id="revert-new-code-btn"
@@ -328,25 +303,6 @@ class CodeEditor extends React.Component<IProps, IState> {
               </div>
               <div className="run-button">
                 {extra}
-                {/* <Button
-                  id="run-code-btn"
-                  data-imitate
-                  style={{ height: '30px', marginRight: '5px' }}
-                  intent="success"
-                  icon="play"
-                  onClick={this.handleRunClick}
-                  loading={isRunning}
-                >
-                  Run
-                </Button>
-                <Radio.Group
-                  value={version}
-                  buttonStyle="solid"
-                  onChange={this.handleVersionChange}
-                >
-                  <Radio value="firstOp">{oldVersionText ?? 'firstOp'}</Radio>
-                  <Radio value="secondOp">{newVersionText ?? 'secondOp'}</Radio>
-                </Radio.Group> */}
                 <Dropdown
                   overlay={
                     <Menu
@@ -405,7 +361,6 @@ class CodeEditor extends React.Component<IProps, IState> {
                 onChange={this.handleDiffEditorOnChange}
                 editorDidMount={(diffEditor) => {
                   if (CriticalChange !== undefined) {
-                    console.log(CriticalChange.beginB);
                     const codeEditor = diffEditor.getModifiedEditor();
                     diffEditor.revealLineInCenter(
                       CriticalChange.beginB - 10 >= 0
@@ -710,21 +665,6 @@ class CodeEditor extends React.Component<IProps, IState> {
             </div>
           </div>
         </ResizeSensor>
-        {/* <Modal
-          width="80%"
-          visible={showCodeDetails}
-          onCancel={() => this.setState({ showCodeDetails: false })}
-          footer={null}
-        >
-          <CodeDetails
-            regressionUuid={regressionUuid}
-            diffEditDetails={diffEditChanges}
-            revisionFlag={title}
-            criticalChangeOriginal={original}
-            criticalChangeNew={modifiedNewCode}
-            fileName={filename}
-          />
-        </Modal> */}
       </>
     );
   }

@@ -125,7 +125,7 @@ public class RegressionServiceImpl implements RegressionService {
 
         //set regression details
         RegressionDetail regressionDetail = new RegressionDetail();
-        regressionDetail.setTestFilePath(testCasePath);
+        regressionDetail.setTestFilePath(testCasePath.substring(testCasePath.lastIndexOf("/") + 1));
 
         if (flag) {
             String fileName = testCasePath.substring(testCasePath.lastIndexOf("/") + 1);
@@ -184,16 +184,15 @@ public class RegressionServiceImpl implements RegressionService {
         regressionDetail.setTestFilePath(testCasePath);
 
         if (!testCasePath.equals("NULL")) {
-            String fileName = testCasePath.substring(testCasePath.lastIndexOf("/") + 1);
             ChangedFile bfcFile = new ChangedFile();
-            bfcFile.setFilename(fileName);
+            bfcFile.setFilename(testCasePath);
             bfcFile.setNewPath(testCasePath);
             bfcFile.setOldPath(testCasePath);
             bfcFile.setType(ChangedFile.Type.TEST_SUITE);
             bfcFiles.add(bfcFile);
 
             ChangedFile bicFile = new ChangedFile();
-            bicFile.setFilename(fileName);
+            bicFile.setFilename(testCasePath);
             bicFile.setNewPath(testCasePath);
             bicFile.setOldPath(testCasePath);
             bicFile.setType(ChangedFile.Type.TEST_SUITE);
