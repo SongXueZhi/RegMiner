@@ -553,10 +553,13 @@ public class RegressionServiceImpl implements RegressionService {
 //    }
 
     @Override
-    public List<HunkEntityWithTool> getCriticalChangeReview(String regressionUuid, String revisionName) {
+    public CriticalChangeReview getCriticalChangeReview(String regressionUuid, String revisionName) {
         List<HunkEntityWithTool> CCReview = criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid, revisionName);
         if (CCReview.size() != 0) {
-            return CCReview;
+            CriticalChangeReview criticalChangeReview = new CriticalChangeReview();
+            criticalChangeReview.setRevisionName(revisionName);
+            criticalChangeReview.setHunkEntityWithToolList(CCReview);
+            return criticalChangeReview;
         } else {
             List<CriticalChangeDD> CC_DD = criticalChangeDDMapper.getCriticalChangeDD(regressionUuid, revisionName);
             if (CC_DD.size() != 0) {
@@ -578,7 +581,11 @@ public class RegressionServiceImpl implements RegressionService {
                                 criticalChangeDD.getEndB(), criticalChangeDD.getType(), criticalChangeDD.getTool());
                     }
                 }
-                return criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid, revisionName);
+                List<HunkEntityWithTool> newCCReview = criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid, revisionName);
+                CriticalChangeReview criticalChangeReview = new CriticalChangeReview();
+                criticalChangeReview.setRevisionName(revisionName);
+                criticalChangeReview.setHunkEntityWithToolList(newCCReview);
+                return criticalChangeReview;
             } else {
                 return null;
             }
