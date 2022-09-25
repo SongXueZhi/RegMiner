@@ -26,13 +26,13 @@ import {
   queryRegressionDetail,
   getRegressionPath,
   regressionCheckout,
-  getCriticalChangeByUuid,
   putCriticalChangeByUuid,
   deleteCriticalChangeById,
   postClearCache,
   getCommentList,
   deleteComment,
   addComment,
+  getRetrievalCriticalChangeReviewList,
 } from './service';
 import type {
   CommentListItems,
@@ -331,7 +331,6 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   function wait(ms: number) {
     return new Promise((resolve) => {
       setTimeout(() => {
-        console.log('running');
         resolve(true);
       }, ms);
     });
@@ -568,20 +567,20 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
     setBFCFeedbackList([]);
     setBICFeedbackList([]);
     message.success('submited');
-    getCriticalChangeByUuid({
+    getRetrievalCriticalChangeReviewList({
       regression_uuid: HISTORY_SEARCH.regressionUuid,
       revision_name: 'bic',
     }).then((resp) => {
       if (resp !== null && resp !== undefined) {
-        setBICCriticalChanges(resp.hunkEntityList);
+        setBICCriticalChanges(resp.hunkEntityWithToolList);
       }
     });
-    getCriticalChangeByUuid({
+    getRetrievalCriticalChangeReviewList({
       regression_uuid: HISTORY_SEARCH.regressionUuid,
       revision_name: 'bfc',
     }).then((resp) => {
       if (resp !== null && resp !== undefined) {
-        setBFCCriticalChanges(resp.hunkEntityList);
+        setBFCCriticalChanges(resp.hunkEntityWithToolList);
       }
     });
   }, [
@@ -706,20 +705,20 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         });
       },
     );
-    getCriticalChangeByUuid({
+    getRetrievalCriticalChangeReviewList({
       regression_uuid: HISTORY_SEARCH.regressionUuid,
       revision_name: 'bic',
     }).then((resp) => {
       if (resp !== null && resp !== undefined) {
-        setBICCriticalChanges(resp.hunkEntityList);
+        setBICCriticalChanges(resp.hunkEntityWithToolList);
       }
     });
-    getCriticalChangeByUuid({
+    getRetrievalCriticalChangeReviewList({
       regression_uuid: HISTORY_SEARCH.regressionUuid,
       revision_name: 'bfc',
     }).then((resp) => {
       if (resp !== null && resp !== undefined) {
-        setBFCCriticalChanges(resp.hunkEntityList);
+        setBFCCriticalChanges(resp.hunkEntityWithToolList);
       }
     });
     getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
@@ -899,7 +898,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
                 </Menu>
               </Card>
               <Card
-                title="Critical changes"
+                title="Critical changes review"
                 bordered={false}
                 bodyStyle={{ padding: 0 }}
                 style={{ marginBottom: 10 }}

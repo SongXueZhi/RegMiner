@@ -2,7 +2,6 @@ import { message } from 'antd';
 import request from 'umi-request';
 import type {
   CommentListItems,
-  HunkEntityItems,
   HunkEntityParams,
   RegressionCode,
   RegressionCriticalChangeDetail,
@@ -89,24 +88,24 @@ export async function getRegressionConsole(params: { path: string }) {
   return data;
 }
 
-export async function getCriticalChangeByUuid(params: {
-  regression_uuid: string;
-  revision_name: 'bic' | 'bfc';
-}) {
-  const { code, msg, data } = await request<API.RegResponse<RegressionCriticalChangeDetail>>(
-    '/api/regression/criticalChange',
-    {
-      method: 'GET',
-      params,
-    },
-  );
-  if (code !== 200) {
-    message.error(msg);
-    return null;
-  } else {
-    return data;
-  }
-}
+// export async function getCriticalChangeByUuid(params: {
+//   regression_uuid: string;
+//   revision_name: 'bic' | 'bfc';
+// }) {
+//   const { code, msg, data } = await request<API.RegResponse<RegressionCriticalChangeDetail>>(
+//     '/api/regression/criticalChange',
+//     {
+//       method: 'GET',
+//       params,
+//     },
+//   );
+//   if (code !== 200) {
+//     message.error(msg);
+//     return null;
+//   } else {
+//     return data;
+//   }
+// }
 
 export async function putCriticalChangeByUuid(
   params: {
@@ -283,9 +282,8 @@ export async function getRetrievalCriticalChangeReviewList(params: {
   regression_uuid: string;
   revision_name: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<HunkEntityItems[]>>(
-    // '/api/regression/criticalChange/review',
-    'http://localhost:8080/regression/criticalChange/review',
+  const { code, msg, data } = await request<API.RegResponse<RegressionCriticalChangeDetail>>(
+    '/api/regression/criticalChange/review',
     {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
@@ -296,7 +294,6 @@ export async function getRetrievalCriticalChangeReviewList(params: {
     message.error(msg);
     return null;
   } else {
-    message.success(msg);
     return data;
   }
 }

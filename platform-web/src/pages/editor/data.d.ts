@@ -68,7 +68,7 @@ export type RegressionCode = {
 
 export type RegressionCriticalChangeDetail = {
   revissionName: 'bic' | 'bfc';
-  hunkEntityList: HunkEntityItems[];
+  hunkEntityWithToolList: HunkEntityItems[];
 };
 
 export interface HunkEntityParams {
