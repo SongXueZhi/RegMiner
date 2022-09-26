@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { getDistanceDay } from '../utils';
 import { SyncOutlined } from '@ant-design/icons';
-import { Alert, Button, Progress, Tag, Steps } from 'antd';
+import { Alert, Button, Progress, Tag, Steps, message } from 'antd';
 import { getProcessInfo } from '../service';
 import { ProgressInfoItems } from '../data';
+import { useAccess } from 'umi';
 const { Step } = Steps;
 
 // dashiboard
@@ -21,7 +22,7 @@ const progressContainer = {
 };
 
 const ProjectProgress: React.FC<any> = () => {
-//   const access = useAccess();
+  const access = useAccess();
   const [progressInfo, setProgressInfo] = useState<ProgressInfoItems>({
     currentProjectName: 'no data',
     projectQueueNum: 0,
@@ -67,22 +68,26 @@ const ProjectProgress: React.FC<any> = () => {
     });
   };
   const resetProcessInfo = () => {
-    const data = {
-      currentProjectName: 'no data',
-      projectQueueNum: 0,
-      totalProjectNum: 0,
-      totalStartTime: 0,
-      projectStatTime: 0,
-      totalProgress: 0,
-      totalPRFCNum: 0,
-      regressionNum: 0,
-      prfcdoneNum: 0,
-      currentRepoProgress: 0,
-      finishedProject: 0,
-    };
-    setProgressInfo(data);
-    window.isStoping = true;
-    window.clearInterval(window.timer);
+    if (access.canClickFoo) {
+      const data = {
+        currentProjectName: 'no data',
+        projectQueueNum: 0,
+        totalProjectNum: 0,
+        totalStartTime: 0,
+        projectStatTime: 0,
+        totalProgress: 0,
+        totalPRFCNum: 0,
+        regressionNum: 0,
+        prfcdoneNum: 0,
+        currentRepoProgress: 0,
+        finishedProject: 0,
+      };
+      setProgressInfo(data);
+      window.isStoping = true;
+      window.clearInterval(window.timer);
+    } else {
+      message.error('Sorry, you have no right to do that. Please login or use another account!');
+    }
   };
 
   useEffect(() => {
@@ -116,7 +121,18 @@ const ProjectProgress: React.FC<any> = () => {
             Processed Projects: {progressInfo.totalProjectNum} |{' '}
             <span>({progressInfo.totalProgress}%)</span>
             <div style={{ position: 'absolute', right: '10px', top: '0px' }}>
-              <Button type="primary" onClick={updateProcessInfo.bind(ProjectProgress)}>
+              <Button
+                type="primary"
+                onClick={() => {
+                  if (access.canClickFoo) {
+                    updateProcessInfo.bind(ProjectProgress);
+                  } else {
+                    message.error(
+                      'Sorry, you have no right to do that. Please login or use another account!',
+                    );
+                  }
+                }}
+              >
                 <span style={{ color: '#fff' }}>Start</span>
               </Button>
               <Button

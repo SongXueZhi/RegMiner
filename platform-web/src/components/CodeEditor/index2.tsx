@@ -189,55 +189,63 @@ const NewCodeEditor: React.FC<IProps> = ({
     setModifiedNewCode(v);
   };
   const handleUpdateNewCodeClick = async () => {
-    const newCode = modifiedNewCode;
-    postRegressionUpdateNewCode(
-      {
-        projectFullName: projectFullName,
-        userToken: '123',
-        regressionUuid: regressionUuid,
-        filePath: oldPath,
-        revisionName: title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
-      },
-      newCode ?? ' ',
-    )
-      .then(() => {
-        onRevertCode?.call(
-          this,
-          title === 'Bug Inducing Commit' ? 'BIC' : 'BFC',
-          filename,
-          oldPath,
-          newPath,
-          diffEditChanges,
-          undefined,
-        );
-      })
-      .catch(() => {
-        message.error('Failed to update, check the code again!');
-      });
+    if (access.canUpdateFoo) {
+      const newCode = modifiedNewCode;
+      postRegressionUpdateNewCode(
+        {
+          projectFullName: projectFullName,
+          userToken: '123',
+          regressionUuid: regressionUuid,
+          filePath: oldPath,
+          revisionName: title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
+        },
+        newCode ?? ' ',
+      )
+        .then(() => {
+          onRevertCode?.call(
+            this,
+            title === 'Bug Inducing Commit' ? 'BIC' : 'BFC',
+            filename,
+            oldPath,
+            newPath,
+            diffEditChanges,
+            undefined,
+          );
+        })
+        .catch(() => {
+          message.error('Failed to update, check the code again!');
+        });
+    } else {
+      message.error('Sorry, you have no right to do that. Please login or use another account!');
+    }
   };
   const handleRevertCode = async () => {
-    await postRegressionRevert({
-      projectFullName: projectFullName,
-      regressionUuid: regressionUuid,
-      userToken: '123',
-      filePath: oldPath,
-      revisionName: title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
-    })
-      .then(() => {
-        // message.success('Code reverted!');
-        onRevertCode?.call(
-          this,
-          title === 'Bug Inducing Commit' ? 'BIC' : 'BFC',
-          filename,
-          oldPath,
-          newPath,
-          diffEditChanges,
-          undefined,
-        );
+    if (access.canClickFoo) {
+      await postRegressionRevert({
+        projectFullName: projectFullName,
+        regressionUuid: regressionUuid,
+        userToken: '123',
+        filePath: oldPath,
+        revisionName: title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
       })
-      .catch(() => {
-        message.error('Revert failed, please try again!');
-      });
+        .then(() => {
+          // message.success('Code reverted!');
+          onRevertCode?.call(
+            this,
+            title === 'Bug Inducing Commit' ? 'BIC' : 'BFC',
+            filename,
+            oldPath,
+            newPath,
+            diffEditChanges,
+            undefined,
+          );
+        })
+        .catch(() => {
+          message.error('Revert failed, please try again!');
+        });
+    } else {
+      message.error('Sorry, you have no right to do that. Please login or use another account!');
+    }
   };
 
   return (
