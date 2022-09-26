@@ -41,3 +41,18 @@ export type RegQueryParams = {
   sorter?: Record<string, any>;
   keyword?: any;
 };
+
+export type ProgressInfoItems = {
+  watingProject?: number;
+  currentProjectName: string;
+  projectQueueNum: number;
+  totalProjectNum: number;
+  totalStartTime: number;
+  projectStatTime: number;
+  totalProgress: number;
+  totalPRFCNum: number;
+  regressionNum: number;
+  prfcdoneNum: number;
+  currentRepoProgress: number;
+  finishedProject: number;
+};

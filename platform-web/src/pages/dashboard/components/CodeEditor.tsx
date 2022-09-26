@@ -1,13 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { getDistanceDay } from '../utils';
 import { SyncOutlined } from '@ant-design/icons';
 
 import {
-  queryRegressionList,
-  addRegression,
-  removeRegression,
   getProcessInfo,
-  getDeatil,
 } from '../service';
 // dashiboard
 declare global {
@@ -25,18 +21,9 @@ const progressContainer = {
 import {
   Alert,
   Button,
-  Col,
-  message,
-  Row,
-  Skeleton,
-  Tooltip,
   Progress,
-  Drawer,
-  Spin,
-  Card,
   Tag,
   Steps,
-  Table,
 } from 'antd';
 const { Step } = Steps;
 class ProgressInfo extends React.Component {
@@ -58,7 +45,6 @@ class ProgressInfo extends React.Component {
       },
       distanceTime: '',
       repodistanceTime: '',
-      isStoping: false,
     };
   }
 
@@ -124,12 +110,6 @@ class ProgressInfo extends React.Component {
   render() {
     //@ts-ignore
     const { progressInfo, distanceTime, repodistanceTime } = this.state;
-
-    const logs = (
-      <pre className="log output" style={{ overflow: 'unset' }}>
-        {}
-      </pre>
-    );
     return (
       <>
         <div style={progressContainer}>
