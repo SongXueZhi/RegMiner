@@ -19,7 +19,7 @@ import {
 } from 'antd';
 import { AppstoreOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import DiffEditorTabs from './components/DiffEditorTabs';
-import type { IRouteComponentProps } from 'umi';
+import { IRouteComponentProps, useAccess } from 'umi';
 import {
   getRegressionConsole,
   queryRegressionCode,
@@ -114,6 +114,7 @@ export type CommentAPI = {
 // }
 
 const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
+  const access = useAccess();
   const HISTORY_SEARCH = parse(location.search) as unknown as IHistorySearch;
   // const savedCallback = useRef<any>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -146,37 +147,41 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
 
   const handleDeleteComment = useCallback(
     (items: CommentListItems) => {
-      deleteComment({
-        regression_uuid: HISTORY_SEARCH.regressionUuid,
-        account_name: items.accountName,
-        comment_id: items.commentId,
-      }).then(() => {
-        getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
-          if (resp !== null && resp !== undefined) {
-            let currComments: CommentAPI[] = [];
-            currComments = resp.map((data) => {
-              return {
-                actions: [
-                  <Tooltip key="comment-delete-btn" title="Delete">
-                    <span onClick={() => handleDeleteComment(data)}>
-                      <DeleteOutlined />
-                    </span>
-                  </Tooltip>,
-                ],
-                author: data.accountName,
-                avatar: 'https://joeschmoe.io/api/v1/random',
-                content: <p>{data.context}</p>,
-                datetime: (
-                  <Tooltip title={data.createTime}>
-                    <span>{data.createTime}</span>
-                  </Tooltip>
-                ),
-              };
-            });
-            setCommentList(currComments);
-          }
+      if (access.canDeleteFoo) {
+        deleteComment({
+          regression_uuid: HISTORY_SEARCH.regressionUuid,
+          account_name: items.accountName,
+          comment_id: items.commentId,
+        }).then(() => {
+          getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
+            if (resp !== null && resp !== undefined) {
+              let currComments: CommentAPI[] = [];
+              currComments = resp.map((data) => {
+                return {
+                  actions: [
+                    <Tooltip key="comment-delete-btn" title="Delete">
+                      <span onClick={() => handleDeleteComment(data)}>
+                        <DeleteOutlined />
+                      </span>
+                    </Tooltip>,
+                  ],
+                  author: data.accountName,
+                  avatar: 'https://joeschmoe.io/api/v1/random',
+                  content: <p>{data.context}</p>,
+                  datetime: (
+                    <Tooltip title={data.createTime}>
+                      <span>{data.createTime}</span>
+                    </Tooltip>
+                  ),
+                };
+              });
+              setCommentList(currComments);
+            }
+          });
         });
-      });
+      } else {
+        message.error('Sorry, you have no right to do that. Please login or use another account!');
+      }
     },
     [HISTORY_SEARCH.regressionUuid],
   );
@@ -440,13 +445,17 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
 
   const handleBICRunClick = useCallback(
     async (content, version) => {
-      setBICConsoleResult('');
-      const consoleResult = getConsoleResult({
-        regression_uuid: HISTORY_SEARCH.regressionUuid,
-        revisionFlag: version,
-        userToken: '123',
-      }).then((resp) => resp);
-      return consoleResult;
+      if (access.canClickFoo) {
+        setBICConsoleResult('');
+        const consoleResult = getConsoleResult({
+          regression_uuid: HISTORY_SEARCH.regressionUuid,
+          revisionFlag: version,
+          userToken: '123',
+        }).then((resp) => resp);
+        return consoleResult;
+      } else {
+        message.error('Sorry, you have no right to do that. Please login or use another account!');
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [getConsoleResult],
@@ -454,14 +463,19 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
 
   const handleBFCRunClick = useCallback(
     async (content, version) => {
-      setBFCConsoleResult('');
-      const consoleResult = getConsoleResult({
-        regression_uuid: HISTORY_SEARCH.regressionUuid,
-        revisionFlag: version,
-        userToken: '123',
-      }).then((resp) => resp);
-      return consoleResult;
+      if (access.canClickFoo) {
+        setBFCConsoleResult('');
+        const consoleResult = getConsoleResult({
+          regression_uuid: HISTORY_SEARCH.regressionUuid,
+          revisionFlag: version,
+          userToken: '123',
+        }).then((resp) => resp);
+        return consoleResult;
+      } else {
+        message.error('Sorry, you have no right to do that. Please login or use another account!');
+      }
     },
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [getConsoleResult],
   );
@@ -498,91 +512,95 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   };
 
   const handleSubmitFeedbacks = useCallback(() => {
-    BICFeedbackList.map((resp) => {
-      if (resp.feedback === 'add') {
-        putCriticalChangeByUuid(
-          {
-            regression_uuid: HISTORY_SEARCH.regressionUuid,
-            revision_name: 'bic',
-          },
-          resp.hunkData,
-        );
-      } else if (resp.feedback === 'reject') {
-        const targetCC = BICCriticalChanges.find((d) => {
-          if (
-            (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
-            (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB)
-          ) {
-            return d;
-          } else {
-            return undefined;
-          }
-        });
-        if (targetCC) {
-          deleteCriticalChangeById({
-            regression_uuid: HISTORY_SEARCH.regressionUuid,
-            revision_name: 'bic',
-            critical_change_id: targetCC.criticalChangeId,
-          });
-        } else {
-          alert(
-            `The reject feedback ${resp.fileName} does not include any critical change, auto withdrawed!`,
+    if (access.canClickFoo) {
+      BICFeedbackList.map((resp) => {
+        if (resp.feedback === 'add') {
+          putCriticalChangeByUuid(
+            {
+              regression_uuid: HISTORY_SEARCH.regressionUuid,
+              revision_name: 'bic',
+            },
+            resp.hunkData,
           );
-        }
-      } else {
-        console.log('feedback type not right');
-      }
-    });
-    BFCFeedbackList.map((resp) => {
-      if (resp.feedback === 'add') {
-        putCriticalChangeByUuid(
-          {
-            regression_uuid: HISTORY_SEARCH.regressionUuid,
-            revision_name: 'bfc',
-          },
-          resp.hunkData,
-        );
-      } else if (resp.feedback === 'reject') {
-        const targetCC = BFCCriticalChanges.find((d) => {
-          if (
-            (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
-            (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB)
-          ) {
-            return d;
-          } else {
-            return undefined;
-          }
-        });
-        if (targetCC) {
-          deleteCriticalChangeById({
-            regression_uuid: HISTORY_SEARCH.regressionUuid,
-            revision_name: 'bfc',
-            critical_change_id: targetCC.criticalChangeId,
+        } else if (resp.feedback === 'reject') {
+          const targetCC = BICCriticalChanges.find((d) => {
+            if (
+              (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
+              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB)
+            ) {
+              return d;
+            } else {
+              return undefined;
+            }
           });
+          if (targetCC) {
+            deleteCriticalChangeById({
+              regression_uuid: HISTORY_SEARCH.regressionUuid,
+              revision_name: 'bic',
+              critical_change_id: targetCC.criticalChangeId,
+            });
+          } else {
+            alert(
+              `The reject feedback ${resp.fileName} does not include any critical change, auto withdrawed!`,
+            );
+          }
+        } else {
+          console.log('feedback type not right');
         }
-      } else {
-        console.log('feedback type not right');
-      }
-    });
-    setBFCFeedbackList([]);
-    setBICFeedbackList([]);
-    message.success('submited');
-    getRetrievalCriticalChangeReviewList({
-      regression_uuid: HISTORY_SEARCH.regressionUuid,
-      revision_name: 'bic',
-    }).then((resp) => {
-      if (resp !== null && resp !== undefined) {
-        setBICCriticalChanges(resp.hunkEntityWithToolList);
-      }
-    });
-    getRetrievalCriticalChangeReviewList({
-      regression_uuid: HISTORY_SEARCH.regressionUuid,
-      revision_name: 'bfc',
-    }).then((resp) => {
-      if (resp !== null && resp !== undefined) {
-        setBFCCriticalChanges(resp.hunkEntityWithToolList);
-      }
-    });
+      });
+      BFCFeedbackList.map((resp) => {
+        if (resp.feedback === 'add') {
+          putCriticalChangeByUuid(
+            {
+              regression_uuid: HISTORY_SEARCH.regressionUuid,
+              revision_name: 'bfc',
+            },
+            resp.hunkData,
+          );
+        } else if (resp.feedback === 'reject') {
+          const targetCC = BFCCriticalChanges.find((d) => {
+            if (
+              (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
+              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB)
+            ) {
+              return d;
+            } else {
+              return undefined;
+            }
+          });
+          if (targetCC) {
+            deleteCriticalChangeById({
+              regression_uuid: HISTORY_SEARCH.regressionUuid,
+              revision_name: 'bfc',
+              critical_change_id: targetCC.criticalChangeId,
+            });
+          }
+        } else {
+          console.log('feedback type not right');
+        }
+      });
+      setBFCFeedbackList([]);
+      setBICFeedbackList([]);
+      message.success('submited');
+      getRetrievalCriticalChangeReviewList({
+        regression_uuid: HISTORY_SEARCH.regressionUuid,
+        revision_name: 'bic',
+      }).then((resp) => {
+        if (resp !== null && resp !== undefined) {
+          setBICCriticalChanges(resp.hunkEntityWithToolList);
+        }
+      });
+      getRetrievalCriticalChangeReviewList({
+        regression_uuid: HISTORY_SEARCH.regressionUuid,
+        revision_name: 'bfc',
+      }).then((resp) => {
+        if (resp !== null && resp !== undefined) {
+          setBFCCriticalChanges(resp.hunkEntityWithToolList);
+        }
+      });
+    } else {
+      message.error('Sorry, you have no right to do that. Please login or use another account!');
+    }
   }, [
     BICFeedbackList,
     BFCFeedbackList,
@@ -632,54 +650,62 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   };
 
   const handleClearCacheClick = async () => {
-    setLoadingClearCache(true);
-    await postClearCache({
-      userToken: '123',
-      regressionUuid: HISTORY_SEARCH.regressionUuid,
-      projectFullName: projectFullName ?? '',
-    })
-      .then(() => {
-        setLoadingClearCache(false);
+    if (access.canClickFoo) {
+      setLoadingClearCache(true);
+      await postClearCache({
+        userToken: '123',
+        regressionUuid: HISTORY_SEARCH.regressionUuid,
+        projectFullName: projectFullName ?? '',
       })
-      .catch(() => {
-        message.error('Failed to clear cache');
-        setLoadingClearCache(false);
-      });
+        .then(() => {
+          setLoadingClearCache(false);
+        })
+        .catch(() => {
+          message.error('Failed to clear cache');
+          setLoadingClearCache(false);
+        });
+    } else {
+      message.error('Sorry, you have no right to do that. Please login or use another account!');
+    }
   };
 
   const handleSubmitComment = useCallback(() => {
-    addComment({
-      regression_uuid: HISTORY_SEARCH.regressionUuid,
-      account_name: 'admin',
-      context: newCommentText,
-    }).then(() => {
-      setNewCommentText('');
-      getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
-        if (resp !== null && resp !== undefined) {
-          let currComments: CommentAPI[] = [];
-          currComments = resp.map((data) => {
-            return {
-              actions: [
-                <Tooltip key="comment-delete-btn" title="Delete">
-                  <span onClick={() => handleDeleteComment(data)}>
-                    <DeleteOutlined />
-                  </span>
-                </Tooltip>,
-              ],
-              author: data.accountName,
-              avatar: 'https://joeschmoe.io/api/v1/random',
-              content: <p>{data.context}</p>,
-              datetime: (
-                <Tooltip title={data.createTime}>
-                  <span>{data.createTime}</span>
-                </Tooltip>
-              ),
-            };
-          });
-          setCommentList(currComments);
-        }
+    if (access.canClickFoo) {
+      addComment({
+        regression_uuid: HISTORY_SEARCH.regressionUuid,
+        account_name: 'admin',
+        context: newCommentText,
+      }).then(() => {
+        setNewCommentText('');
+        getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
+          if (resp !== null && resp !== undefined) {
+            let currComments: CommentAPI[] = [];
+            currComments = resp.map((data) => {
+              return {
+                actions: [
+                  <Tooltip key="comment-delete-btn" title="Delete">
+                    <span onClick={() => handleDeleteComment(data)}>
+                      <DeleteOutlined />
+                    </span>
+                  </Tooltip>,
+                ],
+                author: data.accountName,
+                avatar: 'https://joeschmoe.io/api/v1/random',
+                content: <p>{data.context}</p>,
+                datetime: (
+                  <Tooltip title={data.createTime}>
+                    <span>{data.createTime}</span>
+                  </Tooltip>
+                ),
+              };
+            });
+            setCommentList(currComments);
+          }
+        });
       });
-    });
+    } else {
+      message.error('Sorry, you have no right to do that. Please login or use another account!');
+    }
   }, [HISTORY_SEARCH.regressionUuid, handleDeleteComment, newCommentText]);
 
   useEffect(() => {

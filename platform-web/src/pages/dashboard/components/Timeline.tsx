@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Button } from 'antd';
 import { Link } from 'react-router-dom';
 import { stringify } from 'querystring';
@@ -13,7 +13,6 @@ export type TimeLineProps = {
 
 const TimeLine: React.FC<TimeLineProps> = (props) => {
   const { currentRegressionUuid, lineList, indicated, cur } = props;
-  let timer;
   const [currentStep, setCurrentStep] = useState<number>(cur);
   const [currentPoint, setCurrentPoint] = useState<any>(0);
   const [arr, setArr] = useState<any>([]);

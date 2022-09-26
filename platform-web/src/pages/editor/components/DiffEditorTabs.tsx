@@ -1,4 +1,4 @@
-import CodeEditor from '@/components/CodeEditor';
+import NewCodeEditor from '@/components/CodeEditor/index2';
 import { Tabs } from 'antd';
 import { useCallback } from 'react';
 import type { FilePaneItem } from '..';
@@ -104,7 +104,7 @@ const DiffEditorTabs: React.FC<IProps> = ({
           return (
             <Tabs.TabPane tab={key.split(`${commit}-`)} key={key}>
               <div style={{ width: '100%', height: '106vh', display: 'flex' }}>
-                <CodeEditor
+                <NewCodeEditor
                   title={commit === 'BIC' ? 'Bug Inducing Commit' : 'Bug Fixing Commit'}
                   regressionUuid={regressionUuid}
                   filename={key.slice(4)}
