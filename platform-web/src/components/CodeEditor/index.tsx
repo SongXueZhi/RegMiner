@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import { RefObject } from 'react';
 import React, { createRef } from 'react';
 import { monaco, MonacoDiffEditor } from 'react-monaco-editor';
 import { v4 as uuidv4 } from 'uuid';
