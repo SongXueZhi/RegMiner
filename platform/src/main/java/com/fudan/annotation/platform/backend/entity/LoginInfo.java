@@ -7,15 +7,13 @@ import lombok.NoArgsConstructor;
 /**
  * description:
  *
- * @author Richy
+ * @author sunyujie
  * create: 2021-12-13 19:20
  **/
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginInfo {
-
-    private String username;
-
+    private String accountName;
     private String password;
 }
