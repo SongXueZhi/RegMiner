@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 /**
  * description: account
  *
- * @author Richy
+ * @author sunyujie
  * create: 2021-12-10 15:55
  **/
 
@@ -15,15 +15,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Account {
-
-    private String uuid;
+    private int accountId;
     private String accountName;
     private String password;
     private String email;
+    private String avatar;
     /**
      * 用户权限：
-     * 0 —— 管理员
-     * 1 —— 普通用户
+     * admin —— 管理员
+     * user —— 普通用户
      */
-    private Integer accountRight;
+    private String role;
 }

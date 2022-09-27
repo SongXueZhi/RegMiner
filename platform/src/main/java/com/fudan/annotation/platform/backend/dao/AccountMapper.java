@@ -1,8 +1,11 @@
 package com.fudan.annotation.platform.backend.dao;
 
 import com.fudan.annotation.platform.backend.entity.Account;
+import com.fudan.annotation.platform.backend.entity.AccountReg;
+import com.fudan.annotation.platform.backend.entity.AccountVO;
 import com.fudan.annotation.platform.backend.entity.LoginInfo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,19 +14,16 @@ import java.util.List;
 @Mapper
 public interface AccountMapper {
 
-    int deleteByPrimaryKey(String uuid);
+    int deleteByPrimaryKey(int accountId);
 
-    int insert(Account account);
+    int insert(AccountReg account);
 
-    int insertSelective(Account record);
+    int resetPassword(int accountId, String accountName, String password);
 
-    List<Account> getUserByParam(String uuid, String accountName, Integer accountRight);
+    List<Account> getUserByParam(Integer accountId, String accountName, String role);
 
-    int updateByPrimaryKeySelective(Account record);
+    AccountVO login(LoginInfo loginInfo);
 
-    int resetPassword(String uuid, String password);
-
-    Account login(LoginInfo loginInfo);
-
-    String getAccountName(String uuid);
+    //    int insertSelective(Account record);
+    //    int updateByPrimaryKeySelective(Account record);
 }
