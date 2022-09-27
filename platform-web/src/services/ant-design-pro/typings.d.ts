@@ -9,15 +9,14 @@ declare namespace API {
   };
 
   type CurrentUser = {
-    uuid: string;
-    username: string;
-    password?: string;
-    accountRight: number;
-    token?: string;
+    accountId: number;
+    accountName: string;
+    role: string;
+    avatar?: string;
+    email?: string;
+    token: string;
     // name?: string;
-    // avatar?: string;
     // userid?: string;
-    // email?: string;
     // signature?: string;
     // title?: string;
     // group?: string;
@@ -34,14 +33,13 @@ declare namespace API {
     // phone?: string;
   };
 
-  type LoginResult = AccountItem;
-
-  type AccountItem = {
-    uuid: string;
-    username: string;
-    password?: string;
-    accountRight: number;
-    token?: string;
+  type LoginResult = {
+    accountId: number;
+    accountName: string;
+    role: string;
+    avatar?: string;
+    email?: string;
+    token: string;
   };
 
   type RegressionItem = {
@@ -89,12 +87,12 @@ declare namespace API {
     status?: string;
   };
 
-  type LoginParams = {
-    username?: string;
-    password?: string;
+  interface LoginParams {
+    accountName: string;
+    password: string;
     autoLogin?: boolean;
     type?: string;
-  };
+  }
 
   type ErrorResponse = {
     /** 业务约定的错误码 */

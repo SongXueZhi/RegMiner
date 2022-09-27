@@ -23,7 +23,7 @@ import { handleResponse } from '../response';
 
 /** 登录接口 POST /api/account/login */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.RegResponse<API.LoginResult | null>>('/api/account/login', {
+  return request<API.RegResponse<API.LoginResult>>('/api/account/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -42,9 +42,9 @@ export async function outLogin(options?: { [key: string]: any }) {
 }
 
 /** 获取当前的用户 GET /api/account/currentUser */
-export async function currentUser(options?: { [key: string]: any }) {
-  return request<API.RegResponse<API.CurrentUser | null>>('/api/account/currentUser', {
-    method: 'GET',
-    ...(options || {}),
-  }).then(handleResponse);
-}
+// export async function getCurrentUser(options?: { [key: string]: any }) {
+//   return request<API.RegResponse<API.CurrentUser | null>>('/api/account/currentUser', {
+//     method: 'GET',
+//     ...(options || {}),
+//   }).then(handleResponse);
+// }

@@ -40,8 +40,8 @@ const Login: React.FC = () => {
 
   const intl = useIntl();
 
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
+  const fetchUserInfo = async (user: API.CurrentUser) => {
+    const userInfo = await initialState?.fetchUserInfo?.(user);
     if (userInfo) {
       await setInitialState((s: any) => ({
         ...s,
@@ -54,10 +54,10 @@ const Login: React.FC = () => {
     setSubmitting(true);
     try {
       // 登录
-      const user = await login({ ...values });
+      const user: API.LoginResult = await login({ ...values });
       if (user) {
         message.success('登录成功！');
-        await fetchUserInfo();
+        await fetchUserInfo(user);
         goto();
         return;
       }
@@ -125,7 +125,7 @@ const Login: React.FC = () => {
               />
             )}
             <ProFormText
-              name="username"
+              name="accountName"
               fieldProps={{
                 size: 'large',
                 prefix: <UserOutlined className={styles.prefixIcon} />,

@@ -6,7 +6,6 @@ import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import type { ResponseError } from 'umi-request';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/login';
 
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -22,11 +21,11 @@ export const initialStateConfig = {
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
-  fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchUserInfo?: (user?: API.CurrentUser) => Promise<API.CurrentUser | undefined>;
 }> {
-  const fetchUserInfo = async () => {
+  const fetchUserInfo = async (user?: API.CurrentUser) => {
     try {
-      const currentUser = await queryCurrentUser();
+      const currentUser = user;
       return currentUser === null ? undefined : currentUser;
     } catch (error) {
       history.push(loginPath);
@@ -43,7 +42,6 @@ export async function getInitialState(): Promise<{
     };
   }
   return {
-    fetchUserInfo,
     settings: {},
   };
 }
