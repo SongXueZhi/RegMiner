@@ -34,12 +34,12 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
 }
 
 /** 登出接口 POST /api/account/outLogin */
-export async function outLogin(options?: { [key: string]: any }) {
-  return request<API.RegResponse<Record<string, any>>>('/api/account/outLogin', {
-    method: 'GET',
-    ...(options || {}),
-  }).then(handleResponse);
-}
+// export async function outLogin(options?: { [key: string]: any }) {
+//   return request<API.RegResponse<Record<string, any>>>('/api/account/outLogin', {
+//     method: 'GET',
+//     ...(options || {}),
+//   }).then(handleResponse);
+// }
 
 /** 获取当前的用户 GET /api/account/currentUser */
 // export async function getCurrentUser(options?: { [key: string]: any }) {

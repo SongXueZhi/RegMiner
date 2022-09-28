@@ -78,7 +78,7 @@ const Login: React.FC = () => {
           </div>
           <div className={styles.desc}>RegMiner 数据标注平台</div>
         </div>
-
+        {JSON.stringify(initialState)}
         <div className={styles.main}>
           <ProForm
             initialValues={{

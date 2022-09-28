@@ -1,6 +1,7 @@
-import { Avatar, Space } from 'antd';
+import { Space } from 'antd';
 import React from 'react';
-import { useModel } from 'umi';
+import { SelectLang, useModel } from 'umi';
+import AvatarDropdown from './AvatarDropdown';
 import styles from './index.less';
 
 export type SiderTheme = 'light' | 'dark';
@@ -97,8 +98,8 @@ const GlobalHeaderRight: React.FC = () => {
           Tutorial
         </Button>
       </Popover> */}
-      <Avatar className="user-image" src="./user.png" />
-      {/* <SelectLang className={styles.action} /> */}
+      <AvatarDropdown />
+      <SelectLang className={styles.action} />
     </Space>
   );
 };
