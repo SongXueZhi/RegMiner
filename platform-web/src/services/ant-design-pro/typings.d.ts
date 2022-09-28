@@ -33,6 +33,21 @@ declare namespace API {
     // phone?: string;
   };
 
+  interface LoginParams {
+    accountName: string;
+    password: string;
+    autoLogin?: boolean;
+    type?: string;
+  }
+
+  interface RegisterParams {
+    accountName: string;
+    password: string;
+    avatar?: string;
+    email?: string;
+    role: string;
+  }
+
   type LoginResult = {
     accountId: number;
     accountName: string;
@@ -86,13 +101,6 @@ declare namespace API {
     code?: number;
     status?: string;
   };
-
-  interface LoginParams {
-    accountName: string;
-    password: string;
-    autoLogin?: boolean;
-    type?: string;
-  }
 
   type ErrorResponse = {
     /** 业务约定的错误码 */

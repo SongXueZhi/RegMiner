@@ -16,11 +16,6 @@
             path: '/user/register',
             component: './user/Register',
           },
-          {
-            name: 'register-result',
-            path: '/user/register-result',
-            component: './user/Register-result',
-          },
         ],
       },
     ],
