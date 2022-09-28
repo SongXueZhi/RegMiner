@@ -42,6 +42,7 @@ const Login: React.FC = () => {
 
   const fetchUserInfo = async (user: API.CurrentUser) => {
     const userInfo = await initialState?.fetchUserInfo?.(user);
+    console.log(userInfo);
     if (userInfo) {
       await setInitialState((s: any) => ({
         ...s,
@@ -132,7 +133,7 @@ const Login: React.FC = () => {
               }}
               placeholder={intl.formatMessage({
                 id: 'pages.login.username.placeholder',
-                defaultMessage: '用户名: admin or user',
+                defaultMessage: '用户名',
               })}
               rules={[
                 {

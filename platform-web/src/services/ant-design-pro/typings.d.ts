@@ -14,7 +14,7 @@ declare namespace API {
     role: string;
     avatar?: string;
     email?: string;
-    token: string;
+    token?: string;
     // name?: string;
     // userid?: string;
     // signature?: string;

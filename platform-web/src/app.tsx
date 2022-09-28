@@ -24,11 +24,31 @@ export async function getInitialState(): Promise<{
   fetchUserInfo?: (user?: API.CurrentUser) => Promise<API.CurrentUser | undefined>;
 }> {
   const fetchUserInfo = async (user?: API.CurrentUser) => {
-    try {
-      const currentUser = user;
-      return currentUser === null ? undefined : currentUser;
-    } catch (error) {
-      history.push(loginPath);
+    if (user) {
+      localStorage.account_id = user.accountId;
+      localStorage.account_name = user.accountName;
+      localStorage.account_role = user.role;
+      localStorage.account_avatar = user.avatar;
+      localStorage.account_email = user.email;
+      try {
+        const currentUser = user;
+        return currentUser === null ? undefined : currentUser;
+      } catch (error) {
+        history.push(loginPath);
+      }
+    } else {
+      try {
+        const currentUser: API.CurrentUser = {
+          accountId: localStorage.account_id,
+          accountName: localStorage.account_name,
+          role: localStorage.account_role,
+          avatar: localStorage.account_avatar,
+          email: localStorage.account_email,
+        };
+        return currentUser === null ? undefined : currentUser;
+      } catch (error) {
+        history.push(loginPath);
+      }
     }
     return undefined;
   };
@@ -42,6 +62,7 @@ export async function getInitialState(): Promise<{
     };
   }
   return {
+    fetchUserInfo,
     settings: {},
   };
 }
