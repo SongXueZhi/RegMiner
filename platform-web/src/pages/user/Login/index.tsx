@@ -1,12 +1,12 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Alert, message, Tabs } from 'antd';
+import { Alert, message, Tabs, Image } from 'antd';
 import React, { useState } from 'react';
 import ProForm, { ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
-import { useIntl, Link, history, FormattedMessage, SelectLang, useModel } from 'umi';
+import { useIntl, history, FormattedMessage, SelectLang, useModel, Link } from 'umi';
 import Footer from '@/components/Footer';
 import { login } from '@/services/ant-design-pro/login';
 
-import styles from './index.less';
+import styles from './style.less';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -75,7 +75,7 @@ const Login: React.FC = () => {
         <div className={styles.top}>
           <div className={styles.header}>
             <Link to="/">
-              <img alt="logo" className={styles.logo} src="./reg_logo.svg" />
+              <Image alt="logo" src="/favicon.ico" className={styles.logo} />
               <span className={styles.title}>RegMiner Data Annotations</span>
             </Link>
           </div>
