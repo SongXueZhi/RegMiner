@@ -1,6 +1,7 @@
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
+import type { RunTimeLayoutConfig } from 'umi';
+import { RequestConfig } from '@/.umi/plugin-request/request'
 import { notification } from 'antd';
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
@@ -25,31 +26,32 @@ export async function getInitialState(): Promise<{
 }> {
   const fetchUserInfo = async (user?: API.CurrentUser) => {
     if (user) {
-      localStorage.account_id = user.accountId;
-      localStorage.account_name = user.accountName;
-      localStorage.account_role = user.role;
-      localStorage.account_avatar = user.avatar;
-      localStorage.account_email = user.email;
-      const currentUser = user;
-      if (currentUser.accountName !== undefined && currentUser.accountId !== 0) {
+      try {
+        localStorage.account_id = user.accountId;
+        localStorage.account_name = user.accountName;
+        localStorage.account_role = user.role;
+        localStorage.account_avatar = user.avatar;
+        localStorage.account_email = user.email;
+        const currentUser = user;
         return currentUser;
-      } else {
-        return undefined;
-      }
-    } else {
-      const currentUser: API.CurrentUser = {
-        accountId: localStorage.account_id,
-        accountName: localStorage.account_name,
-        role: localStorage.account_role,
-        avatar: localStorage.account_avatar,
-        email: localStorage.account_email,
-      };
-      if (currentUser.accountName !== undefined && currentUser.accountId !== 0) {
-        return currentUser;
-      } else {
+      } catch (error) {
         history.push(loginPath);
-        return undefined;
       }
+      return undefined;
+    } else {
+      try {
+        const currentUser: API.CurrentUser = {
+          accountId: localStorage.account_id,
+          accountName: localStorage.account_name,
+          role: localStorage.account_role,
+          avatar: localStorage.account_avatar,
+          email: localStorage.account_email,
+        };
+        return currentUser;
+      } catch (error) {
+        history.push(loginPath);
+      }
+      return undefined;
     }
   };
   // 如果是登录页面，不执行
