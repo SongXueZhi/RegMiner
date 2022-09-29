@@ -48,6 +48,12 @@ declare namespace API {
     role: string;
   }
 
+  interface ResetPasswordParams {
+    // account_id: string;
+    account_name: string;
+    password: string;
+  }
+
   type LoginResult = {
     accountId: number;
     accountName: string;

@@ -48,3 +48,14 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
 //     ...(options || {}),
 //   }).then(handleResponse);
 // }
+
+export async function resetPassword(params: API.ResetPasswordParams, options?: { [key: string]: any }) {
+  return request<API.RegResponse<null>>('/api/account/login', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    params: params,
+    ...(options || {}),
+  }).then(handleResponse);
+}

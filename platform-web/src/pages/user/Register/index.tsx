@@ -87,9 +87,9 @@ const RegisterPage: React.FC = () => {
               handleSubmit(values as API.RegisterParams);
             }}
           >
-            <Tabs activeKey="account">
+            <Tabs activeKey="register">
               <Tabs.TabPane
-                key="account"
+                key="register"
                 tab={intl.formatMessage({
                   id: 'pages.login.registerAccount.tab',
                   defaultMessage: 'Register Account',

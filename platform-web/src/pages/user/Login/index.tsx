@@ -1,7 +1,7 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Tabs, Image } from 'antd';
 import React, { useState } from 'react';
-import ProForm, { ProFormText } from '@ant-design/pro-form';
+import ProForm, { ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { useIntl, history, FormattedMessage, SelectLang, useModel, Link } from 'umi';
 import Footer from '@/components/Footer';
 import { login } from '@/services/ant-design-pro/login';
@@ -9,6 +9,7 @@ import { login } from '@/services/ant-design-pro/login';
 import styles from './style.less';
 
 const RegisterPath = '/user/register';
+const ResetPasswordPath = '/user/resetPassword';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -41,7 +42,6 @@ const Login: React.FC = () => {
 
   const fetchUserInfo = async (user: API.CurrentUser) => {
     const userInfo = await initialState?.fetchUserInfo?.(user);
-    console.log(userInfo);
     if (userInfo) {
       await setInitialState((s: any) => ({
         ...s,
@@ -78,11 +78,10 @@ const Login: React.FC = () => {
           </div>
           <div className={styles.desc}>RegMiner 数据标注平台</div>
         </div>
-        {JSON.stringify(initialState)}
         <div className={styles.main}>
           <ProForm
             initialValues={{
-              autoLogin: false,
+              autoLogin: true,
             }}
             submitter={{
               searchConfig: {
@@ -151,7 +150,7 @@ const Login: React.FC = () => {
               }}
               placeholder={intl.formatMessage({
                 id: 'pages.login.password.placeholder',
-                defaultMessage: 'Password: ',
+                defaultMessage: 'Password',
               })}
               rules={[
                 {
@@ -165,17 +164,18 @@ const Login: React.FC = () => {
                 },
               ]}
             />
+            <ProFormCheckbox noStyle name="autoLogin">
+              <FormattedMessage id="pages.login.rememberMe" defaultMessage="Remember me" />
+            </ProFormCheckbox>
             <div>
               <a
                 style={{
                   float: 'left',
+                  marginTop: 10,
                   marginBottom: 10,
                 }}
                 href={RegisterPath}
               >
-                {/* <ProFormCheckbox noStyle name="autoLogin">
-                <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
-              </ProFormCheckbox> */}
                 <FormattedMessage
                   id="pages.login.registerAccount"
                   defaultMessage="Register Account"
@@ -184,9 +184,10 @@ const Login: React.FC = () => {
               <a
                 style={{
                   float: 'right',
+                  marginTop: 10,
                   marginBottom: 10,
                 }}
-                onClick={() => console.log('forgot')}
+                href={ResetPasswordPath}
               >
                 <FormattedMessage
                   id="pages.login.forgotPassword"

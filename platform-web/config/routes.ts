@@ -16,6 +16,11 @@
             path: '/user/register',
             component: './user/Register',
           },
+          {
+            name: 'resetPassword',
+            path: '/user/resetPassword',
+            component: './user/ResetPassword',
+          },
         ],
       },
     ],

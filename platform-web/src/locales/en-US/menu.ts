@@ -7,6 +7,7 @@ export default {
   'menu.login': 'Login',
   'menu.register': 'Register',
   'menu.register-result': 'Register Result',
+  'menu.resetPassword': 'Reset Password',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.analysis': 'Analysis',
   'menu.dashboard.monitor': 'Monitor',

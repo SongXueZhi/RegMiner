@@ -30,27 +30,27 @@ export async function getInitialState(): Promise<{
       localStorage.account_role = user.role;
       localStorage.account_avatar = user.avatar;
       localStorage.account_email = user.email;
-      try {
-        const currentUser = user;
-        return currentUser === null ? undefined : currentUser;
-      } catch (error) {
-        history.push(loginPath);
+      const currentUser = user;
+      if (currentUser.accountName !== undefined && currentUser.accountId !== 0) {
+        return currentUser;
+      } else {
+        return undefined;
       }
     } else {
-      try {
-        const currentUser: API.CurrentUser = {
-          accountId: localStorage.account_id,
-          accountName: localStorage.account_name,
-          role: localStorage.account_role,
-          avatar: localStorage.account_avatar,
-          email: localStorage.account_email,
-        };
-        return currentUser === null ? undefined : currentUser;
-      } catch (error) {
+      const currentUser: API.CurrentUser = {
+        accountId: localStorage.account_id,
+        accountName: localStorage.account_name,
+        role: localStorage.account_role,
+        avatar: localStorage.account_avatar,
+        email: localStorage.account_email,
+      };
+      if (currentUser.accountName !== undefined && currentUser.accountId !== 0) {
+        return currentUser;
+      } else {
         history.push(loginPath);
+        return undefined;
       }
     }
-    return undefined;
   };
   // 如果是登录页面，不执行
   if (shouldLogin(history.location.pathname)) {

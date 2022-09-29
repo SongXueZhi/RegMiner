@@ -60,7 +60,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       <Menu.Item key="logout">
         <LogoutOutlined />
         {!initialState || !initialState.currentUser || !initialState.currentUser.accountName
-          ? 'Sign in again'
+          ? 'Sign in'
           : 'Logout'}
       </Menu.Item>
     </Menu>
