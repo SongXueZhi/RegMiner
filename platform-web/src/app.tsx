@@ -1,12 +1,10 @@
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
+import { history, RequestConfig, RunTimeLayoutConfig } from 'umi';
 import { notification } from 'antd';
-import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import type { ResponseError } from 'umi-request';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/login';
 
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -22,16 +20,37 @@ export const initialStateConfig = {
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
-  fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchUserInfo?: (user?: API.CurrentUser) => Promise<API.CurrentUser | undefined>;
 }> {
-  const fetchUserInfo = async () => {
-    try {
-      const currentUser = await queryCurrentUser();
-      return currentUser === null ? undefined : currentUser;
-    } catch (error) {
-      history.push(loginPath);
+  const fetchUserInfo = async (user?: API.CurrentUser) => {
+    if (user) {
+      try {
+        localStorage.account_id = user.accountId;
+        localStorage.account_name = user.accountName;
+        localStorage.account_role = user.role;
+        localStorage.account_avatar = user.avatar;
+        localStorage.account_email = user.email;
+        const currentUser = user;
+        return currentUser;
+      } catch (error) {
+        history.push(loginPath);
+      }
+      return undefined;
+    } else {
+      try {
+        const currentUser: API.CurrentUser = {
+          accountId: localStorage.account_id,
+          accountName: localStorage.account_name,
+          role: localStorage.account_role,
+          avatar: localStorage.account_avatar,
+          email: localStorage.account_email,
+        };
+        return currentUser;
+      } catch (error) {
+        history.push(loginPath);
+      }
+      return undefined;
     }
-    return undefined;
   };
   // 如果是登录页面，不执行
   if (shouldLogin(history.location.pathname)) {
@@ -52,7 +71,7 @@ function shouldLogin(path: string) {
   return (
     path !== loginPath &&
     path !== '/user/register' &&
-    path !== '/user/register-result' &&
+    path !== '/user/resetPassword' &&
     path !== '/code'
   );
 }

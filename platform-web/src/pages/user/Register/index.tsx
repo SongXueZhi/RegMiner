@@ -1,332 +1,223 @@
-import { Form, Button, Col, Input, Popover, Progress, Row, Select, message } from 'antd';
-import type { FC } from 'react';
-import React, { useState, useEffect } from 'react';
-import type { Dispatch } from 'umi';
-import { Link, connect, history, FormattedMessage, formatMessage } from 'umi';
+import { FormattedMessage, Link, SelectLang, useIntl, history } from 'umi';
+import { Alert, Tabs, Image } from 'antd';
+import { UserOutlined, LockOutlined, MailOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import ProForm, { ProFormSelect, ProFormText } from '@ant-design/pro-form';
+import Footer from '@/components/Footer';
+import { useState } from 'react';
 
-import type { StateType } from './model';
 import styles from './style.less';
+import { register } from '@/services/ant-design-pro/register';
 
-const FormItem = Form.Item;
-const { Option } = Select;
-const InputGroup = Input.Group;
+const loginPath = '/user/login';
 
-const passwordStatusMap = {
-  ok: (
-    <div className={styles.success}>
-      <FormattedMessage id="userandregister.strength.strong" />
-    </div>
-  ),
-  pass: (
-    <div className={styles.warning}>
-      <FormattedMessage id="userandregister.strength.medium" />
-    </div>
-  ),
-  poor: (
-    <div className={styles.error}>
-      <FormattedMessage id="userandregister.strength.short" />
-    </div>
-  ),
+const RegisterMessage: React.FC<{
+  content: string;
+}> = ({ content }) => (
+  <Alert
+    style={{
+      marginBottom: 24,
+    }}
+    message={content}
+    type="error"
+    showIcon
+  />
+);
+
+const goto = () => {
+  if (!history) return;
+  setTimeout(() => {
+    history.push('/user/login');
+  }, 10);
 };
 
-const passwordProgressMap: {
-  ok: 'success';
-  pass: 'normal';
-  poor: 'exception';
-} = {
-  ok: 'success',
-  pass: 'normal',
-  poor: 'exception',
-};
+const RegisterPage: React.FC = () => {
+  const [submitting, setSubmitting] = useState(false);
+  const [status, setStatus] = useState('');
 
-type RegisterProps = {
-  dispatch: Dispatch;
-  userAndregister: StateType;
-  submitting: boolean;
-};
+  const intl = useIntl();
 
-export type UserRegisterParams = {
-  mail: string;
-  password: string;
-  confirm: string;
-  mobile: string;
-  captcha: string;
-  prefix: string;
-};
-
-const Register: FC<RegisterProps> = ({ submitting, dispatch, userAndregister }) => {
-  const [count, setcount]: [number, any] = useState(0);
-  const [visible, setvisible]: [boolean, any] = useState(false);
-  const [prefix, setprefix]: [string, any] = useState('86');
-  const [popover, setpopover]: [boolean, any] = useState(false);
-  const confirmDirty = false;
-  let interval: number | undefined;
-  const [form] = Form.useForm();
-  useEffect(() => {
-    if (!userAndregister) {
-      return;
-    }
-    const account = form.getFieldValue('mail');
-    if (userAndregister.status === 'ok') {
-      message.success('注册成功！');
-      history.push({
-        pathname: '/user/register-result',
-        state: {
-          account,
-        },
-      });
-    }
-  }, [userAndregister]);
-  useEffect(
-    () => () => {
-      clearInterval(interval);
-    },
-    [],
-  );
-  const onGetCaptcha = () => {
-    let counts = 59;
-    setcount(counts);
-    interval = window.setInterval(() => {
-      counts -= 1;
-      setcount(counts);
-      if (counts === 0) {
-        clearInterval(interval);
+  const handleSubmit = async (values: API.RegisterParams) => {
+    setSubmitting(true);
+    console.log(values);
+    await register({ ...values }).then((resp) => {
+      if (typeof resp === 'number') {
+        setStatus('error');
+        return;
+      } else {
+        goto();
       }
-    }, 1000);
-  };
-  const getPasswordStatus = () => {
-    const value = form.getFieldValue('password');
-    if (value && value.length > 9) {
-      return 'ok';
-    }
-    if (value && value.length > 5) {
-      return 'pass';
-    }
-    return 'poor';
-  };
-  const onFinish = (values: Record<string, any>) => {
-    dispatch({
-      type: 'userAndregister/submit',
-      payload: {
-        ...values,
-        prefix,
-      },
     });
-  };
-  const checkConfirm = (_: any, value: string) => {
-    const promise = Promise;
-    if (value && value !== form.getFieldValue('password')) {
-      return promise.reject(formatMessage({ id: 'userandregister.password.twice' }));
-    }
-    return promise.resolve();
-  };
-  const checkPassword = (_: any, value: string) => {
-    const promise = Promise;
-    // 没有值的情况
-    if (!value) {
-      setvisible(!!value);
-      return promise.reject(formatMessage({ id: 'userandregister.password.required' }));
-    }
-    // 有值的情况
-    if (!visible) {
-      setvisible(!!value);
-    }
-    setpopover(!popover);
-    if (value.length < 6) {
-      return promise.reject('');
-    }
-    if (value && confirmDirty) {
-      form.validateFields(['confirm']);
-    }
-    return promise.resolve();
-  };
-  const changePrefix = (value: string) => {
-    setprefix(value);
-  };
-  const renderPasswordProgress = () => {
-    const value = form.getFieldValue('password');
-    const passwordStatus = getPasswordStatus();
-    return value && value.length ? (
-      <div className={styles[`progress-${passwordStatus}`]}>
-        <Progress
-          status={passwordProgressMap[passwordStatus]}
-          className={styles.progress}
-          strokeWidth={6}
-          percent={value.length * 10 > 100 ? 100 : value.length * 10}
-          showInfo={false}
-        />
-      </div>
-    ) : null;
+    setSubmitting(false);
   };
 
   return (
-    <div className={styles.main}>
-      <h3>
-        <FormattedMessage id="userandregister.register.register" />
-      </h3>
-      <Form form={form} name="UserRegister" onFinish={onFinish}>
-        <FormItem
-          name="mail"
-          rules={[
-            {
-              required: true,
-              message: formatMessage({ id: 'userandregister.email.required' }),
-            },
-            {
-              type: 'email',
-              message: formatMessage({ id: 'userandregister.email.wrong-format' }),
-            },
-          ]}
-        >
-          <Input
-            size="large"
-            placeholder={formatMessage({ id: 'userandregister.email.placeholder' })}
-          />
-        </FormItem>
-        <Popover
-          getPopupContainer={(node) => {
-            if (node && node.parentNode) {
-              return node.parentNode as HTMLElement;
-            }
-            return node;
-          }}
-          content={
-            visible && (
-              <div style={{ padding: '4px 0' }}>
-                {passwordStatusMap[getPasswordStatus()]}
-                {renderPasswordProgress()}
-                <div style={{ marginTop: 10 }}>
-                  <FormattedMessage id="userandregister.strength.msg" />
-                </div>
-              </div>
-            )
-          }
-          overlayStyle={{ width: 240 }}
-          placement="right"
-          visible={visible}
-        >
-          <FormItem
-            name="password"
-            className={
-              form.getFieldValue('password') &&
-              form.getFieldValue('password').length > 0 &&
-              styles.password
-            }
-            rules={[
-              {
-                validator: checkPassword,
+    <div className={styles.container}>
+      <div className={styles.lang}>{SelectLang && <SelectLang />}</div>
+      <div className={styles.content}>
+        <div className={styles.top}>
+          <div className={styles.header}>
+            <Link to="/">
+              <Image alt="logo" src="/favicon.ico" className={styles.logo} />
+              <span className={styles.title}>RegMiner Data Annotations</span>
+            </Link>
+          </div>
+          <div className={styles.desc}>RegMiner 数据标注平台</div>
+        </div>
+        <div className={styles.main}>
+          <a href={loginPath}>
+            <ArrowLeftOutlined className={styles.prefixIcon} />
+          </a>
+          <ProForm
+            initialValues={{
+              autoLogin: false,
+            }}
+            submitter={{
+              searchConfig: {
+                submitText: intl.formatMessage({
+                  id: 'pages.login.registerAccount',
+                  defaultMessage: 'Register',
+                }),
               },
-            ]}
+              render: (_, dom) => dom.pop(),
+              submitButtonProps: {
+                loading: submitting,
+                size: 'large',
+                style: {
+                  width: '100%',
+                },
+              },
+            }}
+            onFinish={async (values) => {
+              handleSubmit(values as API.RegisterParams);
+            }}
           >
-            <Input
-              size="large"
-              type="password"
-              placeholder={formatMessage({ id: 'userandregister.password.placeholder' })}
-            />
-          </FormItem>
-        </Popover>
-        <FormItem
-          name="confirm"
-          rules={[
-            {
-              required: true,
-              message: formatMessage({ id: 'userandregister.confirm-password.required' }),
-            },
-            {
-              validator: checkConfirm,
-            },
-          ]}
-        >
-          <Input
-            size="large"
-            type="password"
-            placeholder={formatMessage({ id: 'userandregister.confirm-password.placeholder' })}
-          />
-        </FormItem>
-        <InputGroup compact>
-          <Select size="large" value={prefix} onChange={changePrefix} style={{ width: '20%' }}>
-            <Option value="86">+86</Option>
-            <Option value="87">+87</Option>
-          </Select>
-          <FormItem
-            style={{ width: '80%' }}
-            name="mobile"
-            rules={[
-              {
-                required: true,
-                message: formatMessage({ id: 'userandregister.phone-number.required' }),
-              },
-              {
-                pattern: /^\d{11}$/,
-                message: formatMessage({ id: 'userandregister.phone-number.wrong-format' }),
-              },
-            ]}
-          >
-            <Input
-              size="large"
-              placeholder={formatMessage({ id: 'userandregister.phone-number.placeholder' })}
-            />
-          </FormItem>
-        </InputGroup>
-        <Row gutter={8}>
-          <Col span={16}>
-            <FormItem
-              name="captcha"
+            <Tabs activeKey="register">
+              <Tabs.TabPane
+                key="register"
+                tab={intl.formatMessage({
+                  id: 'pages.login.registerAccount.tab',
+                  defaultMessage: 'Register Account',
+                })}
+              />
+            </Tabs>
+            {status === 'error' && (
+              <RegisterMessage
+                content={intl.formatMessage({
+                  id: 'pages.login.register.errorMessage',
+                  defaultMessage: 'User name already exist, try a new one!',
+                })}
+              />
+            )}
+            <ProFormText
+              name="accountName"
+              fieldProps={{
+                size: 'large',
+                prefix: <UserOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={intl.formatMessage({
+                id: 'pages.login.username.placeholder',
+                defaultMessage: 'Username',
+              })}
               rules={[
                 {
                   required: true,
-                  message: formatMessage({ id: 'userandregister.verification-code.required' }),
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.username.required"
+                      defaultMessage="Please input your username!"
+                    />
+                  ),
                 },
               ]}
-            >
-              <Input
-                size="large"
-                placeholder={formatMessage({ id: 'userandregister.verification-code.placeholder' })}
-              />
-            </FormItem>
-          </Col>
-          <Col span={8}>
-            <Button
-              size="large"
-              disabled={!!count}
-              className={styles.getCaptcha}
-              onClick={onGetCaptcha}
-            >
-              {count
-                ? `${count} s`
-                : formatMessage({ id: 'userandregister.register.get-verification-code' })}
-            </Button>
-          </Col>
-        </Row>
-        <FormItem>
-          <Button
-            size="large"
-            loading={submitting}
-            className={styles.submit}
-            type="primary"
-            htmlType="submit"
-          >
-            <FormattedMessage id="userandregister.register.register" />
-          </Button>
-          <Link className={styles.login} to="/user/login">
-            <FormattedMessage id="userandregister.register.sign-in" />
-          </Link>
-        </FormItem>
-      </Form>
+            />
+            <ProFormText.Password
+              name="password"
+              fieldProps={{
+                size: 'large',
+                prefix: <LockOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={intl.formatMessage({
+                id: 'pages.login.password.placeholder',
+                defaultMessage: 'Password: ',
+              })}
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.password.required"
+                      defaultMessage="Please input your password!"
+                    />
+                  ),
+                },
+              ]}
+            />
+            <ProFormText
+              name="email"
+              fieldProps={{
+                size: 'large',
+                prefix: <MailOutlined className={styles.prefixIcon} />,
+              }}
+              placeholder={intl.formatMessage({
+                id: 'app.settings.basic.email',
+                defaultMessage: 'Email',
+              })}
+              rules={[
+                {
+                  required: false,
+                },
+              ]}
+            />
+            <ProFormSelect
+              name="role"
+              fieldProps={{
+                size: 'large',
+              }}
+              options={[
+                {
+                  value: 'user',
+                  label: 'Normal user',
+                },
+                {
+                  value: 'admin',
+                  label: 'Administrater',
+                },
+              ]}
+              placeholder={intl.formatMessage({
+                id: 'pages.login.register.select-role',
+                defaultMessage: 'Select your role',
+              })}
+              rules={[
+                {
+                  required: true,
+                  message: (
+                    <FormattedMessage
+                      id="pages.login.register.role.required"
+                      defaultMessage="Please select your role!"
+                    />
+                  ),
+                },
+              ]}
+            />
+            {/* <ProFormUploadButton
+              name="avatar"
+              extra="only support .jpg .png files"
+              title={intl.formatMessage({
+                id: 'app.settings.basic.upload-avatar',
+                defaultMessage: 'Upload avatar',
+              })}
+              rules={[
+                {
+                  required: false,
+                },
+              ]}
+            /> */}
+          </ProForm>
+        </div>
+      </div>
+      <Footer />
     </div>
   );
 };
-export default connect(
-  ({
-    userAndregister,
-    loading,
-  }: {
-    userAndregister: StateType;
-    loading: {
-      effects: Record<string, boolean>;
-    };
-  }) => ({
-    userAndregister,
-    submitting: loading.effects['userAndregister/submit'],
-  }),
-)(Register);
+
+export default RegisterPage;

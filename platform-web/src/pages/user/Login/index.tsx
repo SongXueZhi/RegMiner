@@ -1,12 +1,15 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { Alert, message, Tabs } from 'antd';
+import { Alert, Tabs, Image } from 'antd';
 import React, { useState } from 'react';
 import ProForm, { ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
-import { useIntl, Link, history, FormattedMessage, SelectLang, useModel } from 'umi';
+import { useIntl, history, FormattedMessage, SelectLang, Link, useModel } from 'umi';
 import Footer from '@/components/Footer';
 import { login } from '@/services/ant-design-pro/login';
 
-import styles from './index.less';
+import styles from './style.less';
+
+const RegisterPath = '/user/register';
+const ResetPasswordPath = '/user/resetPassword';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -25,9 +28,6 @@ const LoginMessage: React.FC<{
 const goto = () => {
   if (!history) return;
   setTimeout(() => {
-    const { query } = history.location;
-    const { redirect } = query as { redirect: string };
-    console.log(redirect);
     history.push('/');
   }, 10);
 };
@@ -40,8 +40,8 @@ const Login: React.FC = () => {
 
   const intl = useIntl();
 
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
+  const fetchUserInfo = async (user: API.CurrentUser) => {
+    const userInfo = await initialState?.fetchUserInfo?.(user);
     if (userInfo) {
       await setInitialState((s: any) => ({
         ...s,
@@ -54,17 +54,14 @@ const Login: React.FC = () => {
     setSubmitting(true);
     try {
       // 登录
-      const user = await login({ ...values });
+      const user: API.LoginResult = await login({ ...values });
       if (user) {
-        message.success('登录成功！');
-        await fetchUserInfo();
+        await fetchUserInfo(user);
         goto();
         return;
       }
       setStatus('error');
-    } catch (error) {
-      message.error('登录失败，请重试！');
-    }
+    } catch (error) {}
     setSubmitting(false);
   };
 
@@ -75,13 +72,12 @@ const Login: React.FC = () => {
         <div className={styles.top}>
           <div className={styles.header}>
             <Link to="/">
-              <img alt="logo" className={styles.logo} src="./reg_logo.svg" />
+              <Image alt="logo" src="/favicon.ico" className={styles.logo} />
               <span className={styles.title}>RegMiner Data Annotations</span>
             </Link>
           </div>
           <div className={styles.desc}>RegMiner 数据标注平台</div>
         </div>
-
         <div className={styles.main}>
           <ProForm
             initialValues={{
@@ -91,7 +87,7 @@ const Login: React.FC = () => {
               searchConfig: {
                 submitText: intl.formatMessage({
                   id: 'pages.login.submit',
-                  defaultMessage: '登录',
+                  defaultMessage: 'Login',
                 }),
               },
               render: (_, dom) => dom.pop(),
@@ -112,7 +108,7 @@ const Login: React.FC = () => {
                 key="account"
                 tab={intl.formatMessage({
                   id: 'pages.login.accountLogin.tab',
-                  defaultMessage: '账户密码登录',
+                  defaultMessage: 'Account Login',
                 })}
               />
             </Tabs>
@@ -120,19 +116,19 @@ const Login: React.FC = () => {
               <LoginMessage
                 content={intl.formatMessage({
                   id: 'pages.login.accountLogin.errorMessage',
-                  defaultMessage: '账户或密码错误',
+                  defaultMessage: 'Incorrect username/password',
                 })}
               />
             )}
             <ProFormText
-              name="username"
+              name="accountName"
               fieldProps={{
                 size: 'large',
                 prefix: <UserOutlined className={styles.prefixIcon} />,
               }}
               placeholder={intl.formatMessage({
                 id: 'pages.login.username.placeholder',
-                defaultMessage: '用户名: admin or user',
+                defaultMessage: 'Username',
               })}
               rules={[
                 {
@@ -140,7 +136,7 @@ const Login: React.FC = () => {
                   message: (
                     <FormattedMessage
                       id="pages.login.username.required"
-                      defaultMessage="请输入用户名!"
+                      defaultMessage="Please input your username!"
                     />
                   ),
                 },
@@ -154,7 +150,7 @@ const Login: React.FC = () => {
               }}
               placeholder={intl.formatMessage({
                 id: 'pages.login.password.placeholder',
-                defaultMessage: '密码:',
+                defaultMessage: 'Password',
               })}
               rules={[
                 {
@@ -162,26 +158,41 @@ const Login: React.FC = () => {
                   message: (
                     <FormattedMessage
                       id="pages.login.password.required"
-                      defaultMessage="请输入密码！"
+                      defaultMessage="Please input your password!"
                     />
                   ),
                 },
               ]}
             />
-            <div
-              style={{
-                marginBottom: 24,
-              }}
-            >
-              <ProFormCheckbox noStyle name="autoLogin">
-                <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
-              </ProFormCheckbox>
+            <ProFormCheckbox noStyle name="autoLogin">
+              <FormattedMessage id="pages.login.rememberMe" defaultMessage="Remember me" />
+            </ProFormCheckbox>
+            <div>
+              <a
+                style={{
+                  float: 'left',
+                  marginTop: 10,
+                  marginBottom: 10,
+                }}
+                href={RegisterPath}
+              >
+                <FormattedMessage
+                  id="pages.login.registerAccount"
+                  defaultMessage="Register Account"
+                />
+              </a>
               <a
                 style={{
                   float: 'right',
+                  marginTop: 10,
+                  marginBottom: 10,
                 }}
+                href={ResetPasswordPath}
               >
-                <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
+                <FormattedMessage
+                  id="pages.login.forgotPassword"
+                  defaultMessage="Forgot Password ?"
+                />
               </a>
             </div>
           </ProForm>

@@ -9,15 +9,14 @@ declare namespace API {
   };
 
   type CurrentUser = {
-    uuid: string;
-    username: string;
-    password?: string;
-    accountRight: number;
+    accountId: number;
+    accountName: string;
+    role: string;
+    avatar?: string;
+    email?: string;
     token?: string;
     // name?: string;
-    // avatar?: string;
     // userid?: string;
-    // email?: string;
     // signature?: string;
     // title?: string;
     // group?: string;
@@ -34,14 +33,34 @@ declare namespace API {
     // phone?: string;
   };
 
-  type LoginResult = AccountItem;
+  interface LoginParams {
+    accountName: string;
+    password: string;
+    autoLogin?: boolean;
+    type?: string;
+  }
 
-  type AccountItem = {
-    uuid: string;
-    username: string;
-    password?: string;
-    accountRight: number;
-    token?: string;
+  interface RegisterParams {
+    accountName: string;
+    password: string;
+    avatar?: string;
+    email?: string;
+    role: string;
+  }
+
+  interface ResetPasswordParams {
+    // account_id: string;
+    account_name: string;
+    password: string;
+  }
+
+  type LoginResult = {
+    accountId: number;
+    accountName: string;
+    role: string;
+    avatar?: string;
+    email?: string;
+    token: string;
   };
 
   type RegressionItem = {
@@ -87,13 +106,6 @@ declare namespace API {
   type FakeCaptcha = {
     code?: number;
     status?: string;
-  };
-
-  type LoginParams = {
-    username?: string;
-    password?: string;
-    autoLogin?: boolean;
-    type?: string;
   };
 
   type ErrorResponse = {

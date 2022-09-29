@@ -17,9 +17,9 @@
             component: './user/Register',
           },
           {
-            name: 'register-result',
-            path: '/user/register-result',
-            component: './user/Register-result',
+            name: 'resetPassword',
+            path: '/user/resetPassword',
+            component: './user/ResetPassword',
           },
         ],
       },

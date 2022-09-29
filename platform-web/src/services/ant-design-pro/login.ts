@@ -23,7 +23,7 @@ import { handleResponse } from '../response';
 
 /** 登录接口 POST /api/account/login */
 export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.RegResponse<API.LoginResult | null>>('/api/account/login', {
+  return request<API.RegResponse<API.LoginResult>>('/api/account/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -34,17 +34,28 @@ export async function login(body: API.LoginParams, options?: { [key: string]: an
 }
 
 /** 登出接口 POST /api/account/outLogin */
-export async function outLogin(options?: { [key: string]: any }) {
-  return request<API.RegResponse<Record<string, any>>>('/api/account/outLogin', {
-    method: 'GET',
-    ...(options || {}),
-  }).then(handleResponse);
-}
+// export async function outLogin(options?: { [key: string]: any }) {
+//   return request<API.RegResponse<Record<string, any>>>('/api/account/outLogin', {
+//     method: 'GET',
+//     ...(options || {}),
+//   }).then(handleResponse);
+// }
 
 /** 获取当前的用户 GET /api/account/currentUser */
-export async function currentUser(options?: { [key: string]: any }) {
-  return request<API.RegResponse<API.CurrentUser | null>>('/api/account/currentUser', {
-    method: 'GET',
+// export async function getCurrentUser(options?: { [key: string]: any }) {
+//   return request<API.RegResponse<API.CurrentUser | null>>('/api/account/currentUser', {
+//     method: 'GET',
+//     ...(options || {}),
+//   }).then(handleResponse);
+// }
+
+export async function resetPassword(params: API.ResetPasswordParams, options?: { [key: string]: any }) {
+  return request<API.RegResponse<null>>('/api/account/login', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    params: params,
     ...(options || {}),
   }).then(handleResponse);
 }
