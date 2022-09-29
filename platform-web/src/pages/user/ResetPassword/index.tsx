@@ -60,9 +60,9 @@ const ResetPassword: React.FC = () => {
               handleSubmit(values as API.ResetPasswordParams);
             }}
           >
-            <Tabs activeKey="account">
+            <Tabs activeKey="reset-password">
               <Tabs.TabPane
-                key="account"
+                key="reset-password"
                 tab={intl.formatMessage({
                   id: 'pages.login.resetPassword.tab',
                   defaultMessage: 'Reset',
