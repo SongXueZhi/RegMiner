@@ -1,12 +1,14 @@
 import { FormattedMessage, Link, SelectLang, useIntl, history } from 'umi';
 import { Alert, Tabs, Image } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, MailOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import ProForm, { ProFormSelect, ProFormText } from '@ant-design/pro-form';
 import Footer from '@/components/Footer';
 import { useState } from 'react';
 
 import styles from './style.less';
 import { register } from '@/services/ant-design-pro/register';
+
+const loginPath = '/user/login';
 
 const RegisterMessage: React.FC<{
   content: string;
@@ -61,8 +63,10 @@ const RegisterPage: React.FC = () => {
           </div>
           <div className={styles.desc}>RegMiner 数据标注平台</div>
         </div>
-
         <div className={styles.main}>
+          <a href={loginPath}>
+            <ArrowLeftOutlined className={styles.prefixIcon} />
+          </a>
           <ProForm
             initialValues={{
               autoLogin: false,

@@ -71,7 +71,7 @@ function shouldLogin(path: string) {
   return (
     path !== loginPath &&
     path !== '/user/register' &&
-    path !== '/user/register-result' &&
+    path !== '/user/resetPassword' &&
     path !== '/code'
   );
 }
