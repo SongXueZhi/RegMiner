@@ -516,12 +516,23 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
     if (access.canClickFoo) {
       BICFeedbackList.map((resp) => {
         if (resp.feedback === 'add' || resp.feedback === 'ground truth') {
+          const targetCC = BICCriticalChanges.find((d) => {
+            if (
+              (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
+              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB)
+            ) {
+              return d;
+            } else {
+              return undefined;
+            }
+          });
           putCriticalChangeReviewById(
             {
               regression_uuid: HISTORY_SEARCH.regressionUuid,
               revision_name: resp.revision,
               account_name: initialState?.currentUser?.accountName,
               feedback: resp.feedback,
+              review_id: targetCC?.reviewId,
             },
             resp.hunkData,
           );
@@ -540,7 +551,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             deleteCriticalChangeReviewById({
               regression_uuid: HISTORY_SEARCH.regressionUuid,
               revision_name: resp.revision,
-              critical_change_id: targetCC.criticalChangeId,
+              critical_change_id: targetCC.reviewId,
             });
           } else {
             alert(
@@ -553,12 +564,23 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
       });
       BFCFeedbackList.map((resp) => {
         if (resp.feedback === 'add' || resp.feedback === 'ground truth') {
+          const targetCC = BFCCriticalChanges.find((d) => {
+            if (
+              (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
+              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB)
+            ) {
+              return d;
+            } else {
+              return undefined;
+            }
+          });
           putCriticalChangeReviewById(
             {
               regression_uuid: HISTORY_SEARCH.regressionUuid,
               revision_name: resp.revision,
               account_name: initialState?.currentUser?.accountName,
               feedback: resp.feedback,
+              review_id: targetCC?.reviewId,
             },
             resp.hunkData,
           );
@@ -577,7 +599,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             deleteCriticalChangeReviewById({
               regression_uuid: HISTORY_SEARCH.regressionUuid,
               revision_name: resp.revision,
-              critical_change_id: targetCC.criticalChangeId,
+              critical_change_id: targetCC.reviewId,
             });
           }
         } else {
@@ -952,7 +974,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
                       if (BICFileItems) {
                         return (
                           <Menu.Item
-                            key={`BIC-${BICFileItems.filename}-${CCData.criticalChangeId}`}
+                            key={`BIC-${BICFileItems.filename}-${CCData.reviewId}`}
                             onClick={() => {
                               handleMenuClick(
                                 'BIC',
@@ -987,7 +1009,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
                       if (BFCFileItems) {
                         return (
                           <Menu.Item
-                            key={`BFC-${BFCFileItems.filename}-${CCData.criticalChangeId}`}
+                            key={`BFC-${BFCFileItems.filename}-${CCData.reviewId}`}
                             onClick={() => {
                               handleMenuClick(
                                 'BFC',

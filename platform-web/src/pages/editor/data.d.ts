@@ -82,7 +82,7 @@ export interface HunkEntityParams {
 }
 
 export type HunkEntityItems = {
-  criticalChangeId: number;
+  reviewId: number;
   newPath: string;
   oldPath: string;
   beginA: number;

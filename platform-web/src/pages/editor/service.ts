@@ -256,6 +256,7 @@ export async function putCriticalChangeReviewById(
     revision_name?: 'bic' | 'bfc';
     account_name?: string;
     feedback?: string;
+    review_id?: number;
   },
   body: HunkEntityParams,
 ) {
