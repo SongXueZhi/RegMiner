@@ -163,7 +163,7 @@ const NewCodeEditor: React.FC<IProps> = ({
     fileName: string,
     feedback: string,
     range: monaco.Selection,
-    hunkData: DiffEditDetailItems,
+    diffDetail: DiffEditDetailItems,
   ) => {
     setFeedbackContextList({
       decorationKey: key,
@@ -173,11 +173,11 @@ const NewCodeEditor: React.FC<IProps> = ({
       hunkData: {
         newPath: newPath,
         oldPath: oldPath,
-        beginA: hunkData.beginA ?? range.startLineNumber,
-        beginB: hunkData.beginB ?? range.startLineNumber,
-        endA: hunkData.endA ?? range.endLineNumber,
-        endB: hunkData.endB ?? range.endLineNumber,
-        type: hunkData.type ?? '',
+        beginA: diffDetail.beginA ?? range.startLineNumber,
+        beginB: diffDetail.beginB ?? range.startLineNumber,
+        endA: diffDetail.endA ?? range.endLineNumber,
+        endB: diffDetail.endB ?? range.endLineNumber,
+        type: diffDetail.type ?? '',
       },
     });
     onFeedbackList?.call(this, feedbackContextList);
@@ -372,7 +372,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                 run: (ed) => {
                   const selectionRange = ed.getSelection();
                   if (selectionRange) {
-                    const hunkData = diffEditChanges.find((resp) => {
+                    const diffDetail = diffEditChanges.find((resp) => {
                       if (
                         (selectionRange.startLineNumber <= resp.beginB &&
                           selectionRange.endLineNumber >= resp.beginB) ||
@@ -385,7 +385,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                       }
                     });
                     const oldDecorations = ed.getDecorationsInRange(selectionRange);
-                    if (oldDecorations !== null && hunkData !== undefined) {
+                    if (oldDecorations !== null && diffDetail !== undefined) {
                       if (decorationIds.some((d) => d === oldDecorations[0].id)) {
                         const newIdList = decorationIds.filter((v) => v !== oldDecorations[0].id);
                         const newDecoration = ed.deltaDecorations(
@@ -409,7 +409,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                           filename,
                           'add',
                           selectionRange,
-                          hunkData,
+                          diffDetail,
                         );
                       } else {
                         const newDecoration = ed.deltaDecorations(
@@ -437,7 +437,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                           filename,
                           'add',
                           selectionRange,
-                          hunkData,
+                          diffDetail,
                         );
                       }
                     } else {
@@ -457,7 +457,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                 run: (ed) => {
                   const selectionRange = ed.getSelection();
                   if (selectionRange) {
-                    const hunkData = diffEditChanges.find((resp) => {
+                    const diffDetail = diffEditChanges.find((resp) => {
                       if (
                         (selectionRange.startLineNumber <= resp.beginB &&
                           selectionRange.endLineNumber >= resp.beginB) ||
@@ -470,7 +470,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                       }
                     });
                     const oldDecorations = ed.getDecorationsInRange(selectionRange);
-                    if (oldDecorations !== null && hunkData !== undefined) {
+                    if (oldDecorations !== null && diffDetail !== undefined) {
                       if (decorationIds.some((d) => d === oldDecorations[0].id)) {
                         const newIdList = decorationIds.filter((v) => v !== oldDecorations[0].id);
                         const newDecoration = ed.deltaDecorations(
@@ -494,7 +494,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                           filename,
                           'reject',
                           selectionRange,
-                          hunkData,
+                          diffDetail,
                         );
                       } else {
                         const newDecoration = ed.deltaDecorations(
@@ -522,7 +522,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                           filename,
                           'reject',
                           selectionRange,
-                          hunkData,
+                          diffDetail,
                         );
                       }
                     } else {
@@ -542,7 +542,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                 run: (ed) => {
                   const selectionRange = ed.getSelection();
                   if (selectionRange) {
-                    const hunkData = diffEditChanges.find((resp) => {
+                    const diffDetail = diffEditChanges.find((resp) => {
                       if (
                         (selectionRange.startLineNumber <= resp.beginB &&
                           selectionRange.endLineNumber >= resp.beginB) ||
@@ -555,7 +555,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                       }
                     });
                     const oldDecorations = ed.getDecorationsInRange(selectionRange);
-                    if (oldDecorations !== null && hunkData !== undefined) {
+                    if (oldDecorations !== null && diffDetail !== undefined) {
                       if (decorationIds.some((d) => d === oldDecorations[0].id)) {
                         const newIdList = decorationIds.filter((v) => v !== oldDecorations[0].id);
                         const newDecoration = ed.deltaDecorations(
@@ -565,13 +565,21 @@ const NewCodeEditor: React.FC<IProps> = ({
                               range: selectionRange,
                               options: {
                                 className: 'confirmContentClass',
-                                hoverMessage: { value: 'Feedback: Confirm' },
+                                hoverMessage: { value: 'Feedback: Ground Truth' },
                               },
                             },
                           ],
                         );
                         setDecorationIds(
                           newIdList.splice(newIdList.length + 1, 0, newDecoration.toString()),
+                        );
+                        handlefeedbackList(
+                          newDecoration,
+                          title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
+                          filename,
+                          'ground truth',
+                          selectionRange,
+                          diffDetail,
                         );
                       } else {
                         const newDecoration = ed.deltaDecorations(
@@ -592,6 +600,14 @@ const NewCodeEditor: React.FC<IProps> = ({
                             0,
                             newDecoration.toString(),
                           ),
+                        );
+                        handlefeedbackList(
+                          newDecoration,
+                          title === 'Bug Inducing Commit' ? 'bic' : 'bfc',
+                          filename,
+                          'ground truth',
+                          selectionRange,
+                          diffDetail,
                         );
                       }
                     } else {

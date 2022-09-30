@@ -91,6 +91,8 @@ export type HunkEntityItems = {
   endB: number;
   type: string;
   tool?: string;
+  accountName?: string;
+  feedback?: string;
 };
 
 export type FeedbackList = {

@@ -19,20 +19,20 @@ import {
 } from 'antd';
 import { AppstoreOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import DiffEditorTabs from './components/DiffEditorTabs';
-import { IRouteComponentProps, useAccess } from 'umi';
+import { IRouteComponentProps, useAccess, useModel } from 'umi';
 import {
   getRegressionConsole,
   queryRegressionCode,
   queryRegressionDetail,
   getRegressionPath,
   regressionCheckout,
-  putCriticalChangeByUuid,
-  deleteCriticalChangeById,
   postClearCache,
   getCommentList,
   deleteComment,
   addComment,
   getRetrievalCriticalChangeReviewList,
+  deleteCriticalChangeReviewById,
+  putCriticalChangeReviewById,
 } from './service';
 import type {
   CommentListItems,
@@ -115,6 +115,7 @@ export type CommentAPI = {
 
 const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   const access = useAccess();
+  const { initialState } = useModel('@@initialState');
   const HISTORY_SEARCH = parse(location.search) as unknown as IHistorySearch;
   // const savedCallback = useRef<any>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -514,11 +515,13 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   const handleSubmitFeedbacks = useCallback(() => {
     if (access.canClickFoo) {
       BICFeedbackList.map((resp) => {
-        if (resp.feedback === 'add') {
-          putCriticalChangeByUuid(
+        if (resp.feedback === 'add' || resp.feedback === 'ground truth') {
+          putCriticalChangeReviewById(
             {
               regression_uuid: HISTORY_SEARCH.regressionUuid,
-              revision_name: 'bic',
+              revision_name: resp.revision,
+              account_name: initialState?.currentUser?.accountName,
+              feedback: resp.feedback,
             },
             resp.hunkData,
           );
@@ -534,9 +537,9 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             }
           });
           if (targetCC) {
-            deleteCriticalChangeById({
+            deleteCriticalChangeReviewById({
               regression_uuid: HISTORY_SEARCH.regressionUuid,
-              revision_name: 'bic',
+              revision_name: resp.revision,
               critical_change_id: targetCC.criticalChangeId,
             });
           } else {
@@ -549,11 +552,13 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         }
       });
       BFCFeedbackList.map((resp) => {
-        if (resp.feedback === 'add') {
-          putCriticalChangeByUuid(
+        if (resp.feedback === 'add' || resp.feedback === 'ground truth') {
+          putCriticalChangeReviewById(
             {
               regression_uuid: HISTORY_SEARCH.regressionUuid,
-              revision_name: 'bfc',
+              revision_name: resp.revision,
+              account_name: initialState?.currentUser?.accountName,
+              feedback: resp.feedback,
             },
             resp.hunkData,
           );
@@ -569,14 +574,14 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             }
           });
           if (targetCC) {
-            deleteCriticalChangeById({
+            deleteCriticalChangeReviewById({
               regression_uuid: HISTORY_SEARCH.regressionUuid,
-              revision_name: 'bfc',
+              revision_name: resp.revision,
               critical_change_id: targetCC.criticalChangeId,
             });
           }
         } else {
-          console.log('feedback type not right');
+          message.error('feedback type not right');
         }
       });
       setBFCFeedbackList([]);
