@@ -1,6 +1,6 @@
 package com.fudan.annotation.platform.backend.dao;
 
-import com.fudan.annotation.platform.backend.entity.HunkEntityWithTool;
+import com.fudan.annotation.platform.backend.entity.HunkEntityPlus;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -10,10 +10,10 @@ import java.util.List;
 @Mapper
 public interface CriticalChangeReviewMapper {
 
-    void setCriticalChangeReview(int criticalChangeId, String regressionUuid, String revisionName, String newPath, String oldPath,
-                  int beginA, int beginB, int endA, int endB, String type, String tool);
+    void setCriticalChangeReview(String regressionUuid, String revisionName, String newPath, String oldPath,
+                                 int beginA, int beginB, int endA, int endB, String type, String tool, String accountName, String feedback);
 
-    List<HunkEntityWithTool> getCriticalChangeReview(String regressionUuid, String revisionName);
+    List<HunkEntityPlus> getCriticalChangeReview(String regressionUuid, String revisionName);
 
-//    void deleteCriticalChangeReview(String regressionUuid, String revisionName,  Integer criticalChangeId);
+    void deleteCriticalChangeReview(Integer reviewId, String regressionUuid, String revisionName);
 }

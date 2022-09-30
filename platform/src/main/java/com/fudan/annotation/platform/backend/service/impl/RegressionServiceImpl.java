@@ -10,6 +10,7 @@ import com.fudan.annotation.platform.backend.service.RegressionService;
 import com.fudan.annotation.platform.backend.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.internal.preferences.BundleDefaultPreferences;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +35,6 @@ public class RegressionServiceImpl implements RegressionService {
     private RegressionMapper regressionMapper;
     @Autowired
     private ProjectMapper projectMapper;
-    @Autowired
-    private CriticalChangeMapper criticalChangeMapper;
     @Autowired
     private CriticalChangeDDMapper criticalChangeDDMapper;
     @Autowired
@@ -382,29 +381,6 @@ public class RegressionServiceImpl implements RegressionService {
     }
 
     @Override
-    public void setCriticalChange(String regressionUuid, String revisionName, HunkEntity hunkEntityDTO) {
-        criticalChangeMapper.setHunks(regressionUuid, revisionName, hunkEntityDTO.getNewPath(),
-                hunkEntityDTO.getOldPath(),
-                hunkEntityDTO.getBeginA(), hunkEntityDTO.getBeginB(), hunkEntityDTO.getEndA(),
-                hunkEntityDTO.getEndB(), hunkEntityDTO.getType());
-    }
-
-    @Override
-    public CriticalChange getCriticalChange(String regressionUuid, String revisionName) {
-        CriticalChange criticalChange = new CriticalChange();
-        List<HunkEntity> hunks = criticalChangeMapper.getHunks(regressionUuid, revisionName);
-        criticalChange.setRevisionName(revisionName);
-        criticalChange.setHunkEntityList(hunks);
-        return criticalChange;
-    }
-
-    @Override
-    public List<HunkEntity> deleteCriticalChange(String regressionUuid, String revisionName, Integer criticalChangeId) {
-        criticalChangeMapper.deletHunks(regressionUuid, revisionName, criticalChangeId);
-        return criticalChangeMapper.getHunks(regressionUuid, revisionName);
-    }
-
-    @Override
     public String applyHunks(String userToken, String regressionUuid, String oldRevision, String newRevision,
                              List<HunkEntity> hunkList) throws IOException {
         //默认hunk来自同一file，并写入同一file
@@ -544,18 +520,13 @@ public class RegressionServiceImpl implements RegressionService {
         this.regressionMapper = regressionMapper;
     }
 
-//    @Override
-//    public List<CriticalChangeDD> getCriticalChangeDD(String regressionUuid, String revisionName) {
-//        return criticalChangeDDMapper.getCriticalChangeDD(regressionUuid, revisionName);
-//    }
-
     @Override
     public CriticalChangeReview getCriticalChangeReview(String regressionUuid, String revisionName) {
-        List<HunkEntityWithTool> CCReview = criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid, revisionName);
+        List<HunkEntityPlus> CCReview = criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid, revisionName);
         if (CCReview.size() != 0) {
             CriticalChangeReview criticalChangeReview = new CriticalChangeReview();
             criticalChangeReview.setRevisionName(revisionName);
-            criticalChangeReview.setHunkEntityWithToolList(CCReview);
+            criticalChangeReview.setHunkEntityPlusList(CCReview);
             return criticalChangeReview;
         } else {
             List<CriticalChangeDD> CC_DD = criticalChangeDDMapper.getCriticalChangeDD(regressionUuid, revisionName);
@@ -564,24 +535,40 @@ public class RegressionServiceImpl implements RegressionService {
                 for (CriticalChangeDD criticalChangeDD : CC_DD) {
                     if (criticalChangeDD.getTool().equals("ddmin")) {
                         counter += 1;
-                        criticalChangeReviewMapper.setCriticalChangeReview(criticalChangeDD.getCriticalChangeId(), criticalChangeDD.getRegressionUuid(),
-                                criticalChangeDD.getRevisionName(), criticalChangeDD.getNewPath(), criticalChangeDD.getOldPath(),
-                                criticalChangeDD.getBeginA(), criticalChangeDD.getBeginB(), criticalChangeDD.getEndA(),
-                                criticalChangeDD.getEndB(), criticalChangeDD.getType(), criticalChangeDD.getTool());
+                        criticalChangeReviewMapper.setCriticalChangeReview(
+                                criticalChangeDD.getRegressionUuid(),
+                                criticalChangeDD.getRevisionName(),
+                                criticalChangeDD.getNewPath(),
+                                criticalChangeDD.getOldPath(),
+                                criticalChangeDD.getBeginA(),
+                                criticalChangeDD.getBeginB(),
+                                criticalChangeDD.getEndA(),
+                                criticalChangeDD.getEndB(),
+                                criticalChangeDD.getType(),
+                                criticalChangeDD.getTool(),
+                                null, null);
                     }
                 }
                 if (counter == 0) {
                     for (CriticalChangeDD criticalChangeDD : CC_DD) {
-                        criticalChangeReviewMapper.setCriticalChangeReview(criticalChangeDD.getCriticalChangeId(), criticalChangeDD.getRegressionUuid(),
-                                criticalChangeDD.getRevisionName(), criticalChangeDD.getNewPath(), criticalChangeDD.getOldPath(),
-                                criticalChangeDD.getBeginA(), criticalChangeDD.getBeginB(), criticalChangeDD.getEndA(),
-                                criticalChangeDD.getEndB(), criticalChangeDD.getType(), criticalChangeDD.getTool());
+                        criticalChangeReviewMapper.setCriticalChangeReview(
+                                criticalChangeDD.getRegressionUuid(),
+                                criticalChangeDD.getRevisionName(),
+                                criticalChangeDD.getNewPath(),
+                                criticalChangeDD.getOldPath(),
+                                criticalChangeDD.getBeginA(),
+                                criticalChangeDD.getBeginB(),
+                                criticalChangeDD.getEndA(),
+                                criticalChangeDD.getEndB(),
+                                criticalChangeDD.getType(),
+                                criticalChangeDD.getTool(),
+                                null, null);
                     }
                 }
-                List<HunkEntityWithTool> newCCReview = criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid, revisionName);
+                List<HunkEntityPlus> newCCReview = criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid, revisionName);
                 CriticalChangeReview criticalChangeReview = new CriticalChangeReview();
                 criticalChangeReview.setRevisionName(revisionName);
-                criticalChangeReview.setHunkEntityWithToolList(newCCReview);
+                criticalChangeReview.setHunkEntityPlusList(newCCReview);
                 return criticalChangeReview;
             } else {
                 return null;
@@ -589,6 +576,21 @@ public class RegressionServiceImpl implements RegressionService {
         }
     }
 
-    ;
+    @Override
+    public void setCriticalChangeReview(String regressionUuid, String revisionName, int reviewId, String accountName,
+                                        String feedback, HunkEntity hunkEntityDTO) {
+        System.out.println(reviewId);
+        criticalChangeReviewMapper.setCriticalChangeReview(regressionUuid, revisionName,
+                hunkEntityDTO.getNewPath(), hunkEntityDTO.getOldPath(), hunkEntityDTO.getBeginA(),
+                hunkEntityDTO.getBeginB(), hunkEntityDTO.getEndA(), hunkEntityDTO.getEndB(),
+                hunkEntityDTO.getType(), "manual", accountName, feedback);
+    }
+
+    @Override
+    public void deleteCriticalChangeReview(String regressionUuid,
+                                           String revisionName,
+                                           Integer reviewId) {
+        criticalChangeReviewMapper.deleteCriticalChangeReview(reviewId, regressionUuid, revisionName);
+    }
 
 }

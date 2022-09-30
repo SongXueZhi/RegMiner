@@ -84,31 +84,6 @@ public interface RegressionService {
     String readRuntimeResult(String filaPath) throws IOException;
 
     /**
-     * description set critical change hunk
-     *
-     * @param regressionUuid regressionUuid
-     * @param revisionName   revision name
-     * @param hunkEntityDTO  single hunk patch
-     */
-    void setCriticalChange(String regressionUuid, String revisionName, HunkEntity hunkEntityDTO);
-
-    /**
-     * description get critical change hunk
-     *
-     * @param regressionUuid regressionUuid
-     * @param revisionName   revision name
-     */
-    CriticalChange getCriticalChange(String regressionUuid, String revisionName);
-
-    /**
-     * description delete critical change hunk
-     *
-     * @param regressionUuid regressionUuid
-     * @param revisionName   revision name
-     */
-    List<HunkEntity> deleteCriticalChange(String regressionUuid, String revisionName,Integer criticalChangeId);
-
-    /**
      * apply hunks to special file and return the code
      *
      * @param userToken      usertoken
@@ -174,8 +149,8 @@ public interface RegressionService {
      * add Comments by user
      *
      * @param regressionUuid regressionUuid
-     * @param accountName user account
-     * @param context comment context
+     * @param accountName    user account
+     * @param context        comment context
      */
     void setComment(String regressionUuid, String accountName, String context);
 
@@ -183,8 +158,8 @@ public interface RegressionService {
      * add Comments by user
      *
      * @param regressionUuid regressionUuid
-     * @param accountName account Name
-     * @param commentId comment ID
+     * @param accountName    account Name
+     * @param commentId      comment ID
      */
     void deleteComments(String regressionUuid, String accountName, int commentId);
 
@@ -192,9 +167,9 @@ public interface RegressionService {
      * add Comments by user
      *
      * @param regressionUuid regressionUuid
-     * @param accountName account Name
-     * @param commentId comment ID
-     * @param context context
+     * @param accountName    account Name
+     * @param commentId      comment ID
+     * @param context        context
      */
     void postComment(String regressionUuid, String commentId, String accountName, String context);
 
@@ -202,7 +177,27 @@ public interface RegressionService {
      * get Critical change review
      *
      * @param regressionUuid regressionUuid
-     * @param revisionName revision name - bic/bfc
+     * @param revisionName   revision name - bic/bfc
      */
     CriticalChangeReview getCriticalChangeReview(String regressionUuid, String revisionName);
+
+    /**
+     * description set critical change hunk
+     *
+     * @param regressionUuid regressionUuid
+     * @param revisionName   revision name
+     * @param accountName    account name
+     * @param feedback       feedback
+     * @param hunkEntityDTO  single hunk patch
+     */
+    void setCriticalChangeReview(String regressionUuid, String revisionName, int reviewId, String accountName, String feedback, HunkEntity hunkEntityDTO);
+
+    /**
+     * description delete critical change hunk
+     *
+     * @param regressionUuid regressionUuid
+     * @param revisionName   revision name
+     */
+    void deleteCriticalChangeReview(String regressionUuid, String revisionName, Integer reviewId);
+
 }

@@ -3,7 +3,6 @@
 <mapper namespace="com.fudan.annotation.platform.backend.dao.CriticalChangeDDMapper">
 
     <resultMap id="critical_change_dd" type="com.fudan.annotation.platform.backend.entity.CriticalChangeDD">
-        <result column="critical_change_id" property="criticalChangeId" jdbcType="INTEGER"/>
         <result column="regression_uuid" property="regressionUuid" jdbcType="VARCHAR"/>
         <result column="revision_name" property="revisionName" jdbcType="VARCHAR"/>
         <result column="new_path" property="newPath" jdbcType="VARCHAR"/>
@@ -22,5 +21,20 @@
             regression_uuid = #{regressionUuid} and revision_name = #{revisionName}
         </where>
     </select>
+
+    <insert id="setCriticalChangeDD">
+        insert into critical_change_dd
+        (regression_uuid, revision_name)
+        values (#{regressionUuid},
+                #{revisionName});
+    </insert>
+
+<!--    <delete id="deleteCriticalChangeDD">-->
+<!--        delete from critical_change_dd-->
+<!--        <where>-->
+<!--            regression_uuid = #{regressionUuid} and revision_name = #{revisionName}-->
+<!--            and critical_change_id = #{criticalChangeId}-->
+<!--        </where>-->
+<!--    </delete>-->
 
 </mapper>
