@@ -64,11 +64,10 @@ public class AccountController {
 
     @PutMapping(value = "/reset/password")
     public ResponseBean resetPassword(
-            @RequestParam("account_id") int accountId,
             @RequestParam("account_name") String accountName,
             @RequestParam("password") String password) {
         try {
-            accountService.resetPassword(accountId, accountName, password);
+            accountService.resetPassword(accountName, password);
             return new ResponseBean<>(200, "reset success", null);
         } catch (Exception e) {
             return new ResponseBean<>(401, "reset failed :" + e.getMessage(), null);

@@ -46,10 +46,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void resetPassword(int accountId, String accountName, String password) {
+    public void resetPassword(String accountName, String password) {
         //MD5加密密码
         String encodePassword = MD5Util.md5(accountName + password);
-        accountMapper.resetPassword(accountId, accountName, encodePassword);
+        accountMapper.resetPassword(accountName, encodePassword);
     }
 
     @Override
