@@ -164,9 +164,9 @@ const Login: React.FC = () => {
                 },
               ]}
             />
-            <ProFormCheckbox noStyle name="autoLogin">
+            {/* <ProFormCheckbox noStyle name="autoLogin">
               <FormattedMessage id="pages.login.rememberMe" defaultMessage="Remember me" />
-            </ProFormCheckbox>
+            </ProFormCheckbox> */}
             <div>
               <a
                 style={{
