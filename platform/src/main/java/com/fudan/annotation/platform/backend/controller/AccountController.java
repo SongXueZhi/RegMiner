@@ -6,7 +6,6 @@ import com.fudan.annotation.platform.backend.entity.AccountVO;
 import com.fudan.annotation.platform.backend.entity.LoginInfo;
 import com.fudan.annotation.platform.backend.service.AccountService;
 import com.fudan.annotation.platform.backend.vo.ResponseBean;
-import com.fudan.annotation.platform.backend.enums.ResponseCodeMsg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
