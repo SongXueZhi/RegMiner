@@ -614,7 +614,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         revision_name: 'bic',
       }).then((resp) => {
         if (resp !== null && resp !== undefined) {
-          setBICCriticalChanges(resp.hunkEntityWithToolList);
+          setBICCriticalChanges(resp.hunkEntityPlusList);
         }
       });
       getRetrievalCriticalChangeReviewList({
@@ -622,7 +622,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         revision_name: 'bfc',
       }).then((resp) => {
         if (resp !== null && resp !== undefined) {
-          setBFCCriticalChanges(resp.hunkEntityWithToolList);
+          setBFCCriticalChanges(resp.hunkEntityPlusList);
         }
       });
     } else {
@@ -763,7 +763,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
       revision_name: 'bic',
     }).then((resp) => {
       if (resp !== null && resp !== undefined) {
-        setBICCriticalChanges(resp.hunkEntityWithToolList);
+        setBICCriticalChanges(resp.hunkEntityPlusList);
       }
     });
     getRetrievalCriticalChangeReviewList({
@@ -771,7 +771,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
       revision_name: 'bfc',
     }).then((resp) => {
       if (resp !== null && resp !== undefined) {
-        setBFCCriticalChanges(resp.hunkEntityWithToolList);
+        setBFCCriticalChanges(resp.hunkEntityPlusList);
       }
     });
     getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {

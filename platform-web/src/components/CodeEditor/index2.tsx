@@ -5,13 +5,14 @@ import { v4 as uuidv4 } from 'uuid';
 import type { Directory, Depandency } from './sidebar';
 import type { ResizeEntry } from '@blueprintjs/core';
 import { Divider, Button, ResizeSensor } from '@blueprintjs/core';
-import './styles.css';
 import EllipsisMiddle from '../EllipsisMiddle';
 import { Dropdown, Menu, message, Space } from 'antd';
 import type { DiffEditDetailItems, FeedbackList, HunkEntityItems } from '@/pages/editor/data';
 import { DownOutlined } from '@ant-design/icons';
 import { postRegressionRevert, postRegressionUpdateNewCode } from '@/pages/editor/service';
 import { useAccess } from 'umi';
+
+import './styles.css';
 
 interface IProps {
   title: string;

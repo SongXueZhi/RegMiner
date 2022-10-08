@@ -234,7 +234,7 @@ a:hover {
   animation-name: breath;
   animation-duration: 2s;
   animation-timing-function: ease-in-out;
-  animation-iteration-count: 2;
+  animation-iteration-count: infinite;
 }
 
 @keyframes breath {
