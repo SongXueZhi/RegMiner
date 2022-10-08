@@ -24,6 +24,11 @@ import java.util.List;
 public class RegressionController {
     private RegressionService regressionService;
 
+    @Autowired
+    public void setRegressionService(RegressionService regressionService) {
+        this.regressionService = regressionService;
+    }
+
     @GetMapping(value = "/all")
     public ResponseBean<List<Regression>> getAllRegressions(
             @RequestParam(name = "regression_uuid", required = false) String regressionUuid,
@@ -169,44 +174,6 @@ public class RegressionController {
         }
     }
 
-    @PutMapping(value = "/criticalChange")
-    public ResponseBean setCriticalChange(
-            @RequestParam(name = "regression_uuid") String regressionUuid,
-            @RequestParam(name = "revision_name") String revisionName,
-            @RequestBody HunkEntity hunkEntityDTO) {
-        try {
-            regressionService.setCriticalChange(regressionUuid, revisionName, hunkEntityDTO);
-            return new ResponseBean<>(200, "record critical change success", null);
-        } catch (Exception e) {
-            return new ResponseBean<>(401, "record critical change failed :" + e.getMessage(), null);
-        }
-    }
-
-    @GetMapping(value = "/criticalChange")
-    public ResponseBean<CriticalChange> getCriticalChange(
-            @RequestParam(name = "regression_uuid") String regressionUuid,
-            @RequestParam(name = "revision_name") String revisionName) {
-        try {
-            CriticalChange criticalChange = regressionService.getCriticalChange(regressionUuid, revisionName);
-            return new ResponseBean<>(200, "get critical change success", criticalChange);
-        } catch (Exception e) {
-            return new ResponseBean<>(401, "get critical change failed :" + e.getMessage(), null);
-        }
-    }
-
-    @DeleteMapping(value = "/criticalChange")
-    public ResponseBean<List<HunkEntity>> deleteCriticalChange(
-            @RequestParam(name = "regression_uuid") String regressionUuid,
-            @RequestParam(name = "revision_name") String revisionName,
-            @RequestParam(name = "critical_change_id") Integer criticalChangeId) {
-        try {
-            List<HunkEntity> hunks = regressionService.deleteCriticalChange(regressionUuid, revisionName, criticalChangeId);
-            return new ResponseBean<>(200, "delete critical change success", hunks);
-        } catch (Exception e) {
-            return new ResponseBean<>(401, "delete critical change failed :" + e.getMessage(), null);
-        }
-    }
-
     @PutMapping(value = "/hunk")
     public ResponseBean<String> applyHunks(
             @RequestParam String userToken,
@@ -326,11 +293,6 @@ public class RegressionController {
         }
     }
 
-    @Autowired
-    public void setRegressionService(RegressionService regressionService) {
-        this.regressionService = regressionService;
-    }
-
     @GetMapping(value = "/criticalChange/review")
     public ResponseBean getCriticalChangeReview(
             @RequestParam(name = "regression_uuid") String regressionUuid,
@@ -340,6 +302,35 @@ public class RegressionController {
             return new ResponseBean<>(200, "get critical change review success", criticalChangeReview);
         } catch (Exception e) {
             return new ResponseBean<>(401, "get critical change review failed: " + e.getMessage(), null);
+        }
+    }
+
+    @PutMapping(value = "/criticalChange/review")
+    public ResponseBean setCriticalChangeReview(
+            @RequestParam(name = "regression_uuid") String regressionUuid,
+            @RequestParam(name = "revision_name") String revisionName,
+            @RequestParam(name = "account_name") String accountName,
+            @RequestParam(name = "feedback") String feedback,
+            @RequestParam(name = "review_id", required = false) int reviewId,
+            @RequestBody HunkEntity hunkEntityDTO) {
+        try {
+            regressionService.setCriticalChangeReview(regressionUuid, revisionName, reviewId, accountName, feedback, hunkEntityDTO);
+            return new ResponseBean<>(200, "record critical change success", null);
+        } catch (Exception e) {
+            return new ResponseBean<>(401, "record critical change failed :" + e.getMessage(), null);
+        }
+    }
+
+    @DeleteMapping(value = "/criticalChange/review")
+    public ResponseBean<List<HunkEntity>> deleteCriticalChangeReview(
+            @RequestParam(name = "regression_uuid") String regressionUuid,
+            @RequestParam(name = "revision_name") String revisionName,
+            @RequestParam(name = "review_id") Integer reviewId) {
+        try {
+            regressionService.deleteCriticalChangeReview(regressionUuid, revisionName, reviewId);
+            return new ResponseBean<>(200, "delete critical change success", null);
+        } catch (Exception e) {
+            return new ResponseBean<>(401, "delete critical change failed :" + e.getMessage(), null);
         }
     }
 }

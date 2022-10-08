@@ -6,7 +6,6 @@ import com.fudan.annotation.platform.backend.entity.AccountVO;
 import com.fudan.annotation.platform.backend.entity.LoginInfo;
 import com.fudan.annotation.platform.backend.service.AccountService;
 import com.fudan.annotation.platform.backend.vo.ResponseBean;
-import com.fudan.annotation.platform.backend.enums.ResponseCodeMsg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,11 +63,10 @@ public class AccountController {
 
     @PutMapping(value = "/reset/password")
     public ResponseBean resetPassword(
-            @RequestParam("account_id") int accountId,
             @RequestParam("account_name") String accountName,
             @RequestParam("password") String password) {
         try {
-            accountService.resetPassword(accountId, accountName, password);
+            accountService.resetPassword(accountName, password);
             return new ResponseBean<>(200, "reset success", null);
         } catch (Exception e) {
             return new ResponseBean<>(401, "reset failed :" + e.getMessage(), null);

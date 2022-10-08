@@ -33,10 +33,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void insertUser(AccountReg account) {
-        if (account.getAccountName() == null || account.getPassword() == null || account.getRole() == null) {
+        if (account.getAccountName() == null || account.getPassword() == null) {
             throw new RuntimeException("param loss");
         }
         account.setPassword(MD5Util.md5(account.getAccountName() + account.getPassword()));
+        account.setRole("user");
         accountMapper.insert(account);
     }
 
@@ -46,10 +47,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void resetPassword(int accountId, String accountName, String password) {
+    public void resetPassword(String accountName, String password) {
         //MD5加密密码
         String encodePassword = MD5Util.md5(accountName + password);
-        accountMapper.resetPassword(accountId, accountName, encodePassword);
+        accountMapper.resetPassword(accountName, encodePassword);
     }
 
     @Override

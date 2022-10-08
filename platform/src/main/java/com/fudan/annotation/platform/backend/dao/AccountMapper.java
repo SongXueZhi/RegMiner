@@ -18,7 +18,7 @@ public interface AccountMapper {
 
     int insert(AccountReg account);
 
-    int resetPassword(int accountId, String accountName, String password);
+    int resetPassword(String accountName, String password);
 
     List<Account> getUserByParam(Integer accountId, String accountName, String role);
 

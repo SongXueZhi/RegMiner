@@ -10,4 +10,9 @@ import java.util.List;
 @Mapper
 public interface CriticalChangeDDMapper {
     List<CriticalChangeDD> getCriticalChangeDD(String regressionUuid, String revisionName);
+
+    void setCriticalChangeDD(String regressionUuid, String revisionName, String newPath, String oldPath,
+                             int beginA, int beginB, int endA, int endB, String type, String tool);
+
+//    void deleteCriticalChangeDD(Integer criticalChangeId, String regressionUuid, String revisionName);
 }

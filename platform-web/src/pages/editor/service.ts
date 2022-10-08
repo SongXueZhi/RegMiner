@@ -107,55 +107,6 @@ export async function getRegressionConsole(params: { path: string }) {
 //   }
 // }
 
-export async function putCriticalChangeByUuid(
-  params: {
-    regression_uuid?: string;
-    revision_name?: 'bic' | 'bfc';
-  },
-  body: HunkEntityParams,
-) {
-  const { code, msg, data } = await request<API.RegResponse<null>>(
-    '/api/regression/criticalChange',
-    {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      params,
-      data: body,
-    },
-  );
-  if (code !== 200) {
-    message.error(msg);
-    return null;
-  } else {
-    return data;
-  }
-}
-
-export async function deleteCriticalChangeById(params: {
-  regression_uuid: string;
-  revision_name: 'bic' | 'bfc';
-  critical_change_id: number;
-}) {
-  const { code, msg, data } = await request<API.RegResponse<RegressionCriticalChangeDetail>>(
-    '/api/regression/criticalChange',
-    {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      params,
-    },
-  );
-  if (code !== 200) {
-    message.error(msg);
-    return null;
-  } else {
-    return data;
-  }
-}
-
 // 传参改为驼峰法
 export async function postRegressionRevert(params: {
   projectFullName: string;
@@ -288,6 +239,60 @@ export async function getRetrievalCriticalChangeReviewList(params: {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       params: { ...params },
+    },
+  );
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    return data;
+  }
+}
+
+// add && ground truth feedback function
+export async function putCriticalChangeReviewById(
+  params: {
+    regression_uuid?: string;
+    revision_name?: 'bic' | 'bfc';
+    account_name?: string;
+    feedback?: string;
+    review_id?: number;
+  },
+  body: HunkEntityParams,
+) {
+  const { code, msg, data } = await request<API.RegResponse<null>>(
+    '/api/regression/criticalChange/review',
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      params,
+      data: body,
+    },
+  );
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    return data;
+  }
+}
+
+// reject feedback function
+export async function deleteCriticalChangeReviewById(params: {
+  regression_uuid: string;
+  revision_name: 'bic' | 'bfc';
+  critical_change_id: number;
+}) {
+  const { code, msg, data } = await request<API.RegResponse<RegressionCriticalChangeDetail>>(
+    '/api/regression/criticalChange/review',
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      params,
     },
   );
   if (code !== 200) {

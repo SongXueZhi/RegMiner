@@ -34,11 +34,10 @@ public interface AccountService {
     /**
      * description 重置密码
      *
-     * @param accountId   用户的ID
      * @param accountName 用户的新密码
-     * @param role        用户权限
+     * @param password        用户权限
      */
-    void resetPassword(int accountId, String accountName, String role);
+    void resetPassword(String accountName, String password);
 
     /**
      * description 登录

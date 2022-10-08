@@ -18,5 +18,5 @@ import java.util.List;
 public class CriticalChangeReview {
     // bic/bfc
     String revisionName;
-    private List<HunkEntityWithTool> hunkEntityWithToolList;
+    private List<HunkEntityPlus> hunkEntityPlusList;
 }

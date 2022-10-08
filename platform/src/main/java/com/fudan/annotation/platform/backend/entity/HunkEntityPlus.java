@@ -15,8 +15,8 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HunkEntityWithTool implements Serializable {
-    private int criticalChangeId;
+public class HunkEntityPlus implements Serializable {
+    private int reviewId;
     private  String  newPath;
     private  String  oldPath;
     private  int  beginA;
@@ -25,4 +25,6 @@ public class HunkEntityWithTool implements Serializable {
     private  int  endB;
     private String type;
     private String tool;
+    private String accountName;
+    private String feedback;
 }
