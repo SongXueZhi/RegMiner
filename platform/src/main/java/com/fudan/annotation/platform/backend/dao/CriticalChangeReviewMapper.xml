@@ -34,6 +34,19 @@
         #{feedback});
     </insert>
 
+    <update id="updateCriticalChangeReview">
+        update critical_change_review
+        set
+        beginA = #{beginA},
+        beginB = #{beginB},
+        endA = #{endA},
+        endB = #{endB},
+        tool = #{tool},
+        account_name = #{accountName},
+        feedback = #{feedback}
+        where review_id = #{reviewId}
+    </update>
+
     <select id="getCriticalChangeReview" resultMap="critical_change_review">
         select review_id,new_path,old_path,beginA,beginB,endA,endB,type,tool,account_name,feedback from
         critical_change_review

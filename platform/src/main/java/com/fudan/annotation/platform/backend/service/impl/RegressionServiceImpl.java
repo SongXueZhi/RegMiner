@@ -577,13 +577,18 @@ public class RegressionServiceImpl implements RegressionService {
     }
 
     @Override
-    public void setCriticalChangeReview(String regressionUuid, String revisionName, int reviewId, String accountName,
+    public void setCriticalChangeReview(String regressionUuid, String revisionName, Integer reviewId, String accountName,
                                         String feedback, HunkEntity hunkEntityDTO) {
-        System.out.println(reviewId);
-        criticalChangeReviewMapper.setCriticalChangeReview(regressionUuid, revisionName,
-                hunkEntityDTO.getNewPath(), hunkEntityDTO.getOldPath(), hunkEntityDTO.getBeginA(),
-                hunkEntityDTO.getBeginB(), hunkEntityDTO.getEndA(), hunkEntityDTO.getEndB(),
-                hunkEntityDTO.getType(), "manual", accountName, feedback);
+        if (reviewId == null || reviewId.equals(0)) {
+            criticalChangeReviewMapper.setCriticalChangeReview(regressionUuid, revisionName,
+                    hunkEntityDTO.getNewPath(), hunkEntityDTO.getOldPath(), hunkEntityDTO.getBeginA(),
+                    hunkEntityDTO.getBeginB(), hunkEntityDTO.getEndA(), hunkEntityDTO.getEndB(),
+                    hunkEntityDTO.getType(), "manual", accountName, feedback);
+        } else {
+            criticalChangeReviewMapper.updateCriticalChangeReview(reviewId, hunkEntityDTO.getBeginA(),
+                    hunkEntityDTO.getBeginB(), hunkEntityDTO.getEndA(), hunkEntityDTO.getEndB(),
+                    "manual", accountName, feedback);
+        }
     }
 
     @Override
