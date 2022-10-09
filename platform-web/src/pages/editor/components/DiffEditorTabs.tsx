@@ -1,4 +1,4 @@
-import NewCodeEditor from '@/components/CodeEditor/index2';
+import NewCodeEditor from '@/components/CodeEditor';
 import { Tabs } from 'antd';
 import { useCallback } from 'react';
 import type { FilePaneItem } from '..';

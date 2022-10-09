@@ -1,7 +1,7 @@
 import { FormattedMessage, Link, SelectLang, useIntl, history } from 'umi';
 import { Alert, Tabs, Image } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import ProForm, { ProFormSelect, ProFormText } from '@ant-design/pro-form';
+import ProForm, { ProFormText } from '@ant-design/pro-form';
 import Footer from '@/components/Footer';
 import { useState } from 'react';
 
@@ -168,7 +168,7 @@ const RegisterPage: React.FC = () => {
                 },
               ]}
             />
-            <ProFormSelect
+            {/* <ProFormSelect
               name="role"
               fieldProps={{
                 size: 'large',
@@ -198,7 +198,7 @@ const RegisterPage: React.FC = () => {
                   ),
                 },
               ]}
-            />
+            /> */}
             {/* <ProFormUploadButton
               name="avatar"
               extra="only support .jpg .png files"

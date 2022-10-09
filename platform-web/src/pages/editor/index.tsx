@@ -516,16 +516,11 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
     if (access.canClickFoo) {
       BICFeedbackList.map((resp) => {
         if (resp.feedback === 'add' || resp.feedback === 'ground truth') {
-          const targetCC = BICCriticalChanges.find((d) => {
-            if (
+          const targetCC = BICCriticalChanges.find(
+            (d) =>
               (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
-              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB)
-            ) {
-              return d;
-            } else {
-              return undefined;
-            }
-          });
+              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
+          );
           putCriticalChangeReviewById(
             {
               regression_uuid: HISTORY_SEARCH.regressionUuid,
@@ -537,24 +532,19 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             resp.hunkData,
           );
         } else if (resp.feedback === 'reject') {
-          const targetCC = BICCriticalChanges.find((d) => {
-            if (
+          const targetCC = BICCriticalChanges.find(
+            (d) =>
               (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
-              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB)
-            ) {
-              return d;
-            } else {
-              return undefined;
-            }
-          });
+              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
+          );
           if (targetCC) {
             deleteCriticalChangeReviewById({
               regression_uuid: HISTORY_SEARCH.regressionUuid,
               revision_name: resp.revision,
-              critical_change_id: targetCC.reviewId,
+              review_id: targetCC.reviewId,
             });
           } else {
-            alert(
+            message.error(
               `The reject feedback ${resp.fileName} does not include any critical change, auto withdrawed!`,
             );
           }
@@ -564,16 +554,11 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
       });
       BFCFeedbackList.map((resp) => {
         if (resp.feedback === 'add' || resp.feedback === 'ground truth') {
-          const targetCC = BFCCriticalChanges.find((d) => {
-            if (
+          const targetCC = BFCCriticalChanges.find(
+            (d) =>
               (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
-              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB)
-            ) {
-              return d;
-            } else {
-              return undefined;
-            }
-          });
+              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
+          );
           putCriticalChangeReviewById(
             {
               regression_uuid: HISTORY_SEARCH.regressionUuid,
@@ -585,36 +570,36 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             resp.hunkData,
           );
         } else if (resp.feedback === 'reject') {
-          const targetCC = BFCCriticalChanges.find((d) => {
-            if (
+          const targetCC = BFCCriticalChanges.find(
+            (d) =>
               (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
-              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB)
-            ) {
-              return d;
-            } else {
-              return undefined;
-            }
-          });
+              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
+          );
+          console.log(targetCC);
           if (targetCC) {
             deleteCriticalChangeReviewById({
               regression_uuid: HISTORY_SEARCH.regressionUuid,
               revision_name: resp.revision,
-              critical_change_id: targetCC.reviewId,
+              review_id: targetCC.reviewId,
             });
+          } else {
+            message.error(
+              `The reject feedback ${resp.fileName} does not include any critical change, auto withdrawed!`,
+            );
           }
         } else {
-          message.error('feedback type not right');
+          console.log('feedback type not right');
         }
       });
       setBFCFeedbackList([]);
       setBICFeedbackList([]);
-      message.success('submited');
+      message.success('Submit successful');
       getRetrievalCriticalChangeReviewList({
         regression_uuid: HISTORY_SEARCH.regressionUuid,
         revision_name: 'bic',
       }).then((resp) => {
         if (resp !== null && resp !== undefined) {
-          setBICCriticalChanges(resp.hunkEntityWithToolList);
+          setBICCriticalChanges(resp.hunkEntityPlusList);
         }
       });
       getRetrievalCriticalChangeReviewList({
@@ -622,7 +607,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         revision_name: 'bfc',
       }).then((resp) => {
         if (resp !== null && resp !== undefined) {
-          setBFCCriticalChanges(resp.hunkEntityWithToolList);
+          setBFCCriticalChanges(resp.hunkEntityPlusList);
         }
       });
     } else {
@@ -763,7 +748,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
       revision_name: 'bic',
     }).then((resp) => {
       if (resp !== null && resp !== undefined) {
-        setBICCriticalChanges(resp.hunkEntityWithToolList);
+        setBICCriticalChanges(resp.hunkEntityPlusList);
       }
     });
     getRetrievalCriticalChangeReviewList({
@@ -771,7 +756,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
       revision_name: 'bfc',
     }).then((resp) => {
       if (resp !== null && resp !== undefined) {
-        setBFCCriticalChanges(resp.hunkEntityWithToolList);
+        setBFCCriticalChanges(resp.hunkEntityPlusList);
       }
     });
     getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
