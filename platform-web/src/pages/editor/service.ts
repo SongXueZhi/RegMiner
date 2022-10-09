@@ -283,7 +283,7 @@ export async function putCriticalChangeReviewById(
 export async function deleteCriticalChangeReviewById(params: {
   regression_uuid: string;
   revision_name: 'bic' | 'bfc';
-  critical_change_id: number;
+  review_id: number;
 }) {
   const { code, msg, data } = await request<API.RegResponse<RegressionCriticalChangeDetail>>(
     '/api/regression/criticalChange/review',
