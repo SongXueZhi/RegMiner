@@ -3,7 +3,6 @@ package com.fudan.annotation.platform.backend.controller;
 import com.fudan.annotation.platform.backend.entity.*;
 import com.fudan.annotation.platform.backend.service.RegressionService;
 import com.fudan.annotation.platform.backend.vo.ResponseBean;
-import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -327,7 +326,7 @@ public class RegressionController {
             @RequestParam(name = "revision_name") String revisionName,
             @RequestParam(name = "review_id") Integer reviewId) {
         try {
-            regressionService.deleteCriticalChangeReview(regressionUuid, revisionName, reviewId);
+            regressionService.deleteCriticalChangeReview(reviewId, regressionUuid, revisionName);
             return new ResponseBean<>(200, "delete critical change success", null);
         } catch (Exception e) {
             return new ResponseBean<>(401, "delete critical change failed :" + e.getMessage(), null);

@@ -56,7 +56,7 @@
     </select>
 
     <delete id="deleteCriticalChangeReview">
-        delete from critical_change
+        delete from critical_change_review
         <where>
             regression_uuid = #{regressionUuid} and revision_name = #{revisionName}
             and review_id = #{reviewId}

@@ -10,7 +10,6 @@ import com.fudan.annotation.platform.backend.service.RegressionService;
 import com.fudan.annotation.platform.backend.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.core.internal.preferences.BundleDefaultPreferences;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -592,9 +591,9 @@ public class RegressionServiceImpl implements RegressionService {
     }
 
     @Override
-    public void deleteCriticalChangeReview(String regressionUuid,
-                                           String revisionName,
-                                           Integer reviewId) {
+    public void deleteCriticalChangeReview(Integer reviewId,
+                                           String regressionUuid,
+                                           String revisionName) {
         criticalChangeReviewMapper.deleteCriticalChangeReview(reviewId, regressionUuid, revisionName);
     }
 

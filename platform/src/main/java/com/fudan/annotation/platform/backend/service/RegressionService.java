@@ -1,9 +1,6 @@
 package com.fudan.annotation.platform.backend.service;
 
 import com.fudan.annotation.platform.backend.entity.*;
-import org.dom4j.Text;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.List;
@@ -198,6 +195,6 @@ public interface RegressionService {
      * @param regressionUuid regressionUuid
      * @param revisionName   revision name
      */
-    void deleteCriticalChangeReview(String regressionUuid, String revisionName, Integer reviewId);
+    void deleteCriticalChangeReview(Integer reviewId, String regressionUuid, String revisionName);
 
 }
