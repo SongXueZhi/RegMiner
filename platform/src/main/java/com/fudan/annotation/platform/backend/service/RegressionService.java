@@ -190,7 +190,7 @@ public interface RegressionService {
      * @param feedback       feedback
      * @param hunkEntityDTO  single hunk patch
      */
-    void setCriticalChangeReview(String regressionUuid, String revisionName, int reviewId, String accountName, String feedback, HunkEntity hunkEntityDTO);
+    void setCriticalChangeReview(String regressionUuid, String revisionName, Integer reviewId, String accountName, String feedback, HunkEntity hunkEntityDTO);
 
     /**
      * description delete critical change hunk

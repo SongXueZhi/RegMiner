@@ -311,7 +311,7 @@ public class RegressionController {
             @RequestParam(name = "revision_name") String revisionName,
             @RequestParam(name = "account_name") String accountName,
             @RequestParam(name = "feedback") String feedback,
-            @RequestParam(name = "review_id", required = false) int reviewId,
+            @RequestParam(name = "review_id", required = false) Integer reviewId,
             @RequestBody HunkEntity hunkEntityDTO) {
         try {
             regressionService.setCriticalChangeReview(regressionUuid, revisionName, reviewId, accountName, feedback, hunkEntityDTO);
