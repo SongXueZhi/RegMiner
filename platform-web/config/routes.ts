@@ -35,9 +35,16 @@
   {
     key: 'dashboard',
     name: 'dashboard',
-    icon: 'smile',
+    icon: 'Sync', 
     path: '/dashboard',
     component: './dashboard',
+  },
+  {
+    key: 'deltaDebuging',
+    name: 'Delta Debuging',
+    icon: 'Control',
+    path: '/deltaDebuging',
+    component: './deltaDebuging',
   },
   {
     key: 'editor',
