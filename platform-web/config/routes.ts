@@ -38,14 +38,16 @@
     icon: 'Sync', 
     path: '/dashboard',
     component: './dashboard',
+    access: 'adminRouteFilter',
   },
-  {
-    key: 'deltaDebuging',
-    name: 'Delta Debuging',
-    icon: 'Control',
-    path: '/deltaDebuging',
-    component: './deltaDebuging',
-  },
+  // {
+  //   key: 'deltaDebuging',
+  //   name: 'Delta Debuging',
+  //   icon: 'Control',
+  //   path: '/deltaDebuging',
+  //   component: './deltaDebuging',
+  //   access: 'adminRouteFilter',
+  // },
   {
     key: 'editor',
     // name: 'editor',

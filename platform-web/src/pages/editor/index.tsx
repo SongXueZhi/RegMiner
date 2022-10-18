@@ -454,106 +454,102 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   };
 
   const handleSubmitFeedbacks = useCallback(() => {
-    if (access.canClickFoo) {
-      BICFeedbackList.map((resp) => {
-        if (resp.feedback === 'add' || resp.feedback === 'ground truth') {
-          const targetCC = BICCriticalChanges.find(
-            (d) =>
-              (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
-              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
-          );
-          putCriticalChangeReviewById(
-            {
-              regression_uuid: HISTORY_SEARCH.regressionUuid,
-              revision_name: resp.revision,
-              account_name: initialState?.currentUser?.accountName,
-              feedback: resp.feedback,
-              review_id: targetCC?.reviewId,
-            },
-            resp.hunkData,
-          );
-        } else if (resp.feedback === 'reject') {
-          const targetCC = BICCriticalChanges.find(
-            (d) =>
-              (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
-              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
-          );
-          if (targetCC) {
-            deleteCriticalChangeReviewById({
-              regression_uuid: HISTORY_SEARCH.regressionUuid,
-              revision_name: resp.revision,
-              review_id: targetCC.reviewId,
-            });
-          } else {
-            message.error(
-              `The reject feedback ${resp.fileName} does not include any critical change, auto withdrawed!`,
-            );
-          }
+    BICFeedbackList.map((resp) => {
+      if (resp.feedback === 'add' || resp.feedback === 'ground truth') {
+        const targetCC = BICCriticalChanges.find(
+          (d) =>
+            (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
+            (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
+        );
+        putCriticalChangeReviewById(
+          {
+            regression_uuid: HISTORY_SEARCH.regressionUuid,
+            revision_name: resp.revision,
+            account_name: initialState?.currentUser?.accountName,
+            feedback: resp.feedback,
+            review_id: targetCC?.reviewId,
+          },
+          resp.hunkData,
+        );
+      } else if (resp.feedback === 'reject') {
+        const targetCC = BICCriticalChanges.find(
+          (d) =>
+            (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
+            (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
+        );
+        if (targetCC) {
+          deleteCriticalChangeReviewById({
+            regression_uuid: HISTORY_SEARCH.regressionUuid,
+            revision_name: resp.revision,
+            review_id: targetCC.reviewId,
+          });
         } else {
-          console.log('feedback type not right');
+          message.error(
+            `The reject feedback ${resp.fileName} does not include any critical change, auto withdrawed!`,
+          );
         }
-      });
-      BFCFeedbackList.map((resp) => {
-        if (resp.feedback === 'add' || resp.feedback === 'ground truth') {
-          const targetCC = BFCCriticalChanges.find(
-            (d) =>
-              (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
-              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
-          );
-          putCriticalChangeReviewById(
-            {
-              regression_uuid: HISTORY_SEARCH.regressionUuid,
-              revision_name: resp.revision,
-              account_name: initialState?.currentUser?.accountName,
-              feedback: resp.feedback,
-              review_id: targetCC?.reviewId,
-            },
-            resp.hunkData,
-          );
-        } else if (resp.feedback === 'reject') {
-          const targetCC = BFCCriticalChanges.find(
-            (d) =>
-              (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
-              (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
-          );
-          console.log(targetCC);
-          if (targetCC) {
-            deleteCriticalChangeReviewById({
-              regression_uuid: HISTORY_SEARCH.regressionUuid,
-              revision_name: resp.revision,
-              review_id: targetCC.reviewId,
-            });
-          } else {
-            message.error(
-              `The reject feedback ${resp.fileName} does not include any critical change, auto withdrawed!`,
-            );
-          }
+      } else {
+        console.log('feedback type not right');
+      }
+    });
+    BFCFeedbackList.map((resp) => {
+      if (resp.feedback === 'add' || resp.feedback === 'ground truth') {
+        const targetCC = BFCCriticalChanges.find(
+          (d) =>
+            (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
+            (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
+        );
+        putCriticalChangeReviewById(
+          {
+            regression_uuid: HISTORY_SEARCH.regressionUuid,
+            revision_name: resp.revision,
+            account_name: initialState?.currentUser?.accountName,
+            feedback: resp.feedback,
+            review_id: targetCC?.reviewId,
+          },
+          resp.hunkData,
+        );
+      } else if (resp.feedback === 'reject') {
+        const targetCC = BFCCriticalChanges.find(
+          (d) =>
+            (resp.hunkData.beginB <= d.beginB && resp.hunkData.endB >= d.beginB) ||
+            (resp.hunkData.beginB >= d.beginB && resp.hunkData.beginB <= d.endB),
+        );
+        console.log(targetCC);
+        if (targetCC) {
+          deleteCriticalChangeReviewById({
+            regression_uuid: HISTORY_SEARCH.regressionUuid,
+            revision_name: resp.revision,
+            review_id: targetCC.reviewId,
+          });
         } else {
-          console.log('feedback type not right');
+          message.error(
+            `The reject feedback ${resp.fileName} does not include any critical change, auto withdrawed!`,
+          );
         }
-      });
-      setBFCFeedbackList([]);
-      setBICFeedbackList([]);
-      message.success('Submit successful');
-      getRetrievalCriticalChangeReviewList({
-        regression_uuid: HISTORY_SEARCH.regressionUuid,
-        revision_name: 'bic',
-      }).then((resp) => {
-        if (resp !== null && resp !== undefined) {
-          setBICCriticalChanges(resp.hunkEntityPlusList);
-        }
-      });
-      getRetrievalCriticalChangeReviewList({
-        regression_uuid: HISTORY_SEARCH.regressionUuid,
-        revision_name: 'bfc',
-      }).then((resp) => {
-        if (resp !== null && resp !== undefined) {
-          setBFCCriticalChanges(resp.hunkEntityPlusList);
-        }
-      });
-    } else {
-      message.error('Sorry, you have no right to do that. Please login or use another account!');
-    }
+      } else {
+        console.log('feedback type not right');
+      }
+    });
+    setBFCFeedbackList([]);
+    setBICFeedbackList([]);
+    message.success('Submit successful');
+    getRetrievalCriticalChangeReviewList({
+      regression_uuid: HISTORY_SEARCH.regressionUuid,
+      revision_name: 'bic',
+    }).then((resp) => {
+      if (resp !== null && resp !== undefined) {
+        setBICCriticalChanges(resp.hunkEntityPlusList);
+      }
+    });
+    getRetrievalCriticalChangeReviewList({
+      regression_uuid: HISTORY_SEARCH.regressionUuid,
+      revision_name: 'bfc',
+    }).then((resp) => {
+      if (resp !== null && resp !== undefined) {
+        setBFCCriticalChanges(resp.hunkEntityPlusList);
+      }
+    });
   }, [
     BICFeedbackList,
     BFCFeedbackList,
@@ -672,50 +668,43 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   );
 
   const handleSubmitComment = useCallback(() => {
-    if (access.canClickFoo) {
-      addComment({
-        regression_uuid: HISTORY_SEARCH.regressionUuid,
-        account_name: initialState?.currentUser?.accountName ?? undefined,
-        context: newCommentText,
-      }).then(() => {
-        setNewCommentText('');
-        getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
-          if (resp !== null && resp !== undefined) {
-            let currComments: CommentAPI[] = [];
-            currComments = resp.map((data) => {
-              return {
-                actions: [
-                  <Tooltip key="comment-delete-btn" title="Delete">
-                    <span onClick={() => handleDeleteComment(data)}>
-                      <DeleteOutlined />
-                    </span>
-                  </Tooltip>,
-                ],
-                author: data.accountName,
-                avatar: 'https://joeschmoe.io/api/v1/random',
-                content: <p>{data.context}</p>,
-                datetime: (
-                  <Tooltip
-                    title={`${data.createTime.substring(0, 10)} ${data.createTime.substring(
-                      11,
-                      19,
-                    )}`}
-                  >
-                    <span>{`${data.createTime.substring(0, 10)} ${data.createTime.substring(
-                      11,
-                      19,
-                    )}`}</span>
-                  </Tooltip>
-                ),
-              };
-            });
-            setCommentList(currComments);
-          }
-        });
+    addComment({
+      regression_uuid: HISTORY_SEARCH.regressionUuid,
+      account_name: initialState?.currentUser?.accountName ?? undefined,
+      context: newCommentText,
+    }).then(() => {
+      setNewCommentText('');
+      getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
+        if (resp !== null && resp !== undefined) {
+          let currComments: CommentAPI[] = [];
+          currComments = resp.map((data) => {
+            return {
+              actions: [
+                <Tooltip key="comment-delete-btn" title="Delete">
+                  <span onClick={() => handleDeleteComment(data)}>
+                    <DeleteOutlined />
+                  </span>
+                </Tooltip>,
+              ],
+              author: data.accountName,
+              avatar: 'https://joeschmoe.io/api/v1/random',
+              content: <p>{data.context}</p>,
+              datetime: (
+                <Tooltip
+                  title={`${data.createTime.substring(0, 10)} ${data.createTime.substring(11, 19)}`}
+                >
+                  <span>{`${data.createTime.substring(0, 10)} ${data.createTime.substring(
+                    11,
+                    19,
+                  )}`}</span>
+                </Tooltip>
+              ),
+            };
+          });
+          setCommentList(currComments);
+        }
       });
-    } else {
-      message.error('Sorry, you have no right to do that. Please login or use another account!');
-    }
+    });
   }, [HISTORY_SEARCH.regressionUuid, handleDeleteComment, newCommentText]);
 
   useEffect(() => {

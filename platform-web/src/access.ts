@@ -8,6 +8,8 @@ export default function access(initialState: { currentUser?: API.CurrentUser | u
     canUpdateFoo: currentUser?.role === 'admin',
     canClickFoo: currentUser?.role === 'admin',
     canDeleteFoo: currentUser?.role === 'admin',
+    
+    adminRouteFilter: () => currentUser?.role === 'admin',
     // canAdmin: currentUser && currentUser.accountRight === 0,
   };
 }

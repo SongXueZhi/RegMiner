@@ -49,7 +49,7 @@ const DrawerbodyStyle = {
   // 'background-color': '#f5f5f5'
 };
 
-const TableList: React.FC<{}> = () => {
+const DashboardPage: React.FC<{}> = () => {
   const [dashboardvisible, setVisible] = useState<boolean>(false);
   const [currentRegressionUuid, setCurRegressionUuid] = useState<string>('');
   const [currentBugid, setCurBugid] = useState<string>('');
@@ -301,4 +301,4 @@ const TableList: React.FC<{}> = () => {
   );
 };
 
-export default TableList;
+export default DashboardPage;
