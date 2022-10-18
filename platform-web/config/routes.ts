@@ -35,9 +35,16 @@
   {
     key: 'dashboard',
     name: 'dashboard',
-    icon: 'smile',
+    icon: 'Sync', 
     path: '/dashboard',
     component: './dashboard',
+  },
+  {
+    key: 'deltaDebuging',
+    name: 'Delta Debuging',
+    icon: 'Control',
+    path: '/deltaDebuging',
+    component: './deltaDebuging',
   },
   {
     key: 'editor',
@@ -46,13 +53,13 @@
     // icon: 'smile',
     component: './editor',
   },
-  {
-    key: 'detail',
-    // name: 'editor',
-    path: '/detail',
-    // icon: 'smile',
-    component: './detail',
-  },
+  // {
+  //   key: 'detail',
+  //   name: 'editor',
+  //   path: '/detail',
+  //   icon: 'smile',
+  //   component: './detail',
+  // },
   // {
   //   name: 'code',
   //   path: '/code',
