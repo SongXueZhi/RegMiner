@@ -110,3 +110,13 @@ export type CommentListItems = {
   context: string;
   createTime: string;
 };
+
+export type CommentAPI = {
+  // commentId: string;
+  actions?: ReactNode[];
+  author?: ReactNode;
+  avatar?: ReactNode;
+  children?: ReactNode;
+  content?: ReactNode;
+  datetime?: ReactNode;
+};

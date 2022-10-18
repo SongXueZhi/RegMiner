@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import {
@@ -35,6 +34,7 @@ import {
   putCriticalChangeReviewById,
 } from './service';
 import type {
+  CommentAPI,
   CommentListItems,
   CommitItem,
   DiffEditDetailItems,
@@ -74,16 +74,6 @@ export interface FilePaneItem extends CommitFile {
   CriticalChange: HunkEntityItems | undefined;
   project: string;
 }
-
-export type CommentAPI = {
-  // commentId: string;
-  actions?: ReactNode[];
-  author?: ReactNode;
-  avatar?: ReactNode;
-  children?: ReactNode;
-  content?: ReactNode;
-  datetime?: ReactNode;
-};
 
 // function markMatch(
 //   bic: CommitItem[],
@@ -145,47 +135,6 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   const [loadingClearCache, setLoadingClearCache] = useState<boolean>(false);
   const [commentList, setCommentList] = useState<CommentAPI[]>([]);
   const [newCommentText, setNewCommentText] = useState<string>('');
-
-  const handleDeleteComment = useCallback(
-    (items: CommentListItems) => {
-      if (access.canDeleteFoo) {
-        deleteComment({
-          regression_uuid: HISTORY_SEARCH.regressionUuid,
-          account_name: items.accountName,
-          comment_id: items.commentId,
-        }).then(() => {
-          getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
-            if (resp !== null && resp !== undefined) {
-              let currComments: CommentAPI[] = [];
-              currComments = resp.map((data) => {
-                return {
-                  actions: [
-                    <Tooltip key="comment-delete-btn" title="Delete">
-                      <span onClick={() => handleDeleteComment(data)}>
-                        <DeleteOutlined />
-                      </span>
-                    </Tooltip>,
-                  ],
-                  author: data.accountName,
-                  avatar: 'https://joeschmoe.io/api/v1/random',
-                  content: <p>{data.context}</p>,
-                  datetime: (
-                    <Tooltip title={data.createTime}>
-                      <span>{data.createTime}</span>
-                    </Tooltip>
-                  ),
-                };
-              });
-              setCommentList(currComments);
-            }
-          });
-        });
-      } else {
-        message.error('Sorry, you have no right to do that. Please login or use another account!');
-      }
-    },
-    [HISTORY_SEARCH.regressionUuid],
-  );
 
   const getFile = async (params: {
     commit: string;
@@ -446,17 +395,13 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
 
   const handleBICRunClick = useCallback(
     async (content, version) => {
-      if (access.canClickFoo) {
-        setBICConsoleResult('');
-        const consoleResult = getConsoleResult({
-          regression_uuid: HISTORY_SEARCH.regressionUuid,
-          revisionFlag: version,
-          userToken: '123',
-        }).then((resp) => resp);
-        return consoleResult;
-      } else {
-        message.error('Sorry, you have no right to do that. Please login or use another account!');
-      }
+      setBICConsoleResult('');
+      const consoleResult = getConsoleResult({
+        regression_uuid: HISTORY_SEARCH.regressionUuid,
+        revisionFlag: version,
+        userToken: '123',
+      }).then((resp) => resp);
+      return consoleResult;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [getConsoleResult],
@@ -464,17 +409,13 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
 
   const handleBFCRunClick = useCallback(
     async (content, version) => {
-      if (access.canClickFoo) {
-        setBFCConsoleResult('');
-        const consoleResult = getConsoleResult({
-          regression_uuid: HISTORY_SEARCH.regressionUuid,
-          revisionFlag: version,
-          userToken: '123',
-        }).then((resp) => resp);
-        return consoleResult;
-      } else {
-        message.error('Sorry, you have no right to do that. Please login or use another account!');
-      }
+      setBFCConsoleResult('');
+      const consoleResult = getConsoleResult({
+        regression_uuid: HISTORY_SEARCH.regressionUuid,
+        revisionFlag: version,
+        userToken: '123',
+      }).then((resp) => resp);
+      return consoleResult;
     },
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -681,11 +622,60 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
     }
   };
 
+  const handleDeleteComment = useCallback(
+    (items: CommentListItems) => {
+      if (access.canDeleteFoo) {
+        deleteComment({
+          regression_uuid: HISTORY_SEARCH.regressionUuid,
+          account_name: items.accountName,
+          comment_id: items.commentId,
+        }).then(() => {
+          getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
+            if (resp !== null && resp !== undefined) {
+              let currComments: CommentAPI[] = [];
+              currComments = resp.map((data) => {
+                return {
+                  actions: [
+                    <Tooltip key="comment-delete-btn" title="Delete">
+                      <span onClick={() => handleDeleteComment(data)}>
+                        <DeleteOutlined />
+                      </span>
+                    </Tooltip>,
+                  ],
+                  author: data.accountName,
+                  avatar: 'https://joeschmoe.io/api/v1/random',
+                  content: <p>{data.context}</p>,
+                  datetime: (
+                    <Tooltip
+                      title={`${data.createTime.substring(0, 10)} ${data.createTime.substring(
+                        11,
+                        19,
+                      )}`}
+                    >
+                      <span>{`${data.createTime.substring(0, 10)} ${data.createTime.substring(
+                        11,
+                        19,
+                      )}`}</span>
+                    </Tooltip>
+                  ),
+                };
+              });
+              setCommentList(currComments);
+            }
+          });
+        });
+      } else {
+        message.error('Sorry, you have no right to do that. Please login or use another account!');
+      }
+    },
+    [HISTORY_SEARCH.regressionUuid],
+  );
+
   const handleSubmitComment = useCallback(() => {
     if (access.canClickFoo) {
       addComment({
         regression_uuid: HISTORY_SEARCH.regressionUuid,
-        account_name: 'admin',
+        account_name: initialState?.currentUser?.accountName ?? undefined,
         context: newCommentText,
       }).then(() => {
         setNewCommentText('');
@@ -705,8 +695,16 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
                 avatar: 'https://joeschmoe.io/api/v1/random',
                 content: <p>{data.context}</p>,
                 datetime: (
-                  <Tooltip title={data.createTime}>
-                    <span>{data.createTime}</span>
+                  <Tooltip
+                    title={`${data.createTime.substring(0, 10)} ${data.createTime.substring(
+                      11,
+                      19,
+                    )}`}
+                  >
+                    <span>{`${data.createTime.substring(0, 10)} ${data.createTime.substring(
+                      11,
+                      19,
+                    )}`}</span>
                   </Tooltip>
                 ),
               };
@@ -775,8 +773,12 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             avatar: 'https://joeschmoe.io/api/v1/random',
             content: <p>{data.context}</p>,
             datetime: (
-              <Tooltip title={data.createTime}>
-                <span>{data.createTime}</span>
+              <Tooltip
+                title={`${data.createTime.substring(0, 10)} ${data.createTime.substring(11, 19)}`}
+              >
+                <span>
+                  {`${data.createTime.substring(0, 10)} ${data.createTime.substring(11, 19)}`}
+                </span>
               </Tooltip>
             ),
           };
