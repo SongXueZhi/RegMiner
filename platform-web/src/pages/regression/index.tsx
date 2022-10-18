@@ -9,6 +9,7 @@ import { queryRegressionList, addRegression, removeRegression } from './service'
 import { Link } from 'react-router-dom';
 import { stringify } from 'query-string';
 import './index.less';
+import { useAccess } from 'umi';
 
 /**
  * 添加节点
@@ -80,7 +81,8 @@ function withSkeleton(element: JSX.Element | string | number | number | undefine
   );
 }
 
-const TableList: React.FC<{}> = () => {
+const RegressionListPage: React.FC<{}> = () => {
+  const access = useAccess();
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   const columns: ProColumns<API.RegressionItem>[] = [
@@ -272,7 +274,6 @@ const TableList: React.FC<{}> = () => {
           </Col>
         </Row>
       </div> */}
-
       <ProTable<API.RegressionItem>
         headerTitle="Regression List"
         actionRef={actionRef}
@@ -282,7 +283,18 @@ const TableList: React.FC<{}> = () => {
           defaultCollapsed: false,
         }}
         toolBarRender={() => [
-          <Button type="primary" onClick={() => handleModalVisible(true)}>
+          <Button
+            type="primary"
+            onClick={() => {
+              if (access.canClickFoo) {
+                handleModalVisible(true);
+              } else {
+                message.error(
+                  'Sorry, you have no right to do that. Please login or use another account!',
+                );
+              }
+            }}
+          >
             <PlusOutlined /> add
           </Button>,
         ]}
@@ -320,4 +332,4 @@ const TableList: React.FC<{}> = () => {
   );
 };
 
-export default TableList;
+export default RegressionListPage;
