@@ -5,6 +5,8 @@ import { Alert, Button, Progress, Tag, Steps, message } from 'antd';
 import { getProcessInfo } from '../service';
 import { ProgressInfoItems } from '../data';
 import { useAccess } from 'umi';
+import './index.less';
+
 const { Step } = Steps;
 
 // dashiboard
@@ -68,7 +70,7 @@ const ProjectProgress: React.FC<any> = () => {
     });
   };
   const resetProcessInfo = () => {
-    if (access.canClickFoo) {
+    if (access.allUsersFoo) {
       const data = {
         currentProjectName: 'no data',
         projectQueueNum: 0,
@@ -124,7 +126,7 @@ const ProjectProgress: React.FC<any> = () => {
               <Button
                 type="primary"
                 onClick={() => {
-                  if (access.canClickFoo) {
+                  if (access.onlyAdminFoo) {
                     updateProcessInfo.bind(ProjectProgress);
                   } else {
                     message.error(
@@ -137,7 +139,15 @@ const ProjectProgress: React.FC<any> = () => {
               </Button>
               <Button
                 style={{ marginLeft: '10px' }}
-                onClick={resetProcessInfo.bind(ProjectProgress)}
+                onClick={() => {
+                  if (access.onlyAdminFoo) {
+                    resetProcessInfo.bind(ProjectProgress);
+                  } else {
+                    message.error(
+                      'Sorry, you have no right to do that. Please login or use another account!',
+                    );
+                  }
+                }}
               >
                 Stop
               </Button>

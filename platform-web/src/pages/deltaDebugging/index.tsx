@@ -3,7 +3,7 @@ import ProTable from '@ant-design/pro-table';
 import { Button, Descriptions, Drawer, Typography } from 'antd';
 import React, { useState } from 'react';
 
-const InteractiveDeltaDebugingPage: React.FC<{}> = () => {
+const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
   const [sidebarRegressionMenu, setSidebarRegressionMenu] = useState<boolean>(false);
 
   return (
@@ -79,4 +79,4 @@ const InteractiveDeltaDebugingPage: React.FC<{}> = () => {
   );
 };
 
-export default InteractiveDeltaDebugingPage;
+export default InteractiveDeltaDebuggingPage;
