@@ -118,18 +118,22 @@ const NewCodeEditor: React.FC<IProps> = ({
     setMonacoSize({ width: width, height: height });
   };
   const handleRunClick = async (option: string) => {
-    setVersion(option);
-    let content: string | undefined = (
-      option === 'firstOp'
-        ? editorRef.current?.editor?.getOriginalEditor()
-        : editorRef.current?.editor?.getModifiedEditor()
-    )?.getValue();
-    const revisionFlag =
-      option === 'firstOp' ? oldVersionText ?? 'firstOp' : newVersionText ?? 'secondOp';
-    if (typeof content === 'undefined') content = '';
-    onRunCode?.call(this, content, revisionFlag);
-    if (!showConsole) {
-      handleShowConsole();
+    if (access.allUsersFoo) {
+      setVersion(option);
+      let content: string | undefined = (
+        option === 'firstOp'
+          ? editorRef.current?.editor?.getOriginalEditor()
+          : editorRef.current?.editor?.getModifiedEditor()
+      )?.getValue();
+      const revisionFlag =
+        option === 'firstOp' ? oldVersionText ?? 'firstOp' : newVersionText ?? 'secondOp';
+      if (typeof content === 'undefined') content = '';
+      onRunCode?.call(this, content, revisionFlag);
+      if (!showConsole) {
+        handleShowConsole();
+      }
+    } else {
+      message.error('Sorry, you have no right to do that. Please login or use another account!');
     }
   };
   const handleShowConsole = () => {
@@ -174,7 +178,7 @@ const NewCodeEditor: React.FC<IProps> = ({
     setModifiedNewCode(v);
   };
   const handleUpdateNewCodeClick = async () => {
-    if (access.canUpdateFoo) {
+    if (access.allUsersFoo) {
       const newCode = modifiedNewCode;
       postRegressionUpdateNewCode(
         {
@@ -205,7 +209,7 @@ const NewCodeEditor: React.FC<IProps> = ({
     }
   };
   const handleRevertCode = async () => {
-    if (access.canClickFoo) {
+    if (access.allUsersFoo) {
       await postRegressionRevert({
         projectFullName: projectFullName,
         regressionUuid: regressionUuid,

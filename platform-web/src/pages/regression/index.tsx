@@ -286,7 +286,7 @@ const RegressionListPage: React.FC<{}> = () => {
           <Button
             type="primary"
             onClick={() => {
-              if (access.canClickFoo) {
+              if (access.allUsersFoo) {
                 handleModalVisible(true);
               } else {
                 message.error(
