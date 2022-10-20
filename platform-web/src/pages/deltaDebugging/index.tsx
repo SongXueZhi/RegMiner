@@ -1,10 +1,20 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import { Button, Descriptions, Drawer, Typography } from 'antd';
+import { Button, Descriptions, Drawer, Steps, Typography } from 'antd';
 import React, { useState } from 'react';
 
 const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
   const [sidebarRegressionMenu, setSidebarRegressionMenu] = useState<boolean>(false);
+  const [current, setCurrent] = useState(0);
+
+  const handleRunDD = () => {
+    console.log('RUN');
+  };
+
+  const handleStepsChange = (value: number) => {
+    console.log('change', current);
+    setCurrent(value);
+  };
 
   return (
     <PageContainer
@@ -58,6 +68,33 @@ const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
         ),
       }}
     >
+      <div style={{ display: 'flex' }}>
+        <div>
+          <Button onClick={handleRunDD}>Run</Button>
+          <Steps initial={0} current={current} onChange={handleStepsChange} direction="vertical">
+            <Steps.Step
+              title="Step 1"
+              subTitle="this is sub"
+              description="This is a description."
+            />
+            <Steps.Step
+              title="Step 2"
+              subTitle="this is sub"
+              description="This is a description."
+            />
+            <Steps.Step
+              title="Step 3"
+              subTitle="this is sub"
+              description="This is a description."
+            />
+            <Steps.Step
+              title="Step 4"
+              subTitle="this is sub"
+              description="This is a description."
+            />
+          </Steps>
+        </div>
+      </div>
       <Drawer
         // bodyStyle={DrawerbodyStyle}
         title="Regressions List"
@@ -70,7 +107,7 @@ const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
       >
         <ProTable<API.RegressionItem>
           headerTitle="Bugs"
-        //   actionRef={actionRef}
+          //   actionRef={actionRef}
           rowKey="regressionUuid"
           search={false}
         />
