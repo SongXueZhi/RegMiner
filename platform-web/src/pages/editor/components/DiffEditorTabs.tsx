@@ -1,8 +1,7 @@
 import NewCodeEditor from '@/components/CodeEditor';
 import { Tabs } from 'antd';
 import { useCallback } from 'react';
-import type { FilePaneItem } from '..';
-import type { DiffEditDetailItems, FeedbackList, HunkEntityItems } from '../data';
+import type { DiffEditDetailItems, FeedbackList, FilePaneItem, HunkEntityItems } from '../data';
 
 export type DiffEditor = {
   origin: string;

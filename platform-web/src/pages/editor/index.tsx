@@ -32,6 +32,7 @@ import {
   getRetrievalCriticalChangeReviewList,
   deleteCriticalChangeReviewById,
   putCriticalChangeReviewById,
+  queryRegressionMigrate,
 } from './service';
 import type {
   CommentAPI,
@@ -39,6 +40,7 @@ import type {
   CommitItem,
   DiffEditDetailItems,
   FeedbackList,
+  FilePaneItem,
   HunkEntityItems,
 } from './data';
 import { parse } from 'query-string';
@@ -59,20 +61,7 @@ const testMethodList = [
 
 interface IHistorySearch {
   regressionUuid: string;
-}
-
-export type CommitFile = {
-  newPath: string;
-  oldPath: string;
-  newCode: string;
-  oldCode: string;
-};
-
-export interface FilePaneItem extends CommitFile {
-  key: string;
-  editList: DiffEditDetailItems[];
-  CriticalChange: HunkEntityItems | undefined;
-  project: string;
+  bic: string;
 }
 
 // function markMatch(
@@ -719,28 +708,58 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   }, [HISTORY_SEARCH.regressionUuid, handleDeleteComment, newCommentText]);
 
   useEffect(() => {
-    regressionCheckout({ regression_uuid: HISTORY_SEARCH.regressionUuid, userToken: '123' }).then(
-      () => {
-        queryRegressionDetail({
-          regression_uuid: HISTORY_SEARCH.regressionUuid,
-          userToken: '123',
-        }).then((data) => {
-          if (data !== null && data !== undefined) {
-            setListBFC(data.bfcChangedFiles);
-            setListBIC(data.bicChangedFiles);
-            setBFC(data.bfc);
-            setBIC(data.bic);
-            setBFCURL(data.bfcURL);
-            setBICURL(data.bicURL);
-            setProjectFullName(data.projectFullName);
-            setTestCaseName(data.testCaseName);
-            setTestFilePath(data.testFilePath);
-            setRegressionDescription(data.descriptionTxt);
-          }
-          setIsLoading(false);
-        });
-      },
-    );
+    if (
+      HISTORY_SEARCH.bic !== undefined &&
+      HISTORY_SEARCH.bic !== '' &&
+      HISTORY_SEARCH.bic !== null
+    ) {
+      regressionCheckout({ regression_uuid: HISTORY_SEARCH.regressionUuid, userToken: '123' }).then(
+        () => {
+          queryRegressionMigrate({
+            regression_uuid: HISTORY_SEARCH.regressionUuid,
+            userToken: '123',
+            bic: HISTORY_SEARCH.bic,
+          }).then((data) => {
+            if (data !== null && data !== undefined) {
+              setListBFC(data.bfcChangedFiles);
+              setListBIC(data.bicChangedFiles);
+              setBFC(data.bfc);
+              setBIC(data.bic);
+              setBFCURL(data.bfcURL);
+              setBICURL(data.bicURL);
+              setProjectFullName(data.projectFullName);
+              setTestCaseName(data.testCaseName);
+              setTestFilePath(data.testFilePath);
+              setRegressionDescription(data.descriptionTxt);
+            }
+            setIsLoading(false);
+          });
+        },
+      );
+    } else {
+      regressionCheckout({ regression_uuid: HISTORY_SEARCH.regressionUuid, userToken: '123' }).then(
+        () => {
+          queryRegressionDetail({
+            regression_uuid: HISTORY_SEARCH.regressionUuid,
+            userToken: '123',
+          }).then((data) => {
+            if (data !== null && data !== undefined) {
+              setListBFC(data.bfcChangedFiles);
+              setListBIC(data.bicChangedFiles);
+              setBFC(data.bfc);
+              setBIC(data.bic);
+              setBFCURL(data.bfcURL);
+              setBICURL(data.bicURL);
+              setProjectFullName(data.projectFullName);
+              setTestCaseName(data.testCaseName);
+              setTestFilePath(data.testFilePath);
+              setRegressionDescription(data.descriptionTxt);
+            }
+            setIsLoading(false);
+          });
+        },
+      );
+    }
     getRetrievalCriticalChangeReviewList({
       regression_uuid: HISTORY_SEARCH.regressionUuid,
       revision_name: 'bic',
@@ -798,7 +817,16 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
           header={{
             title: 'Regression verfication',
             subTitle: (
-              <Typography.Text>Regression UUID: {HISTORY_SEARCH.regressionUuid}</Typography.Text>
+              <div>
+                <Typography.Text style={{ marginRight: 20 }}>
+                  Regression UUID: {HISTORY_SEARCH.regressionUuid}
+                </Typography.Text>
+                {HISTORY_SEARCH.bic ? (
+                  <Typography.Text style={{ marginRight: 20 }}>
+                    bic ID: {HISTORY_SEARCH.bic}
+                  </Typography.Text>
+                ) : null}
+              </div>
             ),
             footer: (
               <div style={{ display: 'inline-flex', alignItems: 'center' }}>

@@ -26,6 +26,20 @@ export type TableListData = {
   pagination: Partial<TableListPagination>;
 };
 
+export type CommitFile = {
+  newPath: string;
+  oldPath: string;
+  newCode: string;
+  oldCode: string;
+};
+
+export interface FilePaneItem extends CommitFile {
+  key: string;
+  editList: DiffEditDetailItems[];
+  CriticalChange: HunkEntityItems | undefined;
+  project: string;
+}
+
 export type DiffEditDetailItems = {
   beginA: number;
   beginB: number;

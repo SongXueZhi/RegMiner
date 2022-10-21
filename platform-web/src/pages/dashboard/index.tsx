@@ -96,12 +96,12 @@ const DashboardPage: React.FC<{}> = () => {
     handleIdLists(indexList);
     for (let i = 0; i < Number(res.data.searchSpaceNum) - 1; i++) {
       if (indexList.indexOf(i) !== -1) {
-        console.log(
-          'item.index === ',
-          work === idList[indexList.indexOf(i)],
-          idList[indexList.indexOf(i)],
-          work,
-        );
+        // console.log(
+        //   'item.index === ',
+        //   work === idList[indexList.indexOf(i)],
+        //   idList[indexList.indexOf(i)],
+        //   work,
+        // );
         arr.push({
           index: work === idList[indexList.indexOf(i)] ? 'wc' : arr.length,
           name: work === idList[indexList.indexOf(i)] ? i + ':wc' : i,
@@ -126,7 +126,6 @@ const DashboardPage: React.FC<{}> = () => {
       sort.push(indicated.indexOf(i));
     }
     const bfcName = Number(arr[arr.length - 1].name) + 1;
-    console.log();
     arr.push({
       index: 'bfc',
       name: bfcName + ':bfc',
@@ -193,7 +192,7 @@ const DashboardPage: React.FC<{}> = () => {
           danger
           onClick={() => {
             // handleRemove(regressionUuid).then(() => {
-            console.log('regressionUuid,bic:', bic, bfc, regressionUuid, projectFullName, bugId);
+            // console.log('regressionUuid,bic:', bic, bfc, regressionUuid, projectFullName, bugId);
             window.currentBic = bic;
             // });
             const bug = `${projectFullName}_${index}`;
