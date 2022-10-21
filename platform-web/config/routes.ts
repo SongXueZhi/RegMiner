@@ -42,7 +42,7 @@
   },
   {
     key: 'deltaDebugging',
-    name: 'Delta Debugging',
+    name: 'deltaDebugging',
     icon: 'Control',
     path: '/deltaDebugging',
     component: './deltaDebugging',
