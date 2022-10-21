@@ -1,5 +1,5 @@
 {
-    "runResult": {
+    "ddResult": {
         "info": {
             "regressionUuid": "123-456",
             "revision": "bfc",
@@ -42,43 +42,23 @@
                 "stepNum": 1,
                 "stepResult": "failed",
                 "testedHunks": [],
-                "cPro": [
+                "testResults": [
                     {
-                        "hunkId_1": "0.213"
-                    },
-                    {
-                        "hunkId_2": "0.213"
-                    },
-                    {
-                        "hunkId_3": "0.213"
-                    },
-                    {
-                        "hunkId_4": "0.213"
-                    },
-                    {
-                        "hunkId_5": "0.213"
-                    },
-                    {
+                        "resultType": "cPro",
+                        "hunkId_1": "0.213",
+                        "hunkId_2": "0.213",
+                        "hunkId_3": "0.213",
+                        "hunkId_4": "0.213",
+                        "hunkId_5": "0.213",
                         "hunkId_6": "0.213"
-                    }
-                ],
-                "dPro": [
-                    {
-                        "hunkId_1": "0.1"
                     },
                     {
-                        "hunkId_2": "0.1"
-                    },
-                    {
-                        "hunkId_3": "0.1"
-                    },
-                    {
-                        "hunkId_4": "0.1"
-                    },
-                    {
-                        "hunkId_5": "0.1"
-                    },
-                    {
+                        "resultType": "dPro",
+                        "hunkId_1": "0.1",
+                        "hunkId_2": "0.1",
+                        "hunkId_3": "0.1",
+                        "hunkId_4": "0.1",
+                        "hunkId_5": "0.1",
                         "hunkId_6": "0.1"
                     }
                 ]
@@ -90,43 +70,23 @@
                     "hunkId_1",
                     "hunkId_4"
                 ],
-                "cPro": [
+                "testResults": [
                     {
-                        "hunkId_1": "0.213"
-                    },
-                    {
-                        "hunkId_2": "0.345"
-                    },
-                    {
-                        "hunkId_3": "0.345"
-                    },
-                    {
-                        "hunkId_4": "0.213"
-                    },
-                    {
-                        "hunkId_5": "0.345"
-                    },
-                    {
+                        "resultType": "cPro",
+                        "hunkId_1": "0.213",
+                        "hunkId_2": "0.345",
+                        "hunkId_3": "0.345",
+                        "hunkId_4": "0.213",
+                        "hunkId_5": "0.345",
                         "hunkId_6": "0.345"
-                    }
-                ],
-                "dPro": [
-                    {
-                        "hunkId_1": "0.1"
                     },
                     {
-                        "hunkId_2": "0.1"
-                    },
-                    {
-                        "hunkId_3": "0.1"
-                    },
-                    {
-                        "hunkId_4": "0.1"
-                    },
-                    {
-                        "hunkId_5": "0.1"
-                    },
-                    {
+                        "resultType": "dPro",
+                        "hunkId_1": "0.1",
+                        "hunkId_2": "0.1",
+                        "hunkId_3": "0.1",
+                        "hunkId_4": "0.1",
+                        "hunkId_5": "0.1",
                         "hunkId_6": "0.1"
                     }
                 ]
@@ -140,43 +100,23 @@
                     "hunkId_5",
                     "hunkId_6"
                 ],
-                "cPro": [
+                "testResults": [
                     {
-                        "hunkId_1": "0.213"
-                    },
-                    {
-                        "hunkId_2": "0.345"
-                    },
-                    {
-                        "hunkId_3": "0.345"
-                    },
-                    {
-                        "hunkId_4": "0.213"
-                    },
-                    {
-                        "hunkId_5": "0.345"
-                    },
-                    {
+                        "resultType": "cPro",
+                        "hunkId_1": "0.213",
+                        "hunkId_2": "0.345",
+                        "hunkId_3": "0.345",
+                        "hunkId_4": "0.213",
+                        "hunkId_5": "0.345",
                         "hunkId_6": "0.345"
-                    }
-                ],
-                "dPro": [
-                    {
-                        "hunkId_1": "0.3"
                     },
                     {
-                        "hunkId_2": "0.1"
-                    },
-                    {
-                        "hunkId_3": "0.3"
-                    },
-                    {
-                        "hunkId_4": "0.1"
-                    },
-                    {
-                        "hunkId_5": "0.1"
-                    },
-                    {
+                        "resultType": "dPro",
+                        "hunkId_1": "0.3",
+                        "hunkId_2": "0.1",
+                        "hunkId_3": "0.3",
+                        "hunkId_4": "0.1",
+                        "hunkId_5": "0.1",
                         "hunkId_6": "0.1"
                     }
                 ]
@@ -190,43 +130,23 @@
                     "hunkId_4",
                     "hunkId_5"
                 ],
-                "cPro": [
+                "testResults": [
                     {
-                        "hunkId_1": "0.213"
-                    },
-                    {
-                        "hunkId_2": "0.345"
-                    },
-                    {
-                        "hunkId_3": "0.345"
-                    },
-                    {
-                        "hunkId_4": "0.213"
-                    },
-                    {
-                        "hunkId_5": "0.345"
-                    },
-                    {
+                        "resultType": "cPro",
+                        "hunkId_1": "0.213",
+                        "hunkId_2": "0.345",
+                        "hunkId_3": "0.345",
+                        "hunkId_4": "0.213",
+                        "hunkId_5": "0.345",
                         "hunkId_6": "0.345"
-                    }
-                ],
-                "dPro": [
-                    {
-                        "hunkId_1": "0.5"
                     },
                     {
-                        "hunkId_2": "0.1"
-                    },
-                    {
-                        "hunkId_3": "0.3"
-                    },
-                    {
-                        "hunkId_4": "0.1"
-                    },
-                    {
-                        "hunkId_5": "0.1"
-                    },
-                    {
+                        "resultType": "dPro",
+                        "hunkId_1": "0.5",
+                        "hunkId_2": "0.1",
+                        "hunkId_3": "0.3",
+                        "hunkId_4": "0.1",
+                        "hunkId_5": "0.1",
                         "hunkId_6": "0.3"
                     }
                 ]
@@ -240,43 +160,23 @@
                     "hunkId_3",
                     "hunkId_6"
                 ],
-                "cPro": [
+                "testResults": [
                     {
-                        "hunkId_1": "0.213"
-                    },
-                    {
-                        "hunkId_2": "0.345"
-                    },
-                    {
-                        "hunkId_3": "0.345"
-                    },
-                    {
-                        "hunkId_4": "0.213"
-                    },
-                    {
-                        "hunkId_5": "0.345"
-                    },
-                    {
+                        "resultType": "cPro",
+                        "hunkId_1": "0.213",
+                        "hunkId_2": "0.345",
+                        "hunkId_3": "0.345",
+                        "hunkId_4": "0.213",
+                        "hunkId_5": "0.345",
                         "hunkId_6": "0.345"
-                    }
-                ],
-                "dPro": [
-                    {
-                        "hunkId_1": "0.5"
                     },
                     {
-                        "hunkId_2": "0.1"
-                    },
-                    {
-                        "hunkId_3": "0.3"
-                    },
-                    {
-                        "hunkId_4": "0.3"
-                    },
-                    {
-                        "hunkId_5": "0.3"
-                    },
-                    {
+                        "resultType": "dPro",
+                        "hunkId_1": "0.5",
+                        "hunkId_2": "0.1",
+                        "hunkId_3": "0.3",
+                        "hunkId_4": "0.3",
+                        "hunkId_5": "0.3",
                         "hunkId_6": "0.3"
                     }
                 ]

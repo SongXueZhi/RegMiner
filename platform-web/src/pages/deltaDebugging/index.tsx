@@ -1,19 +1,14 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import { Button, Descriptions, Drawer, Steps, Typography } from 'antd';
+import { Button, Card, Descriptions, Divider, Drawer, Typography } from 'antd';
 import React, { useState } from 'react';
+import { ddResult } from './components/mockData';
 
 const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
   const [sidebarRegressionMenu, setSidebarRegressionMenu] = useState<boolean>(false);
-  const [current, setCurrent] = useState(0);
 
   const handleRunDD = () => {
     console.log('RUN');
-  };
-
-  const handleStepsChange = (value: number) => {
-    console.log('change', current);
-    setCurrent(value);
   };
 
   return (
@@ -69,39 +64,21 @@ const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
       }}
     >
       <div style={{ display: 'flex' }}>
-        <div>
-          <Button onClick={handleRunDD}>Run</Button>
-          <Steps initial={0} current={current} onChange={handleStepsChange} direction="vertical">
-            <Steps.Step
-              title="Step 1"
-              subTitle="this is sub"
-              description="This is a description."
-            />
-            <Steps.Step
-              title="Step 2"
-              subTitle="this is sub"
-              description="This is a description."
-            />
-            <Steps.Step
-              title="Step 3"
-              subTitle="this is sub"
-              description="This is a description."
-            />
-            <Steps.Step
-              title="Step 4"
-              subTitle="this is sub"
-              description="This is a description."
-            />
-          </Steps>
-        </div>
+        <Card bordered style={{ marginRight: 10, width: '50%', overflow: 'auto' }}>
+          <div>
+            <Button onClick={handleRunDD}>Run</Button>
+            <Button onClick={handleRunDD}>Run</Button>
+          </div>
+          <Divider />
+        </Card>
+        <Card bordered style={{ width: '50%', overflow: 'auto' }}></Card>
       </div>
       <Drawer
         // bodyStyle={DrawerbodyStyle}
         title="Regressions List"
         placement={'right'}
-        closable={false}
         onClose={() => setSidebarRegressionMenu(false)}
-        visible={sidebarRegressionMenu}
+        open={sidebarRegressionMenu}
         key={'right'}
         width={450}
       >
