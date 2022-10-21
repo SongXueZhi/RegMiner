@@ -2,10 +2,13 @@ import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import { Button, Card, Descriptions, Divider, Drawer, Typography } from 'antd';
 import React, { useState } from 'react';
+import DeltaDebuggingStepFlow from './components/ddStepFlow';
 import { ddResult } from './components/mockData';
+import { ddResultItems } from './data';
 
 const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
   const [sidebarRegressionMenu, setSidebarRegressionMenu] = useState<boolean>(false);
+  const ALLDATA: ddResultItems = ddResult;
 
   const handleRunDD = () => {
     console.log('RUN');
@@ -70,6 +73,9 @@ const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
             <Button onClick={handleRunDD}>Run</Button>
           </div>
           <Divider />
+          <div>
+            <DeltaDebuggingStepFlow ddSteps={ALLDATA}></DeltaDebuggingStepFlow>
+          </div>
         </Card>
         <Card bordered style={{ width: '50%', overflow: 'auto' }}></Card>
       </div>

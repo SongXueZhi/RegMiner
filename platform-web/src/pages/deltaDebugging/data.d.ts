@@ -1,13 +1,13 @@
 export type ddResultItems = {
   info: ddInfoItems;
-  steps: ddStepsItems;
+  steps: ddStepsItems[];
 };
 
 export type ddInfoItems = {
-  regression: string;
+  regressionUuid: string;
   revision: string;
   filePath: string;
-  allHunk: hunkDetailItems[];
+  allHunks: hunkDetailItems[];
 };
 
 export type hunkDetailItems = {

@@ -1,22 +1,27 @@
 import { Steps, Collapse, Table } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { useState } from 'react';
-import { ddResult } from './mockData';
+import { ddResultItems } from '../data';
 
 interface IProps {
-  ddSteps: string[];
+  ddSteps: ddResultItems;
 }
 
-const ddStepFlow: React.FC<IProps> = ({ ddSteps }) => {
+const DeltaDebuggingStepFlow: React.FC<IProps> = ({ ddSteps }) => {
   const [current, setCurrent] = useState(0);
-  const columns: ColumnsType<any> = [];
 
-  const columnsHunkList = ddResult.info.allHunks.map((data) => {
+  const columnsHunkList = ddSteps.info.allHunks.map((data) => {
     return {
       title: data.hunkId,
       dataIndex: data.hunkId,
     };
   });
+  columnsHunkList.splice(0, 0, {
+    title: 'resultType',
+    dataIndex: 'resultType',
+  });
+
+  const columns: ColumnsType<any> = columnsHunkList;
 
   const handleStepsChange = (value: number) => {
     console.log('change', current);
@@ -24,7 +29,7 @@ const ddStepFlow: React.FC<IProps> = ({ ddSteps }) => {
   };
   return (
     <Steps initial={0} current={current} onChange={handleStepsChange} direction="vertical">
-      {ddResult.steps.map((resp) => {
+      {ddSteps.steps.map((resp) => {
         return (
           <Steps.Step
             title={`Step result: ${resp.stepResult}`}
@@ -52,4 +57,4 @@ const ddStepFlow: React.FC<IProps> = ({ ddSteps }) => {
   );
 };
 
-export default ddStepFlow;
+export default DeltaDebuggingStepFlow;

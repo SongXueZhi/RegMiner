@@ -35,7 +35,7 @@
   {
     key: 'dashboard',
     name: 'dashboard',
-    icon: 'Sync', 
+    icon: 'Sync',
     path: '/dashboard',
     component: './dashboard',
     access: 'userRouteFilter',
@@ -55,13 +55,13 @@
     // icon: 'smile',
     component: './editor',
   },
-  {
-    key: 'detail',
-    // name: 'editor',
-    path: '/detail',
-    // icon: 'smile',
-    component: './detail',
-  },
+  // {
+  // key: 'detail',
+  // name: 'editor',
+  // path: '/detail',
+  // icon: 'smile',
+  // component: './detail',
+  // },
   // {
   //   name: 'code',
   //   path: '/code',
