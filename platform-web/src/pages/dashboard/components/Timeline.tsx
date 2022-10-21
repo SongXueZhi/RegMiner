@@ -39,7 +39,7 @@ const TimeLine: React.FC<TimeLineProps> = (props) => {
       narr.push(lineList[indicated[currentStep]].name);
 
       // }
-      console.log('lineList', lineList, indicated);
+      // console.log('lineList', lineList, indicated);
       setCurrentPoint(lineList[indicated[currentStep + 1]].id);
       setCurrentStep(currentStep + 1);
     }
@@ -70,7 +70,7 @@ const TimeLine: React.FC<TimeLineProps> = (props) => {
     return (
       <Link
         to={{
-          pathname: '/detail',
+          pathname: '/editor',
           search: stringify({
             regressionUuid: currentRegressionUuid,
             bic: item.id,

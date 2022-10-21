@@ -26,6 +26,25 @@ export async function queryRegressionDetail(params: {
   return data;
 }
 
+export async function queryRegressionMigrate(params: {
+  regression_uuid: string;
+  userToken: string;
+  bic: string;
+}) {
+  const { code, msg, data } = await request<API.RegResponse<RegressionDetail>>(
+    '/api/regression/migrate',
+    {
+      method: 'GET',
+      params,
+    },
+  );
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  }
+  return data;
+}
+
 export async function regressionCheckout(params: { regression_uuid: string; userToken: string }) {
   const { code, msg, data } = await request<API.RegResponse<any>>('/api/regression/checkout', {
     method: 'PUT',
