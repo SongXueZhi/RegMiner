@@ -1,5 +1,9 @@
-export const ddResult = {
+import { ddResultItems } from '../data';
+
+// case 6
+export const ddResult: ddResultItems = {
   info: {
+    projectFullName: 'this is Project Name',
     regressionUuid: '123-456',
     revision: 'bfc',
     filePath: '/dome/test',
@@ -39,9 +43,9 @@ export const ddResult = {
   steps: [
     {
       stepNum: 1,
-      stepResult: 'failed',
+      testResult: 'failed',
       testedHunks: [],
-      testResults: [
+      testResultData: [
         {
           resultType: 'cPro',
           hunkId_1: '0.213',
@@ -64,9 +68,9 @@ export const ddResult = {
     },
     {
       stepNum: 2,
-      stepResult: 'failed',
+      testResult: 'failed',
       testedHunks: ['hunkId_1', 'hunkId_4'],
-      testResults: [
+      testResultData: [
         {
           resultType: 'cPro',
           hunkId_1: '0.213',
@@ -89,9 +93,9 @@ export const ddResult = {
     },
     {
       stepNum: 3,
-      stepResult: 'CE',
+      testResult: 'CE',
       testedHunks: ['hunkId_2', 'hunkId_4', 'hunkId_5', 'hunkId_6'],
-      testResults: [
+      testResultData: [
         {
           resultType: 'cPro',
           hunkId_1: '0.213',
@@ -114,9 +118,9 @@ export const ddResult = {
     },
     {
       stepNum: 4,
-      stepResult: 'CE',
+      testResult: 'CE',
       testedHunks: ['hunkId_2', 'hunkId_3', 'hunkId_4', '    hunkId_5'],
-      testResults: [
+      testResultData: [
         {
           resultType: 'cPro',
           hunkId_1: '0.213',
@@ -139,9 +143,9 @@ export const ddResult = {
     },
     {
       stepNum: 5,
-      stepResult: 'CE',
+      testResult: 'CE',
       testedHunks: ['hunkId_1', 'hunkId_2', 'hunkId_3', ' hunkId_6'],
-      testResults: [
+      testResultData: [
         {
           resultType: 'cPro',
           hunkId_1: '0.213',
@@ -162,5 +166,132 @@ export const ddResult = {
         },
       ],
     },
+    {
+      stepNum: 6,
+      testResult: 'pass',
+      testedHunks: ['hunkId_1', 'hunkId_2', 'hunkId_3', ' hunkId_4'],
+      testResultData: [
+        {
+          resultType: 'cPro',
+          hunkId_1: '0.213',
+          hunkId_2: '0.345',
+          hunkId_3: '0.345',
+          hunkId_4: '0.213',
+          hunkId_5: '0.0',
+          hunkId_6: '0.0',
+        },
+        {
+          resultType: 'dPro',
+          hunkId_1: '0.5',
+          hunkId_2: '0.1',
+          hunkId_3: '0.3',
+          hunkId_4: '0.3',
+          hunkId_5: '0.0',
+          hunkId_6: '0.0',
+        },
+      ],
+    },
+    {
+      stepNum: 7,
+      testResult: 'CE',
+      testedHunks: ['hunkId_2', 'hunkId_3'],
+      testResultData: [
+        {
+          resultType: 'cPro',
+          hunkId_1: '0.213',
+          hunkId_2: '0.345',
+          hunkId_3: '0.345',
+          hunkId_4: '0.213',
+          hunkId_5: '0.0',
+          hunkId_6: '0.0',
+        },
+        {
+          resultType: 'dPro',
+          hunkId_1: '0.6',
+          hunkId_2: '0.1',
+          hunkId_3: '0.3',
+          hunkId_4: '0.4',
+          hunkId_5: '0.0',
+          hunkId_6: '0.0',
+        },
+      ],
+    },
+    {
+      stepNum: 8,
+      testResult: 'failed',
+      testedHunks: ['hunkId_3', ' hunkId_4'],
+      testResultData: [
+        {
+          resultType: 'cPro',
+          hunkId_1: '0.439',
+          hunkId_2: '0.712',
+          hunkId_3: '0.345',
+          hunkId_4: '0.213',
+          hunkId_5: '0.0',
+          hunkId_6: '0.0',
+        },
+        {
+          resultType: 'dPro',
+          hunkId_1: '0.5',
+          hunkId_2: '0.1',
+          hunkId_3: '0.3',
+          hunkId_4: '0.4',
+          hunkId_5: '0.0',
+          hunkId_6: '0.0',
+        },
+      ],
+    },
+    {
+      stepNum: 9,
+      testResult: 'failed',
+      testedHunks: ['hunkId_1', 'hunkId_2'],
+      testResultData: [
+        {
+          resultType: 'cPro',
+          hunkId_1: '0.439',
+          hunkId_2: '0.712',
+          hunkId_3: '0.712',
+          hunkId_4: '0.439',
+          hunkId_5: '0.0',
+          hunkId_6: '0.0',
+        },
+        {
+          resultType: 'dPro',
+          hunkId_1: '0.5',
+          hunkId_2: '0.1',
+          hunkId_3: '0.2',
+          hunkId_4: '0.3',
+          hunkId_5: '0.0',
+          hunkId_6: '0.0',
+        },
+      ],
+    },
+    {
+      stepNum: 10,
+      testResult: 'CE',
+      testedHunks: ['hunkId_2', 'hunkId_3'],
+      testResultData: [
+        {
+          resultType: 'cPro',
+          hunkId_1: '0.439',
+          hunkId_2: '0.712',
+          hunkId_3: '0.712',
+          hunkId_4: '0.439',
+          hunkId_5: '0.0',
+          hunkId_6: '0.0',
+        },
+        {
+          resultType: 'dPro',
+          hunkId_1: '0.6',
+          hunkId_2: '0.1',
+          hunkId_3: '0.2',
+          hunkId_4: '0.4',
+          hunkId_5: '0.0',
+          hunkId_6: '0.0',
+        },
+      ],
+    },
   ],
 };
+
+export const hunkRelationData = {};

@@ -4,6 +4,7 @@ export type ddResultItems = {
 };
 
 export type ddInfoItems = {
+  projectFullName: string;
   regressionUuid: string;
   revision: string;
   filePath: string;
@@ -18,7 +19,7 @@ export type hunkDetailItems = {
 
 export type ddStepsItems = {
   stepNum: number;
-  stepResult: string;
+  testResult: string;
   testedHunks: string[];
-  testResults: any;
+  testResultData: any;
 };

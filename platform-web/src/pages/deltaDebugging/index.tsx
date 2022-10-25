@@ -1,14 +1,14 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import { Button, Card, Descriptions, Divider, Drawer, Typography } from 'antd';
+import { Button, Card, Descriptions, Drawer, Typography } from 'antd';
 import React, { useState } from 'react';
 import DeltaDebuggingStepFlow from './components/ddStepFlow';
+import DeltaDebuggingHunkBlocks from './components/ddHunkBlocks';
 import { ddResult } from './components/mockData';
 import { ddResultItems } from './data';
 
-const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
+const InteractiveDeltaDebuggingPage: React.FC<{ ddResult: ddResultItems }> = () => {
   const [sidebarRegressionMenu, setSidebarRegressionMenu] = useState<boolean>(false);
-  const ALLDATA: ddResultItems = ddResult;
 
   const handleRunDD = () => {
     console.log('RUN');
@@ -37,7 +37,7 @@ const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
             <Descriptions column={3} style={{ flex: 1 }}>
               <Descriptions.Item label={'Project'} labelStyle={{ fontWeight: 'bold' }}>
                 <Typography.Text keyboard strong>
-                  projectFullName
+                  {ddResult.info.projectFullName}
                 </Typography.Text>
               </Descriptions.Item>
               <Descriptions.Item label={'Bug Inducing Commit'} labelStyle={{ fontWeight: 'bold' }}>
@@ -53,7 +53,10 @@ const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
                 <br />
               </Descriptions.Item>
               <Descriptions.Item label={'Regression UUID'} labelStyle={{ fontWeight: 'bold' }}>
-                <Typography.Text>regUuidxxx-xxx-xx</Typography.Text>
+                <Typography.Text>{ddResult.info.regressionUuid}</Typography.Text>
+              </Descriptions.Item>
+              <Descriptions.Item label={'revision'} labelStyle={{ fontWeight: 'bold' }}>
+                {ddResult.info.revision}
               </Descriptions.Item>
               <Descriptions.Item
                 label={'Regression description'}
@@ -66,18 +69,35 @@ const InteractiveDeltaDebuggingPage: React.FC<{}> = () => {
         ),
       }}
     >
-      <div style={{ display: 'flex' }}>
-        <Card bordered style={{ marginRight: 10, width: '50%', overflow: 'auto' }}>
+      <div style={{ display: 'flex', marginBottom: 10 }}>
+        <Card
+          title={
+            <div>
+              <Button onClick={handleRunDD}>Run</Button>
+              <Button onClick={handleRunDD}>Step</Button>
+            </div>
+          }
+          headStyle={{ height: 85 }}
+          bodyStyle={{ height: 600 }}
+          bordered
+          style={{ width: '60%', overflow: 'auto' }}
+        >
           <div>
-            <Button onClick={handleRunDD}>Run</Button>
-            <Button onClick={handleRunDD}>Run</Button>
-          </div>
-          <Divider />
-          <div>
-            <DeltaDebuggingStepFlow ddSteps={ALLDATA}></DeltaDebuggingStepFlow>
+            <DeltaDebuggingStepFlow ddSteps={ddResult}></DeltaDebuggingStepFlow>
           </div>
         </Card>
-        <Card bordered style={{ width: '50%', overflow: 'auto' }}></Card>
+        <Card
+          title={<div>choosed hunks</div>}
+          headStyle={{ height: 85 }}
+          bodyStyle={{ height: 600 }}
+          bordered
+          style={{ width: '40%', overflow: 'auto' }}
+        >
+          <DeltaDebuggingHunkBlocks hunkInfo={ddResult.info}></DeltaDebuggingHunkBlocks>
+        </Card>
+      </div>
+      <div style={{ display: 'flex' }}>
+        <Card title={'Hunk Relation Graph'} style={{ width: '100%', overflow: 'auto' }}></Card>
       </div>
       <Drawer
         // bodyStyle={DrawerbodyStyle}

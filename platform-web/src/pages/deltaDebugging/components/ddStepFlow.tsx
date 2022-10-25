@@ -8,7 +8,7 @@ interface IProps {
 }
 
 const DeltaDebuggingStepFlow: React.FC<IProps> = ({ ddSteps }) => {
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState<number>(0);
 
   const columnsHunkList = ddSteps.info.allHunks.map((data) => {
     return {
@@ -24,7 +24,7 @@ const DeltaDebuggingStepFlow: React.FC<IProps> = ({ ddSteps }) => {
   const columns: ColumnsType<any> = columnsHunkList;
 
   const handleStepsChange = (value: number) => {
-    console.log('change', current);
+    // console.log('change', current);
     setCurrent(value);
   };
   return (
@@ -32,7 +32,16 @@ const DeltaDebuggingStepFlow: React.FC<IProps> = ({ ddSteps }) => {
       {ddSteps.steps.map((resp) => {
         return (
           <Steps.Step
-            title={`Step result: ${resp.stepResult}`}
+            status={
+              resp.testResult === 'failed'
+                ? 'error'
+                : resp.testResult === 'CE'
+                ? 'process'
+                : resp.testResult === 'pass'
+                ? 'finish'
+                : 'process'
+            }
+            title={`Step result: ${resp.testResult}`}
             subTitle={`Tested hunks: [${resp.testedHunks}]`}
             description={
               <Collapse
@@ -40,11 +49,16 @@ const DeltaDebuggingStepFlow: React.FC<IProps> = ({ ddSteps }) => {
                   console.log(key);
                 }}
               >
-                <Collapse.Panel key={resp.stepNum} header={'dd results'}>
+                <Collapse.Panel
+                  key={resp.stepNum}
+                  header={'dd results'}
+                  forceRender
+                  style={{ overflow: 'auto' }}
+                >
                   <Table
-                    rowKey={`${resp.stepNum}-${resp.stepResult}`}
+                    rowKey={`${resp.stepNum}-${resp.testResult}`}
                     columns={columns}
-                    dataSource={resp.testResults}
+                    dataSource={resp.testResultData}
                     pagination={false}
                   />
                 </Collapse.Panel>
