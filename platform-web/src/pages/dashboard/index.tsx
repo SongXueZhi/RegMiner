@@ -273,7 +273,7 @@ const DashboardPage: React.FC<{}> = () => {
         placement={'right'}
         closable={false}
         onClose={onClose}
-        open={dashboardvisible}
+        visible={dashboardvisible}
         key={'right'}
         width={450}
       >

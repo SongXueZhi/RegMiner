@@ -6,6 +6,7 @@ import DeltaDebuggingStepFlow from './components/ddStepFlow';
 import DeltaDebuggingHunkBlocks from './components/ddHunkBlocks';
 import { ddResult } from './components/mockData';
 import { ddResultItems } from './data';
+import DeltaDebuggingHunkRelationGraph from './components/ddHunkRelationGraph';
 
 const InteractiveDeltaDebuggingPage: React.FC<{ ddResult: ddResultItems }> = () => {
   const [sidebarRegressionMenu, setSidebarRegressionMenu] = useState<boolean>(false);
@@ -97,14 +98,22 @@ const InteractiveDeltaDebuggingPage: React.FC<{ ddResult: ddResultItems }> = () 
         </Card>
       </div>
       <div style={{ display: 'flex' }}>
-        <Card title={'Hunk Relation Graph'} style={{ width: '100%', overflow: 'auto' }}></Card>
+        <Card
+          title={'Hunk Relation Graph'}
+          headStyle={{ height: 85 }}
+          bodyStyle={{ height: 300 }}
+          bordered
+          style={{ width: '100%', overflow: 'auto' }}
+        >
+          <DeltaDebuggingHunkRelationGraph />
+        </Card>
       </div>
       <Drawer
         // bodyStyle={DrawerbodyStyle}
         title="Regressions List"
         placement={'right'}
         onClose={() => setSidebarRegressionMenu(false)}
-        open={sidebarRegressionMenu}
+        visible={sidebarRegressionMenu}
         key={'right'}
         width={450}
       >

@@ -13,7 +13,7 @@ const CreateForm: React.FC<CreateFormProps> = (props) => {
     <Modal
       destroyOnClose
       title="add regression"
-      open={modalVisible}
+      visible={modalVisible}
       onCancel={() => onCancel()}
       footer={null}
     >

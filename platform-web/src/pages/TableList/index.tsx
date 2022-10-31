@@ -365,7 +365,7 @@ const TableList: React.FC = () => {
 
       <Drawer
         width={600}
-        open={showDetail}
+        visible={showDetail}
         onClose={() => {
           setCurrentRow(undefined);
           setShowDetail(false);

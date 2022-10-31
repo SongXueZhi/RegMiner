@@ -294,4 +294,103 @@ export const ddResult: ddResultItems = {
   ],
 };
 
-export const hunkRelationData = {};
+export const hunkRelationData = {
+  nodes: [
+    {
+      path: '/src/main/java/redis/clients/jedis/Pipeline.java',
+      size: 30,
+      name: 'Pipeline.java',
+      id: '1',
+      label: 1,
+    },
+    {
+      path: '/src/main/java/redis/clients/jedis/Jedis.java',
+      size: 30,
+      name: 'Jedis.java',
+      id: '2',
+      label: 2,
+    },
+    {
+      path: '/src/main/java/redis/clients/jedis/Transaction.java',
+      size: 30,
+      name: 'Transaction.java',
+      id: '3',
+      label: 3,
+    },
+  ],
+  smells: [
+    {
+      nodes: [
+        {
+          path: '/src/main/java/redis/clients/jedis/Pipeline.java',
+          index: 1,
+        },
+        {
+          path: '/src/main/java/redis/clients/jedis/Jedis.java',
+          index: 2,
+        },
+        {
+          path: '/src/main/java/redis/clients/jedis/Transaction.java',
+          index: 3,
+        },
+      ],
+      name: '编译率高的开源项目-jedis-master-0',
+    },
+  ],
+  coreNode: '0',
+  edges: [
+    {
+      dependsOnTypes: {
+        Call: 1,
+      },
+      times: 1,
+      target_name: 'Jedis.java',
+      source_label: 1,
+      id: '1001',
+      source: '1',
+      source_name: 'Pipeline.java',
+      target: '2',
+      target_label: 2,
+    },
+    {
+      dependsOnTypes: {
+        Call: 3,
+      },
+      times: 3,
+      target_name: 'Jedis.java',
+      source_label: 3,
+      id: '1002',
+      source: '3',
+      source_name: 'Transaction.java',
+      target: '2',
+      target_label: 2,
+    },
+    {
+      dependsOnTypes: {
+        Call: 3,
+      },
+      times: 3,
+      target_name: 'Pipeline.java',
+      source_label: 2,
+      id: '1003',
+      source: '2',
+      source_name: 'Jedis.java',
+      target: '1',
+      target_label: 1,
+    },
+    {
+      dependsOnTypes: {
+        Call: 1,
+      },
+      times: 1,
+      target_name: 'Transaction.java',
+      source_label: 2,
+      id: '1004',
+      source: '2',
+      source_name: 'Jedis.java',
+      target: '3',
+      target_label: 3,
+    },
+  ],
+  smellType: 'CyclicDependency',
+};
