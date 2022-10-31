@@ -238,6 +238,7 @@ const NewCodeEditor: React.FC<IProps> = ({
   };
 
   return (
+    // @ts-ignore
     <ResizeSensor onResize={handleResizeMonacoEditor}>
       <div className="EditorRoot" id={uuid}>
         <div

@@ -36,7 +36,7 @@ export default {
   'menu.result': '结果页',
   'menu.result.success': '成功页',
   'menu.result.fail': '失败页',
-  'menu.regression': 'Regressions',
+  'menu.regression': 'Regression',
   'menu.exception': '异常页',
   'menu.exception.not-permission': '403',
   'menu.exception.not-find': '404',
@@ -51,4 +51,5 @@ export default {
   'menu.editor.flow': '流程编辑器',
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
+  'menu.deltaDebugging': 'Delta Debugging',
 };
