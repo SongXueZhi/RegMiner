@@ -21,5 +21,6 @@ export type ddStepsItems = {
   stepNum: number;
   testResult: string;
   testedHunks: string[];
-  testResultData: any;
+  cProDDResults: number[];
+  dProDDResults?: number[];
 };

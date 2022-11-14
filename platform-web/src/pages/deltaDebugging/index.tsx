@@ -1,18 +1,28 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import { Button, Card, Descriptions, Drawer, Typography } from 'antd';
+import { Button, Card, Descriptions, Drawer, Steps, Typography } from 'antd';
 import React, { useState } from 'react';
-import DeltaDebuggingStepFlow from './components/ddStepFlow';
 import DeltaDebuggingHunkBlocks from './components/ddHunkBlocks';
 import { ddResult } from './components/mockData';
-import { ddResultItems } from './data';
+import { ddResultItems, ddStepsItems } from './data';
 import DeltaDebuggingHunkRelationGraph from './components/ddHunkRelationGraph';
+import DeltaDebuggingStepResultTable from './components/ddStepResultTable';
+import ProCard from '@ant-design/pro-card';
 
 const InteractiveDeltaDebuggingPage: React.FC<{ ddResult: ddResultItems }> = () => {
   const [sidebarRegressionMenu, setSidebarRegressionMenu] = useState<boolean>(false);
+  const [current, setCurrent] = useState<number>(0);
+  const [selectedStepInfo, setSelectedStepInfo] = useState<ddStepsItems[]>([]);
 
   const handleRunDD = () => {
     console.log('RUN');
+  };
+
+  const handleStepsChange = (value: number) => {
+    // console.log('change', current);
+    setCurrent(value);
+    selectedStepInfo.push(ddResult.steps[value]);
+    setSelectedStepInfo(selectedStepInfo);
   };
 
   return (
@@ -81,21 +91,48 @@ const InteractiveDeltaDebuggingPage: React.FC<{ ddResult: ddResultItems }> = () 
           headStyle={{ height: 85 }}
           bodyStyle={{ height: 600 }}
           bordered
-          style={{ width: '60%', overflow: 'auto' }}
+          style={{ width: '30%', overflow: 'auto' }}
         >
-          <div>
-            <DeltaDebuggingStepFlow ddSteps={ddResult}></DeltaDebuggingStepFlow>
-          </div>
+          <Steps current={current} onChange={handleStepsChange} direction="vertical">
+            {ddResult.steps.map((resp) => {
+              return (
+                <Steps.Step
+                  key={resp.stepNum}
+                  status={
+                    resp.testResult === 'failed'
+                      ? 'error'
+                      : resp.testResult === 'CE'
+                      ? 'process'
+                      : resp.testResult === 'pass'
+                      ? 'finish'
+                      : 'process'
+                  }
+                  title={`Step result: ${resp.testResult}`}
+                  description={`Tested hunks: [${resp.testedHunks}]`}
+                />
+              );
+            })}
+          </Steps>
         </Card>
-        <Card
+        <ProCard
           title={<div>choosed hunks</div>}
           headStyle={{ height: 85 }}
           bodyStyle={{ height: 600 }}
           bordered
-          style={{ width: '40%', overflow: 'auto' }}
+          style={{ width: '70%', overflow: 'auto' }}
+          split={'horizontal'}
         >
-          <DeltaDebuggingHunkBlocks hunkInfo={ddResult.info}></DeltaDebuggingHunkBlocks>
-        </Card>
+          <ProCard split={'horizontal'}>
+            {JSON.stringify(selectedStepInfo)}
+            <DeltaDebuggingStepResultTable
+              ddHunkInfo={ddResult.info}
+              selectedStepInfo={selectedStepInfo}
+            />
+          </ProCard>
+          <ProCard split={'horizontal'}>
+            <DeltaDebuggingHunkBlocks ddHunkInfo={ddResult.info} />
+          </ProCard>
+        </ProCard>
       </div>
       <div style={{ display: 'flex' }}>
         <Card
