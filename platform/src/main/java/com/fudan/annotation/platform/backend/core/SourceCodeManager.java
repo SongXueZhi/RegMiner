@@ -5,7 +5,6 @@ import com.fudan.annotation.platform.backend.util.FileUtil;
 import com.fudan.annotation.platform.backend.util.GitUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.DirectoryScanner;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -24,11 +23,28 @@ import java.nio.file.Paths;
 @Component
 public class SourceCodeManager {
 
-    private final static String workSpace = System.getProperty("user.home") + File.separator + "data"+File.separator+
+    private final static String workSpace = System.getProperty("user.home") + File.separator + "data" + File.separator +
             "miner_space";
 
     public static String metaProjectsDirPath = workSpace + File.separator + "meta_projects";
     public static String cacheProjectsDirPath = workSpace + File.separator + "transfer_cache";
+
+    public File getProjectDir(String projectFullName) {
+        String projectDirName = projectFullName.replace("/", "_");
+        checkRequiredDir();
+        File projectDir = new File(metaProjectsDirPath + File.separator + projectDirName);
+        if (projectDir.exists()) {
+            return projectDir;
+        } else {
+            try {
+                GitUtil.clone(projectDir, "https://github.com/" + projectFullName + ".git");
+                return projectDir;
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
+        }
+        return null;
+    }
 
     public File getMetaProjectDir(String projectUuid) {
         return new File(metaProjectsDirPath + File.separator + projectUuid);
@@ -66,6 +82,29 @@ public class SourceCodeManager {
         return null;
     }
 
+    private void checkRequiredDir() {
+        File metaProjectsDir = new File(metaProjectsDirPath);
+
+        if (metaProjectsDir.exists()) {
+            if (!metaProjectsDir.isDirectory()) {
+                metaProjectsDir.delete();
+                metaProjectsDir.mkdirs();
+            }
+        } else {
+            metaProjectsDir.mkdirs();
+        }
+
+        File cacheProjectsDir = new File(cacheProjectsDirPath);
+        if (cacheProjectsDir.exists()) {
+            if (!cacheProjectsDir.isDirectory()) {
+                cacheProjectsDir.delete();
+                cacheProjectsDir.mkdirs();
+            }
+        } else {
+            cacheProjectsDir.mkdirs();
+        }
+    }
+
     public File getCacheProjectDir(String userToken, String regressionUuid, String revisionFlag, String filePath) {
         return new File(cacheProjectsDirPath + File.separator + userToken + File.separator +
                 regressionUuid + File.separator + revisionFlag + File.separator + filePath);
@@ -83,7 +122,7 @@ public class SourceCodeManager {
 
     }
 
-    public File getRegressionDir(String regressionUuid, String userToken){
+    public File getRegressionDir(String regressionUuid, String userToken) {
         return new File(cacheProjectsDirPath + File.separator + userToken + File.separator + regressionUuid);
     }
 

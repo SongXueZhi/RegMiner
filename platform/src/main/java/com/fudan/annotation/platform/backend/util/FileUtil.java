@@ -1,6 +1,11 @@
 package com.fudan.annotation.platform.backend.util;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * description:
@@ -43,8 +48,8 @@ public class FileUtil {
         }
     }
 
-    public static void writeInFile(String filePath,String content) {
-        try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filePath))){
+    public static void writeInFile(String filePath, String content) {
+        try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(filePath))) {
             bufferedOutputStream.write(content.getBytes());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -52,6 +57,61 @@ public class FileUtil {
             e.printStackTrace();
         }
 
+    }
+
+    public static void copyDirToTarget(String fileFullNameCurrent, String fileFullNameTarget) {
+        try {
+            File current = new File(fileFullNameCurrent);
+            if (!current.exists() || !current.isDirectory()) {
+                return;
+            }
+
+            File target = new File(fileFullNameTarget);
+            if (target.exists()) {
+                FileUtils.forceDelete(target);
+            }
+            FileUtils.forceMkdirParent(target);
+            FileUtils.copyDirectory(current, target);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<String> readListFromFile(String path) {
+        List<String> result = new ArrayList<>();
+        File file = new File(path);
+        try {
+            InputStream is = new FileInputStream(file);
+            if (file.exists() && file.isFile()) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                String line = null;
+                while ((line = br.readLine()) != null) {
+                    result.add(line);
+                }
+                br.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public static void writeListToFile(String path,List<String> line) {
+        File file = new File(path);
+        try {
+            FileOutputStream fos = new FileOutputStream(path,false);
+            if (file.exists() && file.isFile()) {
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos, StandardCharsets.UTF_8));
+                for(String s:line) {
+                    bw.write(s);
+                    bw.newLine();
+                    bw.flush();
+                }
+                bw.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
