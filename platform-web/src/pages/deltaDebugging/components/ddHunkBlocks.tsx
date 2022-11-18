@@ -1,14 +1,14 @@
-import { Checkbox, Col, Row } from 'antd';
+import { Checkbox } from 'antd';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import React, { createRef } from 'react';
 import { MonacoDiffEditor } from 'react-monaco-editor';
 import { ddInfoItems } from '../data';
 
 interface IProps {
-  hunkInfo: ddInfoItems;
+  ddHunkInfo: ddInfoItems;
 }
 
-const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ hunkInfo }) => {
+const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ ddHunkInfo }) => {
   const editorRef = createRef<MonacoDiffEditor>();
   const options = {
     renderSideBySide: false,
@@ -40,27 +40,23 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ hunkInfo }) => {
   };
   return (
     <Checkbox.Group onChange={onChange}>
-      <Row>
-        {hunkInfo.allHunks.map((data) => {
-          return (
-            <Col span={24}>
-              <Checkbox value={data.hunkId}>
-                {data.hunkId}
-                <MonacoDiffEditor
-                  ref={editorRef}
-                  width={600}
-                  height={200}
-                  language={'java'}
-                  theme={'vs-light'}
-                  options={options}
-                  original={data.oldCode}
-                  value={data.newCode}
-                />
-              </Checkbox>
-            </Col>
-          );
-        })}
-      </Row>
+      {ddHunkInfo.allHunks.map((data, index) => {
+        return (
+          <Checkbox value={data.hunkId} key={`${index}-${data.hunkId}`}>
+            {data.hunkId}
+            <MonacoDiffEditor
+              ref={editorRef}
+              width={600}
+              height={200}
+              language={'java'}
+              theme={'vs-light'}
+              options={options}
+              original={data.oldCode}
+              value={data.newCode}
+            />
+          </Checkbox>
+        );
+      })}
     </Checkbox.Group>
   );
 };

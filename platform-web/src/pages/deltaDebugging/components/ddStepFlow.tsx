@@ -58,7 +58,7 @@ const DeltaDebuggingStepFlow: React.FC<IProps> = ({ ddSteps }) => {
                   <Table
                     rowKey={`${resp.stepNum}-${resp.testResult}`}
                     columns={columns}
-                    dataSource={resp.testResultData}
+                    dataSource={resp.cProDDResults}
                     pagination={false}
                   />
                 </Collapse.Panel>
