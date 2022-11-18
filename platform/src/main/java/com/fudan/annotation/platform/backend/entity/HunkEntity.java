@@ -16,12 +16,12 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HunkEntity implements Serializable {
-//    private int criticalChangeId;
-    private  String  newPath;
-    private  String  oldPath;
-    private  int  beginA;
-    private  int  beginB;
-    private  int  endA;
-    private  int  endB;
+    //    private int criticalChangeId;
+    private String newPath;
+    private String oldPath;
+    private int beginA;
+    private int beginB;
+    private int endA;
+    private int endB;
     private String type;
 }
