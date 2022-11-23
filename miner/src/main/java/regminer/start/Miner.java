@@ -73,7 +73,8 @@ public class Miner {
         Thread thread1 = new Thread(() -> tm.evoluteBFCList(pRFCs, linkedQueue));
         thread1.setName("bfc");
         thread1.start();
-        thread1.join();
+        thread1.join(); //comment this line and new thread to do prodd task
+        //TODO @ liu shuning
     }
 
     public static void regressionTask(ProjectEntity projectEntity, BFCEvaluator tm) throws Exception {
