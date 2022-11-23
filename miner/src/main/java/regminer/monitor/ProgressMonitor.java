@@ -9,6 +9,7 @@ import regminer.utils.FileUtilx;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -19,14 +20,15 @@ import java.util.Set;
  */
 public class ProgressMonitor {
 
-    public static Set<String> doneTaskList;
+    public static Set<String> doneTaskList = new HashSet<>();
 
     public static void load() {
-        doneTaskList = FileUtilx.readSetFromFile(Conf.PROJECT_PATH + File.separator + "progress.details");
-        if (Conf.sql_enable) {
-            Set<String> regressionsInSql = new BugRetrieve().getRegressionsFromDB();
-            doneTaskList.addAll(regressionsInSql);
-        }
+        doneTaskList.addAll(FileUtilx.readSetFromFile(Conf.PROJECT_PATH + File.separator + "progress" +
+                ".details"));
+//        if (Conf.sql_enable) {
+//            Set<String> regressionsInSql = new BugRetrieve().getRegressionsFromDB();
+//            doneTaskList.addAll(regressionsInSql);
+//        }
     }
 
     public static void rePlan(List<PotentialRFC> pRFCs) {

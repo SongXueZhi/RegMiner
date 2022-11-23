@@ -24,7 +24,7 @@ public class ConfigLoader {
     private static final Properties prop = new Properties();
     private final static String KEY_PATH = "path";
     private final static String KEY_JAVA_HOME = "JAVA_HOME";
-    private final static String CONFIGPATH = "env.properties";
+    public static String CONFIGPATH = "env.properties";
     private final static String CODE_COVER = "code_cover";
     private final static String AUTO_COMPILE = "auto_compile";
     private final static String COMMAND_LINE = "command_line";
@@ -49,19 +49,6 @@ public class ConfigLoader {
 
     public static void refresh() {
         String pathx = CONFIGPATH;
-        //###########################
-        // 使用Eclipse发布release版本时候请解除注释
-        //###########################
-		String path = System.getProperty("java.class.path");
-		int firstIndex = path.lastIndexOf(System.getProperty("path.separator")) + 1;
-		int lastIndex = path.lastIndexOf(File.separator) + 1;
-		path = path.substring(firstIndex, lastIndex);
-		FileUtilx.log("env.pro " + path);
-		pathx = path + File.separator + CONFIGPATH;
-		FileUtilx.log("env.pro " + pathx);
-        //#########################
-        // release code end
-        //#########################
         try (InputStream inStream = new FileInputStream(new File(pathx))) {
             prop.load(inStream);
         } catch (IOException ex) {
