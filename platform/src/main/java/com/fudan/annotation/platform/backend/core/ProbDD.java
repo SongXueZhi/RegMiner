@@ -1,11 +1,8 @@
 package com.fudan.annotation.platform.backend.core;
 
-import com.fudan.annotation.platform.backend.entity.DDStepResult;
-import com.fudan.annotation.platform.backend.entity.HunkEntity;
-import com.fudan.annotation.platform.backend.entity.Regression;
-import com.fudan.annotation.platform.backend.entity.Revision;
+import com.fudan.annotation.platform.backend.entity.*;
+import com.fudan.annotation.platform.backend.util.CodeUtil;
 import com.fudan.annotation.platform.backend.util.FileUtil;
-import com.fudan.annotation.platform.backend.util.GitUtil;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
@@ -31,22 +28,22 @@ public class ProbDD {
         }
     }
 
-    public List<HunkEntity> runDeltaDebugging(Regression regressionTest, File projectDir, List<Revision> revisionList, List<Integer> stepRange, List<Double> cProb) throws IOException {
-//        Regression regressionTest = regressionMapper.getRegressionInfo(regressionUuid);
-//        File projectDir = sourceCodeManager.getProjectDir(regressionTest.getProjectFullName());
-//        String ricDir = projectDir.toString() + regressionUuid + "_ric";
-        File ricDir = revisionList.stream().filter(revision -> revision.getRevisionName().equals("bic")).collect(Collectors.toList()).get(0).getLocalCodeDir();
+//    public DeltaDebugResult runDeltaDebugging(Regression regressionTest, File projectDir, List<Revision> revisionList, List<Integer> stepRange, List<Double> cProb, List<Integer> cProbLeftIdx2Test) throws IOException {
+////        Regression regressionTest = regressionMapper.getRegressionInfo(regressionUuid);
+////        File projectDir = sourceCodeManager.getProjectDir(regressionTest.getProjectFullName());
+////        String ricDir = projectDir.toString() + regressionUuid + "_ric";
+//        File ricDir = revisionList.stream().filter(revision -> revision.getRevisionName().equals("bic")).collect(Collectors.toList()).get(0).getLocalCodeDir();
+//
+//        // get hunks
+//        List<HunkEntity> hunks = GitUtil.getHunksBetweenCommits(projectDir, regressionTest.getBic(), regressionTest.getWork());
+//        long startTime = System.currentTimeMillis();
+//        DeltaDebugResult deltaDebugResult = ProbDD(ricDir.toString(), hunks, regressionTest.getTestcase(), stepRange, cProb, cProbLeftIdx2Test);
+//        // save to database?
+//        // MysqlManager.insertCC("bic", regressionId, "ProbDD", ccHunks);
+//        return deltaDebugResult;
+//    }
 
-        // get hunks
-        List<HunkEntity> hunks = GitUtil.getHunksBetweenCommits(projectDir, regressionTest.getBic(), regressionTest.getWork());
-        long startTime = System.currentTimeMillis();
-        List<HunkEntity> ccHunks = ProbDD(ricDir.toString(), hunks, regressionTest.getTestcase(), stepRange, cProb);
-        // save to database?
-        // MysqlManager.insertCC("bic", regressionId, "ProbDD", ccHunks);
-        return ccHunks;
-    }
-
-    public static List<HunkEntity> ProbDD(String path, List<HunkEntity> hunkEntities, String testCase, List<Integer> stepRange, List<Double> firstCProb) throws IOException {
+    public static DeltaDebugResult probDD(String path, List<HunkEntity> hunkEntities, String testCase, List<Integer> stepRange, List<Double> firstCProb, List<Integer> cProbLeftIdx2Test) throws IOException {
         hunkEntities.removeIf(hunkEntity -> hunkEntity.getNewPath().contains("test"));
         hunkEntities.removeIf(hunkEntity -> hunkEntity.getOldPath().contains("test"));
 
@@ -59,7 +56,9 @@ public class ProbDD {
         FileUtil.copyDirToTarget(path, tmpPath);
         assert Objects.equals(codeReduceTest(tmpPath, hunkEntities, testCase), "PASS");
 
-        DDStepResult result = new DDStepResult();
+        DeltaDebugResult deltaDebugResult = new DeltaDebugResult();
+        DDStepResult ddStepResult = new DDStepResult();
+        List<DDStepResult> DDstepList = new ArrayList<>();
 //        List<HunkEntity> retseq = hunkEntities;
         List<Integer> retIdx = new ArrayList<>();
         List<Double> initCProb = new ArrayList<>();
@@ -67,43 +66,47 @@ public class ProbDD {
             retIdx.add(i);
             initCProb.add(0.1);
         }
-        result.setCcHunks(hunkEntities);
-        result.setCProbIdx(retIdx);
+        deltaDebugResult.setAllHunkEntities(hunkEntities);
+//        ddStepResult.setCcHunks(hunkEntities);
+        ddStepResult.setCProbLeftIdx2Test(retIdx);
         Integer runTimes = 0;
-        Integer stepNum;
-        if (firstCProb != null) {
-            result.setCProb(firstCProb);
-//            cProb = firstCProb;
-            stepNum = stepRange.get(0);
+        if (firstCProb != null && cProbLeftIdx2Test != null) {
+            ddStepResult.setCProb(firstCProb);
+            ddStepResult.setCProbLeftIdx2Test(cProbLeftIdx2Test);
+
             if (stepRange.get(1) != null) {
-                runTimes = stepRange.get(1) - stepRange.get(0) + 1;
+                runTimes = stepRange.get(1) - stepRange.get(0);
                 for (int i = 0; i < runTimes; i++) {
-                    result = runDDTestByStep(result, hunkEntities, stepNum, path, tmpPath, testCase);
-                    stepNum = stepNum + 1;
-//                    retseq = DDTestResult.getCcHunks();
-//                    retIdx = DDTestResult.getCProbIdx();
-//                    cProb = DDTestResult.getCProb();
-                    if (testDone(result.getCProb())) {
+                    int stepNum = stepRange.get(0) + 1 + i;
+                    ddStepResult.setStepNum(stepNum);
+                    ddStepResult = runDDTestByStep(ddStepResult, hunkEntities, path, tmpPath, testCase);
+                    DDStepResult data = CodeUtil.clone(ddStepResult);
+                    DDstepList.add(data);
+                    if (testDone(ddStepResult.getCProb())) {
                         break;
                     }
                 }
             } else {
-                while (!testDone(result.getCProb())) {
+                while (!testDone(ddStepResult.getCProb())) {
                     runTimes = runTimes + 1;
-                    result = runDDTestByStep(result, hunkEntities, stepNum, path, tmpPath, testCase);
-                    stepNum = stepNum + 1;
-//                    retseq = DDTestResult.getCcHunks();
-//                    retIdx = DDTestResult.getCProbIdx();
-//                    cProb = DDTestResult.getCProb();
+                    ddStepResult.setStepNum(stepRange.get(0) + runTimes);
+                    ddStepResult = runDDTestByStep(ddStepResult, hunkEntities, path, tmpPath, testCase);
+                    DDStepResult data = CodeUtil.clone(ddStepResult);
+                    DDstepList.add(data);
                 }
             }
         } else {
-            result.setCProb(initCProb);
-            stepNum = 0;
-            while (!testDone(result.getCProb())) {
+            ddStepResult.setCProb(initCProb);
+            ddStepResult.setStepNum(runTimes);
+            ddStepResult.setStepTestResult("FAIL");
+            DDStepResult initData = CodeUtil.clone((ddStepResult));
+            DDstepList.add(initData);
+            while (!testDone(ddStepResult.getCProb())) {
                 runTimes = runTimes + 1;
-                result = runDDTestByStep(result, hunkEntities, stepNum, path, tmpPath, testCase);
-                stepNum = stepNum + 1;
+                ddStepResult.setStepNum(runTimes);
+                ddStepResult = runDDTestByStep(ddStepResult, hunkEntities, path, tmpPath, testCase);
+                DDStepResult data = CodeUtil.clone(ddStepResult);
+                DDstepList.add(data);
 //                retseq = DDTestResult.getCcHunks();
 //                retIdx = DDTestResult.getCProbIdx();
 //                cProb = DDTestResult.getCProb();
@@ -143,9 +146,10 @@ public class ProbDD {
 //            bw.append("\np: " + p);
             }
         }
+        deltaDebugResult.setStepInfo(DDstepList);
         System.out.println("循环次数: " + runTimes);
         bw.append("\n循环次数: " + runTimes);
-        return result.getCcHunks();
+        return deltaDebugResult;
     }
 
     public static DDStepResult runDDTestByStep(DDStepResult lastResult,
@@ -153,7 +157,7 @@ public class ProbDD {
 //                                               List<HunkEntity> ccHunkEntities,
 //                                               List<Integer> retIdx,
                                                List<HunkEntity> hunkEntities,
-                                               Integer stepNum,
+//                                               Integer stepNum,
                                                String path,
                                                String tmpPath,
                                                String testCase) throws IOException {
@@ -163,7 +167,7 @@ public class ProbDD {
         if (delIdx.size() == 0) {
             return lastResult;
         }
-        List<Integer> idx2test = getIdx2test(lastResult.getCProbIdx(), delIdx);
+        List<Integer> idx2test = getIdx2test(lastResult.getCProbLeftIdx2Test(), delIdx);
         List<HunkEntity> seq2test = new ArrayList<>();
         for (int idxelm : idx2test) {
             seq2test.add(hunkEntities.get(idxelm));
@@ -171,22 +175,27 @@ public class ProbDD {
         }
         FileUtil.copyDirToTarget(path, tmpPath);
 //        copyRelatedFile(path,tmpPath,relatedFile);
-        System.out.print("\n" + stepNum);
-        bw.append("\n" + stepNum);
+        System.out.print("\n" + lastResult.getStepNum());
+        bw.append("\n" + lastResult.getStepNum());
         System.out.println(idx2test);
         bw.append(" revert: " + idx2test);
-        if (Objects.equals(codeReduceTest(tmpPath, seq2test, testCase), "PASS")) {
+
+        lastResult.setCProbTestedInx(idx2test);
+        String testResult = codeReduceTest(tmpPath, seq2test, testCase);
+        if (Objects.equals(testResult, "PASS")) {
+            lastResult.setStepTestResult("PASS");
             for (int set0 = 0; set0 < lastResult.getCProb().size(); set0++) {
                 if (!idx2test.contains(set0)) {
                     lastResult.getCProb().set(set0, 0.0);
 //                    lastStepResult.set(set0, 0.0);
                 }
             }
-            lastResult.setCcHunks(seq2test);
-            lastResult.setCProbIdx(idx2test);
+//            lastResult.setCcHunks(seq2test);
+            lastResult.setCProbLeftIdx2Test(idx2test);
 //            hunkSeq = seq2test;
 //            retIdx = idx2test;
         } else {
+            lastResult.setStepTestResult(testResult);
             List<Double> pTmp = new ArrayList<>(lastResult.getCProb());
             for (int setd = 0; setd < lastResult.getCProb().size(); setd++) {
                 if (delIdx.contains(setd) && (lastResult.getCProb().get(setd) != 0) && (lastResult.getCProb().get(setd) != 1)) {
@@ -373,9 +382,8 @@ public class ProbDD {
     }
 
     public static List<String> getLinesFromWorkVersion(String workPath, HunkEntity hunk) {
-        List<String> result = new ArrayList<>();
         List<String> line = FileUtil.readListFromFile(workPath + File.separator + hunk.getOldPath());
-        result = line.subList(hunk.getBeginA(), hunk.getEndA());
+        List<String> result = line.subList(hunk.getBeginA(), hunk.getEndA());
         return result;
     }
 }

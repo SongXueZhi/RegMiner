@@ -134,7 +134,7 @@ public class RegressionController {
     public ResponseBean<CodeDetails> getCode(
             @RequestParam(name = "regression_uuid") String regressionUuid,
             @RequestParam String userToken,
-            @RequestParam String filename,
+            @RequestParam(required = false) String filename,
             @RequestParam(name = "old_path") String oldPath,
             @RequestParam(name = "new_path") String newPath,
             @RequestParam String revisionFlag) {
