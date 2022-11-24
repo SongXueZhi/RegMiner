@@ -13,7 +13,7 @@ public interface DeltaDebuggingService {
      * @param userToken      userToken
      * @param stepRange      [start step, end step]
      */
-    DeltaDebugResult getDeltaDebuggingResults(String regressionUuid, String userToken, List<Integer> stepRange, List<Double> cProb, List<Integer> cProbLeftIdx2Test) throws IOException;
+    DeltaDebugResult getDeltaDebuggingResults(String regressionUuid, String revisionName, String userToken, List<Integer> stepRange, List<Double> cProb, List<Integer> cProbLeftIdx2Test) throws IOException;
 
 //    /**
 //     * description 插入新regression

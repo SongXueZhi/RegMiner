@@ -28,11 +28,12 @@ public class DeltaDebuggingController {
     @GetMapping(value = "/runDD")
     public ResponseBean<DeltaDebugResult> getDDResults(
             @RequestParam(name = "regression_uuid") String regressionUuid,
+            @RequestParam(name = "revision_name") String revisionName,
             @RequestParam(name = "start_step") Integer startStep,
             @RequestParam(name = "end_step", required = false) Integer endStep,
             @RequestParam String userToken,
             @RequestParam(required = false) List<Double> cProb,
-            @RequestParam(name= "cProb_left_idx_to_test",required = false) List<Integer> cProbLeftIdx2Test
+            @RequestParam(name = "cProb_left_idx_to_test", required = false) List<Integer> cProbLeftIdx2Test
 //            @RequestBody(required = false) RunDDStepInput stepInput
     ) {
         List<Integer> stepRange = new ArrayList<>();
@@ -48,7 +49,7 @@ public class DeltaDebuggingController {
         System.out.println(cProb);
         System.out.println(cProbLeftIdx2Test);
         try {
-            DeltaDebugResult result = deltaDebuggingService.getDeltaDebuggingResults(regressionUuid, userToken, stepRange, cProb, cProbLeftIdx2Test);
+            DeltaDebugResult result = deltaDebuggingService.getDeltaDebuggingResults(regressionUuid, revisionName, userToken, stepRange, cProb, cProbLeftIdx2Test);
             return new ResponseBean<>(200, "Run complete, return critical change hunks", result);
         } catch (Exception e) {
             e.printStackTrace();
