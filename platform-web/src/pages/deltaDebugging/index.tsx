@@ -1,29 +1,228 @@
+import { PlayCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
+import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Card, Descriptions, Drawer, Steps, Typography } from 'antd';
-import React, { useState } from 'react';
+import {
+  Button,
+  Card,
+  Checkbox,
+  Col,
+  Collapse,
+  Descriptions,
+  Drawer,
+  InputNumber,
+  Menu,
+  message,
+  Row,
+  Skeleton,
+  Spin,
+  Steps,
+  Tooltip,
+  Typography,
+} from 'antd';
+import type { CheckboxValueType } from 'antd/lib/checkbox/Group';
+import React, { createRef, useCallback, useEffect, useRef, useState } from 'react';
+import { MonacoDiffEditor } from 'react-monaco-editor';
+import type { IRouteComponentProps } from 'umi';
+import type { RegressionCode } from '../editor/data';
+import { queryRegressionCode, queryRegressionDetail } from '../editor/service';
+import { queryRegressionList } from '../regression/service';
 import DeltaDebuggingHunkBlocks from './components/ddHunkBlocks';
-import { ddResult } from './components/mockData';
-import { ddResultItems, ddStepsItems } from './data';
 import DeltaDebuggingHunkRelationGraph from './components/ddHunkRelationGraph';
 import DeltaDebuggingStepResultTable from './components/ddStepResultTable';
-import ProCard from '@ant-design/pro-card';
+import type { DdStepsItems, HunkEntityItems } from './data';
+import { runDeltaDebugging } from './service';
 
-const InteractiveDeltaDebuggingPage: React.FC<{ ddResult: ddResultItems }> = () => {
-  const [sidebarRegressionMenu, setSidebarRegressionMenu] = useState<boolean>(false);
-  const [current, setCurrent] = useState<number>(0);
-  const [selectedStepInfo, setSelectedStepInfo] = useState<ddStepsItems[]>([]);
+function withSkeleton(element: JSX.Element | string | number | number | undefined) {
+  return (
+    element ?? <Skeleton title={{ width: '80px', style: { margin: 0 } }} paragraph={false} active />
+  );
+}
 
-  const handleRunDD = () => {
-    console.log('RUN');
+const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
+  const [sidebarRegressionMenu, setSidebarRegressionMenu] = useState<boolean>(true);
+  const [running, setRunning] = useState<boolean>(false);
+  const [currRegressionUuid, setCurrRegressionUuid] = useState<string>();
+  const [currProjectName, setCurrProjectName] = useState<string>();
+  const [currRevisionName, setCurrRevisionName] = useState<string>();
+  const [testCaseName, setTestCaseName] = useState<string>();
+  const [BIC, setBIC] = useState<string>();
+  const [BICURL, setBICURL] = useState<string>();
+  const [BFC, setBFC] = useState<string>();
+  const [BFCURL, setBFCURL] = useState<string>();
+  const [regressionDescription, setRegressionDescription] = useState<string>();
+  // const [ddResult, setDdResult] = useState<ddResultItems>();
+  const [allHunks, setAllHunks] = useState<HunkEntityItems[]>([]);
+  const [allStepInfo, setAllStepInfo] = useState<DdStepsItems[]>([]);
+  const [selectedStepInfo, setSelectedStepInfo] = useState<DdStepsItems[]>([]);
+  const [startStepNum, setStartStepNum] = useState<number>(0);
+  const [endStepNum, setEndStepNum] = useState<number>(0);
+  const actionRef = useRef<ActionType>();
+
+  const RegressionColumns: ProColumns<API.RegressionItem>[] = [
+    {
+      title: 'No.',
+      dataIndex: 'index',
+      width: 48,
+      render: (_, record) => {
+        return record.index + 1;
+      },
+      search: false,
+    },
+    {
+      title: 'Bug ID',
+      dataIndex: 'regressionUuid',
+      search: false,
+      width: 200,
+      render: (_, { projectFullName, regressionUuid, index }) => {
+        return withSkeleton(
+          regressionUuid ? `${projectFullName?.split('/')[1]}_${index}` : 'No Data',
+        );
+      },
+    },
+    {
+      title: 'Revision',
+      search: false,
+      render: (_, { projectFullName, regressionUuid, index }) => {
+        return withSkeleton(
+          regressionUuid ? (
+            <>
+              <Button
+                type="link"
+                onClick={() => {
+                  setCurrRegressionUuid(regressionUuid);
+                  setCurrProjectName(projectFullName?.split('/')[1] + '_' + index);
+                  setCurrRevisionName('bic');
+                  setSidebarRegressionMenu(false);
+                }}
+              >
+                BIC
+              </Button>
+              <Button
+                type="link"
+                disabled
+                onClick={() => {
+                  setCurrRegressionUuid(regressionUuid);
+                  setCurrProjectName(projectFullName?.split('/')[1] + '_' + index);
+                  setCurrRevisionName('bfc');
+                  setSidebarRegressionMenu(false);
+                }}
+              >
+                BFC
+              </Button>
+            </>
+          ) : (
+            'No Data'
+          ),
+        );
+      },
+    },
+    // {
+    //   title: 'actions',
+    //   hideInForm: true,
+    //   // hideInTable: true,
+    //   search: false,
+    //   // fixed: 'right',
+    //   render: (_, { bfc, regressionUuid, projectFullName, bic, bugId, work, index }) => [
+    //     <Divider type="vertical" />,
+    //     <Button
+    //       danger
+    //       onClick={() => {
+    //         // handleRemove(regressionUuid).then(() => {
+    //         // console.log('regressionUuid,bic:', bic, bfc, regressionUuid, projectFullName, bugId);
+    //         window.currentBic = bic;
+    //         // });
+    //         const bug = `${projectFullName}_${index}`;
+
+    //         timeLineDetail(bfc, regressionUuid, projectFullName, bug, work);
+    //         onClose();
+    //       }}
+    //     >
+    //       Time line
+    //     </Button>,
+    //   ],
+    // },
+  ];
+
+  const handleRunDD = async () => {
+    if (currRegressionUuid && currRevisionName) {
+      setRunning(true);
+      await runDeltaDebugging({
+        regression_uuid: currRegressionUuid,
+        revision_name: currRevisionName,
+        start_step: 0,
+        userToken: '123',
+      }).then((data) => {
+        if (data !== null) {
+          setAllHunks(data.allHunkEntities);
+          setAllStepInfo(data.stepInfo);
+        }
+        setRunning(false);
+      });
+    }
+  };
+  const handleRunDDByStep = () => {
+    const targetStep = allStepInfo.find((d) => d.stepNum === startStepNum);
+    if (currRegressionUuid && currRevisionName && targetStep) {
+      setRunning(true);
+      runDeltaDebugging({
+        regression_uuid: currRegressionUuid,
+        revision_name: currRevisionName,
+        start_step: startStepNum,
+        end_step: endStepNum,
+        cPro: targetStep.cprob,
+        cProb_left_idx_to_test: targetStep.cprobLeftIdx2Test,
+        userToken: '123',
+      }).then((data) => {
+        if (data !== null) {
+          setAllHunks(data.allHunkEntities);
+          setAllStepInfo(data.stepInfo);
+        }
+        setRunning(false);
+      });
+    } else {
+      message.error('Something went wrong! try again');
+    }
   };
 
   const handleStepsChange = (value: number) => {
-    // console.log('change', current);
-    setCurrent(value);
-    selectedStepInfo.push(ddResult.steps[value]);
-    setSelectedStepInfo(selectedStepInfo);
+    // value equals to stepNum
+    if (allStepInfo) {
+      if (!selectedStepInfo.some((data) => data.stepNum === value)) {
+        console.log('here');
+        selectedStepInfo.push(allStepInfo[value]);
+        console.log(selectedStepInfo);
+        setSelectedStepInfo(selectedStepInfo);
+        console.log(selectedStepInfo);
+      }
+    }
   };
+
+  useEffect(() => {
+    if (currRegressionUuid) {
+      // regressionCheckout({ regression_uuid: currRegressionUuid, userToken: '123' }).then(() => {
+      queryRegressionDetail({
+        regression_uuid: currRegressionUuid,
+        userToken: '123',
+      }).then((data) => {
+        if (data !== null && data !== undefined) {
+          // setListBFC(data.bfcChangedFiles);
+          // setListBIC(data.bicChangedFiles);
+          setBFC(data.bfc);
+          setBIC(data.bic);
+          setBFCURL(data.bfcURL);
+          setBICURL(data.bicURL);
+          // setProjectFullName(data.projectFullName);
+          setTestCaseName(data.testCaseName);
+          // setTestFilePath(data.testFilePath);
+          setRegressionDescription(data.descriptionTxt);
+        }
+        // setIsLoading(false);
+      });
+      // });
+    }
+  }, [currRegressionUuid]);
 
   return (
     <PageContainer
@@ -47,33 +246,41 @@ const InteractiveDeltaDebuggingPage: React.FC<{ ddResult: ddResultItems }> = () 
           <div style={{ display: 'inline-flex', alignItems: 'center' }}>
             <Descriptions column={3} style={{ flex: 1 }}>
               <Descriptions.Item label={'Project'} labelStyle={{ fontWeight: 'bold' }}>
-                <Typography.Text keyboard strong>
-                  {ddResult.info.projectFullName}
-                </Typography.Text>
+                <Typography.Text strong>{currProjectName}</Typography.Text>
               </Descriptions.Item>
-              <Descriptions.Item label={'Bug Inducing Commit'} labelStyle={{ fontWeight: 'bold' }}>
-                {/* <Typography.Link keyboard href={BICURL} target="_blank">
-                      {BIC?.slice(0, 8)}...
-                    </Typography.Link> */}
-                <br />
+              <Descriptions.Item label={'Revision'} labelStyle={{ fontWeight: 'bold' }}>
+                {currRevisionName ? currRevisionName.toUpperCase() : null}
               </Descriptions.Item>
-              <Descriptions.Item label={'Bug Fixing Commit'} labelStyle={{ fontWeight: 'bold' }}>
-                {/* <Typography.Link keyboard href={BFCURL} target="_blank">
-                      {BFC?.slice(0, 8)}...
-                    </Typography.Link> */}
-                <br />
-              </Descriptions.Item>
+              {currRevisionName !== 'bfc' ? (
+                <Descriptions.Item
+                  label={'Bug Inducing Commit'}
+                  labelStyle={{ fontWeight: 'bold' }}
+                >
+                  <Typography.Link keyboard href={BICURL} target="_blank">
+                    {BIC?.slice(0, 8)}...
+                  </Typography.Link>
+                  <br />
+                </Descriptions.Item>
+              ) : (
+                <Descriptions.Item label={'Bug Fixing Commit'} labelStyle={{ fontWeight: 'bold' }}>
+                  <Typography.Link keyboard href={BFCURL} target="_blank">
+                    {BFC?.slice(0, 8)}...
+                  </Typography.Link>
+                  <br />
+                </Descriptions.Item>
+              )}
               <Descriptions.Item label={'Regression UUID'} labelStyle={{ fontWeight: 'bold' }}>
-                <Typography.Text>{ddResult.info.regressionUuid}</Typography.Text>
+                <Typography.Text>{currRegressionUuid}</Typography.Text>
               </Descriptions.Item>
-              <Descriptions.Item label={'revision'} labelStyle={{ fontWeight: 'bold' }}>
-                {ddResult.info.revision}
-              </Descriptions.Item>
+
               <Descriptions.Item
                 label={'Regression description'}
                 labelStyle={{ fontWeight: 'bold' }}
               >
-                <Typography.Text>regressionDescription</Typography.Text>
+                <Typography.Text>{regressionDescription}</Typography.Text>
+              </Descriptions.Item>
+              <Descriptions.Item label={'Regression testcase'} labelStyle={{ fontWeight: 'bold' }}>
+                <Typography.Text>{testCaseName}</Typography.Text>
               </Descriptions.Item>
             </Descriptions>
           </div>
@@ -81,56 +288,123 @@ const InteractiveDeltaDebuggingPage: React.FC<{ ddResult: ddResultItems }> = () 
       }}
     >
       <div style={{ display: 'flex', marginBottom: 10 }}>
-        <Card
+        <ProCard
           title={
-            <div>
-              <Button onClick={handleRunDD}>Run</Button>
-              <Button onClick={handleRunDD}>Step</Button>
-            </div>
+            <>
+              <Button
+                icon={<PlayCircleOutlined />}
+                onClick={handleRunDD}
+                size="middle"
+                shape="round"
+                style={{ marginBottom: '10px' }}
+              >
+                Delta Debug
+              </Button>
+              <br />
+              <Button
+                icon={<PlayCircleOutlined />}
+                onClick={handleRunDDByStep}
+                size="middle"
+                shape="round"
+                style={{ marginBottom: '5px' }}
+              >
+                Run by Step
+              </Button>{' '}
+              :{' '}
+              <InputNumber
+                min={0}
+                max={allStepInfo.length}
+                value={startStepNum}
+                defaultValue={0}
+                onChange={(value) => setStartStepNum(value)}
+                style={{ width: 60 }}
+                // controls={false}
+              />
+              ~
+              <InputNumber
+                min={1}
+                max={allStepInfo.length}
+                value={endStepNum}
+                onChange={(value) => setEndStepNum(value)}
+                style={{ width: 60 }}
+
+                // controls={false}
+              />
+              <Tooltip title={'Start step ~ End step'}>
+                <QuestionCircleOutlined style={{ marginLeft: 5 }} />
+              </Tooltip>
+            </>
           }
-          headStyle={{ height: 85 }}
-          bodyStyle={{ height: 600 }}
+          headStyle={{ height: 100 }}
+          bodyStyle={{ height: 700 }}
           bordered
           style={{ width: '30%', overflow: 'auto' }}
         >
-          <Steps current={current} onChange={handleStepsChange} direction="vertical">
-            {ddResult.steps.map((resp) => {
-              return (
-                <Steps.Step
-                  key={resp.stepNum}
-                  status={
-                    resp.testResult === 'failed'
-                      ? 'error'
-                      : resp.testResult === 'CE'
-                      ? 'process'
-                      : resp.testResult === 'pass'
-                      ? 'finish'
-                      : 'process'
-                  }
-                  title={`Step result: ${resp.testResult}`}
-                  description={`Tested hunks: [${resp.testedHunks}]`}
-                />
-              );
-            })}
+          <Steps onChange={handleStepsChange} direction="vertical">
+            {allStepInfo
+              ? allStepInfo.map((resp) => {
+                  return (
+                    <Steps.Step
+                      key={resp.stepNum}
+                      status={
+                        resp.stepTestResult === 'FAIL'
+                          ? 'error'
+                          : resp.stepTestResult === 'CE'
+                          ? 'process'
+                          : resp.stepTestResult === 'PASS'
+                          ? 'finish'
+                          : 'process'
+                      }
+                      title={`Step result: ${resp.stepTestResult}`}
+                      description={`Tested hunks: [${
+                        resp.cprobTestedInx === null ? [] : resp.cprobTestedInx
+                      }]`}
+                    />
+                  );
+                })
+              : null}
           </Steps>
-        </Card>
+          <Spin size="large" spinning={running} />
+          {/* <Menu title="DD Step Info" style={{ width: 256 }} mode="inline" >
+            {allStepInfo
+              ? allStepInfo.map((resp) => {
+                  return (
+                    <Menu
+                      key={resp.stepNum}
+                      // icon={<>asdasd</>}
+                      title={`Tested hunks: [${
+                        resp.cprobTestedInx === null ? [] : resp.cprobTestedInx
+                      }]`}
+                    >
+                      im here
+                    </Menu>
+                  );
+                })
+              : null}
+          </Menu> */}
+        </ProCard>
         <ProCard
-          title={<div>choosed hunks</div>}
-          headStyle={{ height: 85 }}
-          bodyStyle={{ height: 600 }}
+          title={'choosed hunks'}
+          headStyle={{ height: 100 }}
+          bodyStyle={{ height: 700 }}
           bordered
           style={{ width: '70%', overflow: 'auto' }}
           split={'horizontal'}
         >
           <ProCard split={'horizontal'}>
-            {JSON.stringify(selectedStepInfo)}
+            {/* {JSON.stringify(selectedStepInfo)} */}
             <DeltaDebuggingStepResultTable
-              ddHunkInfo={ddResult.info}
+              allHunks={allHunks}
               selectedStepInfo={selectedStepInfo}
             />
           </ProCard>
           <ProCard split={'horizontal'}>
-            <DeltaDebuggingHunkBlocks ddHunkInfo={ddResult.info} />
+            <DeltaDebuggingHunkBlocks
+              regressionUuid={currRegressionUuid}
+              revision={currRevisionName}
+              allHunkInfo={allHunks}
+              // selectedIndex={}
+            />
           </ProCard>
         </ProCard>
       </div>
@@ -147,7 +421,7 @@ const InteractiveDeltaDebuggingPage: React.FC<{ ddResult: ddResultItems }> = () 
       </div>
       <Drawer
         // bodyStyle={DrawerbodyStyle}
-        title="Regressions List"
+        title="Regression List"
         placement={'right'}
         onClose={() => setSidebarRegressionMenu(false)}
         visible={sidebarRegressionMenu}
@@ -155,9 +429,15 @@ const InteractiveDeltaDebuggingPage: React.FC<{ ddResult: ddResultItems }> = () 
         width={450}
       >
         <ProTable<API.RegressionItem>
-          headerTitle="Bugs"
-          //   actionRef={actionRef}
+          actionRef={actionRef}
           rowKey="regressionUuid"
+          request={(params) =>
+            queryRegressionList({
+              regression_uuid: params.regression_uuid,
+              keyword: params.keyword,
+            })
+          }
+          columns={RegressionColumns}
           search={false}
         />
       </Drawer>

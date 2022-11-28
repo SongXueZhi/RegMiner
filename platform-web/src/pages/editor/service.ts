@@ -59,7 +59,7 @@ export async function regressionCheckout(params: { regression_uuid: string; user
 
 export async function queryRegressionCode(params: {
   regression_uuid: string;
-  filename: string;
+  filename?: string;
   userToken?: string;
   old_path: string;
   new_path: string;

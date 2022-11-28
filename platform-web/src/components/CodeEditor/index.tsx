@@ -117,6 +117,17 @@ const NewCodeEditor: React.FC<IProps> = ({
     } // 显示部分 ConsoleView，固定为 30px
     setMonacoSize({ width: width, height: height });
   };
+  const handleShowConsole = () => {
+    const width = monacoSize.width as number;
+    const height = monacoSize.height as number;
+    const consoleHeight = document.querySelector(`#${uuid} .ConsoleView`)?.clientHeight ?? 0;
+    let nextH;
+    if (showConsole) nextH = height + consoleHeight - REVEAL_CONSOLE_HEIHGT;
+    // true => false
+    else nextH = height - consoleHeight + REVEAL_CONSOLE_HEIHGT; // false => true
+    setShowConsole(!showConsole);
+    setMonacoSize({ width, height: nextH });
+  };
   const handleRunClick = async (option: string) => {
     if (access.allUsersFoo) {
       setVersion(option);
@@ -128,6 +139,7 @@ const NewCodeEditor: React.FC<IProps> = ({
       const revisionFlag =
         option === 'firstOp' ? oldVersionText ?? 'firstOp' : newVersionText ?? 'secondOp';
       if (typeof content === 'undefined') content = '';
+      // eslint-disable-next-line @typescript-eslint/no-invalid-this
       onRunCode?.call(this, content, revisionFlag);
       if (!showConsole) {
         handleShowConsole();
@@ -135,17 +147,6 @@ const NewCodeEditor: React.FC<IProps> = ({
     } else {
       message.error('Sorry, you have no right to do that. Please login or use another account!');
     }
-  };
-  const handleShowConsole = () => {
-    const width = monacoSize.width as number;
-    const height = monacoSize.height as number;
-    const consoleHeight = document.querySelector(`#${uuid} .ConsoleView`)?.clientHeight ?? 0;
-    let nextH;
-    if (showConsole) nextH = height + consoleHeight - REVEAL_CONSOLE_HEIHGT;
-    // true => false
-    else nextH = height - consoleHeight + REVEAL_CONSOLE_HEIHGT; // false => true
-    setShowConsole(!showConsole);
-    setMonacoSize({ width, height: nextH });
   };
   const handlefeedbackList = (
     key: string[],
@@ -192,6 +193,7 @@ const NewCodeEditor: React.FC<IProps> = ({
       )
         .then(() => {
           onRevertCode?.call(
+            // eslint-disable-next-line @typescript-eslint/no-invalid-this
             this,
             title === 'Bug Inducing Commit' ? 'BIC' : 'BFC',
             filename,
@@ -220,6 +222,7 @@ const NewCodeEditor: React.FC<IProps> = ({
         .then(() => {
           // message.success('Code reverted!');
           onRevertCode?.call(
+            // eslint-disable-next-line @typescript-eslint/no-invalid-this
             this,
             title === 'Bug Inducing Commit' ? 'BIC' : 'BFC',
             filename,

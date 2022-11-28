@@ -1,79 +1,79 @@
-import { Collapse, Table } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
+import type { ProColumns } from '@ant-design/pro-table';
+import ProTable from '@ant-design/pro-table';
+import { Collapse, List, Skeleton } from 'antd';
+import type { ColumnsType } from 'antd/lib/table';
 import { useEffect, useState } from 'react';
-import { ddInfoItems, ddStepsItems } from '../data';
+import type { HunkEntityItems, DdStepsItems } from '../data';
 
 interface IProps {
-  ddHunkInfo: ddInfoItems;
-  selectedStepInfo: ddStepsItems[];
+  allHunks: HunkEntityItems[];
+  selectedStepInfo: DdStepsItems[];
 }
 
-const DeltaDebuggingStepResultTable: React.FC<IProps> = ({ ddHunkInfo, selectedStepInfo }) => {
-  const [tableColumns, setTableColumns] = useState<ColumnsType<any>>([]);
-  const [tableDataSource, setTableDataSource] = useState<any>([]);
+function withSkeleton(element: JSX.Element | string | number | number | undefined) {
+  return (
+    element ?? <Skeleton title={{ width: '80px', style: { margin: 0 } }} paragraph={false} active />
+  );
+}
+
+const DeltaDebuggingStepResultTable: React.FC<IProps> = ({ allHunks, selectedStepInfo }) => {
+  const columnsHunkList: ProColumns<DdStepsItems>[] = [
+    {
+      title: 'Step',
+      dataIndex: 'stepNum',
+      width: 48,
+    },
+    {
+      title: 'Result',
+      dataIndex: 'stepTestResult',
+      width: 48,
+    },
+    {
+      title: 'cProb',
+      dataIndex: 'cprob',
+      render: (_, { cprob }) => {
+        // const CProb = cprob.toString();
+        // cprob.map((resp, index) => description.concat(`hunk ${index}: ${resp}`));
+        // return withSkeleton(CProb);
+        return cprob.map((num, index) => {
+          return `Hunk ${index}: ${num.toFixed(5)} || `;
+        });
+      },
+    },
+    {
+      title: 'dProb',
+      dataIndex: 'dprob',
+      hideInTable: true,
+    },
+  ];
+
+  // const onChange = (key: string | string[]) => {
+  // console.log(key);
+  // };
 
   useEffect(() => {
-    const columnsHunkList = [
-      {
-        title: 'Result type',
-        dataIndex: 'resultType',
-      },
-      {
-        title: 'Step',
-        dataIndex: 'stepNum',
-      },
-    ];
-    ddHunkInfo.allHunks.map((data) => {
-      columnsHunkList.push({
-        title: data.hunkId,
-        dataIndex: data.hunkId,
-      });
-    });
-    setTableColumns(columnsHunkList);
+    console.log(selectedStepInfo);
+  }, [selectedStepInfo]);
 
-    const dataSource = selectedStepInfo.map((data) => {
-      const result = data.cProDDResults
-      return result;
-    });
-    setTableDataSource(dataSource);
-  }, [ddHunkInfo, selectedStepInfo]);
-
-  const onChange = (key: string | string[]) => {
-    console.log(key);
-  };
   return (
-    // <Collapse
-    //   onChange={(key) => {
-    //     console.log(key);
-    //   }}
-    // >
-    //   {selectedStepInfo.map((resp) => {
-    //     <Collapse.Panel
-    //       key={resp.stepNum}
-    //       header={'dd results'}
-    //       // forceRender
-    //       // style={{ overflow: 'auto' }}
-    //     >
-    //       <Table
-    //         rowKey={`${resp.stepNum}-${resp.testResult}`}
-    //         columns={columns}
-    //         dataSource={resp.testResultData}
-    //         pagination={false}
-    //       />
-    //     </Collapse.Panel>;
-    //   })}
-    // </Collapse>
-    <Collapse onChange={onChange}>
-      <Collapse.Panel header="Selected DD results" key={'selected-dd-results'}>
-        <Table
-          // rowKey={`${resp.stepNum}-${resp.testResult}`}
-          bordered
-          dataSource={tableDataSource}
-          columns={tableColumns}
-          pagination={false}
-        />
-      </Collapse.Panel>
-    </Collapse>
+    <>
+      {/* {JSON.stringify(selectedStepInfo)} */}
+      <Collapse>
+        <Collapse.Panel header="Selected DD results" key={'selected-dd-results'}>
+          {allHunks && selectedStepInfo ? (
+            <ProTable
+              rowKey="stepNum"
+              bordered
+              dataSource={selectedStepInfo}
+              columns={columnsHunkList}
+              pagination={false}
+              search={false}
+              toolBarRender={false}
+            />
+          ) : null}
+        </Collapse.Panel>
+      </Collapse>
+    </>
   );
 };
 

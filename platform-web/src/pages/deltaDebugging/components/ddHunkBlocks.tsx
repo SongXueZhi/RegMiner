@@ -1,14 +1,25 @@
-import { Checkbox } from 'antd';
-import { CheckboxValueType } from 'antd/lib/checkbox/Group';
-import React, { createRef } from 'react';
+import type { RegressionCode } from '@/pages/editor/data';
+import { queryRegressionCode } from '@/pages/editor/service';
+import { Checkbox, Col, Divider, Row } from 'antd';
+import type { CheckboxValueType } from 'antd/lib/checkbox/Group';
+import React, { createRef, useEffect, useState } from 'react';
 import { MonacoDiffEditor } from 'react-monaco-editor';
-import { ddInfoItems } from '../data';
+import type { HunkEntityItems } from '../data';
 
-interface IProps {
-  ddHunkInfo: ddInfoItems;
+export interface HunkCodeItems extends RegressionCode {
+  key: number;
+  newPath: string;
 }
 
-const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ ddHunkInfo }) => {
+interface IProps {
+  regressionUuid?: string;
+  revision?: string;
+  allHunkInfo?: HunkEntityItems[];
+}
+
+const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ regressionUuid, revision, allHunkInfo }) => {
+  const [hunkCodeList, setHunkCodeList] = useState<HunkCodeItems[]>([]);
+
   const editorRef = createRef<MonacoDiffEditor>();
   const options = {
     renderSideBySide: false,
@@ -34,30 +45,67 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ ddHunkInfo }) => {
     // line number width
     lineNumbersMinChars: 2,
   };
+  const onChange = (value: CheckboxValueType[]) => {};
 
-  const onChange = (value: CheckboxValueType[]) => {
-    console.log('checkbox: ', value);
-  };
+  useEffect(() => {
+    if (allHunkInfo && regressionUuid && revision) {
+      allHunkInfo.map(async (resp, index) => {
+        const result = await queryRegressionCode({
+          regression_uuid: regressionUuid,
+          userToken: '123',
+          old_path: resp.oldPath,
+          new_path: resp.newPath,
+          revisionFlag: revision,
+        }).then((data) => {
+          if (data) {
+            const hunkCode: HunkCodeItems = {
+              regressionUuid: data.regressionUuid,
+              oldCode: data.oldCode,
+              newCode: data.newCode,
+              key: index,
+              newPath: resp.newPath,
+            };
+            return hunkCode;
+          }
+          return null;
+        });
+        if (result !== null) {
+          hunkCodeList.push(result);
+        }
+        setHunkCodeList(hunkCodeList);
+      });
+    }
+  }, [allHunkInfo, hunkCodeList, regressionUuid, revision]);
+
   return (
-    <Checkbox.Group onChange={onChange}>
-      {ddHunkInfo.allHunks.map((data, index) => {
-        return (
-          <Checkbox value={data.hunkId} key={`${index}-${data.hunkId}`}>
-            {data.hunkId}
-            <MonacoDiffEditor
-              ref={editorRef}
-              width={600}
-              height={200}
-              language={'java'}
-              theme={'vs-light'}
-              options={options}
-              original={data.oldCode}
-              value={data.newCode}
-            />
-          </Checkbox>
-        );
-      })}
-    </Checkbox.Group>
+    <>
+      {/* {JSON.stringify(hunkCodeList)} */}
+      <Checkbox.Group onChange={onChange}>
+        {hunkCodeList
+          ? hunkCodeList.map((data) => {
+              return (
+                <>
+                  <Checkbox value={data.key}>
+                    {'hunk ' + data.key}
+                    <br />
+                    <MonacoDiffEditor
+                      ref={editorRef}
+                      width={800}
+                      height={200}
+                      language={'java'}
+                      theme={'vs-light'}
+                      options={options}
+                      original={data.oldCode}
+                      value={data.newCode}
+                    />
+                  </Checkbox>
+                  <Divider />
+                </>
+              );
+            })
+          : null}
+      </Checkbox.Group>
+    </>
   );
 };
 
