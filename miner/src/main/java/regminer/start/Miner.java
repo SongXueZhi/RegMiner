@@ -7,15 +7,19 @@ import regminer.git.provider.Provider;
 import regminer.miner.PotentialBFCDetector;
 import regminer.miner.ProjectManager;
 import regminer.miner.RelatedTestCaseParser;
+import regminer.miner.dd.DD;
 import regminer.miner.migrate.BFCEvaluator;
 import regminer.miner.migrate.BICFinder;
+import regminer.model.HunkEntity;
 import regminer.model.PotentialRFC;
 import regminer.model.ProjectEntity;
 import regminer.model.Regression;
 import regminer.monitor.ProgressMonitor;
 import regminer.sql.BugStorage;
 import regminer.utils.FileUtilx;
+import regminer.utils.GitUtil;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -73,8 +77,33 @@ public class Miner {
         Thread thread1 = new Thread(() -> tm.evoluteBFCList(pRFCs, linkedQueue));
         thread1.setName("bfc");
         thread1.start();
-        thread1.join(); //comment this line and new thread to do prodd task
-        //TODO @ liu shuning
+        Repository repo = new Provider().create(Provider.EXISITING).get(Conf.LOCAL_PROJECT_GIT);
+        Thread thread2 = new Thread(() -> {
+            while (pRFCs.size() > 0 || linkedQueue.size() > 0) {
+                if (linkedQueue.size() > 0) {
+                    PotentialRFC pRfc = linkedQueue.poll();
+                    File bfcDir = pRfc.fileMap.get(pRfc.getCommit().getName());
+                    File buggyDir = pRfc.fileMap.get(pRfc.getBuggyCommitId());
+                    List<HunkEntity> hunks = GitUtil.getHunksBetweenCommits(repo, pRfc.getCommit().getParent(0).getTree().getId(), pRfc.getCommit().getTree().getId());
+                    //List<HunkEntity> hunks = GitUtil.getHunksBetweenCommits(buggyDir, pRfc.getCommit().getName(), pRfc.getBuggyCommitId());
+                    System.out.println("rfc: " + pRfc.getCommit().getName());
+                    FileUtilx.log("rfc: " + pRfc.getCommit().getName());
+                    DD rfcDD = new DD(buggyDir.getPath(),bfcDir.getPath(), hunks,pRfc.getTestCaseFiles());
+                    List<HunkEntity> ccHunks = null;
+                    try {
+                        ccHunks = rfcDD.run();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("ccHunks: " + ccHunks);
+                    FileUtilx.log("ccHunks: " + ccHunks);
+
+                }
+            }
+        });
+        thread2.setName("dd");
+        thread2.start();
+        thread2.join();
     }
 
     public static void regressionTask(ProjectEntity projectEntity, BFCEvaluator tm) throws Exception {

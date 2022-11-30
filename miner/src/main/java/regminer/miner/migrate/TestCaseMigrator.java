@@ -115,5 +115,25 @@ public class TestCaseMigrator extends Migrator {
         return UNRESOLVE;
     }
 
+    public int testBFCSingleMethod(File directory, @NotNull List<TestFile> testSuites) throws Exception {
+        if (compile(directory, true)) {
+            exec.setDirectory(directory);
+            StringJoiner sj = new StringJoiner(";", "[", "]");
+            TestFile testSuite = testSuites.get(0);
+            Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
+            Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator();
+            Map.Entry<String, RelatedTestCase> entry = it.next();
+            String testCase = testSuite.getQualityClassName() + Conf.methodClassLinkSymbolForTest + entry.getKey().split("[(]")[0];
+            MigrateFailureType type = exec.execTestWithResult(Conf.testLine + testCase);
+            if (type == MigrateFailureType.TESTSUCCESS) {
+                return PASS;
+            }
+            else {
+                return FAL;
+            }
+        } else {
+            return CE;
+        }
+    }
 
 }

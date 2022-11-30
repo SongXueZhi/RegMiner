@@ -89,14 +89,15 @@ public class Migrator {
             }
             File bfcFile = new File(bfcDir, newPathInBfc);
             File tFile = new File(tDir, newPathInBfc);
+            try {
             if (tFile.exists()) {
-                tFile.deleteOnExit();
+               FileUtils.forceDelete(tFile);
             }
             // 直接copy过去
-            try {
+
                 FileUtils.forceMkdirParent(tFile);
                 FileUtils.copyFileToDirectory(bfcFile, tFile.getParentFile());
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         }
