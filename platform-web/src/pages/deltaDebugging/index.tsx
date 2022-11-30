@@ -55,7 +55,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
   // const [ddResult, setDdResult] = useState<ddResultItems>();
   const [allHunks, setAllHunks] = useState<HunkEntityItems[]>([]);
   const [allStepInfo, setAllStepInfo] = useState<DdStepsItems[]>([]);
-  const [selectedStepInfo, setSelectedStepInfo] = useState<DdStepsItems[]>([]);
+  const [selectedStepInfo, setSelectedStepInfo] = useState<DdStepsItems>();
   const [startStepNum, setStartStepNum] = useState<number>(0);
   const [endStepNum, setEndStepNum] = useState<number>(0);
   const actionRef = useRef<ActionType>();
@@ -134,7 +134,6 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
     //         window.currentBic = bic;
     //         // });
     //         const bug = `${projectFullName}_${index}`;
-
     //         timeLineDetail(bfc, regressionUuid, projectFullName, bug, work);
     //         onClose();
     //       }}
@@ -144,6 +143,12 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
     //   ],
     // },
   ];
+
+  const onReload = useCallback(() => {
+    setAllHunks([]);
+    setAllStepInfo([]);
+    setSelectedStepInfo(undefined);
+  }, []);
 
   const handleRunDD = async () => {
     if (currRegressionUuid && currRevisionName) {
@@ -186,20 +191,18 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
     }
   };
 
-  const handleStepsChange = (value: number) => {
-    // value equals to stepNum
-    if (allStepInfo) {
-      if (!selectedStepInfo.some((data) => data.stepNum === value)) {
-        console.log('here');
-        selectedStepInfo.push(allStepInfo[value]);
-        console.log(selectedStepInfo);
-        setSelectedStepInfo(selectedStepInfo);
-        console.log(selectedStepInfo);
-      }
-    }
+  // const handleStepsChange = async (key: number) => {
+  //   // value equals to stepNum
+  //   console.log('onchange: ' + key);
+  // };
+
+  const handleStepClick = (stepData: DdStepsItems) => {
+    setSelectedStepInfo(stepData);
   };
 
   useEffect(() => {
+    onReload();
+
     if (currRegressionUuid) {
       // regressionCheckout({ regression_uuid: currRegressionUuid, userToken: '123' }).then(() => {
       queryRegressionDetail({
@@ -222,7 +225,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
       });
       // });
     }
-  }, [currRegressionUuid]);
+  }, [currRegressionUuid, onReload]);
 
   return (
     <PageContainer
@@ -316,7 +319,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
                 max={allStepInfo.length}
                 value={startStepNum}
                 defaultValue={0}
-                onChange={(value) => setStartStepNum(value)}
+                onChange={(value) => (value !== null ? setStartStepNum(value) : undefined)}
                 style={{ width: 60 }}
                 // controls={false}
               />
@@ -325,7 +328,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
                 min={1}
                 max={allStepInfo.length}
                 value={endStepNum}
-                onChange={(value) => setEndStepNum(value)}
+                onChange={(value) => (value !== null ? setEndStepNum(value) : undefined)}
                 style={{ width: 60 }}
 
                 // controls={false}
@@ -340,12 +343,13 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
           bordered
           style={{ width: '30%', overflow: 'auto' }}
         >
-          <Steps onChange={handleStepsChange} direction="vertical">
+          <Steps direction="vertical">
             {allStepInfo
               ? allStepInfo.map((resp) => {
                   return (
                     <Steps.Step
-                      key={resp.stepNum}
+                      onClick={() => handleStepClick(resp)}
+                      key={'step_' + resp.stepNum}
                       status={
                         resp.stepTestResult === 'FAIL'
                           ? 'error'
@@ -365,40 +369,23 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
               : null}
           </Steps>
           <Spin size="large" spinning={running} />
-          {/* <Menu title="DD Step Info" style={{ width: 256 }} mode="inline" >
-            {allStepInfo
-              ? allStepInfo.map((resp) => {
-                  return (
-                    <Menu
-                      key={resp.stepNum}
-                      // icon={<>asdasd</>}
-                      title={`Tested hunks: [${
-                        resp.cprobTestedInx === null ? [] : resp.cprobTestedInx
-                      }]`}
-                    >
-                      im here
-                    </Menu>
-                  );
-                })
-              : null}
-          </Menu> */}
         </ProCard>
         <ProCard
-          title={'choosed hunks'}
+          title={<Typography.Title level={2}>Choosed Hunks</Typography.Title>}
           headStyle={{ height: 100 }}
           bodyStyle={{ height: 700 }}
           bordered
           style={{ width: '70%', overflow: 'auto' }}
           split={'horizontal'}
         >
-          <ProCard split={'horizontal'}>
-            {/* {JSON.stringify(selectedStepInfo)} */}
+          <ProCard split={'horizontal'} key={'DD-result-table'}>
             <DeltaDebuggingStepResultTable
               allHunks={allHunks}
-              selectedStepInfo={selectedStepInfo}
+              allStepInfo={allStepInfo}
+              selectedHunk={selectedStepInfo}
             />
           </ProCard>
-          <ProCard split={'horizontal'}>
+          <ProCard split={'horizontal'} key={'DD-hunk-blocks'}>
             <DeltaDebuggingHunkBlocks
               regressionUuid={currRegressionUuid}
               revision={currRevisionName}

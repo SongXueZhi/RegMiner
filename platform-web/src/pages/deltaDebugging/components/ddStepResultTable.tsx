@@ -1,79 +1,106 @@
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Collapse, List, Skeleton } from 'antd';
+import { Col, Collapse, List, Row, Skeleton, Typography } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { HunkEntityItems, DdStepsItems } from '../data';
+import { ddResult } from './mockData';
 
 interface IProps {
   allHunks: HunkEntityItems[];
-  selectedStepInfo: DdStepsItems[];
+  allStepInfo?: DdStepsItems[];
+  selectedHunk?: DdStepsItems;
 }
 
-function withSkeleton(element: JSX.Element | string | number | number | undefined) {
-  return (
-    element ?? <Skeleton title={{ width: '80px', style: { margin: 0 } }} paragraph={false} active />
-  );
-}
+// function withSkeleton(element: JSX.Element | string | number | number | undefined) {
+//   return (
+//     element ?? <Skeleton title={{ width: '80px', style: { margin: 0 } }} paragraph={false} active />
+//   );
+// }
 
-const DeltaDebuggingStepResultTable: React.FC<IProps> = ({ allHunks, selectedStepInfo }) => {
-  const columnsHunkList: ProColumns<DdStepsItems>[] = [
-    {
-      title: 'Step',
-      dataIndex: 'stepNum',
-      width: 48,
-    },
-    {
-      title: 'Result',
-      dataIndex: 'stepTestResult',
-      width: 48,
-    },
-    {
-      title: 'cProb',
-      dataIndex: 'cprob',
-      render: (_, { cprob }) => {
-        // const CProb = cprob.toString();
-        // cprob.map((resp, index) => description.concat(`hunk ${index}: ${resp}`));
-        // return withSkeleton(CProb);
-        return cprob.map((num, index) => {
-          return `Hunk ${index}: ${num.toFixed(5)} || `;
-        });
+const DeltaDebuggingStepResultTable: React.FC<IProps> = ({ allHunks, selectedHunk }) => {
+  const [dataSource, setDataSource] = useState<DdStepsItems[]>([]);
+
+  const columns: ProColumns<DdStepsItems>[] = useMemo(
+    () => [
+      {
+        title: 'Step',
+        dataIndex: 'stepNum',
+        width: 48,
       },
-    },
-    {
-      title: 'dProb',
-      dataIndex: 'dprob',
-      hideInTable: true,
-    },
-  ];
-
-  // const onChange = (key: string | string[]) => {
-  // console.log(key);
-  // };
+      {
+        title: 'Result',
+        dataIndex: 'stepTestResult',
+        width: 48,
+      },
+      {
+        title: 'cProb',
+        dataIndex: 'cprob',
+        render: (_, { cprobTestedInx, cprob }) => {
+          return (
+            <Row justify="center" wrap={true}>
+              {cprob.map((num, index) => {
+                return (
+                  <Col span={4}>
+                    <Typography.Text mark={cprobTestedInx ? cprobTestedInx.includes(index) : false}>
+                      Hunk {index}:
+                    </Typography.Text>
+                    <Typography.Text keyboard>{num.toFixed(3)}</Typography.Text>
+                  </Col>
+                );
+              })}
+            </Row>
+          );
+        },
+      },
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   useEffect(() => {
-    console.log(selectedStepInfo);
-  }, [selectedStepInfo]);
+    if (selectedHunk) {
+      // every step can only loaded once
+      if (!dataSource.some((d) => d.stepNum === selectedHunk.stepNum)) {
+        const list = dataSource.concat([selectedHunk]);
+        console.log('here');
+        setDataSource(list);
+      }
+    } else {
+      setDataSource([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedHunk]);
 
   return (
-    <>
-      {/* {JSON.stringify(selectedStepInfo)} */}
-      <Collapse>
-        <Collapse.Panel header="Selected DD results" key={'selected-dd-results'}>
-          {allHunks && selectedStepInfo ? (
-            <ProTable
-              rowKey="stepNum"
-              bordered
-              dataSource={selectedStepInfo}
-              columns={columnsHunkList}
-              pagination={false}
-              search={false}
-              toolBarRender={false}
-            />
-          ) : null}
-        </Collapse.Panel>
-      </Collapse>
-    </>
+    <Collapse>
+      <Collapse.Panel header={'Selected DD results'} key="selected-dd-results">
+        {allHunks ? (
+          <ProTable
+            key={'selected-step-info-table'}
+            rowKey="stepNum"
+            bordered
+            dataSource={dataSource}
+            // request={}
+            columns={columns}
+            pagination={false}
+            search={false}
+            toolBarRender={false}
+          />
+        ) : null}
+      </Collapse.Panel>
+      {/* <Collapse.Panel header="test" key={'test'}>
+          <ProTable
+            rowKey="stepNum"
+            bordered
+            columns={columnsHunkList}
+            pagination={false}
+            search={false}
+            toolBarRender={false}
+            dataSource={ddResult.stepInfo}
+          />
+        </Collapse.Panel> */}
+    </Collapse>
   );
 };
 

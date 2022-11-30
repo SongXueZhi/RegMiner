@@ -1,5 +1,6 @@
 import type { RegressionCode } from '@/pages/editor/data';
 import { queryRegressionCode } from '@/pages/editor/service';
+import { ResizeEntry, ResizeSensor } from '@blueprintjs/core';
 import { Checkbox, Col, Divider, Row } from 'antd';
 import type { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import React, { createRef, useEffect, useState } from 'react';
@@ -15,11 +16,17 @@ interface IProps {
   regressionUuid?: string;
   revision?: string;
   allHunkInfo?: HunkEntityItems[];
+  choosedHunksIndex?: number[];
 }
+
+const DEFAULT_HEIGHT = 40;
 
 const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ regressionUuid, revision, allHunkInfo }) => {
   const [hunkCodeList, setHunkCodeList] = useState<HunkCodeItems[]>([]);
-
+  const [monacoSize, setMonacoSize] = useState<{
+    width: string | number;
+    height: string | number;
+  }>({ width: 1080, height: 300 });
   const editorRef = createRef<MonacoDiffEditor>();
   const options = {
     renderSideBySide: false,
@@ -45,7 +52,18 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ regressionUuid, revision, 
     // line number width
     lineNumbersMinChars: 2,
   };
-  const onChange = (value: CheckboxValueType[]) => {};
+
+  // const handleResizeMonacoEditor = (entries: ResizeEntry[]) => {
+  //   const e = entries[0] as ResizeEntry;
+  //   const width = e.contentRect.width;
+  //   const height = (e.contentRect.height ?? DEFAULT_HEIGHT) - 40; // 固定减去 TitleView 的 40 高
+
+  //   setMonacoSize({ width: width, height: height });
+  // };
+
+  const onChange = (value: CheckboxValueType[]) => {
+    console.log(value);
+  };
 
   useEffect(() => {
     if (allHunkInfo && regressionUuid && revision) {
@@ -71,15 +89,14 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ regressionUuid, revision, 
         });
         if (result !== null) {
           hunkCodeList.push(result);
+          setHunkCodeList(hunkCodeList);
         }
-        setHunkCodeList(hunkCodeList);
       });
     }
   }, [allHunkInfo, hunkCodeList, regressionUuid, revision]);
 
   return (
-    <>
-      {/* {JSON.stringify(hunkCodeList)} */}
+    // <ResizeSensor onResize={handleResizeMonacoEditor}>
       <Checkbox.Group onChange={onChange}>
         {hunkCodeList
           ? hunkCodeList.map((data) => {
@@ -89,9 +106,10 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ regressionUuid, revision, 
                     {'hunk ' + data.key}
                     <br />
                     <MonacoDiffEditor
+                      key={data.key}
                       ref={editorRef}
-                      width={800}
-                      height={200}
+                      width={monacoSize.width}
+                      height={monacoSize.height}
                       language={'java'}
                       theme={'vs-light'}
                       options={options}
@@ -105,7 +123,7 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ regressionUuid, revision, 
             })
           : null}
       </Checkbox.Group>
-    </>
+    // </ResizeSensor>
   );
 };
 
