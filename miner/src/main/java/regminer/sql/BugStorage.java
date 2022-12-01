@@ -18,8 +18,11 @@
 
 package regminer.sql;
 
+import regminer.model.HunkEntity;
 import regminer.model.ProjectEntity;
 import regminer.model.Regression;
+
+import java.util.List;
 
 public class BugStorage {
     public  void saveBug(Regression regression) {
@@ -34,5 +37,23 @@ public class BugStorage {
                 +regression.getBuggyId()+"','"+regression.getBicId()+"','"+regression.getWorkId()+"','"
                 +regression.getTestCase()+"','"+regression.getWithGap()+"')";
         MysqlManager.executeUpdate(sql);
+    }
+
+    public  void saveCriticalChange(String commitId, List<HunkEntity> ccHunks) {
+        for(HunkEntity hunk: ccHunks) {
+            String sql = "insert IGNORE into critical_change_bugminer (revision_name, commit_id, " +
+                    "new_path, old_path, beginA, beginB, endA, endB, type, tool) values('bfc','" +
+                    commitId + "','" +
+                    hunk.getNewPath() + "','" +
+                    hunk.getOldPath() + "'," +
+                    hunk.getBeginA() + "," +
+                    hunk.getBeginB() + "," +
+                    hunk.getEndA() + "," +
+                    hunk.getEndB() + ",'" +
+                    hunk.getType().toString() +
+                    "','probdd')";
+
+            MysqlManager.executeUpdate(sql);
+        }
     }
 }

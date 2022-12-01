@@ -97,7 +97,9 @@ public class Miner {
                     }
                     System.out.println("ccHunks: " + ccHunks);
                     FileUtilx.log("ccHunks: " + ccHunks);
-
+                    if (Conf.sql_enable) {
+                        bugStorage.saveCriticalChange(pRfc.getCommit().getName(), ccHunks);
+                    }
                 }
             }
         });
