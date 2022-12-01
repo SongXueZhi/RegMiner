@@ -56,6 +56,8 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
   const [allHunks, setAllHunks] = useState<HunkEntityItems[]>([]);
   const [allStepInfo, setAllStepInfo] = useState<DdStepsItems[]>([]);
   const [selectedStepInfo, setSelectedStepInfo] = useState<DdStepsItems>();
+  const [selectedStepTestedHunksIndex, setSelectedStepTestedHunksIndex] = useState<number[]>([]);
+  const [runTimes, setRunTimes] = useState<number>(1);
   const [startStepNum, setStartStepNum] = useState<number>(0);
   const [endStepNum, setEndStepNum] = useState<number>(0);
   const actionRef = useRef<ActionType>();
@@ -171,6 +173,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
     const targetStep = allStepInfo.find((d) => d.stepNum === startStepNum);
     if (currRegressionUuid && currRevisionName && targetStep) {
       setRunning(true);
+      onReload();
       runDeltaDebugging({
         regression_uuid: currRegressionUuid,
         revision_name: currRevisionName,
@@ -197,7 +200,12 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
   // };
 
   const handleStepClick = (stepData: DdStepsItems) => {
+    // update dd result table
     setSelectedStepInfo(stepData);
+    // update dd hunk blocks
+    setSelectedStepTestedHunksIndex(
+      stepData.cprobTestedInx !== null ? stepData.cprobTestedInx : [],
+    );
   };
 
   useEffect(() => {
@@ -303,45 +311,12 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
               >
                 Delta Debug
               </Button>
-              <br />
-              <Button
-                icon={<PlayCircleOutlined />}
-                onClick={handleRunDDByStep}
-                size="middle"
-                shape="round"
-                style={{ marginBottom: '5px' }}
-              >
-                Run by Step
-              </Button>{' '}
-              :{' '}
-              <InputNumber
-                min={0}
-                max={allStepInfo.length}
-                value={startStepNum}
-                defaultValue={0}
-                onChange={(value) => (value !== null ? setStartStepNum(value) : undefined)}
-                style={{ width: 60 }}
-                // controls={false}
-              />
-              ~
-              <InputNumber
-                min={1}
-                max={allStepInfo.length}
-                value={endStepNum}
-                onChange={(value) => (value !== null ? setEndStepNum(value) : undefined)}
-                style={{ width: 60 }}
-
-                // controls={false}
-              />
-              <Tooltip title={'Start step ~ End step'}>
-                <QuestionCircleOutlined style={{ marginLeft: 5 }} />
-              </Tooltip>
             </>
           }
-          headStyle={{ height: 100 }}
+          headStyle={{ height: 60 }}
           bodyStyle={{ height: 700 }}
           bordered
-          style={{ width: '30%', overflow: 'auto' }}
+          style={{ width: '25%', overflow: 'auto' }}
         >
           <Steps direction="vertical">
             {allStepInfo
@@ -359,10 +334,10 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
                           ? 'finish'
                           : 'process'
                       }
-                      title={`Step result: ${resp.stepTestResult}`}
-                      description={`Tested hunks: [${
+                      title={`Step ${resp.stepNum} result: ${resp.stepTestResult}`}
+                      description={`Tested hunks: [ ${
                         resp.cprobTestedInx === null ? [] : resp.cprobTestedInx
-                      }]`}
+                      } ]`}
                     />
                   );
                 })
@@ -371,21 +346,63 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
           <Spin size="large" spinning={running} />
         </ProCard>
         <ProCard
-          title={<Typography.Title level={2}>Choosed Hunks</Typography.Title>}
-          headStyle={{ height: 100 }}
+          title={
+            <>
+              {selectedStepInfo ? (
+                <>
+                  <Typography.Text style={{ fontSize: 20 }}>
+                    Step {selectedStepInfo?.stepNum} Details{' '}
+                  </Typography.Text>
+                  <Button
+                    icon={<PlayCircleOutlined />}
+                    onClick={handleRunDDByStep}
+                    size="middle"
+                    shape="round"
+                    style={{ marginLeft: '5px', marginRight: '5px' }}
+                  >
+                    Delta Debug by steps
+                  </Button>
+                  <InputNumber
+                    min={0}
+                    max={allStepInfo.length}
+                    value={runTimes}
+                    defaultValue={1}
+                    onChange={(value) => {
+                      if (value !== null) {
+                        setRunTimes(value);
+                        // run the modified step needs the previous step info
+                        setStartStepNum(selectedStepInfo.stepNum - 1);
+                        setEndStepNum(selectedStepInfo.stepNum + value - 1);
+                      } else {
+                        message.error('Unexpected run times, please enter a integer number.');
+                      }
+                    }}
+                    style={{ width: 60 }}
+                    controls={false}
+                  />
+                  <Tooltip title={'Number of Runs'}>
+                    <QuestionCircleOutlined style={{ marginLeft: 5 }} />
+                  </Tooltip>
+                </>
+              ) : (
+                <Typography.Title level={4}>Selected Delta Debug Step</Typography.Title>
+              )}
+            </>
+          }
+          headStyle={{ height: 60 }}
           bodyStyle={{ height: 700 }}
           bordered
-          style={{ width: '70%', overflow: 'auto' }}
+          style={{ width: '75%', overflow: 'auto' }}
           split={'horizontal'}
         >
-          <ProCard split={'horizontal'} key={'DD-result-table'}>
+          <ProCard split="horizontal" key={'DD-result-table'}>
             <DeltaDebuggingStepResultTable
               allHunks={allHunks}
               allStepInfo={allStepInfo}
               selectedHunk={selectedStepInfo}
             />
           </ProCard>
-          <ProCard split={'horizontal'} key={'DD-hunk-blocks'}>
+          <ProCard key={'DD-hunk-blocks'}>
             <DeltaDebuggingHunkBlocks
               regressionUuid={currRegressionUuid}
               revision={currRevisionName}

@@ -4,12 +4,12 @@ import { ResizeEntry, ResizeSensor } from '@blueprintjs/core';
 import { Checkbox, Col, Divider, Row } from 'antd';
 import type { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import React, { createRef, useEffect, useState } from 'react';
-import { MonacoDiffEditor } from 'react-monaco-editor';
+import { monaco, MonacoDiffEditor } from 'react-monaco-editor';
 import type { HunkEntityItems } from '../data';
+// import '@Codeeditor/style.css';
 
-export interface HunkCodeItems extends RegressionCode {
+export interface HunkCodeItems extends RegressionCode, HunkEntityItems {
   key: number;
-  newPath: string;
 }
 
 interface IProps {
@@ -19,14 +19,14 @@ interface IProps {
   choosedHunksIndex?: number[];
 }
 
-const DEFAULT_HEIGHT = 40;
+// const DEFAULT_HEIGHT = 40;
 
 const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ regressionUuid, revision, allHunkInfo }) => {
   const [hunkCodeList, setHunkCodeList] = useState<HunkCodeItems[]>([]);
   const [monacoSize, setMonacoSize] = useState<{
     width: string | number;
     height: string | number;
-  }>({ width: 1080, height: 300 });
+  }>({ width: 1180, height: 300 });
   const editorRef = createRef<MonacoDiffEditor>();
   const options = {
     renderSideBySide: false,
@@ -77,11 +77,11 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ regressionUuid, revision, 
         }).then((data) => {
           if (data) {
             const hunkCode: HunkCodeItems = {
+              key: index,
               regressionUuid: data.regressionUuid,
               oldCode: data.oldCode,
               newCode: data.newCode,
-              key: index,
-              newPath: resp.newPath,
+              ...resp,
             };
             return hunkCode;
           }
@@ -97,32 +97,48 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({ regressionUuid, revision, 
 
   return (
     // <ResizeSensor onResize={handleResizeMonacoEditor}>
-      <Checkbox.Group onChange={onChange}>
-        {hunkCodeList
-          ? hunkCodeList.map((data) => {
-              return (
-                <>
-                  <Checkbox value={data.key}>
-                    {'hunk ' + data.key}
-                    <br />
-                    <MonacoDiffEditor
-                      key={data.key}
-                      ref={editorRef}
-                      width={monacoSize.width}
-                      height={monacoSize.height}
-                      language={'java'}
-                      theme={'vs-light'}
-                      options={options}
-                      original={data.oldCode}
-                      value={data.newCode}
-                    />
-                  </Checkbox>
-                  <Divider />
-                </>
-              );
-            })
-          : null}
-      </Checkbox.Group>
+    <Checkbox.Group onChange={onChange}>
+      {hunkCodeList
+        ? hunkCodeList.map((data) => {
+            return (
+              <>
+                <Checkbox value={data.key}>
+                  {'hunk ' + data.key}
+                  <br />
+                  <MonacoDiffEditor
+                    key={data.key}
+                    ref={editorRef}
+                    width={monacoSize.width}
+                    height={monacoSize.height}
+                    language={'java'}
+                    theme={'vs-light'}
+                    options={options}
+                    original={data.oldCode}
+                    value={data.newCode}
+                    editorDidMount={(diffEditor) => {
+                      const codeEditor = diffEditor.getModifiedEditor();
+                      diffEditor.revealLineInCenter(data.beginB);
+                      codeEditor.deltaDecorations(
+                        [],
+                        [
+                          {
+                            range: new monaco.Range(data.beginB, 0, data.endB, 0),
+                            options: {
+                              isWholeLine: true,
+                              className: 'criticalChangeHintClass',
+                            },
+                          },
+                        ],
+                      );
+                    }}
+                  />
+                </Checkbox>
+                <Divider />
+              </>
+            );
+          })
+        : null}
+    </Checkbox.Group>
     // </ResizeSensor>
   );
 };
