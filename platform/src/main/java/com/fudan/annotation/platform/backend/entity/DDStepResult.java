@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
- * description:
+ * description: delta debugging step result
  *
  * @author David
  * create: 2022-11-16 09:22
@@ -16,8 +17,13 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DDStepResult {
+public class DDStepResult implements Serializable {
+    private Integer stepNum;
+    private String stepTestResult; // PASS || FAIL || CE
     private List<Double> cProb;
-    private List<Integer> cProbIdx;
-    private List<HunkEntity> ccHunks;
+    // index tested this step
+    private List<Integer> cProbTestedInx;
+    // index left to be tested, while 'PASS', remove not included indexes
+    private List<Integer> cProbLeftIdx2Test;
+//    private List<HunkEntity> ccHunks;
 }

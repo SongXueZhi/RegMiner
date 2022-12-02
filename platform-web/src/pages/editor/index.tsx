@@ -18,7 +18,8 @@ import {
 } from 'antd';
 import { AppstoreOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
 import DiffEditorTabs from './components/DiffEditorTabs';
-import { IRouteComponentProps, useAccess, useModel } from 'umi';
+import type { IRouteComponentProps } from 'umi';
+import { useAccess, useModel } from 'umi';
 import {
   getRegressionConsole,
   queryRegressionCode,
@@ -543,6 +544,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
     } else {
       message.error('Sorry, you have no right to do that. Please login or use another account!');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     BICFeedbackList,
     BFCFeedbackList,
@@ -657,6 +659,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         message.error('Sorry, you have no right to do that. Please login or use another account!');
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [HISTORY_SEARCH.regressionUuid],
   );
 
@@ -705,6 +708,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
     } else {
       message.error('Sorry, you have no right to do that. Please login or use another account!');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [HISTORY_SEARCH.regressionUuid, handleDeleteComment, newCommentText]);
 
   useEffect(() => {
@@ -818,13 +822,15 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             title: 'Regression verfication',
             subTitle: (
               <div>
-                <Typography.Text style={{ marginRight: 20 }}>
-                  Regression UUID: {HISTORY_SEARCH.regressionUuid}
-                </Typography.Text>
-                {HISTORY_SEARCH.bic ? (
-                  <Typography.Text style={{ marginRight: 20 }}>
-                    bic ID: {HISTORY_SEARCH.bic}
+                <span style={{ marginRight: 20 }}>
+                  <Typography.Text>
+                    Regression UUID: {HISTORY_SEARCH.regressionUuid}
                   </Typography.Text>
+                </span>
+                {HISTORY_SEARCH.bic ? (
+                  <span style={{ marginRight: 20 }}>
+                    <Typography.Text>bic ID: {HISTORY_SEARCH.bic}</Typography.Text>
+                  </span>
                 ) : null}
               </div>
             ),
@@ -888,7 +894,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
                 bodyStyle={{ padding: 0 }}
               >
                 <Menu
-                  title="菜单"
+                  title="Changed Files"
                   style={{ width: 286, maxHeight: '70vh', overflow: 'auto' }}
                   defaultOpenKeys={['BIC', 'BFC']}
                   mode="inline"

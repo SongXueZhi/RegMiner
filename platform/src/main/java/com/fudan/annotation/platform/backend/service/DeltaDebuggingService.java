@@ -13,14 +13,14 @@ public interface DeltaDebuggingService {
      * @param userToken      userToken
      * @param stepRange      [start step, end step]
      */
-    List<HunkEntity> getDeltaDebuggingResults(String regressionUuid, String userToken, List<Integer> stepRange, List<Double> cProb) throws IOException;
+    DeltaDebugResult getDeltaDebuggingResults(String regressionUuid, String revisionName, String userToken, List<Integer> stepRange, List<Double> cProb, List<Integer> cProbLeftIdx2Test) throws IOException;
 
-    /**
-     * description 插入新regression
-     *
-     * @param regressionUuid regressionID
-     * @param userToken      userToken
-     * @param stepNum        指定跑到第几部，可以为null
-     */
+//    /**
+//     * description 插入新regression
+//     *
+//     * @param regressionUuid regressionID
+//     * @param userToken      userToken
+//     * @param stepNum        指定跑到第几部，可以为null
+//     */
 //    DDStep runDeltaDebuggingByStep(String regressionUuid, String userToken, Integer stepNum);
 }

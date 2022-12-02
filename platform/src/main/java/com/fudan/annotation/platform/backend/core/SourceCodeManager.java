@@ -29,21 +29,21 @@ public class SourceCodeManager {
     public static String metaProjectsDirPath = workSpace + File.separator + "meta_projects";
     public static String cacheProjectsDirPath = workSpace + File.separator + "transfer_cache";
 
-    public File getProjectDir(String projectFullName) {
-        String projectDirName = projectFullName.replace("/", "_");
+    public File getProjectDir(String projectUuid, String regressionUuid, String userToken) {
+//        String projectDirName = projectFullName.replace("/", "_");
         checkRequiredDir();
-        File projectDir = new File(metaProjectsDirPath + File.separator + projectDirName);
+        File projectDir = new File(metaProjectsDirPath + File.separator + projectUuid);
         if (projectDir.exists()) {
             return projectDir;
         } else {
-            try {
-                GitUtil.clone(projectDir, "https://github.com/" + projectFullName + ".git");
-                return projectDir;
-            } catch (Exception exception) {
-                System.out.println(exception.getMessage());
-            }
+//            try {
+//                GitUtil.clone(projectDir, "https://github.com/" + projectFullName + ".git");
+//                return projectDir;
+//            } catch (Exception exception) {
+//                System.out.println(exception.getMessage());
+//            }
+            return null;
         }
-        return null;
     }
 
     public File getMetaProjectDir(String projectUuid) {

@@ -81,6 +81,7 @@ const DiffEditorTabs: React.FC<IProps> = ({
       CriticalChange: HunkEntityItems | undefined,
     ) => {
       onEdit(activeKey, 'remove');
+      // eslint-disable-next-line @typescript-eslint/no-invalid-this
       onRevertCode?.call(this, Commit, filename, oldPath, newPath, editList, CriticalChange);
     },
     [activeKey, onEdit, onRevertCode],
