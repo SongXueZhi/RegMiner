@@ -1,6 +1,7 @@
 package com.fudan.annotation.platform.backend.controller;
 
 import com.fudan.annotation.platform.backend.entity.DeltaDebugResult;
+import com.fudan.annotation.platform.backend.entity.RunDDStepInput;
 import com.fudan.annotation.platform.backend.service.DeltaDebuggingService;
 import com.fudan.annotation.platform.backend.vo.ResponseBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,27 +30,13 @@ public class DeltaDebuggingController {
     public ResponseBean<DeltaDebugResult> getDDResults(
             @RequestParam(name = "regression_uuid") String regressionUuid,
             @RequestParam(name = "revision_name") String revisionName,
-            @RequestParam(name = "start_step") Integer startStep,
-            @RequestParam(name = "end_step", required = false) Integer endStep,
-            @RequestParam String userToken,
-            @RequestParam(required = false) List<Double> cProb,
-            @RequestParam(name = "cProb_left_idx_to_test", required = false) List<Integer> cProbLeftIdx2Test
-//            @RequestBody(required = false) RunDDStepInput stepInput
+            @RequestParam String userToken
     ) {
         List<Integer> stepRange = new ArrayList<>();
-        if (endStep != null) {
-            stepRange.add(startStep);
-            stepRange.add(endStep);
-        } else {
-            stepRange.add(startStep);
-            stepRange.add(null);
-        }
-//        System.out.println(stepInput.getCProb());
-//        System.out.println(stepInput.getCProbLeftIdx2Test());
-        System.out.println(cProb);
-        System.out.println(cProbLeftIdx2Test);
+        stepRange.add(0);
+        stepRange.add(null);
         try {
-            DeltaDebugResult result = deltaDebuggingService.getDeltaDebuggingResults(regressionUuid, revisionName, userToken, stepRange, cProb, cProbLeftIdx2Test);
+            DeltaDebugResult result = deltaDebuggingService.getRunProbDD(regressionUuid, revisionName, userToken, stepRange);
             return new ResponseBean<>(200, "Run complete, return critical change hunks", result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,12 +44,30 @@ public class DeltaDebuggingController {
         }
     }
 
-//    @GetMapping(value = "/DDSteps")
-//    public ResponseBean<> getDDByStep(@RequestParam(required = false) int steps) {
-//        try {
-//            DDStep result = deltaDebuggingService.runDeltaDebuggingByStep()
-//        } catch (Exception e) {
-//            return new ResponseBean<>(401, "Run failed: " + e.getMessage(), );
-//        }
-//    }
+    @PostMapping(value = "/runDDStep")
+    public ResponseBean<DeltaDebugResult> postRunDDByStep(@RequestBody RunDDStepInput runDDStepInput) {
+        List<Integer> stepRange = new ArrayList<>();
+        if (runDDStepInput.getEndStep() != null) {
+            stepRange.add(runDDStepInput.getStartStep());
+            stepRange.add(runDDStepInput.getEndStep());
+        } else {
+            stepRange.add(runDDStepInput.getStartStep());
+            stepRange.add(null);
+        }
+        System.out.println(runDDStepInput);
+        try {
+            DeltaDebugResult result = deltaDebuggingService.postRunProbDDbyStep(
+                    runDDStepInput.getRegressionUuid(),
+                    runDDStepInput.getRevisionName(),
+                    runDDStepInput.getUserToken(),
+                    stepRange,
+                    runDDStepInput.getCprob(),
+                    runDDStepInput.getLeftIdx2Test(),
+                    runDDStepInput.getTestedHunkIdx());
+            return new ResponseBean<>(200, "Run complete, return critical change hunks", result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseBean<>(401, "Run failed: " + e.getMessage(), null);
+        }
+    }
 }
