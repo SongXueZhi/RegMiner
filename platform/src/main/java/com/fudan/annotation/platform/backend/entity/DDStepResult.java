@@ -22,8 +22,7 @@ public class DDStepResult implements Serializable {
     private String stepTestResult; // PASS || FAIL || CE
     private List<Double> cProb;
     // index tested this step
-    private List<Integer> cProbTestedInx;
+    private List<Integer> stepTestedInx;
     // index left to be tested, while 'PASS', remove not included indexes
-    private List<Integer> cProbLeftIdx2Test;
-//    private List<HunkEntity> ccHunks;
+    private List<Integer> leftIdx2Test;
 }

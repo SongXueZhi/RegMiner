@@ -11,16 +11,18 @@ public interface DeltaDebuggingService {
      *
      * @param regressionUuid regressionUuid
      * @param userToken      userToken
-     * @param stepRange      [start step, end step]
+     * @param stepRange      [start step num, end step num]
+     * @param revisionName   revision name
      */
-    DeltaDebugResult getDeltaDebuggingResults(String regressionUuid, String revisionName, String userToken, List<Integer> stepRange, List<Double> cProb, List<Integer> cProbLeftIdx2Test) throws IOException;
+    DeltaDebugResult getRunProbDD(String regressionUuid, String revisionName, String userToken, List<Integer> stepRange) throws IOException;
 
-//    /**
-//     * description 插入新regression
-//     *
-//     * @param regressionUuid regressionID
-//     * @param userToken      userToken
-//     * @param stepNum        指定跑到第几部，可以为null
-//     */
-//    DDStep runDeltaDebuggingByStep(String regressionUuid, String userToken, Integer stepNum);
+    /**
+     * description 插入新regression
+     *
+     * @param regressionUuid regressionUuid
+     * @param userToken      userToken
+     * @param stepRange      [start step, end step]
+     * @param cProb          previous step cProb
+     */
+    DeltaDebugResult postRunProbDDbyStep(String regressionUuid, String revisionName, String userToken, List<Integer> stepRange, List<Double> cProb, List<Integer> leftIdx2Test, List<Integer> stepTestedInx) throws IOException;
 }
