@@ -6,33 +6,25 @@ import ProTable from '@ant-design/pro-table';
 import {
   Button,
   Card,
-  Checkbox,
-  Col,
-  Collapse,
   Descriptions,
   Drawer,
   InputNumber,
-  Menu,
   message,
-  Row,
   Skeleton,
   Spin,
   Steps,
   Tooltip,
   Typography,
 } from 'antd';
-import type { CheckboxValueType } from 'antd/lib/checkbox/Group';
-import React, { createRef, useCallback, useEffect, useRef, useState } from 'react';
-import { MonacoDiffEditor } from 'react-monaco-editor';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { IRouteComponentProps } from 'umi';
-import type { RegressionCode } from '../editor/data';
-import { queryRegressionCode, queryRegressionDetail } from '../editor/service';
+import { queryRegressionDetail } from '../editor/service';
 import { queryRegressionList } from '../regression/service';
 import DeltaDebuggingHunkBlocks from './components/ddHunkBlocks';
 import DeltaDebuggingHunkRelationGraph from './components/ddHunkRelationGraph';
 import DeltaDebuggingStepResultTable from './components/ddStepResultTable';
 import type { DdStepsItems, HunkEntityItems } from './data';
-import { runDeltaDebugging } from './service';
+import { runDeltaDebugging, runDeltaDebuggingByStep } from './service';
 
 function withSkeleton(element: JSX.Element | string | number | number | undefined) {
   return (
@@ -174,13 +166,14 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
     if (currRegressionUuid && currRevisionName && targetStep) {
       setRunning(true);
       onReload();
-      runDeltaDebugging({
-        regression_uuid: currRegressionUuid,
-        revision_name: currRevisionName,
-        start_step: startStepNum,
-        end_step: endStepNum,
-        cPro: targetStep.cprob,
-        cProb_left_idx_to_test: targetStep.cprobLeftIdx2Test,
+      runDeltaDebuggingByStep({
+        regressionUuid: currRegressionUuid,
+        revisionName: currRevisionName,
+        startStep: startStepNum,
+        endStep: endStepNum,
+        cprob: targetStep.cprob,
+        leftIdx2Test: targetStep.leftIdx2Test,
+        testedHunkIdx: targetStep.stepTestedInx ? targetStep.stepTestedInx : [],
         userToken: '123',
       }).then((data) => {
         if (data !== null) {
@@ -194,19 +187,16 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
     }
   };
 
-  // const handleStepsChange = async (key: number) => {
-  //   // value equals to stepNum
-  //   console.log('onchange: ' + key);
-  // };
-
   const handleStepClick = (stepData: DdStepsItems) => {
     // update dd result table
     setSelectedStepInfo(stepData);
     // update dd hunk blocks
-    setSelectedStepTestedHunksIndex(
-      stepData.cprobTestedInx !== null ? stepData.cprobTestedInx : [],
-    );
+    setSelectedStepTestedHunksIndex(stepData.stepTestedInx !== null ? stepData.stepTestedInx : []);
   };
+
+  const handleOnSelectedHunks = useCallback((selectedHunksIdx: number[]) => {
+    setSelectedStepTestedHunksIndex(selectedHunksIdx);
+  }, []);
 
   useEffect(() => {
     onReload();
@@ -308,6 +298,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
                 size="middle"
                 shape="round"
                 style={{ marginBottom: '10px' }}
+                type="primary"
               >
                 Delta Debug
               </Button>
@@ -336,7 +327,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
                       }
                       title={`Step ${resp.stepNum} result: ${resp.stepTestResult}`}
                       description={`Tested hunks: [ ${
-                        resp.cprobTestedInx === null ? [] : resp.cprobTestedInx
+                        resp.stepTestedInx === null ? [] : resp.stepTestedInx
                       } ]`}
                     />
                   );
@@ -359,6 +350,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
                     size="middle"
                     shape="round"
                     style={{ marginLeft: '5px', marginRight: '5px' }}
+                    type="primary"
                   >
                     Delta Debug by steps
                   </Button>
@@ -407,7 +399,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
               regressionUuid={currRegressionUuid}
               revision={currRevisionName}
               allHunkInfo={allHunks}
-              // selectedIndex={}
+              onSelectedHunks={handleOnSelectedHunks}
             />
           </ProCard>
         </ProCard>
@@ -416,7 +408,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
         <Card
           title={'Hunk Relation Graph'}
           headStyle={{ height: 85 }}
-          bodyStyle={{ height: 300 }}
+          bodyStyle={{ height: 900 }}
           bordered
           style={{ width: '100%', overflow: 'auto' }}
         >

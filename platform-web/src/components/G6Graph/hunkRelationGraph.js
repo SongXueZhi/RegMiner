@@ -91,15 +91,18 @@ const drawSmellGraph = function (json_data, graphId) {
       },
     },
     defaultNode: {
-      size: 30,
+      type: 'rect',
+      // size: 30,
       style: {
+        width: 100,
+        height: 30,
         lineWidth: 2,
         stroke: '#5B8FF9',
         fill: '#C6E5FF',
       },
     },
     defaultEdge: {
-      size: 1,
+      size: 2,
       color: '#A9A9A9',
       style: {
         endArrow: {

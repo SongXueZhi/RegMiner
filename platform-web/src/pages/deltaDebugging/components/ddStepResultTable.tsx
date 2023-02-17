@@ -1,10 +1,8 @@
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Col, Collapse, List, Row, Skeleton, Typography } from 'antd';
-import type { ColumnsType } from 'antd/lib/table';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Col, Collapse, Row, Typography } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import type { HunkEntityItems, DdStepsItems } from '../data';
-import { ddResult } from './mockData';
 
 interface IProps {
   allHunks: HunkEntityItems[];
@@ -36,13 +34,13 @@ const DeltaDebuggingStepResultTable: React.FC<IProps> = ({ allHunks, selectedHun
       {
         title: 'cProb',
         dataIndex: 'cprob',
-        render: (_, { cprobTestedInx, cprob }) => {
+        render: (_, { stepTestedInx, cprob }) => {
           return (
             <Row justify="center" wrap={true}>
               {cprob.map((num, index) => {
                 return (
                   <Col span={4}>
-                    <Typography.Text mark={cprobTestedInx ? cprobTestedInx.includes(index) : false}>
+                    <Typography.Text mark={stepTestedInx ? stepTestedInx.includes(index) : false}>
                       Hunk {index}:
                     </Typography.Text>
                     <Typography.Text keyboard>{num.toFixed(3)}</Typography.Text>
@@ -63,7 +61,6 @@ const DeltaDebuggingStepResultTable: React.FC<IProps> = ({ allHunks, selectedHun
       // every step can only loaded once
       if (!dataSource.some((d) => d.stepNum === selectedHunk.stepNum)) {
         const list = dataSource.concat([selectedHunk]);
-        console.log('here');
         setDataSource(list);
       }
     } else {
