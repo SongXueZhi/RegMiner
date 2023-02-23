@@ -1,15 +1,16 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, message, Skeleton, Tooltip } from 'antd';
-import React, { useState, useRef } from 'react';
+import { Button, Divider, Input, message, Select, Skeleton, Tooltip } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
 import { queryRegressionList, addRegression, removeRegression } from './service';
 import { Link } from 'react-router-dom';
-import { stringify } from 'query-string';
+import { parse, stringify } from 'query-string';
 import './index.less';
 import { useAccess } from 'umi';
+import { arr2str } from '@/utils/conversion';
 
 /**
  * 添加节点
@@ -75,15 +76,44 @@ const handleRemove = async (regressionUuid: string) => {
   }
 };
 
+const pageSize = 20;
+
 function withSkeleton(element: JSX.Element | string | number | number | undefined) {
   return (
     element ?? <Skeleton title={{ width: '80px', style: { margin: 0 } }} paragraph={false} active />
   );
 }
 
+interface SearchParams extends Record<string, any> {
+  order?: string;
+  page?: number;
+  ps?: number;
+  regressionUuid?: string;
+  projectFullName?: string;
+  keyword?: string;
+}
+
+interface IHistorySearch extends SearchParams {
+  regression_uuid?: string;
+  project_full_name?: string;
+  keyword?: string;
+}
+
+const generateParams = (params: SearchParams) => {
+  return {
+    regression_uuid: params.regressionUuid,
+    project_full_name: params.projectFullName,
+    ksyword: params.keyword,
+    page: params.current,
+    ps: params.pageSize,
+  };
+};
+
 const RegressionListPage: React.FC<{}> = () => {
   const access = useAccess();
+  // const HISTORY_SEARCH = parse(location.search) as IHistorySearch;
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
+  const [regressionUuidList, setRegressionUuidList] = useState<string[]>([]);
   const actionRef = useRef<ActionType>();
   const columns: ProColumns<API.RegressionItem>[] = [
     {
@@ -97,9 +127,9 @@ const RegressionListPage: React.FC<{}> = () => {
       // formItemProps: { label: 'keyword' },
     },
     {
-      title: 'bug id',
+      title: 'regression UUID',
       dataIndex: 'regressionUuid',
-      search: false,
+      width: 200,
       render: (_, { projectFullName, regressionUuid, index }) => {
         return withSkeleton(
           regressionUuid ? (
@@ -110,7 +140,9 @@ const RegressionListPage: React.FC<{}> = () => {
                   search: stringify({ regressionUuid }),
                 }}
               >
-                {projectFullName?.split('/')[1]}_{index}
+                <Tooltip title={projectFullName?.split('/')[1] + '_' + `${index}`}>
+                  {regressionUuid}
+                </Tooltip>
               </Link>
             ) : (
               regressionUuid
@@ -120,11 +152,32 @@ const RegressionListPage: React.FC<{}> = () => {
           ),
         );
       },
+      // renderFormItem: (_, { record, type }, form) => {
+      //   if (type === 'form') {
+      //     return null;
+      //   }
+      //   return (
+      //     <Select
+      //       showSearch
+      //       mode="multiple"
+      //       maxTagCount="responsive"
+      //       placeholder={'Regression UUID'}
+      //       options={[]}
+      //     />
+      //   );
+      // },
+      renderFormItem: (_, { type }, form) => {
+        if (type === 'form') {
+          return null;
+        }
+        return <Input placeholder="Regression UUID" />;
+      },
     },
     {
       title: 'keyword',
       dataIndex: 'keyword',
       hideInTable: true,
+      search: false,
       render: (_, { regressionUuid, index }) => {
         return withSkeleton(regressionUuid ? (index <= 49 ? '' : '') : '暂无数据');
       },
@@ -132,6 +185,8 @@ const RegressionListPage: React.FC<{}> = () => {
     {
       title: 'project name',
       dataIndex: 'projectFullName',
+      width: 200,
+      search: false,
       renderText: (val: string) => `${val} `,
       // tip: '所属项目名称',
     },
@@ -140,7 +195,6 @@ const RegressionListPage: React.FC<{}> = () => {
       dataIndex: 'bic',
       ellipsis: true,
       hideInSearch: true,
-      width: 200,
       render: (_, record) => {
         return (
           <Tooltip placement="top" title={record.bic}>
@@ -155,7 +209,6 @@ const RegressionListPage: React.FC<{}> = () => {
       // tip: 'a random work commit',
       ellipsis: true,
       hideInSearch: true,
-      width: 180,
       render: (_, record) => {
         return (
           <Tooltip placement="top" title={record.work}>
@@ -169,7 +222,6 @@ const RegressionListPage: React.FC<{}> = () => {
       dataIndex: 'bfc',
       ellipsis: true,
       hideInSearch: true,
-      width: 200,
       render: (_, record) => {
         return (
           <Tooltip placement="top" title={record.bfc}>
@@ -184,7 +236,6 @@ const RegressionListPage: React.FC<{}> = () => {
       tip: 'the parent of bug fixing commit',
       ellipsis: true,
       hideInSearch: true,
-      width: 180,
       render: (_, record) => {
         return (
           <Tooltip placement="top" title={record.buggy}>
@@ -240,6 +291,33 @@ const RegressionListPage: React.FC<{}> = () => {
     },
   ];
 
+  const queryList = async (
+    params: SearchParams & {
+      pageSize?: number | undefined;
+      current?: number | undefined;
+      keyword?: string | undefined;
+    },
+  ) => {
+    const totalParams = {
+      ...generateParams(params),
+    };
+    const resp = await queryRegressionList({ ...totalParams });
+    const regressionList: string[] = resp.data.map((d) => {
+      return d.regressionUuid;
+    });
+    setRegressionUuidList(regressionList);
+    if (resp === null || typeof resp === 'boolean')
+      return {
+        data: [],
+        success: true,
+        total: 0,
+      };
+    return {
+      data: resp.data,
+      success: true,
+      total: resp.data.length,
+    };
+  };
   return (
     <PageContainer
       header={{
@@ -299,18 +377,11 @@ const RegressionListPage: React.FC<{}> = () => {
           </Button>,
         ]}
         // @ts-ignore
-        request={(params) =>
-          queryRegressionList({
-            regression_uuid: params.regressionUuid,
-            keyword: params.keyword,
-            project_full_name: params.projectFullName,
-          })
-        }
+        request={queryList}
         columns={columns}
-        // pagination={{
-        //   pageSize: 20,
-        //   pageSizeOptions: undefined,
-        // }}
+        pagination={{
+          pageSize: pageSize,
+        }}
       />
       <CreateForm onCancel={() => handleModalVisible(false)} modalVisible={createModalVisible}>
         <ProTable<API.RegressionItem, API.RegressionItem>
