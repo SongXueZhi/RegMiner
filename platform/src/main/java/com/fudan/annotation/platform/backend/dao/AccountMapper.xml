@@ -26,7 +26,7 @@
         </where>
     </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete from account
         where account_id = #{accountId}
     </delete>
