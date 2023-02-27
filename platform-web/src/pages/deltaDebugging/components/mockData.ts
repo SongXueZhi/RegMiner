@@ -1,3 +1,4 @@
+import { sources } from 'webpack';
 import type { DdResultItems } from '../data';
 
 // case 6
@@ -552,23 +553,328 @@ export const relationTreeData = {
 export const addNodeEdgeData = {
   nodes: [
     {
-      id: 'node1',
-      label: '1',
+      id: 'hunk_0',
+      label: 'hunk 0',
     },
     {
-      id: 'node2',
-      label: '2',
+      id: 'hunk_1',
+      label: 'Hunk 1',
     },
     {
-      id: 'node3',
-      label: '3',
+      id: 'hunk_2',
+      label: 'Hunk 2',
+    },
+    {
+      id: 'hunk_3',
+      label: 'Hunk 3',
+    },
+    {
+      id: 'hunk_4',
+      label: 'Hunk 4',
+    },
+    {
+      id: 'hunk_5',
+      label: 'Hunk 5',
+    },
+    {
+      id: 'hunk_6',
+      label: 'Hunk 6',
+    },
+    {
+      id: 'hunk_7',
+      label: 'Hunk 7',
+    },
+    {
+      id: 'hunk_8',
+      label: 'Hunk 8',
+    },
+    {
+      id: 'hunk_9',
+      label: 'Hunk 9',
+    },
+    {
+      id: 'hunk_10',
+      label: 'Hunk 10',
+    },
+    {
+      id: 'hunk_11',
+      label: 'Hunk 11',
+    },
+  ],
+  smells: [
+    {
+      nodes: [
+        {
+          path: 'AbstractCharInputReader.java',
+          index: 1,
+        },
+        {
+          path: 'CharInputReader.java',
+          index: 2,
+        },
+        {
+          path: 'LookaheadCharInputReader.java',
+          index: 3,
+        },
+        {
+          path: 'CsvParser.java',
+          index: 3,
+        },
+        {
+          path: 'Github_299.java',
+          index: 3,
+        },
+      ],
+      name: '编译率高的开源项目-jedis-master-0',
     },
   ],
   edges: [
     {
-      id: 'edge1',
-      target: 'node2',
-      source: 'node1',
+      id: 'hunk_2/hunk_3',
+      source: 'hunk_2',
+      target: 'hunk_3',
+    },
+    {
+      id: 'hunk_3/hunk_4',
+      source: 'hunk_3',
+      target: 'hunk_4',
+    },
+    {
+      id: 'hunk_4/hunk_8',
+      source: 'hunk_4',
+      target: 'hunk_8',
+    },
+    {
+      id: 'hunk_11/hunk_0',
+      source: 'hunk_11',
+      target: 'hunk_0',
+    },
+    {
+      id: 'hunk_0/hunk_11',
+      source: 'hunk_0',
+      target: 'hunk_11',
+    },
+    {
+      id: 'hunk_9/hunk_10',
+      source: 'hunk_9',
+      target: 'hunk_10',
+    },
+    {
+      id: 'hunk_5/hunk_7',
+      source: 'hunk_9',
+      target: 'hunk_10',
+    },
+    {
+      id: 'hunk_5/hunk_6',
+      source: 'hunk_5',
+      target: 'hunk_7',
+    },
+    {
+      id: 'hunk_8/hunk_2',
+      source: 'hunk_4',
+      target: 'hunk_8',
+    },
+    {
+      id: 'hunk_9/hunk_1',
+      source: 'hunk_9',
+      target: 'hunk_1',
+    },
+    {
+      id: 'hunk_9/hunk_8',
+      source: 'hunk_9',
+      target: 'hunk_8',
     },
   ],
+};
+
+export const addNodeEdgeDataFake = {
+  nodes: [
+    {
+      id: 'hunk_0',
+      label: 'hunk 0',
+    },
+    {
+      id: 'hunk_1',
+      label: 'Hunk 1',
+    },
+    {
+      id: 'hunk_2',
+      label: 'Hunk 2',
+    },
+    {
+      id: 'hunk_3',
+      label: 'Hunk 3',
+    },
+    {
+      id: 'hunk_4',
+      label: 'Hunk 4',
+    },
+    {
+      id: 'hunk_5',
+      label: 'Hunk 5',
+    },
+    {
+      id: 'hunk_6',
+      label: 'Hunk 6',
+    },
+    {
+      id: 'hunk_7',
+      label: 'Hunk 7',
+    },
+    {
+      id: 'hunk_8',
+      label: 'Hunk 8',
+    },
+    {
+      id: 'hunk_9',
+      label: 'Hunk 9',
+    },
+    {
+      id: 'hunk_10',
+      label: 'Hunk 10',
+    },
+    {
+      id: 'hunk_11',
+      label: 'Hunk 11',
+    },
+  ],
+  smells: [
+    {
+      nodes: [
+        {
+          path: 'AbstractCharInputReader.java',
+          index: 1,
+        },
+        {
+          path: 'CharInputReader.java',
+          index: 2,
+        },
+        {
+          path: 'LookaheadCharInputReader.java',
+          index: 3,
+        },
+        {
+          path: 'CsvParser.java',
+          index: 3,
+        },
+        {
+          path: 'Github_299.java',
+          index: 3,
+        },
+      ],
+      name: '编译率高的开源项目-jedis-master-0',
+    },
+  ],
+  edges: [
+    {
+      id: 'hunk_2/hunk_3',
+      source: 'hunk_2',
+      target: 'hunk_3',
+    },
+    {
+      id: 'hunk_3/hunk_4',
+      source: 'hunk_3',
+      target: 'hunk_4',
+    },
+    {
+      id: 'hunk_4/hunk_8',
+      source: 'hunk_4',
+      target: 'hunk_8',
+    },
+    {
+      id: 'hunk_11/hunk_0',
+      source: 'hunk_11',
+      target: 'hunk_0',
+    },
+    {
+      id: 'hunk_0/hunk_11',
+      source: 'hunk_0',
+      target: 'hunk_11',
+    },
+    {
+      id: 'hunk_9/hunk_10',
+      source: 'hunk_9',
+      target: 'hunk_10',
+    },
+    {
+      id: 'hunk_5/hunk_7',
+      source: 'hunk_9',
+      target: 'hunk_10',
+    },
+    {
+      id: 'hunk_5/hunk_6',
+      source: 'hunk_5',
+      target: 'hunk_7',
+    },
+    {
+      id: 'hunk_8/hunk_2',
+      source: 'hunk_4',
+      target: 'hunk_8',
+    },
+    {
+      id: 'hunk_9/hunk_1',
+      source: 'hunk_9',
+      target: 'hunk_1',
+    },
+    {
+      id: 'hunk_9/hunk_8',
+      source: 'hunk_9',
+      target: 'hunk_8',
+    },
+    {
+      id: 'hunk_2/hunk_5',
+      source: 'hunk_2',
+      target: 'hunk_5',
+    },
+  ],
+};
+
+export const tutorialData = {
+  nodes: [
+    {
+      path: '/src/main/java/redis/clients/jedis/Pipeline.java',
+      name: 'Pipeline.java',
+      id: '1',
+      label: '1',
+      x: 30,
+      y: 25,
+    },
+    {
+      path: '/src/main/java/redis/clients/jedis/Jedis.java',
+      name: 'Jedis.java',
+      id: '2',
+      label: '2',
+      x: 170,
+      y: 25,
+    },
+  ],
+  smells: [
+    {
+      nodes: [
+        {
+          path: '/src/main/java/redis/clients/jedis/Pipeline.java',
+          index: 1,
+        },
+        {
+          path: '/src/main/java/redis/clients/jedis/Jedis.java',
+          index: 2,
+        },
+        {
+          path: '/src/main/java/redis/clients/jedis/Transaction.java',
+          index: 3,
+        },
+      ],
+      name: '编译率高的开源项目-jedis-master-0',
+    },
+  ],
+  coreNode: '0',
+  edges: [
+    {
+      id: '1001',
+      source: '1',
+      target: '2',
+      label: '1 rely on 2',
+    },
+  ],
+  smellType: 'CyclicDependency',
 };

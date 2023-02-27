@@ -81,28 +81,26 @@ const drawSmellGraph = function (json_data, graphId) {
     },
     plugins: [nodeTip, edgeTip, nodeMenu],
     animate: true,
-    defaultCombo: {
-      type: 'circle',
-      size: 30,
-      style: {
-        lineWidth: 2,
-        stroke: '#9370db',
-        fill: '#e6e6fa',
-      },
-    },
+    // defaultCombo: {
+    //   type: 'circle',
+    //   size: 30,
+    //   style: {
+    //     lineWidth: 2,
+    //     stroke: '#9370db',
+    //     fill: '#e6e6fa',
+    //   },
+    // },
     defaultNode: {
-      type: 'rect',
-      // size: 30,
       style: {
-        width: 100,
-        height: 30,
-        lineWidth: 2,
+        width: 10,
+        height: 5,
+        lineWidth: 1,
         stroke: '#5B8FF9',
         fill: '#C6E5FF',
       },
     },
     defaultEdge: {
-      size: 2,
+      size: 1,
       color: '#A9A9A9',
       style: {
         endArrow: {
@@ -110,23 +108,17 @@ const drawSmellGraph = function (json_data, graphId) {
           fill: '#A9A9A9',
         },
       },
-      labelCfg: {
-        autoRotate: true,
-      },
+      // labelCfg: {
+      //   autoRotate: true,
+      // },
     },
-    layout: {
-      type: 'fruchterman',
-      gravity: 10,
-      speed: 5,
-      clustering: true,
-    },
-    nodeStateStyles: {
-      coreNode: {
-        lineWidth: 2,
-        stroke: '#DC143C',
-        fill: '#FFC0CB',
-      },
-    },
+    // nodeStateStyles: {
+    //   coreNode: {
+    //     lineWidth: 2,
+    //     stroke: '#DC143C',
+    //     fill: '#FFC0CB',
+    //   },
+    // },
   });
   let coreNodeId = json_data['coreNode'];
   let links = json_data['edges'];

@@ -10,6 +10,7 @@ import {
   Drawer,
   InputNumber,
   message,
+  Popover,
   Skeleton,
   Spin,
   Steps,
@@ -23,6 +24,7 @@ import { queryRegressionList } from '../regression/service';
 import DeltaDebuggingHunkBlocks from './components/ddHunkBlocks';
 import DeltaDebuggingHunkRelationGraph from './components/ddHunkRelationGraph';
 import DeltaDebuggingStepResultTable from './components/ddStepResultTable';
+import TutorialGraph from './components/tutorialG6Graph';
 import type { DdStepsItems, HunkEntityItems } from './data';
 import { runDeltaDebugging, runDeltaDebuggingByStep } from './service';
 
@@ -404,11 +406,22 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
           </ProCard>
         </ProCard>
       </div>
-      <div style={{ display: 'flex' }}>
+      <div>
         <Card
-          title={'Hunk Relation Graph'}
+          title={
+            <div style={{ display: 'flex' }}>
+              <Typography.Title level={4}>Hunk Relation Graph</Typography.Title>
+              <Popover
+                style={{ width: 500 }}
+                content={<TutorialGraph />}
+                trigger="hover"
+              >
+                <QuestionCircleOutlined style={{ fontSize: 18 }} />
+              </Popover>
+            </div>
+          }
           headStyle={{ height: 85 }}
-          bodyStyle={{ height: 900 }}
+          bodyStyle={{ height: 700 }}
           bordered
           style={{ width: '100%', overflow: 'auto' }}
         >
