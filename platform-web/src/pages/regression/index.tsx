@@ -130,23 +130,23 @@ const RegressionListPage: React.FC<{}> = () => {
       title: 'regression UUID',
       dataIndex: 'regressionUuid',
       width: 200,
-      render: (_, { projectFullName, regressionUuid, index }) => {
+      render: (_, { projectFullName, regressionUuid, id }) => {
         return withSkeleton(
           regressionUuid ? (
-            index <= 49 ? (
+            // index <= 49 ? (
               <Link
                 to={{
                   pathname: '/editor',
                   search: stringify({ regressionUuid }),
                 }}
               >
-                <Tooltip title={projectFullName?.split('/')[1] + '_' + `${index}`}>
-                  {regressionUuid}
+                <Tooltip title={regressionUuid}>
+                  {projectFullName?.split('/')[1] + '_' + `${id}`}
                 </Tooltip>
               </Link>
-            ) : (
-              regressionUuid
-            )
+            // ) : (
+            //   regressionUuid
+            // )
           ) : (
             '暂无数据'
           ),

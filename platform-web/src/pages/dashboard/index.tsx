@@ -162,7 +162,7 @@ const DashboardPage: React.FC<{}> = () => {
       render: (_, { projectFullName, regressionUuid, index }) => {
         return withSkeleton(
           regressionUuid ? (
-            index <= 49 ? (
+            // index <= 49 ? (
               <Link
                 to={{
                   pathname: '/editor',
@@ -171,9 +171,9 @@ const DashboardPage: React.FC<{}> = () => {
               >
                 {projectFullName?.split('/')[1]}_{index}
               </Link>
-            ) : (
-              regressionUuid
-            )
+            // ) : (
+            //   regressionUuid
+            // )
           ) : (
             '暂无数据'
           ),
