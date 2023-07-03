@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 public interface BugTypeMapper {
 
-    List<BugTypes> getAllBugTypes();
+    List<BugTypes> getAllBugTypes(String bugTypeName);
 
     void insertBugType(CreateBugType newBugType);
 

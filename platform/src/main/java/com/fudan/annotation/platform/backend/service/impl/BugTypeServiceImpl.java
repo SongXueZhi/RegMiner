@@ -1,8 +1,10 @@
 package com.fudan.annotation.platform.backend.service.impl;
 
+import com.fudan.annotation.platform.backend.dao.AccountMapper;
+import com.fudan.annotation.platform.backend.dao.BugToTypeMapper;
 import com.fudan.annotation.platform.backend.dao.BugTypeMapper;
-import com.fudan.annotation.platform.backend.entity.BugTypes;
-import com.fudan.annotation.platform.backend.entity.CreateBugType;
+import com.fudan.annotation.platform.backend.dao.RegressionMapper;
+import com.fudan.annotation.platform.backend.entity.*;
 import com.fudan.annotation.platform.backend.service.BugTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +22,21 @@ import java.util.List;
 @Service
 @Slf4j
 public class BugTypeServiceImpl implements BugTypeService {
-    @Autowired
+
     private BugTypeMapper bugTypeMapper;
+    @Autowired
+    private BugToTypeMapper bugToTypeMapper;
+    @Autowired
+    private RegressionMapper regressionMapper;
+
+    @Autowired
+    public void setBugTypeMapper(BugTypeMapper bugTypeMapper) {
+        this.bugTypeMapper = bugTypeMapper;
+    }
 
     @Override
-    public List<BugTypes> getAllBugTypes() {
-        return bugTypeMapper.getAllBugTypes();
+    public List<BugTypes> getAllBugTypes(String bugTypeName) {
+        return bugTypeMapper.getAllBugTypes(bugTypeName);
     }
 
     @Override
@@ -39,6 +50,51 @@ public class BugTypeServiceImpl implements BugTypeService {
     @Override
     public void deleteBugTypeById(int bugTypeId) {
         bugTypeMapper.deleteBugTypeById(bugTypeId);
+    }
+
+    @Override
+    public List<BugToTypeItems> getBugToTypeByRegressionUuid(String regressionUuid) {
+        return bugToTypeMapper.getBugToTypeByRegressionUuid(regressionUuid);
+    }
+
+    @Override
+    public void postAgreeBugType(String regressionUuid, int bugTypeId) {
+        List<BugToTypeItems> bugToTypeList = bugToTypeMapper.getBugToTypeByRegressionUuid(regressionUuid);
+        if(regressionUuid == null || regressionUuid == "") {
+            throw new RuntimeException("param loss");
+        }
+        if (bugToTypeList.equals(null) || bugToTypeList.isEmpty()) {
+            throw new RuntimeException("record does not exist");
+        }
+        bugToTypeMapper.postAgreeBugType(regressionUuid, bugTypeId);
+    }
+
+    @Override
+    public void postDisagreeBugType(String regressionUuid, int bugTypeId) {
+        List<BugToTypeItems> bugToTypeList = bugToTypeMapper.getBugToTypeByRegressionUuid(regressionUuid);
+        if(regressionUuid == null || regressionUuid == "") {
+            throw new RuntimeException("param loss");
+        }
+        if (bugToTypeList.isEmpty()) {
+            throw new RuntimeException("record does not exist");
+        }
+        bugToTypeMapper.postDisagreeBugType(regressionUuid, bugTypeId);
+    }
+
+    @Override
+    public void createBugTypeToRegression(CreateBugToType newBugToType) {
+        List<BugTypes> bugTypeList = bugTypeMapper.getAllBugTypes(newBugToType.getBugTypeName());
+        List<Regression> regressionList = regressionMapper.selectRegression(newBugToType.getRegressionUuid(), null, null, null);
+        if(newBugToType.getBugTypeName() == null || newBugToType.getBugTypeName() == "" ||
+                newBugToType.getBugTypeName() == null || newBugToType.getBugTypeName() == "" ||
+                newBugToType.getAccountName() == null || newBugToType.getAccountName() == "" ||
+                newBugToType.getBugTypeId() == 0) {
+            throw new RuntimeException("param loss");
+        }
+        if(regressionList.isEmpty() || bugTypeList.isEmpty()) {
+            throw new RuntimeException("Wrong params, please check if the regressionUuid or bugTypeId is right.");
+        }
+        bugToTypeMapper.insertBugToType(newBugToType);
     }
 
 }

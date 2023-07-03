@@ -12,6 +12,11 @@
     <select id="getAllBugTypes" resultMap="bug_type">
         select *
         from bug_type
+        <trim prefix="where" prefixOverrides="and">
+            <if test="bug_type_name != null">
+                bug_type_name = #{bugTypeName}
+            </if>
+        </trim>
     </select>
 
     <insert id="insertBugType" parameterType="com.fudan.annotation.platform.backend.entity.CreateBugType">

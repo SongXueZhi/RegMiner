@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fudan.annotation.platform.backend.dao.BugToTypeMapper">
+
+    <resultMap id="bug_to_type_items" type="com.fudan.annotation.platform.backend.entity.BugToTypeItems">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="regression_uuid" property="regressionUuid" jdbcType="VARCHAR"/>
+        <result column="bug_type_id" property="bugTypeId" jdbcType="INTEGER"/>
+        <result column="bug_type_name" property="bugTypeName" jdbcType="VARCHAR"/>
+        <result column="agree_count" property="agreeCount" jdbcType="INTEGER"/>
+        <result column="disagree_count" property="disagreeCount" jdbcType="INTEGER"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="created_by" property="createdBy" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getBugToTypeByRegressionUuid" resultMap="bug_to_type_items">
+        select *
+        from bug_to_type
+        <where>
+            regression_uuid = #{regressionUuid}
+        </where>
+    </select>
+
+    <update id="postAgreeBugType">
+        update bug_to_type
+        set
+        agree_count = agree_count + 1
+        <where>
+            regression_uuid = #{regressionUuid}
+            and bug_type_id = #{bugTypeId}
+        </where>
+    </update>
+
+    <update id="postDisagreeBugType">
+        update bug_to_type
+        set
+        disagree_count = disagree_count + 1
+        <where>
+            regression_uuid = #{regressionUuid}
+            and bug_type_id = #{bugTypeId}
+        </where>
+    </update>
+
+    <insert id="insertBugToType" parameterType="com.fudan.annotation.platform.backend.entity.CreateBugToType">
+        insert into bug_to_type
+        (regression_uuid, bug_type_id, bug_type_name, created_by)
+        values (#{regressionUuid},
+        #{bugTypeId},
+        #{bugTypeName},
+        #{accountName});
+    </insert>
+
+</mapper>
