@@ -14,19 +14,16 @@
         from bug_type
     </select>
 
-<!--    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">-->
-<!--        delete from account-->
-<!--        where account_id = #{accountId}-->
-<!--    </delete>-->
+    <insert id="insertBugType" parameterType="com.fudan.annotation.platform.backend.entity.CreateBugType">
+        insert into bug_type
+        (bug_type_name, created_by)
+        values (#{bugTypeName},
+        #{accountName});
+    </insert>
 
-<!--    <insert id="insert" parameterType="com.fudan.annotation.platform.backend.entity.Account">-->
-<!--        insert into account-->
-<!--        (account_name, password, email, avatar, role)-->
-<!--        values (#{accountName},-->
-<!--        #{password},-->
-<!--        #{email},-->
-<!--        #{avatar},-->
-<!--        #{role});-->
-<!--    </insert>-->
+    <delete id="deleteBugTypeById" parameterType="java.lang.Integer">
+        delete from bug_type
+        where bug_type_id = #{bugTypeId}
+    </delete>
 
 </mapper>
