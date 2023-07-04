@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * description: regression
  *
@@ -15,7 +17,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Regression {
-
     private Integer Id;
     private String regressionUuid;
     private Integer regressionStatus;
@@ -29,5 +30,5 @@ public class Regression {
     private String testcase;
     private String descriptionTxt;
     private String keyWord;
-
+    private List<String> bugTypeNames;
 }

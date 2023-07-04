@@ -44,11 +44,20 @@ public class RegressionServiceImpl implements RegressionService {
     private Migrator migrator;
     @Autowired
     private CommentsMapper commentsMapper;
+    @Autowired
+    private BugToTypeMapper bugToTypeMapper;
 
     @Override
     public List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName,
                                            String keyWord) {
-        return regressionMapper.selectRegression(regressionUuid, regressionStatus, projectName, keyWord);
+        List<Regression> regressionList = regressionMapper.selectRegression(regressionUuid, regressionStatus, projectName, keyWord);
+
+        regressionList.forEach(data -> {
+            List<String> bugTypeNames = bugToTypeMapper.getBugTypeNamesByRegression(data.getRegressionUuid());
+            System.out.println(bugTypeNames);
+            data.setBugTypeNames(bugTypeNames);
+        });
+        return regressionList;
     }
 
     @Override

@@ -10,8 +10,9 @@ import java.util.List;
 @Repository
 @Mapper
 public interface BugToTypeMapper {
-
     List<BugToTypeItems> getBugToTypeByRegressionUuid(String regressionUuid);
+
+    List<String> getBugTypeNamesByRegression(String regressionUuid);
 
     void postAgreeBugType(String regressionUuid, int bugTypeId);
 

@@ -21,6 +21,14 @@
         </where>
     </select>
 
+    <select id="getBugTypeNamesByRegression" parameterType="java.lang.String" resultType="java.lang.String">
+        select bug_type_name
+        from bug_to_type
+        <where>
+            regression_uuid = #{regressionUuid}
+        </where>
+    </select>
+
     <update id="postAgreeBugType">
         update bug_to_type
         set
