@@ -13,7 +13,7 @@ public interface RegressionService {
      * @param regressionUuid   regressionID
      * @param regressionStatus regression状态
      */
-    List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName, String keyWord);
+    List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName, String keyWord, List<String> bugTypeName);
 
     /**
      * description 插入新regression

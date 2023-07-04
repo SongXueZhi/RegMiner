@@ -26,7 +26,7 @@ public class ProgressController {
         try {
             ProgressInfo progressInfo = progressService.getProgressInfo();
             progressInfo.setRegressionNum(regressionService.getRegressions(null, null,
-                    progressInfo.getCurrentProjectName(), null).size());
+                    progressInfo.getCurrentProjectName(), null, null).size());
             return new ResponseBean<>(200, "get progress info success", progressInfo);
         } catch (Exception e) {
             return new ResponseBean<>(401, "get failed :" + e.getMessage(), null);

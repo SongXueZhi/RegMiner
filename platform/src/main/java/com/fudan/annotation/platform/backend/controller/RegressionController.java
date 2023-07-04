@@ -33,9 +33,10 @@ public class RegressionController {
             @RequestParam(name = "regression_uuid", required = false) String regressionUuid,
             @RequestParam(name = "regression_status", required = false) Integer regressionStatus,
             @RequestParam(name = "project_name", required = false) String projectName,
-            @RequestParam(name = "keyword", required = false) String keyWord) {
+            @RequestParam(name = "keyword", required = false) String keyWord,
+            @RequestParam(name = "bug_type_name", required = false) List<String> bugTypeName) {
         try {
-            List<Regression> regressionList = regressionService.getRegressions(regressionUuid, regressionStatus, projectName, keyWord);
+            List<Regression> regressionList = regressionService.getRegressions(regressionUuid, regressionStatus, projectName, keyWord, bugTypeName);
             return new ResponseBean<>(200, "get regression info success", regressionList);
         } catch (Exception e) {
             return new ResponseBean<>(401, "get failed :" + e.getMessage(), null);

@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * description:
@@ -49,14 +50,23 @@ public class RegressionServiceImpl implements RegressionService {
 
     @Override
     public List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName,
-                                           String keyWord) {
+                                           String keyWord, List<String> bugTypeName) {
         List<Regression> regressionList = regressionMapper.selectRegression(regressionUuid, regressionStatus, projectName, keyWord);
-
         regressionList.forEach(data -> {
             List<String> bugTypeNames = bugToTypeMapper.getBugTypeNamesByRegression(data.getRegressionUuid());
-            System.out.println(bugTypeNames);
             data.setBugTypeNames(bugTypeNames);
         });
+        if(bugTypeName != null) {
+            List<Regression> targetRegressionList = new ArrayList<>();
+            bugTypeName.forEach(BTName -> {
+                for(Regression r: regressionList) {
+                    if(r.getBugTypeNames().contains(BTName)) {
+                        targetRegressionList.add(r);
+                    }
+                }
+            });
+            return targetRegressionList;
+        }
         return regressionList;
     }
 
