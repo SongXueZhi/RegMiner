@@ -85,9 +85,9 @@ public class BugTypeServiceImpl implements BugTypeService {
     public void createBugTypeToRegression(CreateBugToType newBugToType) {
         List<BugTypes> bugTypeList = bugTypeMapper.getAllBugTypes(newBugToType.getBugTypeName());
         List<Regression> regressionList = regressionMapper.selectRegression(newBugToType.getRegressionUuid(), null, null, null);
-        if(newBugToType.getBugTypeName() == null || newBugToType.getBugTypeName() == "" ||
-                newBugToType.getBugTypeName() == null || newBugToType.getBugTypeName() == "" ||
-                newBugToType.getAccountName() == null || newBugToType.getAccountName() == "" ||
+        if(newBugToType.getRegressionUuid() == null || newBugToType.getRegressionUuid().equals("") ||
+                newBugToType.getBugTypeName() == null || newBugToType.getBugTypeName().equals("") ||
+                newBugToType.getAccountName() == null || newBugToType.getAccountName().equals("") ||
                 newBugToType.getBugTypeId() == 0) {
             throw new RuntimeException("param loss");
         }
