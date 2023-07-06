@@ -71,7 +71,7 @@ const GlobalHeaderRight: React.FC = () => {
         color="#ffffb8"
         placement="leftTop"
         defaultVisible={true}
-        visible={visible}
+        open={visible}
         style={{ marginRight: '20px' }}
         title={
           <Space align="center">

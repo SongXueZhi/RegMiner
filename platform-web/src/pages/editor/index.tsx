@@ -15,8 +15,9 @@ import {
   Typography,
   Divider,
   Form,
+  Modal,
 } from 'antd';
-import { AppstoreOutlined, DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import DiffEditorTabs from './components/DiffEditorTabs';
 import type { IRouteComponentProps } from 'umi';
 import { useAccess, useModel } from 'umi';
@@ -34,8 +35,10 @@ import {
   deleteCriticalChangeReviewById,
   putCriticalChangeReviewById,
   queryRegressionMigrate,
+  getRegressionBugTypes,
 } from './service';
 import type {
+  BugTypeItems,
   CommentAPI,
   CommentListItems,
   CommitItem,
@@ -46,6 +49,8 @@ import type {
 } from './data';
 import { parse } from 'query-string';
 import TextArea from 'antd/lib/input/TextArea';
+import BugType from './components/BugType';
+import TagBugTypes from './components/TagBugType';
 
 const { SubMenu } = Menu;
 
@@ -116,6 +121,8 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   const [BICURL, setBICURL] = useState<string>();
   const [BFCURL, setBFCURL] = useState<string>();
   const [regressionDescription, setRegressionDescription] = useState<string>();
+  const [regressionBugTypes, setRegressionBugTypes] = useState<BugTypeItems[]>([]);
+  const [openTagBugType, setOpenTagBugType] = useState<boolean>(false);
   const [BICisRunning, setBICIsRunning] = useState<boolean>(false);
   const [BFCisRunning, setBFCIsRunning] = useState<boolean>(false);
   const [BICFeedbackList, setBICFeedbackList] = useState<FeedbackList[]>([]);
@@ -772,6 +779,11 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         setBICCriticalChanges(resp.hunkEntityPlusList);
       }
     });
+    getRegressionBugTypes({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((data) => {
+      if (data !== null && data !== undefined) {
+        setRegressionBugTypes(data);
+      }
+    });
     getRetrievalCriticalChangeReviewList({
       regression_uuid: HISTORY_SEARCH.regressionUuid,
       revision_name: 'bfc',
@@ -865,6 +877,42 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
                     labelStyle={{ fontWeight: 'bold' }}
                   >
                     <Typography.Text>{regressionDescription}</Typography.Text>
+                  </Descriptions.Item>
+                  <Descriptions.Item label={'Bug Types'} labelStyle={{ fontWeight: 'bold' }}>
+                    {regressionBugTypes.map((resp) => {
+                      return (
+                        <BugType
+                          bugTypeId={resp.bugTypeId}
+                          bugTypeName={resp.bugTypeName}
+                          agreeCount={resp.agreeCount}
+                          disagreeCount={resp.disagreeCount}
+                          regressionUuid={HISTORY_SEARCH.regressionUuid}
+                          onUpdateData={() => {
+                            getRegressionBugTypes({
+                              regression_uuid: HISTORY_SEARCH.regressionUuid,
+                            }).then((data) => {
+                              if (data !== null && data !== undefined) {
+                                setRegressionBugTypes(data);
+                              }
+                            });
+                          }}
+                        />
+                      );
+                    })}
+                    <Tag
+                      style={{ background: '#fff', borderStyle: 'dashed' }}
+                      onClick={() => {
+                        if (access.allUsersFoo) {
+                          setOpenTagBugType(true);
+                        } else {
+                          message.error(
+                            'Sorry, you have no right to do that. Please login or use another account!',
+                          );
+                        }
+                      }}
+                    >
+                      <PlusOutlined /> New Tag
+                    </Tag>
                   </Descriptions.Item>
                 </Descriptions>
                 <Button onClick={handleClearCacheClick} loading={loadingClearCache}>
@@ -1214,6 +1262,24 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             </Form.Item>
           </Card>
         </PageContainer>
+        {/* </Spin> */}
+        <Modal
+          title={`Regression: ${HISTORY_SEARCH.regressionUuid}`}
+          open={openTagBugType}
+          onCancel={() => {
+            setOpenTagBugType(false);
+            getRegressionBugTypes({
+              regression_uuid: HISTORY_SEARCH.regressionUuid,
+            }).then((data) => {
+              if (data !== null && data !== undefined) {
+                setRegressionBugTypes(data);
+              }
+            });
+          }}
+          footer={null}
+        >
+          <TagBugTypes regressionUuid={HISTORY_SEARCH.regressionUuid} />
+        </Modal>
       </Spin>
     </>
   );

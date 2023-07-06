@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import request from 'umi-request';
-import type { RegQueryParams } from './data';
+import type { AllBugTypes, RegQueryParams } from './data';
 
 export async function queryRegressionList(params?: RegQueryParams) {
   const { code, msg, data } = await request<API.RegResponse<API.RegressionItem[]>>(
@@ -49,4 +49,18 @@ export async function updateStatus(params: { regressionUuid: string; regressionS
       method: 'PUT',
     },
   );
+}
+
+export async function getAllBugTypes() {
+  const { code, msg, data } = await request<API.RegResponse<AllBugTypes[]>>('/api/bugType/all', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  }
+  return data;
 }

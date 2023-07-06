@@ -411,11 +411,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
           title={
             <div style={{ display: 'flex' }}>
               <Typography.Title level={4}>Hunk Relation Graph</Typography.Title>
-              <Popover
-                style={{ width: 500 }}
-                content={<TutorialGraph />}
-                trigger="hover"
-              >
+              <Popover style={{ width: 500 }} content={<TutorialGraph />} trigger="hover">
                 <QuestionCircleOutlined style={{ fontSize: 18 }} />
               </Popover>
             </div>
@@ -433,7 +429,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
         title="Regression List"
         placement={'right'}
         onClose={() => setSidebarRegressionMenu(false)}
-        visible={sidebarRegressionMenu}
+        open={sidebarRegressionMenu}
         key={'right'}
         width={450}
       >
@@ -444,6 +440,8 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
             queryRegressionList({
               regression_uuid: params.regression_uuid,
               keyword: params.keyword,
+              page: params.current ?? 1,
+              ps: params.pageSize ?? 10,
             })
           }
           columns={RegressionColumns}

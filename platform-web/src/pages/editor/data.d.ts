@@ -132,3 +132,14 @@ export type CommentAPI = {
   content?: ReactNode;
   datetime?: ReactNode;
 };
+
+export type BugTypeItems = {
+  id: number;
+  regressionUuid: string;
+  bugTypeId: number;
+  bugTypeName: string;
+  agreeCount: number;
+  disagreeCount: number;
+  updateTime: Date;
+  createdBy: string;
+};

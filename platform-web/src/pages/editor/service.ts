@@ -1,6 +1,7 @@
 import { message } from 'antd';
 import request from 'umi-request';
 import type {
+  BugTypeItems,
   CommentListItems,
   HunkEntityParams,
   RegressionCode,
@@ -314,6 +315,94 @@ export async function deleteCriticalChangeReviewById(params: {
       params,
     },
   );
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    return data;
+  }
+}
+
+export async function getRegressionBugTypes(params: { regression_uuid: string }) {
+  const { code, msg, data } = await request<API.RegResponse<BugTypeItems[]>>(
+    '/api/bugType/regression/bugTypeDetail',
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      params,
+    },
+  );
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    return data;
+  }
+}
+
+export async function agreeBugType(params: { regression_uuid: string; bug_type_id: number }) {
+  const { code, msg, data } = await request<API.RegResponse<number>>('/api/bugType/agree', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    params,
+  });
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    return data;
+  }
+}
+
+export async function disagreeBugType(params: { regression_uuid: string; bug_type_id: number }) {
+  const { code, msg, data } = await request<API.RegResponse<number>>('/api/bugType/disagree', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    params,
+  });
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    return data;
+  }
+}
+
+export async function addBugTypeToRegression(body: {
+  regressionUuid: string;
+  bugTypeId: number;
+  bugTypeName: string;
+  accountName: string;
+}) {
+  const { code, msg, data } = await request<API.RegResponse<void>>('/api/bugType/tagBugType', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  if (code !== 200) {
+    message.error(msg);
+    return null;
+  } else {
+    return data;
+  }
+}
+
+export async function createNewBugType(body: { bugTypeName: string; accountName?: string }) {
+  const { code, msg, data } = await request<API.RegResponse<string>>('/api/bugType/create', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
   if (code !== 200) {
     message.error(msg);
     return null;

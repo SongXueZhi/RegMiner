@@ -40,4 +40,12 @@ export type RegQueryParams = {
   filter?: Record<string, ReactText[] | null>;
   sorter?: Record<string, any>;
   keyword?: any;
+  bug_type_name?: string[];
+  page: number;
+  ps: number;
+};
+
+export type AllBugTypes = {
+  bugTypeId: number;
+  bugTypeName: string;
 };

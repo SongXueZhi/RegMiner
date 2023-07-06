@@ -75,6 +75,7 @@ declare namespace API {
     bic?: string;
     work?: string;
     testcase?: string;
+    bugTypeNames?: string[];
   };
 
   type PageParams = {

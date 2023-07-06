@@ -1,16 +1,16 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, message, Select, Skeleton, Tooltip } from 'antd';
+import { Button, Divider, Input, message, Select, Skeleton, Tag, Tooltip } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
-import { queryRegressionList, addRegression, removeRegression } from './service';
+import { queryRegressionList, addRegression, removeRegression, getAllBugTypes } from './service';
 import { Link } from 'react-router-dom';
-import { parse, stringify } from 'query-string';
+import { stringify } from 'query-string';
 import './index.less';
 import { useAccess } from 'umi';
-import { arr2str } from '@/utils/conversion';
+import type { AllBugTypes } from './data';
 
 /**
  * 添加节点
@@ -91,19 +91,22 @@ interface SearchParams extends Record<string, any> {
   regressionUuid?: string;
   projectFullName?: string;
   keyword?: string;
+  bugTypeNames?: string[];
 }
 
-interface IHistorySearch extends SearchParams {
-  regression_uuid?: string;
-  project_full_name?: string;
-  keyword?: string;
-}
+// interface IHistorySearch extends SearchParams {
+//   regression_uuid?: string;
+//   project_full_name?: string;
+//   keyword?: string;
+//   bug_types?: string[];
+// }
 
 const generateParams = (params: SearchParams) => {
   return {
     regression_uuid: params.regressionUuid,
     project_full_name: params.projectFullName,
     ksyword: params.keyword,
+    bug_type_name: params.bugTypeNames,
     page: params.current,
     ps: params.pageSize,
   };
@@ -114,6 +117,7 @@ const RegressionListPage: React.FC<{}> = () => {
   // const HISTORY_SEARCH = parse(location.search) as IHistorySearch;
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
   const [regressionUuidList, setRegressionUuidList] = useState<string[]>([]);
+  const [allBugTypes, setAllBugTypes] = useState<AllBugTypes[]>([]);
   const actionRef = useRef<ActionType>();
   const columns: ProColumns<API.RegressionItem>[] = [
     {
@@ -134,20 +138,20 @@ const RegressionListPage: React.FC<{}> = () => {
         return withSkeleton(
           regressionUuid ? (
             // index <= 49 ? (
-              <Link
-                to={{
-                  pathname: '/editor',
-                  search: stringify({ regressionUuid }),
-                }}
-              >
-                <Tooltip title={regressionUuid}>
-                  {projectFullName?.split('/')[1] + '_' + `${id}`}
-                </Tooltip>
-              </Link>
+            <Link
+              to={{
+                pathname: '/editor',
+                search: stringify({ regressionUuid }),
+              }}
+            >
+              <Tooltip title={regressionUuid}>
+                {projectFullName?.split('/')[1] + '_' + `${id}`}
+              </Tooltip>
+            </Link>
+          ) : (
             // ) : (
             //   regressionUuid
             // )
-          ) : (
             '暂无数据'
           ),
         );
@@ -245,6 +249,36 @@ const RegressionListPage: React.FC<{}> = () => {
       },
     },
     {
+      title: 'bug type',
+      dataIndex: 'bugTypeNames',
+      render: (_, record) => {
+        return record.bugTypeNames
+          ? record.bugTypeNames.map((resp) => {
+              return <Tag color="purple">{resp}</Tag>;
+            })
+          : '无分类';
+      },
+      renderFormItem: (_, { type }, form) => {
+        if (type === 'form') {
+          return null;
+        }
+        return (
+          <Select
+            mode="multiple"
+            allowClear
+            style={{ width: '100%' }}
+            placeholder="Please select"
+            options={allBugTypes.map((resp) => {
+              return { value: resp.bugTypeName, label: resp.bugTypeName };
+            })}
+            // onChange={(v) => {
+            //   form.setFieldValue({bugtype});
+            // }}
+          />
+        );
+      },
+    },
+    {
       title: 'test case',
       dataIndex: 'testcase',
       hideInForm: true,
@@ -301,6 +335,7 @@ const RegressionListPage: React.FC<{}> = () => {
     const totalParams = {
       ...generateParams(params),
     };
+    console.log(totalParams);
     const resp = await queryRegressionList({ ...totalParams });
     const regressionList: string[] = resp.data.map((d) => {
       return d.regressionUuid;
@@ -318,6 +353,14 @@ const RegressionListPage: React.FC<{}> = () => {
       total: resp.data.length,
     };
   };
+
+  useEffect(() => {
+    getAllBugTypes().then((data) => {
+      if (data) {
+        setAllBugTypes(data);
+      }
+    });
+  }, []);
   return (
     <PageContainer
       header={{
