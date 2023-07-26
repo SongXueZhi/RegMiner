@@ -62,14 +62,14 @@
         <dependency>
             <groupId>org.eclipse.jdt</groupId>
             <artifactId>org.eclipse.jdt.core</artifactId>
-            <version>3.20.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.osgi.service</groupId>
-                    <artifactId>org.osgi.service.prefs</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>3.33.0</version>
         </dependency>
+<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.eclipse.platform/org.eclipse.core.runtime &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.eclipse.platform</groupId>-->
+<!--            <artifactId>org.eclipse.core.runtime</artifactId>-->
+<!--            <version>3.26.100</version>s>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.dom4j</groupId>
             <artifactId>dom4j</artifactId>
