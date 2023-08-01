@@ -4,6 +4,7 @@ import com.fudan.annotation.platform.backend.entity.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 public interface RegressionService {
 
@@ -76,7 +77,9 @@ public interface RegressionService {
      */
     CodeDetails getFilesCode(String regressionUuid, String userToken, String filename, String oldPath, String newPath, String revisionFlag);
 
-    String runTest(String regressionUuid, String userToken, String revisionFlag);
+    String runTest(String regressionUuid, String userToken, String revisionFlag) throws Exception;
+
+    Map<String,List<Integer>> codeCoverageMap(String regressionUuid, String userToken, String revisionFlag)throws Exception;
 
     String readRuntimeResult(String filaPath) throws IOException;
 

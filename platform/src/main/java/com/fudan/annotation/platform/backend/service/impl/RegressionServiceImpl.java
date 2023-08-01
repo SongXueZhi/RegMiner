@@ -1,9 +1,7 @@
 package com.fudan.annotation.platform.backend.service.impl;
 
 import com.fudan.annotation.platform.backend.config.Configs;
-import com.fudan.annotation.platform.backend.core.Executor;
-import com.fudan.annotation.platform.backend.core.Migrator;
-import com.fudan.annotation.platform.backend.core.SourceCodeManager;
+import com.fudan.annotation.platform.backend.core.*;
 import com.fudan.annotation.platform.backend.dao.*;
 import com.fudan.annotation.platform.backend.entity.*;
 import com.fudan.annotation.platform.backend.service.RegressionService;
@@ -47,7 +45,9 @@ public class RegressionServiceImpl implements RegressionService {
     private CommentsMapper commentsMapper;
     @Autowired
     private BugToTypeMapper bugToTypeMapper;
-
+    private static final JacocoMavenManager jacocoMavenManager = new JacocoMavenManager();
+    @Autowired
+    private CodeCoverage codeCoverage;
     @Override
     public List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName,
                                            String keyWord, List<String> bugTypeName) {
@@ -370,15 +370,21 @@ public class RegressionServiceImpl implements RegressionService {
         Regression regression = regressionMapper.getRegressionInfo(regressionUuid);
         String testCase = regression.getTestcase().split(";")[0];
         File codeDir = sourceCodeManager.getCodeDir(regressionUuid, userToken, revisionFlag);
-
         String logFileName = UUID.randomUUID() + "_" + Configs.RUNTIME_LOG_FILE_NAME;
         String logPath = codeDir.getAbsolutePath() + File.separator + logFileName;
         File logFile = new File(logPath);
         logFile.deleteOnExit();
 
+        try {
+            jacocoMavenManager.addJacocoFeatureToMaven(codeDir);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
         new Thread(() -> {
             int state =
                     new Executor().setDirectory(codeDir).exec("mvn test -Dtest=" + testCase + " >> " + logFileName, 1);
+                    new Executor().setDirectory(codeDir).exec("mvn jacoco:report", 1);
             try {
                 String endFlag = "REGMINER-TEST-END";
                 if (state < 0) {
@@ -390,7 +396,14 @@ public class RegressionServiceImpl implements RegressionService {
             }
         }).start();
 
+
         return logPath;
+    }
+
+    @Override
+    public Map<String, List<Integer>> codeCoverageMap(String regressionUuid, String userToken, String revisionFlag) throws Exception {
+        File codeDir = sourceCodeManager.getCodeDir(regressionUuid, userToken, revisionFlag);
+        return  codeCoverage.parseJaCoCoReport(codeDir);
     }
 
     @Override

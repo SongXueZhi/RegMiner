@@ -23,8 +23,8 @@ import java.nio.file.Paths;
 @Component
 public class SourceCodeManager {
 
-    private final static String workSpace = System.getProperty("user.home") + File.separator + "data" + File.separator +
-            "miner_space";
+    private final static String workSpace = System.getProperty("user.home") + File.separator +
+            "work_space";
 
     public static String metaProjectsDirPath = workSpace + File.separator + "meta_projects";
     public static String cacheProjectsDirPath = workSpace + File.separator + "transfer_cache";
@@ -139,7 +139,7 @@ public class SourceCodeManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(str);
+//        System.out.println(str);
 
         return str;
 
