@@ -17,14 +17,14 @@ const Footer: React.FC = () => {
       links={[
         {
           key: 'left',
-          title: 'RegMiner Data Annotations',
+          title: 'BugShareHub',
           href: 'https://sites.google.com/d/1czj_Xo96OgTOoH0EffWvzte03TJtiv5K/p/1t7VGB1k5rRObf-3O1SgApJXShFMcGJT3/edit',
           blankTarget: true,
         },
         {
           key: 'icon',
           title: <GithubOutlined />,
-          href: 'https://github.com/SongXueZhi/RegMiner',
+          href: 'https://github.com/SongXueZhi/BugMiner',
           blankTarget: true,
         },
       ]}

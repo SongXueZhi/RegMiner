@@ -12,7 +12,7 @@ const Settings: LayoutSettings & {
   fixSiderbar: true,
   colorWeak: false,
   splitMenus: false,
-  title: 'RegMiner',
+  title: 'BugShareHub',
   pwa: false,
   logo: '/reg_logo.svg',
   iconfontUrl: '',

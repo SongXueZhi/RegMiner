@@ -240,7 +240,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
                 type="primary"
                 onClick={() => setSidebarRegressionMenu(true)}
               >
-                Show Regressions
+                Show Bugs
               </Button>
             </div>
           </div>

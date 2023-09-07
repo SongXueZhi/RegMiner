@@ -1227,7 +1227,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
               />
             ) : null}
           </div>
-          <Card style={{ marginTop: '10px' }} title={`Regression Comments`}>
+          <Card style={{ marginTop: '10px' }} title={` Comments`}>
             <List
               className="comment-list"
               itemLayout="horizontal"
@@ -1264,7 +1264,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         </PageContainer>
         {/* </Spin> */}
         <Modal
-          title={`Regression: ${HISTORY_SEARCH.regressionUuid}`}
+          title={`Bug Repository: ${HISTORY_SEARCH.regressionUuid}`}
           open={openTagBugType}
           onCancel={() => {
             setOpenTagBugType(false);

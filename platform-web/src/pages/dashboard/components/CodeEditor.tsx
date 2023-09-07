@@ -2,9 +2,7 @@ import React from 'react';
 import { getDistanceDay } from '../utils';
 import { SyncOutlined } from '@ant-design/icons';
 
-import {
-  getProcessInfo,
-} from '../service';
+import { getProcessInfo } from '../service';
 // dashiboard
 declare global {
   interface Window {
@@ -18,13 +16,7 @@ const progressContainer = {
   'margin-bottom': '20px',
   // marginBotton: '20px'
 };
-import {
-  Alert,
-  Button,
-  Progress,
-  Tag,
-  Steps,
-} from 'antd';
+import { Alert, Button, Progress, Tag, Steps } from 'antd';
 const { Step } = Steps;
 class ProgressInfo extends React.Component {
   constructor(props: any) {
@@ -249,7 +241,7 @@ class ProgressInfo extends React.Component {
                     <Tag className="tag-content" color="green">
                       {progressInfo.prfcdoneNum}
                     </Tag>
-                    Regressions:
+                    Bugs:
                     <Tag className="tag-content" color="#f50">
                       {progressInfo.regressionNum}
                     </Tag>

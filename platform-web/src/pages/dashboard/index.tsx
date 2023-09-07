@@ -163,18 +163,18 @@ const DashboardPage: React.FC<{}> = () => {
         return withSkeleton(
           regressionUuid ? (
             // index <= 49 ? (
-              <Link
-                to={{
-                  pathname: '/editor',
-                  search: stringify({ regressionUuid }),
-                }}
-              >
-                {projectFullName?.split('/')[1]}_{index}
-              </Link>
+            <Link
+              to={{
+                pathname: '/editor',
+                search: stringify({ regressionUuid }),
+              }}
+            >
+              {projectFullName?.split('/')[1]}_{index}
+            </Link>
+          ) : (
             // ) : (
             //   regressionUuid
             // )
-          ) : (
             '暂无数据'
           ),
         );
@@ -223,7 +223,7 @@ const DashboardPage: React.FC<{}> = () => {
             <div>process dashboard</div>
             <div>
               <Button className="sub-title-header" type="primary" onClick={showDrawer}>
-                Show Finished Regressions
+                Show Finished Bugs
               </Button>
               {/* <Button type="primary" style={{ marginLeft: '10px' }}>
                 Start
@@ -268,7 +268,7 @@ const DashboardPage: React.FC<{}> = () => {
       </div>
       <Drawer
         bodyStyle={DrawerbodyStyle}
-        title="Finished Regressions List"
+        title="Finished Bugs List"
         placement={'right'}
         closable={false}
         onClose={onClose}

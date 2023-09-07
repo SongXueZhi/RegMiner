@@ -30,10 +30,10 @@ const ResetPassword: React.FC = () => {
           <div className={styles.header}>
             <Link to="/">
               <Image alt="logo" src="/favicon.ico" className={styles.logo} />
-              <span className={styles.title}>RegMiner Data Annotations</span>
+              <span className={styles.title}>BugShareHub</span>
             </Link>
           </div>
-          <div className={styles.desc}>RegMiner 数据标注平台</div>
+          <div className={styles.desc}>BugShareHub 数据标注平台</div>
         </div>
         <div className={styles.main}>
           <a href={loginPath}>

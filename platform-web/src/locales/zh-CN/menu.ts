@@ -36,7 +36,7 @@ export default {
   'menu.result': '结果页',
   'menu.result.success': '成功页',
   'menu.result.fail': '失败页',
-  'menu.regression': 'Regression',
+  'menu.regression': 'Bug Repository',
   'menu.exception': '异常页',
   'menu.exception.not-permission': '403',
   'menu.exception.not-find': '404',

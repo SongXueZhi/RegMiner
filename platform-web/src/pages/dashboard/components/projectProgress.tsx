@@ -266,7 +266,7 @@ const ProjectProgress: React.FC<any> = () => {
                   <Tag className="tag-content" color="green">
                     {progressInfo.prfcdoneNum}
                   </Tag>
-                  Regressions:
+                  Bugs:
                   <Tag className="tag-content" color="#f50">
                     {progressInfo.regressionNum}
                   </Tag>

@@ -131,7 +131,7 @@ const RegressionListPage: React.FC<{}> = () => {
       // formItemProps: { label: 'keyword' },
     },
     {
-      title: 'regression UUID',
+      title: 'Bug UUID',
       dataIndex: 'regressionUuid',
       width: 200,
       render: (_, { projectFullName, regressionUuid, id }) => {
@@ -187,7 +187,7 @@ const RegressionListPage: React.FC<{}> = () => {
       },
     },
     {
-      title: 'project name',
+      title: 'Project name',
       dataIndex: 'projectFullName',
       width: 200,
       search: false,
@@ -195,7 +195,7 @@ const RegressionListPage: React.FC<{}> = () => {
       // tip: '所属项目名称',
     },
     {
-      title: 'bug inducing commit',
+      title: 'Bug inducing commit',
       dataIndex: 'bic',
       ellipsis: true,
       hideInSearch: true,
@@ -208,7 +208,7 @@ const RegressionListPage: React.FC<{}> = () => {
       },
     },
     {
-      title: 'work commit',
+      title: 'Work commit',
       dataIndex: 'work',
       // tip: 'a random work commit',
       ellipsis: true,
@@ -222,7 +222,7 @@ const RegressionListPage: React.FC<{}> = () => {
       },
     },
     {
-      title: 'bug fixing commit',
+      title: 'Bug fixing commit',
       dataIndex: 'bfc',
       ellipsis: true,
       hideInSearch: true,
@@ -235,7 +235,7 @@ const RegressionListPage: React.FC<{}> = () => {
       },
     },
     {
-      title: 'buggy commit',
+      title: 'Buggy commit',
       dataIndex: 'buggy',
       tip: 'the parent of bug fixing commit',
       ellipsis: true,
@@ -249,7 +249,7 @@ const RegressionListPage: React.FC<{}> = () => {
       },
     },
     {
-      title: 'bug type',
+      title: 'Bug type',
       dataIndex: 'bugTypeNames',
       render: (_, record) => {
         return record.bugTypeNames
@@ -279,7 +279,24 @@ const RegressionListPage: React.FC<{}> = () => {
       },
     },
     {
-      title: 'test case',
+      title: 'Bug DataSource', // 你可以更改此标题
+      // dataIndex: 'toolSelector',
+      hideInTable: true,
+      renderFormItem: (_, { type }, form) => {
+        if (type === 'form') {
+          return null;
+        }
+        return (
+          <Select style={{ width: '100%' }} placeholder="Select a DataSource">
+            <Select.Option value="regminer">Regminer</Select.Option>
+            <Select.Option value="bugbuilder">BugBuilder</Select.Option>
+            <Select.Option value="bugminer">Bugminer</Select.Option>
+          </Select>
+        );
+      },
+    },
+    {
+      title: 'Test case',
       dataIndex: 'testcase',
       hideInForm: true,
       hideInSearch: true,
@@ -365,7 +382,7 @@ const RegressionListPage: React.FC<{}> = () => {
     <PageContainer
       header={{
         style: { width: '100%' },
-        title: 'Regression',
+        title: 'Bug Repository',
         // subTitle: (
         //   <Alert
         //     style={{ paddingLeft: '100px', paddingRight: '100px' }}
@@ -396,7 +413,7 @@ const RegressionListPage: React.FC<{}> = () => {
         </Row>
       </div> */}
       <ProTable<API.RegressionItem>
-        headerTitle="Regression List"
+        headerTitle="Bug List"
         actionRef={actionRef}
         rowKey="regressionUuid"
         search={{

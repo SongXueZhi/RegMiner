@@ -36,7 +36,7 @@ export default {
   'menu.result': 'Result',
   'menu.result.success': 'Success',
   'menu.result.fail': 'Fail',
-  'menu.regression': 'Regression',
+  'menu.regression': 'Bug Repository',
   'menu.exception': 'Exception',
   'menu.exception.not-permission': '403',
   'menu.exception.not-find': '404',
