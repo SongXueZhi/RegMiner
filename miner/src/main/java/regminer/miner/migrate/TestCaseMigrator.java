@@ -26,8 +26,7 @@ public class TestCaseMigrator extends Migrator {
         mergeTwoVersion_BaseLine(pRFC,bicDirectory);
         // 编译
         if (compile(bicDirectory, true)) {
-            int a = testSuite(bicDirectory, pRFC.getTestCaseFiles());
-            return a;
+            return testSuite(bicDirectory, pRFC.getTestCaseFiles());
         } else {
             return CE;
         }

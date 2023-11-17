@@ -51,7 +51,7 @@ public class BFCEvaluator extends Migrator {
             PotentialRFC potentialRFC = iterator.next();
             try {
                 evolute(potentialRFC);
-                if (potentialRFC.getTestCaseFiles().size() <= 0) {
+                if (potentialRFC.getTestCaseFiles().isEmpty()) {
                     iterator.remove();
                     continue;
                 }
@@ -97,7 +97,7 @@ public class BFCEvaluator extends Migrator {
             copyToTarget(pRFC, bfcpDirectory);
 
             // 4.compile BFC
-            if (!comiple(bfcDirectory, false)) {
+            if (!compile(bfcDirectory, false)) {
                 pRFC.getTestCaseFiles().clear();
                 FileUtilx.log("BFC compile error");
                 emptyCache(bfcID);
@@ -107,14 +107,14 @@ public class BFCEvaluator extends Migrator {
             // 5. 测试BFC中的每一个待测试方法
             testBFC(bfcDirectory, pRFC);
 
-            if (pRFC.getTestCaseFiles().size() <= 0) {
+            if (pRFC.getTestCaseFiles().isEmpty()) {
                 FileUtilx.log("BFC all test fal");
                 emptyCache(bfcID);
                 return;
             }
 
             // 7.编译并测试BFCP
-            if (!comiple(bfcpDirectory, false)) {
+            if (!compile(bfcpDirectory, false)) {
                 pRFC.getTestCaseFiles().clear();
                 FileUtilx.log("BFC~1 compile error");
                 emptyCache(bfcID);
@@ -123,7 +123,7 @@ public class BFCEvaluator extends Migrator {
             // 6.测试BFCP
             String result = testBFCP(bfcpDirectory, pRFC.getTestCaseFiles());
 
-            if (pRFC.getTestCaseFiles().size() > 0) {
+            if (!pRFC.getTestCaseFiles().isEmpty()) {
                 ExperResult.numSuc++;
                 //删除无关的测试用例
                 purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);//XXX:TestDenpendency:TEST REDUCE
@@ -188,7 +188,7 @@ public class BFCEvaluator extends Migrator {
         return tracker.regressionProbCalculate(tracker.handleTasks(coverNodeList, bfcDirectory));
     }
 
-    public boolean comiple(File file, boolean record) throws Exception {
+    public boolean compile(File file, boolean record) {
         exec.setDirectory(file);
         return exec.execBuildWithResult(Conf.compileLine, record);
     }
@@ -208,7 +208,7 @@ public class BFCEvaluator extends Migrator {
                 continue;
             }
             Map testMethodsMap = testFile.getTestMethodMap();
-            if (testMethodsMap == null || testMethodsMap.size() == 0) {
+            if (testMethodsMap == null || testMethodsMap.isEmpty()) {
                 iter.remove(); // 如果该测试文件中没有测试成功的方法,则该TestFile移除
             }
         }
@@ -216,12 +216,12 @@ public class BFCEvaluator extends Migrator {
 
     public void testSuite(TestFile testFile) throws Exception {
         Map<String, RelatedTestCase> methodMap = testFile.getTestMethodMap();
-        if (methodMap != null && methodMap.size() > 0) {
+        if (methodMap != null && !methodMap.isEmpty()) {
             testMethod(methodMap, testFile.getQualityClassName());
         }
     }
 
-    public void testMethod(Map<String, RelatedTestCase> methodMap, String qualityClassName) throws Exception {
+    public void testMethod(Map<String, RelatedTestCase> methodMap, String qualityClassName) {
         // 遍历BFC测试文件中的每一个方法,并执行测试,测试失败即移除
         for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, RelatedTestCase> entry = it.next();
@@ -233,21 +233,21 @@ public class BFCEvaluator extends Migrator {
         }
     }
 
-    public String testBFCP(File file, List<TestFile> realTestCase) throws Exception {
+    public String testBFCP(File file, List<TestFile> realTestCase) {
         exec.setDirectory(file);
         StringJoiner sj = new StringJoiner(";", "[", "]");
         Iterator<TestFile> iterator = realTestCase.iterator();
         while (iterator.hasNext()) {
             TestFile testSuite = iterator.next();
             testBFCPMethod(testSuite, sj);
-            if (testSuite.getTestMethodMap().size() == 0) {
+            if (testSuite.getTestMethodMap().isEmpty()) {
                 iterator.remove();
             }
         }
         return sj.toString();
     }
 
-    public void testBFCPMethod(TestFile testSuite, StringJoiner sj) throws Exception {
+    public void testBFCPMethod(TestFile testSuite, StringJoiner sj) {
         Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
         for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, RelatedTestCase> entry = it.next();
@@ -329,7 +329,7 @@ public class BFCEvaluator extends Migrator {
         }
     }
 
-    public void testSuite(File file, @NotNull List<TestFile> testSuites) throws Exception {
+    public void testSuite(File file, @NotNull List<TestFile> testSuites) {
         exec.setDirectory(file);
         Iterator<TestFile> iterator = testSuites.iterator();
         while (iterator.hasNext()) {
@@ -339,7 +339,7 @@ public class BFCEvaluator extends Migrator {
 
     }
 
-    public void testMethod(@NotNull TestFile testSuite) throws Exception {
+    public void testMethod(@NotNull TestFile testSuite) {
         Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
         for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<String, RelatedTestCase> entry = it.next();

@@ -51,7 +51,7 @@ public class Miner {
 
     public static void singleThreadHandle() throws Exception {
         ProjectManager projectManager = new ProjectManager();
-        if (ConfigLoader.organizeName.equals("")){
+        if (ConfigLoader.organizeName.isEmpty()){
             FileUtilx.log("Incorrectly formatted project name, please set project name in {organization}/{project_name}");
             return;
         }
@@ -75,8 +75,8 @@ public class Miner {
        thread1.start();
 
         Thread thread2 = new Thread(() -> {
-            while (pRFCs.size() > 0 || linkedQueue.size() > 0) {
-                if (linkedQueue.size() > 0) {
+            while (!pRFCs.isEmpty() || !linkedQueue.isEmpty()) {
+                if (!linkedQueue.isEmpty()) {
                     PotentialRFC pRfc = linkedQueue.poll();
                     FileUtilx.log("queue size:"+linkedQueue.size());
                     Regression regression = finder.searchBIC(pRfc);

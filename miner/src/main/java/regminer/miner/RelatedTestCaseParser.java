@@ -22,7 +22,7 @@ public class RelatedTestCaseParser  {
         for (PotentialTestCase potentialTestCase : potentialTestCaseList) {
             //if index > 0 ,test file in (c,c+2),we need copy test file to bfcdir
             //file map size > 0, meaning have test file need to copy
-            if (potentialTestCase.getIndex() > 0 && potentialTestCase.fileMap.size() > 0) {
+            if (potentialTestCase.getIndex() > 0 && !potentialTestCase.fileMap.isEmpty()) {
                 List<TestFile> testFiles = potentialTestCase.getTestFiles();
                 List<SourceFile> sourceFiles = potentialTestCase.getSourceFiles();
                 copyPotentialTestFileToBFC(testFiles,bfcDir,potentialTestCase);
