@@ -46,7 +46,7 @@ public class BFCEvaluator extends Migrator {
      */
     public void evoluteBFCList(List<PotentialRFC> potentialRFCList, ConcurrentLinkedQueue<PotentialRFC> queue) {
         Iterator<PotentialRFC> iterator = potentialRFCList.iterator();
-        int i =0;
+        int i = 0;
         while (iterator.hasNext()) {
             PotentialRFC potentialRFC = iterator.next();
             try {
@@ -57,7 +57,7 @@ public class BFCEvaluator extends Migrator {
                 }
                 queue.add(potentialRFC);
                 ++i;
-                FileUtilx.log("pRFC total:"+i);
+                FileUtilx.log("pRFC total:" + i);
                 iterator.remove();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -105,7 +105,9 @@ public class BFCEvaluator extends Migrator {
             }
 
             // 5. 测试BFC中的每一个待测试方法
+//            System.out.println("before testing, bfcp test case size:" + pRFC.getTestCaseFiles().size());
             testBFC(bfcDirectory, pRFC);
+//            System.out.println("after testing, bfcp test case size:" + pRFC.getTestCaseFiles().size());
 
             if (pRFC.getTestCaseFiles().isEmpty()) {
                 FileUtilx.log("BFC all test fal");
@@ -207,14 +209,14 @@ public class BFCEvaluator extends Migrator {
                 iter.remove();// 只保留测试文件
                 continue;
             }
-            Map testMethodsMap = testFile.getTestMethodMap();
+            Map<String, RelatedTestCase> testMethodsMap = testFile.getTestMethodMap();
             if (testMethodsMap == null || testMethodsMap.isEmpty()) {
                 iter.remove(); // 如果该测试文件中没有测试成功的方法,则该TestFile移除
             }
         }
     }
 
-    public void testSuite(TestFile testFile) throws Exception {
+    public void testSuite(TestFile testFile) {
         Map<String, RelatedTestCase> methodMap = testFile.getTestMethodMap();
         if (methodMap != null && !methodMap.isEmpty()) {
             testMethod(methodMap, testFile.getQualityClassName());
