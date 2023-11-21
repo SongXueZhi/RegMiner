@@ -65,6 +65,9 @@ public class TestExecutor extends Executor {
         Timer t = null;
         InputStreamReader inputStr = null;
         BufferedReader bufferReader = null;
+        boolean testCE = false;
+        boolean maySuccess = false;
+        boolean mayFail = false;
         try {
             if (OS.contains(OS_WINDOWS)) {
                 pb.command("cmd.exe", "/c", cmd);
@@ -83,15 +86,26 @@ public class TestExecutor extends Executor {
             inputStr = new InputStreamReader(process.getInputStream());
             bufferReader = new BufferedReader(inputStr);
             String line;
-            boolean testCE = false;
+
             while ((line = bufferReader.readLine()) != null) {
                 line = line.toLowerCase();
-                if (line.contains("build success")) {
-                    return MigrateFailureType.TESTSUCCESS;
+                if (line.contains("build success")) {//there may exist the case that: build success and test failure
+                    if (!mayFail) {
+                        maySuccess = true;
+                    }
                 } else if (line.contains("compilation error") || line.contains("compilation failure")) {
                     testCE = true;
-                } else if (line.contains("no test")) {
+                } else if (line.contains("tests run: 0") || line.contains("no test")) {
                     return MigrateFailureType.NoTests;
+                } else if (line.contains("build failure")) {
+                    if (testCE) {
+                        return MigrateFailureType.CompilationFailed;
+                    } else {
+                        maySuccess = false;
+                        mayFail = true;
+                    }
+                } else if (line.contains("test failure")) {
+                    return MigrateFailureType.NONE;
                 }
             }
             if (testCE) {
@@ -101,7 +115,6 @@ public class TestExecutor extends Executor {
             ex.printStackTrace();
         } finally {
             try {
-
                 if (t != null) {
                     t.cancel();
                 }
@@ -118,6 +131,9 @@ public class TestExecutor extends Executor {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        if (maySuccess && !mayFail) {
+            return MigrateFailureType.TESTSUCCESS;
         }
         return MigrateFailureType.NONE;
     }

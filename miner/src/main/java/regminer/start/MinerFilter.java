@@ -29,7 +29,7 @@ public class MinerFilter {
         List<String> filter = new ArrayList<>(FileUtilx.readSetFromFile(Conf.PROJECT_PATH + File.separator + "bfc.txt"));
         PotentialBFCDetector pBFCDetector = new PotentialBFCDetector(Miner.repo, Miner.git);
         Miner.pRFCs = null;
-        Miner.pRFCs = (LinkedList<PotentialRFC>) pBFCDetector.detectPotentialBFC(filter);
+        Miner.pRFCs = pBFCDetector.detectPotentialBFC(filter);
         Miner.singleThreadHandle();
     }
 }

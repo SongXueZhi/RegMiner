@@ -78,7 +78,7 @@ public class BICFinder {
         // 预防方法被错误的调用
         // 情况1 search时候bfc没有确定的测试用例
         List<TestFile> testSuites = pRFC.getTestCaseFiles();
-        if (testSuites == null || testSuites.size() == 0) {
+        if (testSuites == null || testSuites.isEmpty()) {
             FileUtilx.log("意外的错误：NOSET");
             return null;
         }
@@ -129,11 +129,11 @@ public class BICFinder {
             if (a >= 0) {
                 working = arr[a];
                 bic = arr[a + 1];
-            } else if (a < 0 && passPoint >= 0 && (falPoint - passPoint) == 1) {
+            } else if (passPoint >= 0 && falPoint - passPoint == 1) {
                 working = arr[passPoint];
                 bic = arr[falPoint];
             }
-            if (working == "" && bic == "") {
+            if (working.isEmpty() && bic.isEmpty()) {
                 FileUtilx.log("work and bic eq empty");
                 System.out.println("work and bic eq empty");
                 return null;
@@ -150,7 +150,7 @@ public class BICFinder {
                     bfcpId, bic,
                     working,
                     testcaseString, 0);
-        } else if (a < 0 && passPoint >= 0 && (falPoint - passPoint) > 1) {
+        } else if (passPoint >= 0 && falPoint - passPoint > 1) {
             FileUtilx.log("regression+1,with gap");
             exec.setDirectory(new File(Conf.PROJECT_PATH));
             String testcaseString = combinedRegressionTestResult();

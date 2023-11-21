@@ -2,6 +2,7 @@ package regminer.miner;
 
 import java.io.File;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.diff.Edit;
@@ -22,7 +23,7 @@ public class RelatedTestCaseParser  {
         for (PotentialTestCase potentialTestCase : potentialTestCaseList) {
             //if index > 0 ,test file in (c,c+2),we need copy test file to bfcdir
             //file map size > 0, meaning have test file need to copy
-            if (potentialTestCase.getIndex() > 0 && potentialTestCase.fileMap.size() > 0) {
+            if (potentialTestCase.getIndex() > 0 && !potentialTestCase.fileMap.isEmpty()) {
                 List<TestFile> testFiles = potentialTestCase.getTestFiles();
                 List<SourceFile> sourceFiles = potentialTestCase.getSourceFiles();
                 copyPotentialTestFileToBFC(testFiles,bfcDir,potentialTestCase);
@@ -33,13 +34,13 @@ public class RelatedTestCaseParser  {
         }
 
     }
-    private  void  copyPotentialTestFileToBFC(List<? extends ChangedFile> files,File bfcDir,PotentialTestCase potentialTestCase){
+    private void copyPotentialTestFileToBFC(List<? extends ChangedFile> files,File bfcDir,PotentialTestCase potentialTestCase){
         Iterator<? extends ChangedFile> iterator = files.iterator();
         while (iterator.hasNext()){
             ChangedFile changedFile = iterator.next();
             try {
                 FileUtils.copyToDirectory(potentialTestCase.fileMap.get(changedFile.getNewPath()),bfcDir);
-            }catch (Exception e){
+            } catch (Exception e){
                 iterator.remove();
                 e.printStackTrace();
             }
@@ -47,13 +48,14 @@ public class RelatedTestCaseParser  {
     }
 
     // 现在每个测试文件被分为测试相关和测试文件。
-    public void parseTestCases(PotentialRFC pRFC) throws Exception {
+    public void parseTestCases(PotentialRFC pRFC) {
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
         // Prepare for no testcase in bfc but in range of (c~2,c^2)
         if (pRFC.getTestcaseFrom() == PotentialRFC.TESTCASE_FROM_SEARCH) {
             handlePotentialTestFile(pRFC.getPotentialTestCaseList(),bfcDir,pRFC);
         }
 
+//        System.out.println("prfc testcase file size: " + pRFC.getTestCaseFiles().size());
         Iterator<TestFile> iterator = pRFC.getTestCaseFiles().iterator();
         while (iterator.hasNext()) {
             TestFile file = iterator.next();
@@ -61,10 +63,11 @@ public class RelatedTestCaseParser  {
                 continue;
             }
             String code = FileUtilx.readContentFromFile(new File(bfcDir,file.getNewPath()));
-            if (code == null){
+            if (code == null) {
                 continue;
             }
             if (!isTestSuite(code)) {
+//                System.out.println("remove here!");
                 file.setType(Type.TEST_RELATE);
                 pRFC.getTestRelates().add(file);
                 iterator.remove();
@@ -75,6 +78,7 @@ public class RelatedTestCaseParser  {
                 file.setTestMethodMap(methodMap);
             }
         }
+//        System.out.println("prfc testcase file size(after parsing): " + pRFC.getTestCaseFiles().size());
     }
 
     private Map<String, RelatedTestCase> parse(TestFile file, String code) {
@@ -122,8 +126,14 @@ public class RelatedTestCaseParser  {
 
     }
 
-    private boolean isTestSuite(String code) {
-        return code.contains("junit") || code.contains("@Test");
+    public boolean isTestSuite(String code) {
+        if (code.contains("org.junit") || code.contains("org.testng") || code.contains("@Test")) {
+            return true;
+        }
+        //in some cases, there's no junit or testng marks, but it's a test file
+        Pattern testClassPattern = Pattern.compile("public\\s+class\\s+.*[tT]est");
+        Pattern testMethodPattern = Pattern.compile("public\\s+void\\s+.*[tT]est");
+        return testClassPattern.matcher(code).find() && testMethodPattern.matcher(code).find();
     }
 
 }

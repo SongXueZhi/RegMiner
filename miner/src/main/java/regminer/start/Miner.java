@@ -51,7 +51,7 @@ public class Miner {
 
     public static void singleThreadHandle() throws Exception {
         ProjectManager projectManager = new ProjectManager();
-        if (ConfigLoader.organizeName.equals("")){
+        if (ConfigLoader.organizeName.isEmpty()){
             FileUtilx.log("Incorrectly formatted project name, please set project name in {organization}/{project_name}");
             return;
         }
@@ -60,54 +60,52 @@ public class Miner {
         long s1 = System.currentTimeMillis();
 
         // 工具类准备,1)测试方法查找 2)测试用例确定 3)BIC查找
-        RelatedTestCaseParser rTCParser = new RelatedTestCaseParser();
+//        RelatedTestCaseParser rTCParser = new RelatedTestCaseParser();
         BFCEvaluator tm = new BFCEvaluator(repo);
         BICFinder finder = new BICFinder();
-        // 声明一些辅助变量
-        float i = 0;
-        float j = (float) pRFCs.size();
-        System.out.println("origin bfc number " + j);
+        System.out.println("origin bfc count: " + pRFCs.size());
 
         ConcurrentLinkedQueue<PotentialRFC> linkedQueue = new ConcurrentLinkedQueue<>();
 
-       Thread thread1 =  new Thread(() -> tm.evoluteBFCList(pRFCs, linkedQueue));
-       thread1.setName("bfc");
-       thread1.start();
+        Thread thread1 =  new Thread(() -> tm.evoluteBFCList(pRFCs, linkedQueue));
+        thread1.setName("bfc");
+        thread1.start();
 
         Thread thread2 = new Thread(() -> {
-            while (pRFCs.size() > 0 || linkedQueue.size() > 0) {
-                if (linkedQueue.size() > 0) {
-                    PotentialRFC pRfc = linkedQueue.poll();
-                    FileUtilx.log("queue size:"+linkedQueue.size());
-                    Regression regression = finder.searchBIC(pRfc);
-                    if (regression == null) {
-                        ProgressMonitor.addDone(pRfc.getCommit().getName());
-                        continue;
-                    }
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(regression.getBugId()).append(",").append(regression.getBfcId())
-                            .append(",").append(regression.getBuggyId())
-                            .append(",").append(regression.getBicId())
-                            .append(",").append(regression.getWorkId())
-                            .append(",").append(regression.getTestCase())
-                            .append(",").append(regression.getWithGap());
-                    String regressionLog = sb.toString();
-                    if (!setResult.contains(regressionLog)) {
-                        FileUtilx.apendResult(regressionLog);
-                    }
-                    setResult.add(regressionLog);
-                    if (Conf.sql_enable) {
-                        regression.setProjectEntity(projectEntity);
-                        bugStorage.saveBug(regression);
-                    }
-                    ProgressMonitor.addDone(pRfc.getCommit().getName());
-                }
-            }
+            System.out.println("Bic mining is skipped now");
+//            while (!pRFCs.isEmpty() || !linkedQueue.isEmpty()) {
+//                if (!linkedQueue.isEmpty()) {
+//                    PotentialRFC pRfc = linkedQueue.poll();
+//                    FileUtilx.log("queue size:"+linkedQueue.size());
+//                    Regression regression = finder.searchBIC(pRfc);
+//                    if (regression == null) {
+//                        ProgressMonitor.addDone(pRfc.getCommit().getName());
+//                        continue;
+//                    }
+//                    StringBuilder sb = new StringBuilder();
+//                    sb.append(regression.getBugId()).append(",").append(regression.getBfcId())
+//                            .append(",").append(regression.getBuggyId())
+//                            .append(",").append(regression.getBicId())
+//                            .append(",").append(regression.getWorkId())
+//                            .append(",").append(regression.getTestCase())
+//                            .append(",").append(regression.getWithGap());
+//                    String regressionLog = sb.toString();
+//                    if (!setResult.contains(regressionLog)) {
+//                        FileUtilx.apendResult(regressionLog);
+//                    }
+//                    setResult.add(regressionLog);
+//                    if (Conf.sql_enable) {
+//                        regression.setProjectEntity(projectEntity);
+//                        bugStorage.saveBug(regression);
+//                    }
+//                    ProgressMonitor.addDone(pRfc.getCommit().getName());
+//                }
+//            }
         });
         thread2.setName("rfc");
         thread2.start();
         thread2.join();
         long s2 = System.currentTimeMillis();
-        System.out.println(s2 - s1);
+        System.out.println(s2 - s1 + " ms");
     }
 }
