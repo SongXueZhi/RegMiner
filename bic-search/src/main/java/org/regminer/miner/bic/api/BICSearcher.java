@@ -1,7 +1,7 @@
 package org.regminer.miner.bic.api;
 
 import org.regminer.miner.bic.api.core.AbstractBICSearcher;
-import org.regminer.miner.ct.api.ProjectBuilder;
+import org.regminer.ct.api.ProjectBuilder;
 import org.regminer.miner.migrate.api.TestMigrator;
 
 /**

@@ -9,7 +9,7 @@ import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryBuilderFactory;
+
 import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.patch.HunkHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -18,7 +18,7 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.regminer.miner.constant.Configurations;
 import org.regminer.miner.constant.Constant;
-import org.regminer.miner.git.provider.RepositoryProvider;
+
 import org.regminer.miner.model.*;
 import org.regminer.miner.utils.FileUtilx;
 import org.regminer.miner.utils.GitUtil;
@@ -281,7 +281,7 @@ public class PotentialBFCDetector {
                 pRFC.setNormalJavaFiles(normalJavaFiles);
                 pRFC.setSourceFiles(sourceFiles);
                 potentialRFCs.add(pRFC);
-            } else if (justNormalJavaFile(files) && (message1.contains("fix") || message1.contains("close"))) {
+            } else if (justNormalJavaFile(files) && (message1.contains("fix") || message1.contains("repair"))) {
 //				针对只标题只包含fix但是修改的文件路径中没有测试用例的提交
 //				我们将在(c-3,c+3) 的范围内检索可能的测试用例
 //				[TODO] songxuezhi

@@ -22,10 +22,9 @@ public class ProgressMonitor {
 
     public static void load() {
         doneTaskList = FileUtilx.readSetFromFile(Configurations.PROJECT_PATH + File.separator + "progress.details");
-        if (Configurations.sql_enable) {
-            Set<String> regressionsInSql = new BugRetrieve().getRegressionsFromDB();
-            doneTaskList.addAll(regressionsInSql);
-        }
+        Set<String> regressionsInSql = new BugRetrieve().getRegressionsFromDB();
+        doneTaskList.addAll(regressionsInSql);
+
     }
 
     public static void rePlan(List<PotentialBFC> pRFCs) {
