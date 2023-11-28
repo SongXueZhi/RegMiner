@@ -37,27 +37,6 @@ public class Migrator {
             return result;
         }
     }
-
-    public String findJavaFile( String className, String[] projectJavaFiles) {
-        String path = className.replace(".", File.separator) + ".java";
-        for (String file : projectJavaFiles) {
-            if (file.contains(path)) {
-                return file;
-            }
-        }
-        return null;
-    }
-
-    public String findClassFile( String className,  String[] projectJavaFiles) {
-        String path = className.replace(".", File.separator) + ".class";
-        for (String file : projectJavaFiles) {
-            if (file.contains(path)) {
-                return file;
-            }
-        }
-        return null;
-    }
-
     /**
      * @param pRFC
      * @param tDir
@@ -140,13 +119,4 @@ public class Migrator {
         }
     }
 
-    //TODO SongXueZhi
-    public void detectCompileWay(File bfcDir) {
-    	File[] files = bfcDir.listFiles();
-    	for (File file : files){
-    		if (file.getName().equals("pom.xml")){
-
-			}
-		}
-    }
 }

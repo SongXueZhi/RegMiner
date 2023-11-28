@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.regminer.miner.model;
+package org.regminer.common.model;
 
 public class SourceFile extends ChangedFile {
     public SourceFile(String newPath) {

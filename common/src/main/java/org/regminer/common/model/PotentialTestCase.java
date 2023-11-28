@@ -1,4 +1,4 @@
-package org.regminer.miner.model;
+package org.regminer.common.model;
 
 import java.io.File;
 import java.util.HashMap;

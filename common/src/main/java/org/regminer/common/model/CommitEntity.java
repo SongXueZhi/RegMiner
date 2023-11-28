@@ -1,4 +1,4 @@
-package org.regminer.miner.common.model;
+package org.regminer.common.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

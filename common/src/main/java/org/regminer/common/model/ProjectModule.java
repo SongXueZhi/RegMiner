@@ -1,4 +1,4 @@
-package org.regminer.miner.common.model;
+package org.regminer.common.model;
 
 /**
  * @Author: sxz

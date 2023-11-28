@@ -1,4 +1,4 @@
-package org.regminer.miner.common.utils;
+package org.regminer.common.utils;
 
 import org.apache.commons.io.FileUtils;
 

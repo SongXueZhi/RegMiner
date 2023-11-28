@@ -1,4 +1,4 @@
-package org.regminer.miner.common.tool;
+package org.regminer.common.tool;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;

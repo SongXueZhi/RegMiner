@@ -9,7 +9,7 @@ import org.regminer.ct.exec.Executor;
 import org.regminer.ct.model.*;
 import org.regminer.ct.utils.CtUtils;
 import org.regminer.ct.utils.OSUtils;
-import org.regminer.miner.common.model.TestCaseX;
+import org.regminer.common.model.TestCaseX;
 
 import java.io.File;
 import java.util.List;

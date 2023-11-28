@@ -1,6 +1,6 @@
 package org.regminer.ct.utils;
 
-import org.regminer.miner.common.model.TestCaseX;
+import org.regminer.common.model.TestCaseX;
 import org.regminer.ct.domain.Compiler;
 
 public class CtUtils {

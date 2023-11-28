@@ -7,32 +7,26 @@ import org.jetbrains.annotations.NotNull;
 import org.regminer.miner.RelatedTestCaseParser;
 import org.regminer.miner.constant.Configurations;
 import org.regminer.miner.constant.ExperResult;
-import org.regminer.miner.coverage.CodeCoverage;
-import org.regminer.miner.coverage.model.CoverNode;
 import org.regminer.miner.finalize.SycFileCleanup;
-import org.regminer.miner.maven.JacocoMavenManager;
-import org.regminer.miner.model.ChangedFile.Type;
-import org.regminer.miner.model.MigrateItem;
-import org.regminer.miner.model.PotentialBFC;
-import org.regminer.miner.model.RelatedTestCase;
-import org.regminer.miner.model.TestFile;
+import org.regminer.common.model.MigrateItem;
+import org.regminer.common.model.PotentialBFC;
+import org.regminer.common.model.RelatedTestCase;
+import org.regminer.common.model.TestFile;
 import org.regminer.miner.utils.CompilationUtil;
 import org.regminer.miner.utils.FileUtilx;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class BFCEvaluator extends Migrator {
 
-    Repository repo;
-    String projectName = Configurations.PROJRCT_NAME;
-    JacocoMavenManager jacocoMavenManager = new JacocoMavenManager();
-    CodeCoverage codeCoverage = new CodeCoverage();
+
     BFCTracker tracker = new BFCTracker();
     RelatedTestCaseParser testCaseParser = new RelatedTestCaseParser();
 
+    protected Logger logger = org.slf4j.LoggerFactory.getLogger(BFCEvaluator.class);
     public BFCEvaluator(Repository repo) {
         this.repo = repo;
     }
@@ -65,30 +59,24 @@ public class BFCEvaluator extends Migrator {
         }
     }
 
+
+
+
     public void evolute(PotentialBFC pRFC) {
         String bfcID = pRFC.getCommit().getName();
         try {
-
             // 1.checkout bfc
-            FileUtilx.log(bfcID + " checkout ");
+            logger.info(bfcID + " checkout ");
             File bfcDirectory = checkout(bfcID, bfcID, "bfc");
             pRFC.fileMap.put(bfcID, bfcDirectory);
 
-            //2. parser Testcase
-            testCaseParser.parseTestCases(pRFC);
-
-            // 3. verity have bfc~1
-            if (pRFC.getCommit().getParentCount() <= 0) {
-                FileUtilx.log("BFC no parent");
-                pRFC.getTestCaseFiles().clear();
-                emptyCache(bfcID);
-                return;
-            }
-
-            //4. checkout bfc~1
+            //3. checkout bfc~1
             String bfcpID = pRFC.getCommit().getParent(0).getName();
             File bfcpDirectory = checkout(bfcID, bfcpID, "bfcp");// 管理每一个commit的文件路径
             pRFC.fileMap.put(bfcpID, bfcpDirectory);
+
+            //2. parser Testcase
+            testCaseParser.parseTestCases(pRFC);
 
             // 4.将BFC中所有与测试相关的文件迁移到BFCP,与BIC查找中的迁移略有不同
             // BFC到BFCP的迁移不做依赖分析,相关就迁移
@@ -98,18 +86,16 @@ public class BFCEvaluator extends Migrator {
             // 4.compile BFC
             if (!compile(bfcDirectory, false)) {
                 pRFC.getTestCaseFiles().clear();
-                FileUtilx.log("BFC compile error");
+                logger.info("BFC compile error");
                 emptyCache(bfcID);
                 return;
             }
 
             // 5. 测试BFC中的每一个待测试方法
-//            System.out.println("before testing, bfcp test case size:" + pRFC.getTestCaseFiles().size());
             testBFC(bfcDirectory, pRFC);
-//            System.out.println("after testing, bfcp test case size:" + pRFC.getTestCaseFiles().size());
 
             if (pRFC.getTestCaseFiles().isEmpty()) {
-                FileUtilx.log("BFC all test fal");
+                logger.error("BFC all test fal");
                 emptyCache(bfcID);
                 return;
             }
@@ -133,14 +119,6 @@ public class BFCEvaluator extends Migrator {
                 FileUtilx.log("bfc~1 test success" + result);
                 emptyCache(bfcID);
                 return;
-            }
-
-            // Test buggy test in BFC get Method coverage
-            if (Configurations.code_cover) {
-                double rfcProb = testWithJacoco(bfcDirectory, pRFC.getTestCaseFiles());
-                pRFC.setScore(rfcProb);
-                FileUtilx.apendResultToFile(bfcID + "," + rfcProb + "," + combinedRegressionTestResult(pRFC), new File("bfcscore.csv"));
-                emptyCache(bfcID);
             }
 
             pRFC.setBuggyCommitId(bfcpID);
@@ -170,23 +148,6 @@ public class BFCEvaluator extends Migrator {
             }
         }
         return sj.toString();
-    }
-
-    public double testWithJacoco(File bfcDirectory, List<TestFile> testFiles) throws Exception {
-        //add Jacoco plugin
-        try {
-            jacocoMavenManager.addJacocoFeatureToMaven(bfcDirectory);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
-        }
-        testSuite(bfcDirectory, testFiles);
-        // git test coverage methods
-        List<CoverNode> coverNodeList = codeCoverage.readJacocoReports(bfcDirectory);
-        if (coverNodeList == null) {
-            return -1;
-        }
-        return tracker.regressionProbCalculate(tracker.handleTasks(coverNodeList, bfcDirectory));
     }
 
     public boolean compile(File file, boolean record) {

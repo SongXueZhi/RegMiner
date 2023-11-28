@@ -1,4 +1,4 @@
-package org.regminer.miner.common.model;
+package org.regminer.common.model;
 
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;

@@ -1,7 +1,7 @@
-package org.regminer.miner.migrate.api;
+package org.regminer.migrate.api;
 
 
-import org.regminer.miner.migrate.api.core.AbstractTestMigrator;
+import org.regminer.migrate.api.core.AbstractTestMigrator;
 
 /**
  * @Author: sxz

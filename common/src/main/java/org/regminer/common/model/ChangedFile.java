@@ -1,4 +1,4 @@
-package org.regminer.miner.model;
+package org.regminer.common.model;
 
 import org.eclipse.jgit.diff.Edit;
 

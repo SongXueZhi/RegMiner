@@ -4,7 +4,6 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.diff.Edit;
 import org.jetbrains.annotations.NotNull;
 import org.regminer.miner.constant.Constant;
-import org.regminer.miner.model.*;
 import org.regminer.miner.model.ChangedFile.Type;
 import org.regminer.miner.utils.CompilationUtil;
 import org.regminer.miner.utils.FileUtilx;

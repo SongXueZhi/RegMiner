@@ -1,4 +1,4 @@
-package org.regminer.miner.migrate.api.core;
+package org.regminer.migrate.api.core;
 
 /**
  * @Author: sxz

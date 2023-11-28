@@ -1,4 +1,4 @@
-package org.regminer.miner.common.utils;
+package org.regminer.common.utils;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -9,8 +9,8 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.regminer.miner.common.tool.RepositoryProvider;
-import org.regminer.miner.common.tool.SimpleProgressMonitor;
+import org.regminer.common.tool.RepositoryProvider;
+import org.regminer.common.tool.SimpleProgressMonitor;
 
 import java.io.File;
 import java.util.List;
