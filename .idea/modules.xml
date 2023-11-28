@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/RegMiner.iml" filepath="$PROJECT_DIR$/RegMiner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miner/miner.iml" filepath="$PROJECT_DIR$/miner/miner.iml" />
     </modules>
   </component>
 </project>
