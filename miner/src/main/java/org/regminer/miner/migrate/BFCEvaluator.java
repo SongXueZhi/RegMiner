@@ -61,7 +61,6 @@ public class BFCEvaluator extends Migrator {
 
 
 
-
     public void evolute(PotentialBFC pRFC) {
         String bfcID = pRFC.getCommit().getName();
         try {
