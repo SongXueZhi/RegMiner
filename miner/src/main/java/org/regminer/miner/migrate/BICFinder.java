@@ -1,13 +1,13 @@
 package org.regminer.miner.migrate;
 
-import org.regminer.miner.constant.Configurations;
-import org.regminer.miner.exec.TestExecutor;
+import org.regminer.common.constant.Configurations;
+import org.regminer.common.exec.TestExecutor;
 import org.regminer.miner.finalize.SycFileCleanup;
 import org.regminer.miner.model.PotentialBFC;
 import org.regminer.miner.model.Regression;
 import org.regminer.miner.model.RelatedTestCase;
 import org.regminer.miner.model.TestFile;
-import org.regminer.miner.utils.FileUtilx;
+import org.regminer.common.utils.FileUtilx;
 
 import java.io.File;
 import java.util.*;

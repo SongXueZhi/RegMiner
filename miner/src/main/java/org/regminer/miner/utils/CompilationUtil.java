@@ -4,7 +4,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
 import org.regminer.miner.ast.JdtClassRetriever;
 import org.regminer.miner.ast.JdtMethodRetriever;
-import org.regminer.miner.model.Methodx;
+import org.regminer.common.model.Methodx;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -5,9 +5,8 @@
  */
 package org.regminer.miner.start;
 
-import org.regminer.miner.constant.Configurations;
+import org.regminer.common.constant.Configurations;
 import org.regminer.miner.sql.MysqlManager;
-import org.regminer.miner.utils.FileUtilx;
 import org.slf4j.Logger;
 
 import java.io.File;

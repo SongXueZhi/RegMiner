@@ -1,9 +1,7 @@
-package org.regminer.miner.utils;
+package org.regminer.common.utils;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
-import org.regminer.miner.constant.Configurations;
+import org.regminer.common.constant.Configurations;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -11,13 +9,33 @@ import java.util.*;
 
 public class FileUtilx {
 
-    public void createdNewDirectory(String path) {
-
-    }
 
     // /home/sxz/document/mmmmm-ddahkdak989/123.java
     public static String getDirectoryFromPath(String path) {
         return path.contains("/") ? path.substring(0, path.lastIndexOf("/")) : "";
+    }
+
+    public static File getDirFromBfcAndBic(String bfc, String bic) {
+        String shortBfc = bfc.length() > 7 ? bfc.substring(0, 7) : bfc;
+        String shortBic = bic.length() > 7 ? bic.substring(0, 7) : bic;
+
+        // 创建一个唯一的目录名
+        String dirName =
+                Configurations.CACHE_PATH+File.separator+Configurations.PROJECT_NAME+ File.separator + shortBfc + File.separator + shortBic;
+
+        // 创建一个File对象
+        File directory = new File(dirName);
+
+        // 如果目录不存在，则创建它
+        if (directory.exists()) {
+            try {
+                FileUtils.forceDelete(directory);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        directory.mkdirs();
+        return directory;
     }
 
     @SuppressWarnings("deprecation")
@@ -130,17 +148,4 @@ public class FileUtilx {
         return result;
     }
 
-    public static void parseJson(String jsonText) {
-        HashMap<String, String> map = new HashMap<String, String>();
-        JSONArray jarr = JSONArray.parseArray(jsonText);
-        for (Iterator<?> iterator = jarr.iterator(); iterator.hasNext(); ) {
-            JSONObject job = (JSONObject) iterator.next();
-            if (map.containsKey(job.get(job))) {
-                continue;
-            } else {
-
-            }
-        }
-
-    }
 }

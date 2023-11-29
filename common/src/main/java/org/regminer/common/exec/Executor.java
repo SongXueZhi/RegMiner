@@ -1,8 +1,7 @@
-package org.regminer.ct.exec;
+package org.regminer.common.exec;
 
 import org.apache.commons.io.IOUtils;
 import org.regminer.ct.domain.OS;
-import org.regminer.ct.model.ExecResult;
 
 import java.io.BufferedReader;
 import java.io.File;

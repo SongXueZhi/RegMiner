@@ -1,10 +1,11 @@
 package org.regminer.ct.api;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.regminer.common.exec.ExecResult;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.Compiler;
 import org.regminer.ct.domain.JDK;
-import org.regminer.ct.exec.Executor;
+import org.regminer.common.exec.Executor;
 import org.regminer.ct.model.*;
 import org.regminer.ct.utils.CtUtils;
 import org.regminer.ct.utils.OSUtils;

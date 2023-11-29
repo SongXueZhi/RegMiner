@@ -2,15 +2,14 @@ package org.regminer.miner.start;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
-import org.regminer.miner.constant.Configurations;
-import org.regminer.miner.constant.Constant;
+import org.regminer.common.constant.Configurations;
+import org.regminer.common.constant.Constant;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.util.List;
 
 /**

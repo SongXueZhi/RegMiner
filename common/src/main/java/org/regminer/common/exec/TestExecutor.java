@@ -1,4 +1,4 @@
-package org.regminer.miner.exec;
+package org.regminer.common.exec;
 
 import org.apache.commons.io.IOUtils;
 import org.regminer.miner.model.MigrateItem;

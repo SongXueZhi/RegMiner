@@ -1,4 +1,4 @@
-package org.regminer.ct.model;
+package org.regminer.common.exec;
 
 public class ExecResult {
     private long usageTime;

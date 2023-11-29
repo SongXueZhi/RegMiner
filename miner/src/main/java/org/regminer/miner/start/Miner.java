@@ -3,7 +3,7 @@ package org.regminer.miner.start;
 import org.regminer.miner.PotentialBFCDetector;
 import org.regminer.miner.migrate.BFCEvaluator;
 import org.regminer.miner.migrate.BICFinder;
-import org.regminer.miner.model.PotentialBFC;
+import org.regminer.common.model.PotentialBFC;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class Miner {
             bfcEvaluator.evoluteBFCList(pBFCs);
             logger.info("Mining finished.");
             for (PotentialBFC pBFC : pBFCs) {
-                bicFinder.searchBIC(pBFC);
+//                bicFinder.searchBIC(pBFC);
             }
         }catch (Exception exception){
 

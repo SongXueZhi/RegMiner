@@ -1,7 +1,7 @@
 package org.regminer.miner;
 
 import org.apache.commons.io.FileUtils;
-import org.regminer.miner.constant.Configurations;
+import org.regminer.common.constant.Configurations;
 import org.regminer.miner.model.ProjectEntity;
 import org.regminer.miner.sql.ProjectDao;
 

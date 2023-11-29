@@ -1,4 +1,4 @@
-package org.regminer.miner.constant;
+package org.regminer.common.constant;
 
 import java.util.List;
 

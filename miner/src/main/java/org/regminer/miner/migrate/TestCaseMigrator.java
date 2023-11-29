@@ -1,18 +1,23 @@
 package org.regminer.miner.migrate;
 
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
-import org.regminer.miner.constant.Configurations;
-import org.regminer.miner.model.MigrateItem;
-import org.regminer.miner.model.PotentialBFC;
-import org.regminer.miner.model.RelatedTestCase;
-import org.regminer.miner.model.TestFile;
-import org.regminer.miner.utils.FileUtilx;
+import org.regminer.common.constant.Configurations;
+import org.regminer.common.model.*;
+import org.regminer.common.utils.FileUtilx;
+import org.regminer.common.utils.GitUtils;
+import org.regminer.ct.api.AutoCompileAndTest;
+import org.regminer.ct.api.CtContext;
+import org.regminer.ct.model.CompileResult;
+import org.regminer.ct.model.CtCommands;
+import org.regminer.ct.model.TestCaseResult;
+import org.regminer.ct.model.TestResult;
+import org.regminer.migrate.api.Migrator;
+import org.slf4j.Logger;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author sxz
@@ -23,99 +28,41 @@ public class TestCaseMigrator extends Migrator {
     public final static int CE = -1;
     public final static int UNRESOLVE = -2;
 
-    public int migrate(@NotNull PotentialBFC pRFC, String bic) throws Exception {
-        File bicDirectory = checkout(pRFC.getCommit().getName(), bic, "bic");
+    protected Logger logger = org.slf4j.LoggerFactory.getLogger(this.getClass());
+
+    public TestResult migrate(@NotNull PotentialBFC pRFC, String bic) throws Exception {
+        File bicDirectory = checkoutCiForBFC(pRFC.getCommit().getName(), bic);
         pRFC.fileMap.put(bic, bicDirectory);
         mergeTwoVersion_BaseLine(pRFC,bicDirectory);
         // 编译
-        if (compile(bicDirectory, true)) {
-            return testSuite(bicDirectory, pRFC.getTestCaseFiles());
+        CtContext ctContext  = new CtContext(new AutoCompileAndTest());
+        ctContext.setProjectDir(bicDirectory);
+        CompileResult compileResult = ctContext.compile();
+        //编译成功后执行测试
+        if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
+            return test(pRFC.getTestCaseFiles(), ctContext, compileResult.getEnvCommands());
         } else {
-            return CE;
-        }
-    }
-    public int testClass(TestFile testFile) throws Exception {
-        MigrateItem.MigrateFailureType type = exec.execTestWithResult(Configurations.testLine + testFile.getQualityClassName());
-        FileUtilx.log("try test class");
-        if (type == MigrateItem.MigrateFailureType.NONE) {
-            return FAL;
-        }
-        if (type == MigrateItem.MigrateFailureType.TESTSUCCESS) {
-            return PASS;
-        }
-        return UNRESOLVE;
-    }
-    public boolean compile(File file, boolean record) throws Exception {
-        exec.setDirectory(file);
-        return exec.execBuildWithResult(Configurations.compileLine, record);
-    }
-
-    public int testSuite(File file, @NotNull List<TestFile> testSuites) throws Exception {
-        exec.setDirectory(file);
-        StringJoiner sj = new StringJoiner(";", "[", "]");
-        Iterator<TestFile> iterator = testSuites.iterator();
-        boolean result1 = false;
-        boolean result = false;
-        while (iterator.hasNext()) {
-            TestFile testSuite = iterator.next();
-            int res = testBFCPMethod(testSuite, sj);
-
-            // XXX:TestDenpendency block
-            if (res == UNRESOLVE){
-                res = testClass(testSuite);
-            }
-            // block end
-
-            if (res == PASS) {
-                result1 = true;
-            }
-            if (res == FAL) {
-                result = true;
-            }
-
-        }
-
-        FileUtilx.log("Test bic " + sj);
-        if (result1) {
-            return PASS;
-        } else if (result) {
-            return FAL;
-        } else {
-            return UNRESOLVE;
+           return null; //或许返回NULL可能会引发空指针，但在当前阶段是合理的，如果编译失败，就没有测试结果。
         }
     }
 
-    public int testBFCPMethod(@NotNull TestFile testSuite, StringJoiner sj) throws Exception {
-        boolean result = false;
-        boolean result1 = false;
-        boolean result2 = false;
-        Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
-        for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<String, RelatedTestCase> entry = it.next();
-            String testCase = testSuite.getQualityClassName() + Configurations.methodClassLinkSymbolForTest
-                    + entry.getKey().split("[(]")[0];
-            MigrateItem.MigrateFailureType type = exec.execTestWithResult(Configurations.testLine + testCase);
-            sj.add(testCase + ":" + type.getName());
 
-            if (type == MigrateItem.MigrateFailureType.NONE) {
-                result = true;
-            }
-            if (type == MigrateItem.MigrateFailureType.TESTSUCCESS) {
-                result1 = true;
-            }
+    public List<TestCaseX> convertTestFilesToTestCaseXList(List<TestFile> testFiles) {
+        List<TestCaseX> allTestCaseXs = new ArrayList<>();
+
+        for (TestFile testFile : testFiles) {
+            List<TestCaseX> testCaseXs = testFile.toTestCaseXList();
+            allTestCaseXs.addAll(testCaseXs);
         }
 
-        if (result1) {
-            FileUtilx.log("PASS");
-            return PASS;
-        }
-        if (result) {
-            FileUtilx.log("FAL");
-            return FAL;
-        }
-        FileUtilx.log("UNRESOLVE");
-        return UNRESOLVE;
+        return allTestCaseXs;
     }
 
-
+    //TODO Song Xuezhi 现在这样的重构必然会造成损失，有些项目（maven低版本）没有办法只测试一个具体的方法，可能只能测试一个类。
+    // 但这个问题，我觉的大概可能在未来项目构建模块解决。
+    // 我认为这件事情的优先级和compile同等。
+    public  TestResult test(List<TestFile> testFiles, CtContext ctContext, CtCommands ctCommands){
+        TestResult testResult  = ctContext.test(convertTestFilesToTestCaseXList(testFiles),ctCommands);
+        return  testResult;
+    }
 }

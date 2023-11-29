@@ -2,34 +2,35 @@ package org.regminer.miner.migrate;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.*;
-import org.eclipse.jgit.lib.Repository;
 import org.jetbrains.annotations.NotNull;
-import org.regminer.miner.RelatedTestCaseParser;
-import org.regminer.miner.constant.Configurations;
-import org.regminer.miner.constant.ExperResult;
+import org.regminer.ct.api.AutoCompileAndTest;
+import org.regminer.ct.api.CtContext;
+import org.regminer.ct.model.CompileResult;
+import org.regminer.ct.model.TestCaseResult;
+import org.regminer.ct.model.TestResult;
+import org.regminer.ct.utils.TestUtils;
+import org.regminer.migrate.api.Migrator;
+import org.regminer.miner.TestCaseParser;
+import org.regminer.common.constant.Configurations;
+import org.regminer.common.constant.ExperResult;
 import org.regminer.miner.finalize.SycFileCleanup;
 import org.regminer.common.model.MigrateItem;
 import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.model.RelatedTestCase;
 import org.regminer.common.model.TestFile;
 import org.regminer.miner.utils.CompilationUtil;
-import org.regminer.miner.utils.FileUtilx;
+import org.regminer.common.utils.FileUtilx;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class BFCEvaluator extends Migrator {
+public class BFCEvaluator extends TestCaseMigrator{
+    TestCaseParser testCaseParser = new TestCaseParser();
 
-
-    BFCTracker tracker = new BFCTracker();
-    RelatedTestCaseParser testCaseParser = new RelatedTestCaseParser();
 
     protected Logger logger = org.slf4j.LoggerFactory.getLogger(BFCEvaluator.class);
-    public BFCEvaluator(Repository repo) {
-        this.repo = repo;
-    }
 
     /**
      * Firstly,checkout BFC ,and manage BFC DIR In the map
@@ -66,29 +67,28 @@ public class BFCEvaluator extends Migrator {
         try {
             // 1.checkout bfc
             logger.info(bfcID + " checkout ");
-            File bfcDirectory = checkout(bfcID, bfcID, "bfc");
+            File bfcDirectory = checkoutCiForBFC(bfcID, bfcID);
             pRFC.fileMap.put(bfcID, bfcDirectory);
-
-            //3. checkout bfc~1
-            String bfcpID = pRFC.getCommit().getParent(0).getName();
-            File bfcpDirectory = checkout(bfcID, bfcpID, "bfcp");// 管理每一个commit的文件路径
-            pRFC.fileMap.put(bfcpID, bfcpDirectory);
-
-            //2. parser Testcase
-            testCaseParser.parseTestCases(pRFC);
-
-            // 4.将BFC中所有与测试相关的文件迁移到BFCP,与BIC查找中的迁移略有不同
-            // BFC到BFCP的迁移不做依赖分析,相关就迁移
-            // 因为后续BFC的测试用例确认会删除一些TESTFILE,所以先迁移
-            copyToTarget(pRFC, bfcpDirectory);
-
-            // 4.compile BFC
-            if (!compile(bfcDirectory, false)) {
+            //2. 尝试编译BFC
+            CtContext ctContext = new CtContext(new AutoCompileAndTest());
+            ctContext.setProjectDir(bfcDirectory);
+            CompileResult compileResult = ctContext.compile();
+            if (compileResult.getState() == CompileResult.CompileState.CE) {
                 pRFC.getTestCaseFiles().clear();
                 logger.info("BFC compile error");
                 emptyCache(bfcID);
                 return;
             }
+            //3. parser Testcase
+            testCaseParser.parseTestCases(pRFC);
+
+            TestResult testResult = test(pRFC.getTestCaseFiles(),ctContext,compileResult.getEnvCommands());
+
+            Set<String> failTestcase =
+                    TestUtils.collectTestCasesBreakState(testResult, TestCaseResult.TestState.PASS).keySet();
+
+
+
 
             // 5. 测试BFC中的每一个待测试方法
             testBFC(bfcDirectory, pRFC);
@@ -98,6 +98,18 @@ public class BFCEvaluator extends Migrator {
                 emptyCache(bfcID);
                 return;
             }
+            //2. checkout bfc~1
+            String bfcpID = pRFC.getCommit().getParent(0).getName();
+            File bfcpDirectory = checkoutCiForBFC(bfcID, bfcpID);// 管理每一个commit的文件路径
+            pRFC.fileMap.put(bfcpID, bfcpDirectory);
+
+
+
+            migrate(pRFC, bic)
+
+            // 4.compile BFC
+
+
 
             // 7.编译并测试BFCP
             if (!compile(bfcpDirectory, false)) {

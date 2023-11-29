@@ -1,7 +1,7 @@
 package org.regminer.miner.git.provider;
 
 
-import org.regminer.miner.constant.Configurations;
+import org.regminer.common.constant.Configurations;
 
 public class Provider {
 	public static final int EXISITING = 0;

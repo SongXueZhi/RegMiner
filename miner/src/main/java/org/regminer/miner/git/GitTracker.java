@@ -19,7 +19,7 @@
 package org.regminer.miner.git;
 
 import org.apache.commons.io.FileUtils;
-import org.regminer.miner.exec.TestExecutor;
+import org.regminer.common.exec.TestExecutor;
 
 import java.io.File;
 import java.io.IOException;

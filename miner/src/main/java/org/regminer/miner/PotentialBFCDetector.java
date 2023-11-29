@@ -13,9 +13,10 @@ import org.eclipse.jgit.patch.HunkHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
-import org.regminer.miner.constant.Configurations;
-import org.regminer.miner.constant.Constant;
-import org.regminer.miner.utils.FileUtilx;
+import org.regminer.common.constant.Configurations;
+import org.regminer.common.constant.Constant;
+import org.regminer.common.model.*;
+import org.regminer.common.utils.FileUtilx;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -76,7 +77,7 @@ public class PotentialBFCDetector {
      * @return
      * @throws Exception
      */
-    private List<ChangedFile> getLastDiffFiles(RevCommit commit,Git git) throws Exception {
+    private List<ChangedFile> getLastDiffFiles(RevCommit commit, Git git) throws Exception {
         List<ChangedFile> files = new LinkedList<>();
         ObjectId id = commit.getTree().getId();
         ObjectId oldId = null;

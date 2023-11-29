@@ -3,10 +3,11 @@ package org.regminer.miner;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.diff.Edit;
 import org.jetbrains.annotations.NotNull;
-import org.regminer.miner.constant.Constant;
-import org.regminer.miner.model.ChangedFile.Type;
+import org.regminer.common.constant.Constant;
+import org.regminer.common.model.*;
+import org.regminer.common.model.ChangedFile.Type;
 import org.regminer.miner.utils.CompilationUtil;
-import org.regminer.miner.utils.FileUtilx;
+import org.regminer.common.utils.FileUtilx;
 
 import java.io.File;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ import java.util.regex.Pattern;
 //获取每一个测试文件中的测试方法（暂时不用），并且过滤测试文件是否真实
 //如果不包含junit或者@test则移除
 //过滤完成后，如果若有测试文件都被移除，则pRFC移除
-public class RelatedTestCaseParser  {
+public class TestCaseParser {
 
     public void handlePotentialTestFile(@NotNull List<PotentialTestCase> potentialTestCaseList, File bfcDir, PotentialBFC pRFC){
         for (PotentialTestCase potentialTestCase : potentialTestCaseList) {
@@ -35,7 +36,7 @@ public class RelatedTestCaseParser  {
         }
 
     }
-    private void copyPotentialTestFileToBFC(List<? extends ChangedFile> files,File bfcDir,PotentialTestCase potentialTestCase){
+    private void copyPotentialTestFileToBFC(List<? extends ChangedFile> files, File bfcDir, PotentialTestCase potentialTestCase){
         Iterator<? extends ChangedFile> iterator = files.iterator();
         while (iterator.hasNext()){
             ChangedFile changedFile = iterator.next();

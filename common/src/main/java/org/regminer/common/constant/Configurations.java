@@ -1,4 +1,4 @@
-package org.regminer.miner.constant;
+package org.regminer.common.constant;
 
 import org.regminer.miner.model.ProjectEntity;
 import org.regminer.miner.start.ConfigLoader;

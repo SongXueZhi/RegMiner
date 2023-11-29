@@ -1,46 +1,34 @@
-package org.regminer.miner.migrate;
-
-import org.apache.commons.io.FileUtils;
-import org.regminer.miner.constant.Configurations;
-import org.regminer.miner.constant.Constant;
-import org.regminer.miner.exec.TestExecutor;
-import org.regminer.miner.migrate.model.MergeTask;
-import org.regminer.miner.model.ChangedFile;
-import org.regminer.miner.model.PotentialBFC;
-import org.regminer.miner.model.SourceFile;
-import org.regminer.miner.model.TestFile;
-import org.regminer.miner.utils.FileUtilx;
+package org.regminer.migrate.api;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
+import org.apache.commons.io.FileUtils;
+import org.regminer.common.constant.Configurations;
+import org.regminer.common.constant.Constant;
+import org.regminer.common.model.ChangedFile;
+import org.regminer.common.model.PotentialBFC;
+import org.regminer.common.model.SourceFile;
+import org.regminer.common.model.TestFile;
+import org.regminer.common.utils.FileUtilx;
+import org.regminer.common.utils.GitUtils;
+import org.regminer.migrate.model.MergeTask;
+
+/**
+ * @Author: sxz
+ * @Date: 2023/11/29/13:46
+ * @Description:
+ */
 public class Migrator {
-    TestExecutor exec = new TestExecutor();
-
-    public File checkout(String bfcId, String commitId, String version) throws IOException {
-        synchronized (Configurations.META_PATH) {
-            String cacheFile = Configurations.CACHE_PATH + File.separator + bfcId + File.separator + commitId + File.separator
-                    + version + "_" + UUID.randomUUID();
-            File file = new File(cacheFile);
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-            exec.setDirectory(file);
-            FileUtils.copyDirectoryToDirectory(new File(Configurations.META_PATH), new File(cacheFile));
-            File result = new File(cacheFile + File.separator + "meta");
-            exec.setDirectory(result);
-            exec.execPrintln("git checkout -f " + commitId);
-            return result;
-        }
+    public File checkoutCiForBFC(String bfcId, String commitId) throws IOException {
+        File codeDir = FileUtilx.getDirFromBfcAndBic(bfcId, commitId);
+        FileUtils.copyDirectoryToDirectory(new File(Configurations.META_PATH), codeDir);
+        GitUtils.checkout(commitId,codeDir);
+        return codeDir;
     }
-    /**
-     * @param pRFC
-     * @param tDir
-     */
     public void mergeTwoVersion_BaseLine(PotentialBFC pRFC, File tDir) {
         /**
          *
@@ -118,5 +106,4 @@ public class Migrator {
             FileUtils.copyFileToDirectory(file, file1);
         }
     }
-
 }

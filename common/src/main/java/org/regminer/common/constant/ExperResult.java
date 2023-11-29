@@ -1,4 +1,4 @@
-package org.regminer.miner.constant;
+package org.regminer.common.constant;
 
 public class ExperResult {
 	public static float numSuc = 0;

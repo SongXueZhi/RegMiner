@@ -10,6 +10,7 @@ import org.apache.bcel.util.SyntheticRepository;
 import org.apache.tools.ant.DirectoryScanner;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.regminer.common.utils.FileUtilx;
 
 import java.io.*;
 import java.util.ArrayList;
