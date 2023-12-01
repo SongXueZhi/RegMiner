@@ -1,4 +1,4 @@
-package org.regminer.ct.domain;
+package org.regminer.common.model;
 
 public class OS {
     public final static String WINDOWS = "windows";

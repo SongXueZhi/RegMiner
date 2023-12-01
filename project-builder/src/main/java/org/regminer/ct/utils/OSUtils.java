@@ -1,6 +1,6 @@
 package org.regminer.ct.utils;
 
-import org.regminer.ct.domain.OS;
+import org.regminer.common.model.OS;
 
 public class OSUtils {
 

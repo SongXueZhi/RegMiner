@@ -1,4 +1,4 @@
-package org.regminer.miner.sql;
+package org.regminer.common.sql;
 
 import org.regminer.miner.start.ConfigLoader;
 

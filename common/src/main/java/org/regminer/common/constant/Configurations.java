@@ -1,14 +1,14 @@
 package org.regminer.common.constant;
 
-import org.regminer.miner.model.ProjectEntity;
-import org.regminer.miner.start.ConfigLoader;
+
 
 import java.io.File;
 
 public class Configurations {
 
+
 	public static String PROJECT_NAME = ConfigLoader.projectName;
-	public static String ROOT_DIR = ConfigLoader.rootDir;
+	public static String ROOT_DIR = ConfigLoader.;
 	public static String CONFIG_PATH = "env.properties";
 	public static String TASK_NAME = "bfc";
 

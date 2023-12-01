@@ -1,4 +1,4 @@
-package org.regminer.ct;
+package org.regminer.common.constant;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,10 +8,14 @@ import java.util.Properties;
 public class ConfigLoader {
     private static final Properties prop = new Properties();
     private final static String CONFIGPATH = "env.properties";
-
     private final static String PROJRCT_NAME = "project_name";
     private final static String PROJECTS_Dir = "projects_dir";
     private final static String PROJECT_IN = "project_in";
+
+    private final static String SQL_ENABLE = "sql_enable";
+    private final static String SQL_URL = "sql_url";
+    private final static String USER_NAME = "username";
+    private final static String PASSWD = "passwd";
     private final static String JDK_DIR = "jdk_dir";
     private final static String JDK_HOME = "jdk_home";
     private final static String JDK6 = "j6_file";
@@ -26,8 +30,9 @@ public class ConfigLoader {
     private final static String JDK15 = "j15_file";
     private final static String JDK16 = "j16_file";
     private final static String JDK17 = "j17_file";
+    private final static String ROOT_DIR = "root_dir";
 
-
+    public static String rootDir = "";
     public static String projectName = "";
     public static String projectPath = "";
     public static String projectsDir = "";
@@ -55,7 +60,16 @@ public class ConfigLoader {
             System.out.println(ex.getMessage());
         }
         projectName = prop.getProperty(PROJRCT_NAME);
-        projectPath = "datas/" + projectName;
+        rootDir = prop.getProperty(ROOT_DIR);
+
+        if (prop.getProperty(SQL_ENABLE).equals("0")) {
+            Configurations.sql_enable = false;
+        } else {
+            MysqlManager.URL = prop.getProperty(SQL_URL);
+            MysqlManager.NAME = prop.getProperty(USER_NAME);
+            MysqlManager.PWD = prop.getProperty(PASSWD);
+        }
+
         projectsDir = prop.getProperty(PROJECTS_Dir);
         projectIn = prop.getProperty(PROJECT_IN);
         jdkDir = prop.getProperty(JDK_DIR);

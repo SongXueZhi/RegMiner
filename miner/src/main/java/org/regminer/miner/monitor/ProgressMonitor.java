@@ -2,8 +2,8 @@ package org.regminer.miner.monitor;
 
 import org.apache.commons.io.FileUtils;
 import org.regminer.common.constant.Configurations;
-import org.regminer.miner.model.PotentialBFC;
-import org.regminer.miner.sql.BugRetrieve;
+import org.regminer.common.model.PotentialBFC;
+import org.regminer.common.sql.BugRetrieve;
 import org.regminer.common.utils.FileUtilx;
 
 import java.io.File;

@@ -16,7 +16,7 @@
  *
  */
 
-package org.regminer.miner.model;
+package org.regminer.common.model;
 
 public class Regression {
     String regressionUUID;

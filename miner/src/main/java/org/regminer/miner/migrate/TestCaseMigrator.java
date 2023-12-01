@@ -1,23 +1,20 @@
 package org.regminer.miner.migrate;
 
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
-import org.regminer.common.constant.Configurations;
-import org.regminer.common.model.*;
-import org.regminer.common.utils.FileUtilx;
-import org.regminer.common.utils.GitUtils;
+import org.regminer.common.model.PotentialBFC;
+import org.regminer.common.model.TestCaseX;
+import org.regminer.common.model.TestFile;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.CtCommands;
-import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 import org.regminer.migrate.api.Migrator;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author sxz

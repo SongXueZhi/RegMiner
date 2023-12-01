@@ -1,6 +1,6 @@
 package org.regminer.ct.domain;
 
-import org.regminer.ct.ConfigLoader;
+import org.regminer.common.constant.ConfigLoader;
 
 public enum JDK {
 

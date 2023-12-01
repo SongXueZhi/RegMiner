@@ -1,5 +1,7 @@
 package org.regminer.ct.domain;
 
+import org.regminer.common.model.OS;
+
 public enum Compiler {
     MVN {
         @Override

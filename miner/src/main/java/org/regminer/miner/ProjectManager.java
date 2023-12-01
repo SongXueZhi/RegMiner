@@ -2,8 +2,8 @@ package org.regminer.miner;
 
 import org.apache.commons.io.FileUtils;
 import org.regminer.common.constant.Configurations;
-import org.regminer.miner.model.ProjectEntity;
-import org.regminer.miner.sql.ProjectDao;
+import org.regminer.common.model.ProjectEntity;
+import org.regminer.common.sql.ProjectDao;
 
 import java.io.File;
 import java.io.IOException;

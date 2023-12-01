@@ -2,31 +2,26 @@ package org.regminer.miner.migrate;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.*;
-import org.jetbrains.annotations.NotNull;
+import org.regminer.common.constant.Configurations;
+import org.regminer.common.model.PotentialBFC;
+import org.regminer.common.model.TestFile;
+import org.regminer.common.utils.FileUtilx;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 import org.regminer.ct.utils.TestUtils;
-import org.regminer.migrate.api.Migrator;
 import org.regminer.miner.TestCaseParser;
-import org.regminer.common.constant.Configurations;
-import org.regminer.common.constant.ExperResult;
 import org.regminer.miner.finalize.SycFileCleanup;
-import org.regminer.common.model.MigrateItem;
-import org.regminer.common.model.PotentialBFC;
-import org.regminer.common.model.RelatedTestCase;
-import org.regminer.common.model.TestFile;
 import org.regminer.miner.utils.CompilationUtil;
-import org.regminer.common.utils.FileUtilx;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class BFCEvaluator extends TestCaseMigrator{
+public class BFCEvaluator extends TestCaseMigrator {
     TestCaseParser testCaseParser = new TestCaseParser();
 
 
@@ -61,7 +56,6 @@ public class BFCEvaluator extends TestCaseMigrator{
     }
 
 
-
     public void evolute(PotentialBFC pRFC) {
         String bfcID = pRFC.getCommit().getName();
         try {
@@ -81,156 +75,59 @@ public class BFCEvaluator extends TestCaseMigrator{
             }
             //3. parser Testcase
             testCaseParser.parseTestCases(pRFC);
+            //4. 测试BFC
+            TestResult testResult = test(pRFC.getTestCaseFiles(), ctContext, compileResult.getEnvCommands());
 
-            TestResult testResult = test(pRFC.getTestCaseFiles(),ctContext,compileResult.getEnvCommands());
-
-            Set<String> failTestcase =
-                    TestUtils.collectTestCasesBreakState(testResult, TestCaseResult.TestState.PASS).keySet();
-
-
-
-
-            // 5. 测试BFC中的每一个待测试方法
-            testBFC(bfcDirectory, pRFC);
+            TestUtils.removeTestFilesInBFC(pRFC, testResult, TestCaseResult.TestState.FAL);
 
             if (pRFC.getTestCaseFiles().isEmpty()) {
                 logger.error("BFC all test fal");
                 emptyCache(bfcID);
                 return;
             }
-            //2. checkout bfc~1
-            String bfcpID = pRFC.getCommit().getParent(0).getName();
-            File bfcpDirectory = checkoutCiForBFC(bfcID, bfcpID);// 管理每一个commit的文件路径
-            pRFC.fileMap.put(bfcpID, bfcpDirectory);
 
+            //5. 选择BFCP
+            int count = pRFC.getCommit().getParentCount();
+            if (count == 0) {
+                logger.error("BFC has no parent");
+                emptyCache(bfcID);
+                return;
+            }
 
+            boolean findBFCPFlag = false;
+            for (int i = 0; i < count; i++) {
+                String bfcpID = pRFC.getCommit().getParent(i).getName();
+                TestResult bfcpTestResult = migrate(pRFC, bfcpID);
 
-            migrate(pRFC, bic)
+                if (bfcpTestResult == null) { //这说明编译失败
+                    logger.info("BFC~1 compile error");
+                    continue;
+                }
+                TestUtils.removeTestFilesInBFC(pRFC, bfcpTestResult, TestCaseResult.TestState.PASS);
 
-            // 4.compile BFC
-
-
-
-            // 7.编译并测试BFCP
-            if (!compile(bfcpDirectory, false)) {
+                if (!pRFC.getTestCaseFiles().isEmpty()) {
+                    //查找成功，删除无关的测试用例
+                    //跳出，找到一个就够了
+                    logger.info("bfc~1 test fal");
+                    purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);//XXX:TestDenpendency:TEST REDUCE
+                    findBFCPFlag = true;
+                    pRFC.setBuggyCommitId(bfcpID);
+                    break;
+                }
+            }
+            if (!findBFCPFlag) {
                 pRFC.getTestCaseFiles().clear();
-                FileUtilx.log("BFC~1 compile error");
+                logger.info("Can't find a bfc-1");
                 emptyCache(bfcID);
                 return;
             }
-            // 6.测试BFCP
-            String result = testBFCP(bfcpDirectory, pRFC.getTestCaseFiles());
-
-            if (!pRFC.getTestCaseFiles().isEmpty()) {
-                ExperResult.numSuc++;
-                //删除无关的测试用例
-                purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);//XXX:TestDenpendency:TEST REDUCE
-                FileUtilx.log("bfc~1 test fal" + result);
-            } else {
-                FileUtilx.log("bfc~1 test success" + result);
-                emptyCache(bfcID);
-                return;
-            }
-
-            pRFC.setBuggyCommitId(bfcpID);
-            exec.setDirectory(new File(Configurations.PROJECT_PATH));
         } catch (Exception e) {
-            if (pRFC.getTestCaseFiles()==null){
+            if (pRFC.getTestCaseFiles() == null) {
                 pRFC.setTestCaseFiles(new ArrayList<>());
             }
             pRFC.getTestCaseFiles().clear();
             emptyCache(bfcID);
-            e.printStackTrace();
-        }
-    }
-
-    public String combinedRegressionTestResult(PotentialBFC pRFC) {
-        StringJoiner sj = new StringJoiner(";", "", "");
-        for (TestFile tc : pRFC.getTestCaseFiles()) {
-            Map<String, RelatedTestCase> methodMap = tc.getTestMethodMap();
-            if (methodMap == null) {
-                continue;
-            }
-            for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
-                Map.Entry<String, RelatedTestCase> entry = it.next();
-                String testCase = tc.getQualityClassName() + Configurations.methodClassLinkSymbolForTest
-                        + entry.getKey().split("[(]")[0];
-                sj.add(testCase);
-            }
-        }
-        return sj.toString();
-    }
-
-    public boolean compile(File file, boolean record) {
-        exec.setDirectory(file);
-        return exec.execBuildWithResult(Configurations.compileLine, record);
-    }
-
-    public void testBFC(File file, PotentialBFC pRFC) throws Exception {
-        // 一定要先设置当前文件路径
-        exec.setDirectory(file);
-        // 开始测试
-        Iterator<TestFile> iter = pRFC.getTestCaseFiles().iterator();
-        while (iter.hasNext()) {
-            TestFile testFile = iter.next();
-
-            if (testFile.getType() == Type.TEST_SUITE) {
-                testSuite(testFile);
-            } else {
-                iter.remove();// 只保留测试文件
-                continue;
-            }
-            Map<String, RelatedTestCase> testMethodsMap = testFile.getTestMethodMap();
-            if (testMethodsMap == null || testMethodsMap.isEmpty()) {
-                iter.remove(); // 如果该测试文件中没有测试成功的方法,则该TestFile移除
-            }
-        }
-    }
-
-    public void testSuite(TestFile testFile) {
-        Map<String, RelatedTestCase> methodMap = testFile.getTestMethodMap();
-        if (methodMap != null && !methodMap.isEmpty()) {
-            testMethod(methodMap, testFile.getQualityClassName());
-        }
-    }
-
-    public void testMethod(Map<String, RelatedTestCase> methodMap, String qualityClassName) {
-        // 遍历BFC测试文件中的每一个方法,并执行测试,测试失败即移除
-        for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<String, RelatedTestCase> entry = it.next();
-            String testCase = qualityClassName + Configurations.methodClassLinkSymbolForTest + entry.getKey().split("[(]")[0];
-            MigrateItem.MigrateFailureType type = exec.execTestWithResult(Configurations.testLine + testCase);
-            if (type != MigrateItem.MigrateFailureType.TESTSUCCESS) {
-                it.remove();
-            }
-        }
-    }
-
-    public String testBFCP(File file, List<TestFile> realTestCase) {
-        exec.setDirectory(file);
-        StringJoiner sj = new StringJoiner(";", "[", "]");
-        Iterator<TestFile> iterator = realTestCase.iterator();
-        while (iterator.hasNext()) {
-            TestFile testSuite = iterator.next();
-            testBFCPMethod(testSuite, sj);
-            if (testSuite.getTestMethodMap().isEmpty()) {
-                iterator.remove();
-            }
-        }
-        return sj.toString();
-    }
-
-    public void testBFCPMethod(TestFile testSuite, StringJoiner sj) {
-        Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
-        for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<String, RelatedTestCase> entry = it.next();
-            String testCase = testSuite.getQualityClassName() + Configurations.methodClassLinkSymbolForTest
-                    + entry.getKey().split("[(]")[0];
-            MigrateItem.MigrateFailureType type = exec.execTestWithResult(Configurations.testLine + testCase);
-            sj.add(testCase + ":" + type.getName());
-            if (type != MigrateItem.MigrateFailureType.NONE) {
-                it.remove();
-            }
+            logger.error(e.getMessage());
         }
     }
 
@@ -292,33 +189,13 @@ public class BFCEvaluator extends TestCaseMigrator{
                         importDeclaration.delete();
                     }
                 }
-            if (file.exists()){
-                file.delete();
-            }
+                if (file.exists()) {
+                    file.delete();
+                }
                 FileUtils.writeStringToFile(file, unit.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public void testSuite(File file, @NotNull List<TestFile> testSuites) {
-        exec.setDirectory(file);
-        Iterator<TestFile> iterator = testSuites.iterator();
-        while (iterator.hasNext()) {
-            TestFile testSuite = iterator.next();
-            testMethod(testSuite);
-        }
-
-    }
-
-    public void testMethod(@NotNull TestFile testSuite) {
-        Map<String, RelatedTestCase> methodMap = testSuite.getTestMethodMap();
-        for (Iterator<Map.Entry<String, RelatedTestCase>> it = methodMap.entrySet().iterator(); it.hasNext(); ) {
-            Map.Entry<String, RelatedTestCase> entry = it.next();
-            String testCase = testSuite.getQualityClassName() + Configurations.methodClassLinkSymbolForTest
-                    + entry.getKey().split("[(]")[0];
-            exec.execTestWithResult(Configurations.testLine + testCase);
         }
     }
 }
