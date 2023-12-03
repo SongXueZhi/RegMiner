@@ -30,9 +30,9 @@ import java.util.Set;
 public class MysqlManager {
 
     public static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    public static String URL;
-    public static String NAME;
-    public static String PWD;
+    public static String url;
+    public static String name;
+    public static String pwd;
     private static Connection conn = null;
     private static Statement statement = null;
 
@@ -41,7 +41,7 @@ public class MysqlManager {
             return;
         }
         Class.forName(DRIVER);
-        conn = DriverManager.getConnection(URL, NAME, PWD);
+        conn = DriverManager.getConnection(url, name, pwd);
 
     }
 

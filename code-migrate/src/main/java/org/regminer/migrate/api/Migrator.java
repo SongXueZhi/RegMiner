@@ -25,7 +25,7 @@ import java.util.*;
 public class Migrator {
     public File checkoutCiForBFC(String bfcId, String commitId) throws IOException {
         File codeDir = FileUtilx.getDirFromBfcAndBic(bfcId, commitId);
-        FileUtils.copyDirectoryToDirectory(new File(Configurations.META_PATH), codeDir);
+        FileUtils.copyDirectoryToDirectory(new File(Configurations.metaPath), codeDir);
         GitUtils.checkout(commitId, codeDir);
         return codeDir;
     }

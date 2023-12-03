@@ -21,7 +21,7 @@ public class ProgressMonitor {
     public static Set<String> doneTaskList;
 
     public static void load() {
-        doneTaskList = FileUtilx.readSetFromFile(Configurations.PROJECT_PATH + File.separator + "progress.details");
+        doneTaskList = FileUtilx.readSetFromFile(Configurations.projectPath + File.separator + "progress.details");
         Set<String> regressionsInSql = new BugRetrieve().getRegressionsFromDB();
         doneTaskList.addAll(regressionsInSql);
 
@@ -42,7 +42,7 @@ public class ProgressMonitor {
     @SuppressWarnings("deprecation")
     public static void addDone(String name) {
         try {
-            FileUtils.writeStringToFile(new File(Configurations.PROJECT_PATH + File.separator + "progress.details"),
+            FileUtils.writeStringToFile(new File(Configurations.projectPath + File.separator + "progress.details"),
                     name + "\n",
                     true);
         } catch (IOException e) {

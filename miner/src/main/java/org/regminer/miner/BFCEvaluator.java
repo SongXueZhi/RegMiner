@@ -138,7 +138,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
 
 
     public void emptyCache(String bfcID) {
-        File bfcFile = new File(Configurations.CACHE_PATH + File.separator + bfcID);
+        File bfcFile = new File(Configurations.cachePath + File.separator + bfcID);
         new SycFileCleanup().cleanDirectory(bfcFile);
     }
 

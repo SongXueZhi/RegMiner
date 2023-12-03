@@ -2,6 +2,8 @@ package org.regminer.miner.start;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.regminer.bic.api.EnhancedBinarySearch;
 import org.regminer.bic.api.SearchBICContext;
 import org.regminer.common.constant.Configurations;
@@ -11,7 +13,6 @@ import org.regminer.migrate.api.TestCaseMigrator;
 import org.regminer.miner.BFCEvaluator;
 import org.regminer.miner.PotentialBFCDetector;
 import org.regminer.miner.SearchBFCContext;
-import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,7 +27,7 @@ import java.util.List;
  */
 public class MinerCli {
     private static final Options OPTIONS = new Options();
-    static Logger logger = org.slf4j.LoggerFactory.getLogger(MinerCli.class);
+    static Logger logger = LogManager.getLogger(MinerCli.class);
     private static CommandLine commandLine;
     private static String HELP_STRING = null;
 
@@ -41,7 +42,7 @@ public class MinerCli {
                 processCommands();
             }
         } catch (ParseException e) {
-            logger.error("Error parsing command: {}", e.getMessage());
+            logger.info("Error parsing command: {}", e.getMessage());
             printHelp();
         }
     }
@@ -73,9 +74,9 @@ public class MinerCli {
     }
 
     private static void processCommands() {
-        Configurations.ROOT_DIR = commandLine.getOptionValue("ws");
-        Configurations.PROJECT_NAME = commandLine.getOptionValue("pj");
-        Configurations.CONFIG_PATH = commandLine.getOptionValue("cfg", Configurations.CONFIG_PATH); // Default value
+        Configurations.rootDir = commandLine.getOptionValue("ws");
+        Configurations.projectName = commandLine.getOptionValue("pj");
+        Configurations.configPath = commandLine.getOptionValue("cfg", Configurations.configPath); // Default value
         // if not specified
         processTaskOption();
         // Additional processing for other options
@@ -101,7 +102,7 @@ public class MinerCli {
         if (commandLine.hasOption("t")) {
             String taskName = commandLine.getOptionValue("t");
             if (Constant.TASK_LIST.contains(taskName)) {
-                Configurations.TASK_NAME = taskName;
+                Configurations.taskName = taskName;
                 miner = new Miner(new SearchBFCContext(new BFCEvaluator(new TestCaseParser(), new TestCaseMigrator()),
                         new PotentialBFCDetector()),
                         new SearchBICContext(new EnhancedBinarySearch()));

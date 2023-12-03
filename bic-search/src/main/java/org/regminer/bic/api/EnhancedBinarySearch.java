@@ -56,7 +56,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
     public Triple<String, String, Integer> search(PotentialBFC potentialBFC) {
         this.pRFC = potentialBFC;
         String bfcId = pRFC.getCommit().getName();
-        File bfcFile = new File(Configurations.CACHE_PATH + File.separator + bfcId);
+        File bfcFile = new File(Configurations.cachePath + File.separator + bfcId);
         try {
             logger.info(pRFC.getCommit().getName() + " Start search");
             passPoint = Integer.MIN_VALUE;

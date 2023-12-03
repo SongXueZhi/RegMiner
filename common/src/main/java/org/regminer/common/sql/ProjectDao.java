@@ -1,6 +1,6 @@
 package org.regminer.common.sql;
 
-import org.regminer.common.constant.ConfigLoader;
+import org.regminer.common.constant.Configurations;
 import org.regminer.common.model.ProjectEntity;
 
 /**
@@ -14,7 +14,7 @@ public class ProjectDao {
         String organizeName = name.split("/")[0];
         String sql = new StringBuilder("select project_uuid,organization,project_name from project where project_name" +
                 " ='")
-                .append(ConfigLoader.projectName).append("' ").append("and organization ='")
+                .append(Configurations.projectName).append("' ").append("and organization ='")
                 .append(organizeName).append("'").toString();
         return MysqlManager.getProject(sql);
     }

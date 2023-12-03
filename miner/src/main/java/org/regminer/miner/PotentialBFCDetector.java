@@ -27,7 +27,7 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
 
     public List<PotentialBFC> detectPotentialBFC() throws Exception {
         // 获取所有的commit，我们需要对所有的commit进行分析
-        try (Repository repo = new FileRepository(Configurations.PROJECT_PATH); Git git = new Git(repo)) {
+        try (Repository repo = new FileRepository(Configurations.projectPath); Git git = new Git(repo)) {
             Iterable<RevCommit> commits = git.log().all().call();
             // 开始迭代每一个commit
             return detectAll(commits, git);
