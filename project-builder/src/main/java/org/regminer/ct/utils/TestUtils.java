@@ -40,6 +40,8 @@ public class TestUtils {
      */
     public static void removeTestFilesInBFC(PotentialBFC potentialBFC, TestResult testResult,
                                             TestCaseResult.TestState testState) {
+        //TODO luzhengjie: 获取TestResult中的Testcase，根据Testcase的状态，删除PotentialBFC的TestFile.getTestMethodMap()
+        // 中满足条件的case，如果TestFile.getTestMethodMap()为空，则删除该TestFile。
         Set<String> testCasesToRemove = collectTestCases(testResult, state -> state == testState).keySet();
 
         potentialBFC.getTestCaseFiles().removeIf(testFile -> {

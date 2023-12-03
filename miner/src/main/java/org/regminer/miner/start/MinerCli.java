@@ -76,8 +76,8 @@ public class MinerCli {
     private static void processCommands() {
         Configurations.rootDir = commandLine.getOptionValue("ws");
         Configurations.projectName = commandLine.getOptionValue("pj");
-        Configurations.configPath = commandLine.getOptionValue("cfg", Configurations.configPath); // Default value
-        // if not specified
+        Configurations.configPath = commandLine.getOptionValue("cfg", Configurations.configPath);
+        Configurations.updateDependentFields();
         processTaskOption();
         // Additional processing for other options
     }

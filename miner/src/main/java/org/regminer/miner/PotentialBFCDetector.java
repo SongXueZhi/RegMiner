@@ -16,9 +16,11 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.model.*;
+import org.regminer.common.tool.RepositoryProvider;
 import org.regminer.common.utils.FileUtilx;
 import org.regminer.miner.core.PBFCFilterStrategy;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,7 +29,8 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
 
     public List<PotentialBFC> detectPotentialBFC() throws Exception {
         // 获取所有的commit，我们需要对所有的commit进行分析
-        try (Repository repo = new FileRepository(Configurations.projectPath); Git git = new Git(repo)) {
+        try (Repository repo = RepositoryProvider.getRepoFromLocal(new File(Configurations.projectPath)); Git git =
+                new Git(repo)) {
             Iterable<RevCommit> commits = git.log().all().call();
             // 开始迭代每一个commit
             return detectAll(commits, git);

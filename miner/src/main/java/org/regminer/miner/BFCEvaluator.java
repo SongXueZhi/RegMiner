@@ -1,5 +1,7 @@
 package org.regminer.miner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.tool.SycFileCleanup;
@@ -13,7 +15,6 @@ import org.regminer.ct.model.TestResult;
 import org.regminer.ct.utils.TestUtils;
 import org.regminer.migrate.api.TestCaseMigrator;
 import org.regminer.miner.core.BFCSearchStrategy;
-import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class BFCEvaluator extends BFCSearchStrategy {
-    protected Logger logger = org.slf4j.LoggerFactory.getLogger(BFCEvaluator.class);
+    protected Logger logger = LogManager.getLogger(BFCEvaluator.class);
     TestCaseParser testCaseParser;
     TestCaseMigrator testCaseMigrator;
 
@@ -73,7 +74,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
             if (compileResult.getState() == CompileResult.CompileState.CE) {
                 pRFC.getTestCaseFiles().clear();
                 logger.info("BFC compile error");
-                emptyCache(bfcID);
+                emptyCache(pRFC.fileMap.get(bfcID));
                 return;
             }
             //3. parser Testcase
@@ -86,7 +87,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
 
             if (pRFC.getTestCaseFiles().isEmpty()) {
                 logger.error("BFC all test fal");
-                emptyCache(bfcID);
+                emptyCache(pRFC.fileMap.get(bfcID));
                 return;
             }
 
@@ -94,7 +95,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
             int count = pRFC.getCommit().getParentCount();
             if (count == 0) {
                 logger.error("BFC has no parent");
-                emptyCache(bfcID);
+                emptyCache(pRFC.fileMap.get(bfcID));
                 return;
             }
 
@@ -123,7 +124,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
             if (!findBFCPFlag) {
                 pRFC.getTestCaseFiles().clear();
                 logger.info("Can't find a bfc-1");
-                emptyCache(bfcID);
+                emptyCache(pRFC.fileMap.get(bfcID));
                 return;
             }
         } catch (Exception e) {
@@ -131,15 +132,14 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 pRFC.setTestCaseFiles(new ArrayList<>());
             }
             pRFC.getTestCaseFiles().clear();
-            emptyCache(bfcID);
+            emptyCache(pRFC.fileMap.get(bfcID));
             logger.error(e.getMessage());
         }
     }
 
 
-    public void emptyCache(String bfcID) {
-        File bfcFile = new File(Configurations.cachePath + File.separator + bfcID);
-        new SycFileCleanup().cleanDirectory(bfcFile);
+    public void emptyCache(File file) {
+        new SycFileCleanup().cleanDirectory(file);
     }
 
     @Override
