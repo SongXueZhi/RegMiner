@@ -2,8 +2,15 @@ package org.regminer.miner.start;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
+import org.regminer.bic.api.EnhancedBinarySearch;
+import org.regminer.bic.api.SearchBICContext;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
+import org.regminer.ct.api.TestCaseParser;
+import org.regminer.migrate.api.TestCaseMigrator;
+import org.regminer.miner.BFCEvaluator;
+import org.regminer.miner.PotentialBFCDetector;
+import org.regminer.miner.SearchBFCContext;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -22,6 +29,8 @@ public class MinerCli {
     private static final Options OPTIONS = new Options();
     private static CommandLine commandLine;
     private static String HELP_STRING = null;
+
+    private static Miner miner;
 
     public static void main(String[] args) {
         CommandLineParser commandLineParser = new DefaultParser();
@@ -91,6 +100,10 @@ public class MinerCli {
             String taskName = commandLine.getOptionValue("t");
             if (Constant.TASK_LIST.contains(taskName)) {
                 Configurations.TASK_NAME = taskName;
+                miner = new Miner(new SearchBFCContext(new BFCEvaluator(new TestCaseParser(),new TestCaseMigrator()),
+                        new PotentialBFCDetector()),
+                        new SearchBICContext(new EnhancedBinarySearch()));
+                miner.start();
             } else {
                 logger.error("Task name '{}' is not valid. Defaulting to BFC collection.", taskName);
             }

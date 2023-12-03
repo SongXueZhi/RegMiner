@@ -17,11 +17,12 @@ import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.model.*;
 import org.regminer.common.utils.FileUtilx;
+import org.regminer.miner.core.PBFCFilterStrategy;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class PotentialBFCDetector {
+public class PotentialBFCDetector extends PBFCFilterStrategy {
 
 
     public List<PotentialBFC> detectPotentialBFC() throws Exception {
@@ -285,4 +286,8 @@ public class PotentialBFCDetector {
         }
     }
 
+    @Override
+    public List<PotentialBFC> filter() throws Exception {
+        return detectPotentialBFC();
+    }
 }

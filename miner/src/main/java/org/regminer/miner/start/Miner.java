@@ -2,9 +2,12 @@ package org.regminer.miner.start;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.regminer.bic.api.SearchBICContext;
+import org.regminer.common.constant.Configurations;
+import org.regminer.common.constant.Constant;
 import org.regminer.miner.PotentialBFCDetector;
 import org.regminer.miner.BFCEvaluator;
 import org.regminer.common.model.PotentialBFC;
+import org.regminer.miner.SearchBFCContext;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -16,27 +19,27 @@ import java.util.List;
  */
 public class Miner {
 
-    private BFCEvaluator bfcEvaluator;
-    private SearchBICContext bicFinder;
-    private PotentialBFCDetector potentialBFCDetector;
+    private SearchBFCContext bfcContext;
+    private SearchBICContext bicContext;
     protected Logger logger = org.slf4j.LoggerFactory.getLogger(Miner.class);
-    public Miner(BFCEvaluator bfcEvaluator, SearchBICContext bicFinder){
-        this.bfcEvaluator = bfcEvaluator;
-        this.bicFinder = bicFinder;
-        potentialBFCDetector = new PotentialBFCDetector();
+    public Miner(SearchBFCContext bfcEvaluator, SearchBICContext bicFinder){
+        this.bfcContext = bfcEvaluator;
+        this.bicContext = bicFinder;
     }
     public void start(){
         logger.info("Start mining...");
         try {
-            List<PotentialBFC> pBFCs  = potentialBFCDetector.detectPotentialBFC();
-            bfcEvaluator.evoluteBFCList(pBFCs);
+            List<PotentialBFC> pBFCs = bfcContext.searchBFC();
             logger.info("find {} potential BFCs",pBFCs.size());
-            for (PotentialBFC pBFC : pBFCs) {
-                Triple<String,String,Integer> bic = bicFinder.search(pBFC);
-                logger.info("find bic: {} {} {}",bic.getLeft(),bic.getMiddle(),bic.getRight());
+            if(Configurations.TASK_NAME.equals(Constant.BFC_BIC_TASK)){
+                logger.info("start to search bic");
+                for (PotentialBFC pBFC : pBFCs) {
+                    Triple<String,String,Integer> bic = bicContext.search(pBFC);
+                    logger.info("find bic: {} {} {}",bic.getLeft(),bic.getMiddle(),bic.getRight());
+                }
             }
         }catch (Exception exception){
-
+            logger.error(exception.getMessage());
         }
     }
 }

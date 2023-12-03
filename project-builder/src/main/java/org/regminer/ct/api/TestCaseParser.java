@@ -1,4 +1,4 @@
-package org.regminer.miner;
+package org.regminer.ct.api;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.diff.Edit;

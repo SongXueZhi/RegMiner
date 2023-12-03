@@ -5,23 +5,29 @@ import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.utils.FileUtilx;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
+import org.regminer.ct.api.TestCaseParser;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 import org.regminer.ct.utils.TestUtils;
 import org.regminer.common.tool.SycFileCleanup;
 import org.regminer.migrate.api.TestCaseMigrator;
+import org.regminer.miner.core.BFCSearchStrategy;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.*;
 
-public class BFCEvaluator extends TestCaseMigrator {
-    TestCaseParser testCaseParser = new TestCaseParser();
-
+public class BFCEvaluator extends BFCSearchStrategy {
+    TestCaseParser testCaseParser;
+    TestCaseMigrator testCaseMigrator;
 
     protected Logger logger = org.slf4j.LoggerFactory.getLogger(BFCEvaluator.class);
 
+    public BFCEvaluator(TestCaseParser testCaseParser, TestCaseMigrator testCaseMigrator) {
+        this.testCaseParser = testCaseParser;
+        this.testCaseMigrator = testCaseMigrator;
+    }
     /**
      * Firstly,checkout BFC ,and manage BFC DIR In the map
      * Then try the code coverage feature
@@ -56,7 +62,7 @@ public class BFCEvaluator extends TestCaseMigrator {
         try {
             // 1.checkout bfc
             logger.info(bfcID + " checkout ");
-            File bfcDirectory = checkoutCiForBFC(bfcID, bfcID);
+            File bfcDirectory = testCaseMigrator.checkoutCiForBFC(bfcID, bfcID);
             pRFC.fileMap.put(bfcID, bfcDirectory);
             //2. 尝试编译BFC
             CtContext ctContext = new CtContext(new AutoCompileAndTest());
@@ -71,7 +77,8 @@ public class BFCEvaluator extends TestCaseMigrator {
             //3. parser Testcase
             testCaseParser.parseTestCases(pRFC);
             //4. 测试BFC
-            TestResult testResult = test(pRFC.getTestCaseFiles(), ctContext, compileResult.getEnvCommands());
+            TestResult testResult = testCaseMigrator.test(pRFC.getTestCaseFiles(), ctContext,
+                    compileResult.getEnvCommands());
 
             TestUtils.removeTestFilesInBFC(pRFC, testResult, TestCaseResult.TestState.FAL);
 
@@ -92,7 +99,7 @@ public class BFCEvaluator extends TestCaseMigrator {
             boolean findBFCPFlag = false;
             for (int i = 0; i < count; i++) {
                 String bfcpID = pRFC.getCommit().getParent(i).getName();
-                TestResult bfcpTestResult = migrate(pRFC, bfcpID);
+                TestResult bfcpTestResult = testCaseMigrator.migrate(pRFC, bfcpID);
 
                 if (bfcpTestResult == null) { //这说明编译失败
                     logger.info("BFC~1 compile error");
@@ -104,7 +111,8 @@ public class BFCEvaluator extends TestCaseMigrator {
                     //查找成功，删除无关的测试用例
                     //跳出，找到一个就够了
                     logger.info("bfc~1 test fal");
-                    purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);//XXX:TestDenpendency:TEST REDUCE
+                    testCaseMigrator.purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);//XXX:TestDenpendency:TEST
+                    // REDUCE
                     findBFCPFlag = true;
                     pRFC.setBuggyCommitId(bfcpID);
                     break;
@@ -132,4 +140,8 @@ public class BFCEvaluator extends TestCaseMigrator {
         new SycFileCleanup().cleanDirectory(bfcFile);
     }
 
+    @Override
+    public void searchRealBFC(List<PotentialBFC> potentialBFCs) {
+        evoluteBFCList(potentialBFCs);
+    }
 }
