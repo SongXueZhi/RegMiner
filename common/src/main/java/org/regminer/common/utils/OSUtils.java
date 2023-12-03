@@ -1,4 +1,4 @@
-package org.regminer.ct.utils;
+package org.regminer.common.utils;
 
 import org.regminer.common.model.OS;
 

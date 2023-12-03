@@ -1,12 +1,14 @@
 package org.regminer.common.constant;
 
+import org.regminer.common.sql.MysqlManager;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigLoader {
-    private static final Properties prop = new Properties();
+    private static  Properties prop = new Properties();
     private final static String CONFIGPATH = "env.properties";
     private final static String PROJRCT_NAME = "project_name";
     private final static String PROJECTS_Dir = "projects_dir";
@@ -52,7 +54,9 @@ public class ConfigLoader {
     public static String j16File = "";
     public static String j17File = "";
 
-
+    static {
+        refresh();
+    }
     public static void refresh() {
         try (InputStream inStream = new FileInputStream(CONFIGPATH)) {
             prop.load(inStream);
@@ -63,7 +67,7 @@ public class ConfigLoader {
         rootDir = prop.getProperty(ROOT_DIR);
 
         if (prop.getProperty(SQL_ENABLE).equals("0")) {
-            Configurations.sql_enable = false;
+            Configurations.SQL_ENABLE = false;
         } else {
             MysqlManager.URL = prop.getProperty(SQL_URL);
             MysqlManager.NAME = prop.getProperty(USER_NAME);

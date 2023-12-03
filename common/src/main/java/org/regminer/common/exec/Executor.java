@@ -1,7 +1,7 @@
 package org.regminer.common.exec;
 
 import org.apache.commons.io.IOUtils;
-import
+import org.regminer.common.model.OS;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
  * @author knightsong
  */
 public class Executor {
-
 
     ProcessBuilder pb = new ProcessBuilder();
     String osName;

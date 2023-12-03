@@ -16,16 +16,17 @@
  *
  */
 
-package org.regminer.miner.coverage;
+package org.regminer.common.tool;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.regminer.miner.coverage.model.CoverClass;
-import org.regminer.miner.coverage.model.CoverMethod;
-import org.regminer.miner.coverage.model.CoverNode;
-import org.regminer.miner.coverage.model.CoverPackage;
-import org.regminer.miner.maven.JacocoMavenManager;
+
+import org.regminer.common.model.CoverClass;
+import org.regminer.common.model.CoverMethod;
+import org.regminer.common.model.CoverNode;
+import org.regminer.common.model.CoverPackage;
+import org.regminer.common.tool.JacocoMavenManager;
 
 import java.io.File;
 import java.util.ArrayList;

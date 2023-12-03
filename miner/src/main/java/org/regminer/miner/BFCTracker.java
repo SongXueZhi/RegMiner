@@ -16,10 +16,10 @@
  *
  */
 
-package org.regminer.miner.migrate;
+package org.regminer.miner;
 
-import org.regminer.miner.coverage.model.CoverNode;
-import org.regminer.miner.git.GitTracker;
+import org.regminer.common.model.CoverNode;
+import org.regminer.common.utils.GitTracker;
 import org.regminer.miner.utils.CodeUtil;
 
 import java.io.File;

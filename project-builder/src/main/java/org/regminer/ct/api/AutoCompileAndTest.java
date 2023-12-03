@@ -9,7 +9,7 @@ import org.regminer.ct.domain.Compiler;
 import org.regminer.ct.domain.JDK;
 import org.regminer.ct.model.*;
 import org.regminer.ct.utils.CtUtils;
-import org.regminer.ct.utils.OSUtils;
+import org.regminer.common.utils.OSUtils;
 import org.regminer.common.model.TestCaseX;
 
 import java.io.File;

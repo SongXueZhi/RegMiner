@@ -18,7 +18,7 @@
 
 package org.regminer.common.sql;
 
-import org.regminer.miner.model.ProjectEntity;
+import org.regminer.common.model.ProjectEntity;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

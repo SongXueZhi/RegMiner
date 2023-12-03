@@ -2,17 +2,17 @@ package org.regminer.migrate.api;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jdt.core.dom.*;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.model.ChangedFile;
 import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.model.SourceFile;
 import org.regminer.common.model.TestFile;
+import org.regminer.common.utils.CompilationUtil;
 import org.regminer.common.utils.FileUtilx;
 import org.regminer.common.utils.GitUtils;
 import org.regminer.migrate.model.MergeTask;
@@ -104,6 +104,68 @@ public class Migrator {
                 file1.mkdirs();
             }
             FileUtils.copyFileToDirectory(file, file1);
+        }
+    }
+
+    public void purgeUnlessTestcase(List<TestFile> testSuiteList, PotentialBFC pRFC) {
+        File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
+        for (TestFile testFile : testSuiteList) {
+            String path = testFile.getNewPath();
+            File file = new File(bfcDir, path);
+            try {
+                CompilationUnit unit = CompilationUtil.parseCompliationUnit(FileUtils.readFileToString(file,
+                        "UTF-8"));
+                Set<String> testCaseSet = testFile.getTestMethodMap().keySet();
+                List<TypeDeclaration> types = unit.types();
+                for (TypeDeclaration type : types) {
+                    MethodDeclaration[] mdArray = type.getMethods();
+                    for (int i = 0; i < mdArray.length; i++) {
+                        MethodDeclaration method = mdArray[i];
+                        String name = method.getName().toString();
+                        List<ASTNode> parameters = method.parameters();
+                        // SingleVariableDeclaration
+                        StringJoiner sj = new StringJoiner(",", name + "(", ")");
+                        for (ASTNode param : parameters) {
+                            sj.add(param.toString());
+                        }
+                        String signature = sj.toString();
+                        if ((method.toString().contains("@Test") || name.startsWith("test") || name.endsWith("test")) && !testCaseSet.contains(signature)) {
+                            method.delete();
+                        }
+                    }
+                }
+                List<ImportDeclaration> imports = unit.imports();
+                int len = imports.size();
+                ImportDeclaration[] importDeclarations = new ImportDeclaration[len];
+                for (int i = 0; i < len; i++) {
+                    importDeclarations[i] = imports.get(i);
+                }
+
+                for (ImportDeclaration importDeclaration : importDeclarations) {
+                    String importName = importDeclaration.getName().getFullyQualifiedName();
+                    if (importName.lastIndexOf(".") > -1) {
+                        importName = importName.substring(importName.lastIndexOf(".") + 1);
+                    } else {
+                        importName = importName;
+                    }
+
+                    boolean flag = false;
+                    for (TypeDeclaration type : types) {
+                        if (type.toString().contains(importName)) {
+                            flag = true;
+                        }
+                    }
+                    if (!(flag || importDeclaration.toString().contains("*"))) {
+                        importDeclaration.delete();
+                    }
+                }
+                if (file.exists()) {
+                    file.delete();
+                }
+                FileUtils.writeStringToFile(file, unit.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

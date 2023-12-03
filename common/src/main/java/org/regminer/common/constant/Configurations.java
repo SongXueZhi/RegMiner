@@ -8,7 +8,7 @@ public class Configurations {
 
 
 	public static String PROJECT_NAME = ConfigLoader.projectName;
-	public static String ROOT_DIR = ConfigLoader.;
+	public static String ROOT_DIR = ConfigLoader.rootDir;
 	public static String CONFIG_PATH = "env.properties";
 	public static String TASK_NAME = "bfc";
 
@@ -24,5 +24,8 @@ public class Configurations {
 
 	// extra with clone
 	public static String CLONE_URL = "";
+
+	public static boolean SQL_ENABLE=false;
+
 
 }

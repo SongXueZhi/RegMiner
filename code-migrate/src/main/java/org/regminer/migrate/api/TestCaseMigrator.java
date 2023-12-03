@@ -1,6 +1,5 @@
-package org.regminer.miner.migrate;
+package org.regminer.migrate.api;
 
-import org.jetbrains.annotations.NotNull;
 import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.model.TestCaseX;
 import org.regminer.common.model.TestFile;
@@ -9,7 +8,6 @@ import org.regminer.ct.api.CtContext;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.CtCommands;
 import org.regminer.ct.model.TestResult;
-import org.regminer.migrate.api.Migrator;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -27,7 +25,7 @@ public class TestCaseMigrator extends Migrator {
 
     protected Logger logger = org.slf4j.LoggerFactory.getLogger(this.getClass());
 
-    public TestResult migrate(@NotNull PotentialBFC pRFC, String bic) throws Exception {
+    public TestResult migrate(PotentialBFC pRFC, String bic) throws Exception {
         File bicDirectory = checkoutCiForBFC(pRFC.getCommit().getName(), bic);
         pRFC.fileMap.put(bic, bicDirectory);
         mergeTwoVersion_BaseLine(pRFC,bicDirectory);

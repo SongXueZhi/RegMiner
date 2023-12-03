@@ -16,17 +16,18 @@
  *
  */
 
-package org.regminer.miner.git;
+package org.regminer.common.utils;
 
 import org.apache.commons.io.FileUtils;
-import org.regminer.common.exec.TestExecutor;
+import org.regminer.common.exec.Executor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class GitTracker {
-    TestExecutor testExecutor = new TestExecutor();
 
     // Now we track method change history just in the time that after of bfcdetect and before TestcaseDetermine
     public boolean addJavaAttibuteToGit(File bfcdir) {
@@ -53,8 +54,10 @@ public class GitTracker {
      * @return
      */
     public int trackFunctionByGitBlogL(String Method, String file_path, File bfcDir) {
-        testExecutor.setDirectory(bfcDir);
-        Set<String> commitHistoryList = testExecutor.execWithSetResult("git log -L:" + Method + ":" + file_path + " --pretty=format:%h -s");
-        return commitHistoryList.size();
+        String[] commitHistoryList =
+                new Executor(OSUtils.getOSType()).exec("git log -L:" + Method + ":" + file_path +
+                " --pretty" +
+                "=format:%h -s").getMessage().split("/n");
+        return new HashSet<>(List.of(commitHistoryList)).size();
     }
 }

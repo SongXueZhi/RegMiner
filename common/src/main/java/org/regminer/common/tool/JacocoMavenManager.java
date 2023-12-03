@@ -16,7 +16,7 @@
  *
  */
 
-package org.regminer.miner.maven;
+package org.regminer.common.tool;
 
 import org.apache.maven.model.*;
 

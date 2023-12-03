@@ -1,4 +1,4 @@
-package org.regminer.miner.finalize;
+package org.regminer.common.tool;
 
 import org.apache.commons.io.FileUtils;
 

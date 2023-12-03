@@ -1,7 +1,7 @@
 package org.regminer.common.sql;
 
-import org.regminer.miner.model.ProjectEntity;
-import org.regminer.miner.start.ConfigLoader;
+import org.regminer.common.model.ProjectEntity;
+import org.regminer.common.constant.ConfigLoader;
 
 /**
  * @Author: sxz

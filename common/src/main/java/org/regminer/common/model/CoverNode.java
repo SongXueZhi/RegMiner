@@ -16,7 +16,7 @@
  *
  */
 
-package org.regminer.miner.coverage.model;
+package org.regminer.common.model;
 // tuple <package,class,method>
 public class CoverNode {
  CoverMethod coverMethod;

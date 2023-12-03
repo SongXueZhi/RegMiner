@@ -1,8 +1,6 @@
 package org.regminer.ct.utils;
 
 import org.regminer.common.model.PotentialBFC;
-import org.regminer.common.model.RelatedTestCase;
-import org.regminer.common.model.TestFile;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 
@@ -51,4 +49,5 @@ public class TestUtils {
 
         // TODO: Review alignment issues raised by Song Xuezhi during debugging.
     }
+
 }

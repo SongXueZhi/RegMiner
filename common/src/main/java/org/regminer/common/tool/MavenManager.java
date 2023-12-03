@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.regminer.miner.maven;
+package org.regminer.common.tool;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.model.Dependency;

@@ -1,10 +1,7 @@
-package org.regminer.miner.migrate;
+package org.regminer.miner;
 
-import org.apache.commons.io.FileUtils;
-import org.eclipse.jdt.core.dom.*;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.model.PotentialBFC;
-import org.regminer.common.model.TestFile;
 import org.regminer.common.utils.FileUtilx;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
@@ -12,13 +9,11 @@ import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 import org.regminer.ct.utils.TestUtils;
-import org.regminer.miner.TestCaseParser;
-import org.regminer.miner.finalize.SycFileCleanup;
-import org.regminer.miner.utils.CompilationUtil;
+import org.regminer.common.tool.SycFileCleanup;
+import org.regminer.migrate.api.TestCaseMigrator;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class BFCEvaluator extends TestCaseMigrator {
@@ -137,65 +132,4 @@ public class BFCEvaluator extends TestCaseMigrator {
         new SycFileCleanup().cleanDirectory(bfcFile);
     }
 
-    public void purgeUnlessTestcase(List<TestFile> testSuiteList, PotentialBFC pRFC) {
-        File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
-        for (TestFile testFile : testSuiteList) {
-            String path = testFile.getNewPath();
-            File file = new File(bfcDir, path);
-            try {
-                CompilationUnit unit = CompilationUtil.parseCompliationUnit(FileUtils.readFileToString(file,
-                        "UTF-8"));
-                Set<String> testCaseSet = testFile.getTestMethodMap().keySet();
-                List<TypeDeclaration> types = unit.types();
-                for (TypeDeclaration type : types) {
-                    MethodDeclaration[] mdArray = type.getMethods();
-                    for (int i = 0; i < mdArray.length; i++) {
-                        MethodDeclaration method = mdArray[i];
-                        String name = method.getName().toString();
-                        List<ASTNode> parameters = method.parameters();
-                        // SingleVariableDeclaration
-                        StringJoiner sj = new StringJoiner(",", name + "(", ")");
-                        for (ASTNode param : parameters) {
-                            sj.add(param.toString());
-                        }
-                        String signature = sj.toString();
-                        if ((method.toString().contains("@Test") || name.startsWith("test") || name.endsWith("test")) && !testCaseSet.contains(signature)) {
-                            method.delete();
-                        }
-                    }
-                }
-                List<ImportDeclaration> imports = unit.imports();
-                int len = imports.size();
-                ImportDeclaration[] importDeclarations = new ImportDeclaration[len];
-                for (int i = 0; i < len; i++) {
-                    importDeclarations[i] = imports.get(i);
-                }
-
-                for (ImportDeclaration importDeclaration : importDeclarations) {
-                    String importName = importDeclaration.getName().getFullyQualifiedName();
-                    if (importName.lastIndexOf(".") > -1) {
-                        importName = importName.substring(importName.lastIndexOf(".") + 1);
-                    } else {
-                        importName = importName;
-                    }
-
-                    boolean flag = false;
-                    for (TypeDeclaration type : types) {
-                        if (type.toString().contains(importName)) {
-                            flag = true;
-                        }
-                    }
-                    if (!(flag || importDeclaration.toString().contains("*"))) {
-                        importDeclaration.delete();
-                    }
-                }
-                if (file.exists()) {
-                    file.delete();
-                }
-                FileUtils.writeStringToFile(file, unit.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

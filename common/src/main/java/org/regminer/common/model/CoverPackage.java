@@ -16,19 +16,10 @@
  *
  */
 
-package org.regminer.miner.coverage.model;
+package org.regminer.common.model;
 
-public class CoverClass {
+public class CoverPackage {
     String name;
-    String fileName;
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
 
     public String getName() {
         return name;

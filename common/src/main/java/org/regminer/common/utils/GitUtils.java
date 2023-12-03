@@ -5,15 +5,18 @@ import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.regminer.common.constant.Configurations;
 import org.regminer.common.tool.RepositoryProvider;
 import org.regminer.common.tool.SimpleProgressMonitor;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -85,6 +88,24 @@ public class GitUtils {
 
             return treeParser;
         }
+    }
+    // 使用拓扑排序遍历commitID前的所有commit
+    public static  List<String> revListCommand(String commitId,File codeDir) {
+        List<String> revList = new ArrayList<>();
+        try (Repository repo = RepositoryProvider.getRepoFromLocal(codeDir)) {
+            // Use RevWalk to traverse the commit history starting from the specified commit ID
+            try (RevWalk walk = new RevWalk(repo)) {
+                RevCommit startCommit = walk.parseCommit(repo.resolve(commitId));
+                walk.markStart(startCommit);
+                for (RevCommit commit : walk) {
+                    revList.add(commit.getName());
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return revList;
     }
 
 

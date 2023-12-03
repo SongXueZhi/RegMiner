@@ -45,5 +45,7 @@ public class TestCaseResult {
         CE,
         TE,
         NOTEST,
+        UNKNOWN,
+        NOMARK
     }
 }

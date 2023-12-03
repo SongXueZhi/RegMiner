@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.model.*;
 import org.regminer.common.model.ChangedFile.Type;
-import org.regminer.miner.utils.CompilationUtil;
+import org.regminer.common.utils.CompilationUtil;
 import org.regminer.common.utils.FileUtilx;
 
 import java.io.File;

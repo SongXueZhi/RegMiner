@@ -16,10 +16,12 @@
  *
  */
 
-package org.regminer.miner.coverage.model;
+package org.regminer.common.model;
 
-public class CoverPackage {
+public class CoverMethod {
     String name;
+    String signature;
+    int line;
 
     public String getName() {
         return name;
@@ -28,4 +30,21 @@ public class CoverPackage {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public void setLine(int line) {
+        this.line = line;
+    }
+
 }

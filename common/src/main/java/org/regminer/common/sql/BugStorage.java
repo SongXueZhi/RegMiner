@@ -18,8 +18,8 @@
 
 package org.regminer.common.sql;
 
-import org.regminer.miner.model.ProjectEntity;
-import org.regminer.miner.model.Regression;
+import org.regminer.common.model.ProjectEntity;
+import org.regminer.common.model.Regression;
 
 public class BugStorage {
     public  void saveBug(Regression regression) {
