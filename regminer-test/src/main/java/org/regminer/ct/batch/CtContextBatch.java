@@ -27,13 +27,13 @@ public class CtContextBatch {
         compileProjectCommits(projectDir);
     }
 
-    public void compileBatchProjects() throws Exception{
-        Map<String, Map<JDK,Integer>> jdkNumberForProjects = new HashMap<>();
+    public void compileBatchProjects() throws Exception {
+        Map<String, Map<JDK, Integer>> jdkNumberForProjects = new HashMap<>();
         ArrayList<String> projects = getProjectIn(ConfigLoader.projectIn);
         File projectsDir = new File(ConfigLoader.projectsDir);
         File[] files = projectsDir.listFiles();
 
-        if(files == null || files.length == 0){
+        if (files == null || files.length == 0) {
             System.out.println("Empty File Dir");
             return;
         }
@@ -43,7 +43,7 @@ public class CtContextBatch {
                 compileProjectCommits(new File(file.getAbsolutePath()));
             }
         }
-        if(projects.size() > 0){
+        if (projects.size() > 0) {
             System.out.println("PROJECT " + projects + " Not Found");
         }
     }
@@ -55,7 +55,7 @@ public class CtContextBatch {
         try (Repository repository = RepositoryProvider.getRepoFromLocal(projectDir); Git git = new Git(repository)) {
             Iterator<RevCommit> commits = git.log().all().call().iterator();
             int i = 0;
-            System.out.println(projectDir.getName() + " START ···" );
+            System.out.println(projectDir.getName() + " START ···");
             while (commits.hasNext()) {
                 RevCommit revCommit = commits.next();
                 i++;
@@ -79,7 +79,8 @@ public class CtContextBatch {
                                 + ":" + result.getCompileWay().getCompiler().name() + ":" + result.getCompileWay().getJdk().name());
                     } else {
                         commitError++;
-                        System.out.println(revCommit.getName() + ":" + result.getState().name() + ":" + "CompileWay NULL");
+                        System.out.println(revCommit.getName() + ":" + result.getState().name() + ":" + "CompileWay " +
+                                "NULL");
                     }
                 }
             }
@@ -93,7 +94,8 @@ public class CtContextBatch {
             System.out.println("\n-------------------");
         }
     }
-    public ArrayList<String> getProjectIn(String projectIn){
+
+    public ArrayList<String> getProjectIn(String projectIn) {
         ArrayList<String> projects = new ArrayList<>();
         try {
             FileReader fr = new FileReader(projectIn);

@@ -21,12 +21,10 @@ package org.regminer.common.tool;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-
 import org.regminer.common.model.CoverClass;
 import org.regminer.common.model.CoverMethod;
 import org.regminer.common.model.CoverNode;
 import org.regminer.common.model.CoverPackage;
-import org.regminer.common.tool.JacocoMavenManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,7 +32,8 @@ import java.util.List;
 
 public class CodeCoverage {
     final static String MAVEN_POM = "pom.xml";
-    final static String JACOCO_PATH = "target" + File.separator + "site" + File.separator + "jacoco" + File.separator + "jacoco.xml";
+    final static String JACOCO_PATH =
+            "target" + File.separator + "site" + File.separator + "jacoco" + File.separator + "jacoco.xml";
 
     public void addJacocoFeatureToProject(File codePath) throws Exception {
         File pomFile = new File(codePath, MAVEN_POM);

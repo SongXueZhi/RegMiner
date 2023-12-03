@@ -21,13 +21,14 @@
 
     <insert id="insertBugType" parameterType="com.fudan.annotation.platform.backend.entity.CreateBugType">
         insert into bug_type
-        (bug_type_name, created_by)
+            (bug_type_name, created_by)
         values (#{bugTypeName},
-        #{accountName});
+                #{accountName});
     </insert>
 
     <delete id="deleteBugTypeById" parameterType="java.lang.Integer">
-        delete from bug_type
+        delete
+        from bug_type
         where bug_type_id = #{bugTypeId}
     </delete>
 

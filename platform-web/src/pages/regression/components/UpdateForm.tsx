@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Form, Button, DatePicker, Input, Modal, Radio, Select, Steps } from 'antd';
+import React, {useState} from 'react';
+import {Button, DatePicker, Form, Input, Modal, Radio, Select, Steps} from 'antd';
 
-import type { TableListItem } from '../data';
+import type {TableListItem} from '../data';
 
 export type FormValueType = {
   target?: string;
@@ -18,9 +18,9 @@ export type UpdateFormProps = {
   values: Partial<TableListItem>;
 };
 const FormItem = Form.Item;
-const { Step } = Steps;
-const { TextArea } = Input;
-const { Option } = Select;
+const {Step} = Steps;
+const {TextArea} = Input;
+const {Option} = Select;
 const RadioGroup = Radio.Group;
 
 export type UpdateFormState = {
@@ -29,8 +29,8 @@ export type UpdateFormState = {
 };
 
 const formLayout = {
-  labelCol: { span: 7 },
-  wrapperCol: { span: 13 },
+  labelCol: {span: 7},
+  wrapperCol: {span: 13},
 };
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
@@ -63,12 +63,12 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   const handleNext = async () => {
     const fieldsValue = await form.validateFields();
 
-    setFormVals({ ...formVals, ...fieldsValue });
+    setFormVals({...formVals, ...fieldsValue});
 
     if (currentStep < 2) {
       forward();
     } else {
-      handleUpdate({ ...formVals, ...fieldsValue });
+      handleUpdate({...formVals, ...fieldsValue});
     }
   };
 
@@ -77,13 +77,13 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
       return (
         <>
           <FormItem name="target" label="监控对象">
-            <Select style={{ width: '100%' }}>
+            <Select style={{width: '100%'}}>
               <Option value="0">表一</Option>
               <Option value="1">表二</Option>
             </Select>
           </FormItem>
           <FormItem name="template" label="规则模板">
-            <Select style={{ width: '100%' }}>
+            <Select style={{width: '100%'}}>
               <Option value="0">规则模板一</Option>
               <Option value="1">规则模板二</Option>
             </Select>
@@ -103,17 +103,17 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
           <FormItem
             name="time"
             label="开始时间"
-            rules={[{ required: true, message: '请选择开始时间！' }]}
+            rules={[{required: true, message: '请选择开始时间！'}]}
           >
             <DatePicker
-              style={{ width: '100%' }}
+              style={{width: '100%'}}
               showTime
               format="YYYY-MM-DD HH:mm:ss"
               placeholder="选择开始时间"
             />
           </FormItem>
           <FormItem name="frequency" label="调度周期">
-            <Select style={{ width: '100%' }}>
+            <Select style={{width: '100%'}}>
               <Option value="month">月</Option>
               <Option value="week">周</Option>
             </Select>
@@ -126,16 +126,16 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         <FormItem
           name="name"
           label="规则名称"
-          rules={[{ required: true, message: '请输入规则名称！' }]}
+          rules={[{required: true, message: '请输入规则名称！'}]}
         >
-          <Input placeholder="请输入" />
+          <Input placeholder="请输入"/>
         </FormItem>
         <FormItem
           name="desc"
           label="规则描述"
-          rules={[{ required: true, message: '请输入至少五个字符的规则描述！', min: 5 }]}
+          rules={[{required: true, message: '请输入至少五个字符的规则描述！', min: 5}]}
         >
-          <TextArea rows={4} placeholder="请输入至少五个字符" />
+          <TextArea rows={4} placeholder="请输入至少五个字符"/>
         </FormItem>
       </>
     );
@@ -145,7 +145,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     if (currentStep === 1) {
       return (
         <>
-          <Button style={{ float: 'left' }} onClick={backward}>
+          <Button style={{float: 'left'}} onClick={backward}>
             上一步
           </Button>
           <Button onClick={() => handleUpdateModalVisible(false, values)}>取消</Button>
@@ -158,7 +158,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
     if (currentStep === 2) {
       return (
         <>
-          <Button style={{ float: 'left' }} onClick={backward}>
+          <Button style={{float: 'left'}} onClick={backward}>
             上一步
           </Button>
           <Button onClick={() => handleUpdateModalVisible(false, values)}>取消</Button>
@@ -181,17 +181,17 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
   return (
     <Modal
       width={640}
-      bodyStyle={{ padding: '32px 40px 48px' }}
+      bodyStyle={{padding: '32px 40px 48px'}}
       destroyOnClose
       title="规则配置"
       open={updateModalVisible}
       footer={renderFooter()}
       onCancel={() => handleUpdateModalVisible()}
     >
-      <Steps style={{ marginBottom: 28 }} size="small" current={currentStep}>
-        <Step title="基本信息" />
-        <Step title="配置规则属性" />
-        <Step title="设定调度周期" />
+      <Steps style={{marginBottom: 28}} size="small" current={currentStep}>
+        <Step title="基本信息"/>
+        <Step title="配置规则属性"/>
+        <Step title="设定调度周期"/>
       </Steps>
       <Form
         {...formLayout}

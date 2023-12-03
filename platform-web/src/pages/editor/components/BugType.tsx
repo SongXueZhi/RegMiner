@@ -1,8 +1,8 @@
-import { LikeFilled, LikeOutlined, DislikeFilled, DislikeOutlined } from '@ant-design/icons';
-import { Tag, Tooltip, message } from 'antd';
-import { useAccess } from 'umi';
-import { agreeBugType, disagreeBugType } from '../service';
-import { useState } from 'react';
+import {DislikeFilled, DislikeOutlined, LikeFilled, LikeOutlined} from '@ant-design/icons';
+import {message, Tag, Tooltip} from 'antd';
+import {useAccess} from 'umi';
+import {agreeBugType, disagreeBugType} from '../service';
+import {useState} from 'react';
 
 interface IProps {
   bugTypeId: number;
@@ -11,22 +11,22 @@ interface IProps {
   disagreeCount: number;
   regressionUuid: string;
   onUpdateData: ({
-    agreeCount,
-    disagreeCount,
-  }: {
+                   agreeCount,
+                   disagreeCount,
+                 }: {
     agreeCount?: number;
     disagreeCount?: number;
   }) => void;
 }
 
 const BugType: React.FC<IProps> = ({
-  bugTypeId,
-  bugTypeName,
-  agreeCount,
-  disagreeCount,
-  regressionUuid,
-  onUpdateData,
-}) => {
+                                     bugTypeId,
+                                     bugTypeName,
+                                     agreeCount,
+                                     disagreeCount,
+                                     regressionUuid,
+                                     onUpdateData,
+                                   }) => {
   const access = useAccess();
   const [agree, setAgree] = useState<boolean | undefined>(undefined);
 
@@ -57,9 +57,9 @@ const BugType: React.FC<IProps> = ({
               );
             }
           }}
-          style={{ marginLeft: 5 }}
+          style={{marginLeft: 5}}
         >
-          {agree === true ? <LikeFilled /> : <LikeOutlined />}
+          {agree === true ? <LikeFilled/> : <LikeOutlined/>}
           <span>{agreeCount}</span>
           {/* </Button> */}
         </span>
@@ -87,9 +87,9 @@ const BugType: React.FC<IProps> = ({
               );
             }
           }}
-          style={{ marginLeft: 5 }}
+          style={{marginLeft: 5}}
         >
-          {agree === false ? <DislikeFilled /> : <DislikeOutlined />}
+          {agree === false ? <DislikeFilled/> : <DislikeOutlined/>}
           <span>{disagreeCount}</span>
           {/* </Button> */}
         </span>

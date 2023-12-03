@@ -1,5 +1,5 @@
-import { message } from 'antd';
-import { request } from 'umi';
+import {message} from 'antd';
+import {request} from 'umi';
 
 // 注册接口 POST
 export async function register(body: API.RegisterParams, options?: { [key: string]: any }) {
@@ -10,7 +10,7 @@ export async function register(body: API.RegisterParams, options?: { [key: strin
     },
     data: body,
     ...(options || {}),
-  }).then(({ code, msg, data }) => {
+  }).then(({code, msg, data}) => {
     if (code === 200) {
       message.success(msg);
       return data;

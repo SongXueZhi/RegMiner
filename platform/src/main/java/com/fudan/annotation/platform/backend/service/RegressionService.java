@@ -14,7 +14,8 @@ public interface RegressionService {
      * @param regressionUuid   regressionID
      * @param regressionStatus regression状态
      */
-    List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName, String keyWord, List<String> bugTypeName);
+    List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName,
+                                    String keyWord, List<String> bugTypeName);
 
     /**
      * description 插入新regression
@@ -75,11 +76,12 @@ public interface RegressionService {
      * @param newPath        newPath
      * @param revisionFlag   revisionFlag
      */
-    CodeDetails getFilesCode(String regressionUuid, String userToken, String filename, String oldPath, String newPath, String revisionFlag);
+    CodeDetails getFilesCode(String regressionUuid, String userToken, String filename, String oldPath, String newPath
+            , String revisionFlag);
 
     String runTest(String regressionUuid, String userToken, String revisionFlag) throws Exception;
 
-    Map<String,List<Integer>> codeCoverageMap(String regressionUuid, String userToken, String revisionFlag)throws Exception;
+    Map<String, List<Integer>> codeCoverageMap(String regressionUuid, String userToken, String revisionFlag) throws Exception;
 
     String readRuntimeResult(String filaPath) throws IOException;
 
@@ -92,7 +94,8 @@ public interface RegressionService {
      * @param newRevision    new revision name
      * @param hunkList       hunks need to apply
      */
-    String applyHunks(String userToken, String regressionUuid, String oldRevision, String newRevision, List<HunkEntity> hunkList) throws IOException;
+    String applyHunks(String userToken, String regressionUuid, String oldRevision, String newRevision,
+                      List<HunkEntity> hunkList) throws IOException;
 
     /**
      * modified a file with new code
@@ -104,7 +107,8 @@ public interface RegressionService {
      * @param newCode        updated code
      * @param coverStatus    modified or not(0-adopt old code 1-adopt new code)
      */
-    void modifiedCode(String userToken, String regressionUuid, String oldPath, String revisionName, String newCode, Integer coverStatus) throws IOException;
+    void modifiedCode(String userToken, String regressionUuid, String oldPath, String revisionName, String newCode,
+                      Integer coverStatus) throws IOException;
 
     /**
      * update a file with new code
@@ -116,7 +120,8 @@ public interface RegressionService {
      * @param revisionName   old revision name(bic->work, bfc->buggy)
      * @param filePath       file path
      */
-    void updateCode(String userToken, String code, String projectName, String regressionUuid, String revisionName, String filePath) throws IOException;
+    void updateCode(String userToken, String code, String projectName, String regressionUuid, String revisionName,
+                    String filePath) throws IOException;
 
     /**
      * revert a file to old code
@@ -127,7 +132,8 @@ public interface RegressionService {
      * @param revisionName   old revision name(bic->work, bfc->buggy)
      * @param filePath       file path
      */
-    void revertCode(String userToken, String projectName, String regressionUuid, String revisionName, String filePath) throws IOException;
+    void revertCode(String userToken, String projectName, String regressionUuid, String revisionName,
+                    String filePath) throws IOException;
 
     /**
      * clear cache by regression
@@ -190,7 +196,8 @@ public interface RegressionService {
      * @param feedback       feedback
      * @param hunkEntityDTO  single hunk patch
      */
-    void setCriticalChangeReview(String regressionUuid, String revisionName, Integer reviewId, String accountName, String feedback, HunkEntity hunkEntityDTO);
+    void setCriticalChangeReview(String regressionUuid, String revisionName, Integer reviewId, String accountName,
+                                 String feedback, HunkEntity hunkEntityDTO);
 
     /**
      * description delete critical change hunk

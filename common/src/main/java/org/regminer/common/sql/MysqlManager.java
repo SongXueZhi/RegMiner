@@ -30,9 +30,9 @@ import java.util.Set;
 public class MysqlManager {
 
     public static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    public static  String URL;
-    public static  String NAME;
-    public static  String PWD;
+    public static String URL;
+    public static String NAME;
+    public static String PWD;
     private static Connection conn = null;
     private static Statement statement = null;
 
@@ -86,16 +86,17 @@ public class MysqlManager {
             statement.executeUpdate(sql);
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             closed();
         }
     }
-    public static ProjectEntity getProject(String sql){
+
+    public static ProjectEntity getProject(String sql) {
         ProjectEntity projectEntity = null;
         try {
             getStatement();
             ResultSet rs = statement.executeQuery(sql);
-            while (rs.next()){
+            while (rs.next()) {
                 projectEntity = new ProjectEntity();
                 projectEntity.setProjectID(rs.getString("project_uuid"));
                 projectEntity.setOrganization(rs.getString("organization"));
@@ -105,20 +106,20 @@ public class MysqlManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return  projectEntity;
+        return projectEntity;
     }
 
-    public static Set<String>  executeSql(String sql) {
+    public static Set<String> executeSql(String sql) {
         Set<String> result = new HashSet<>();
         try {
             getStatement();
             ResultSet rs = statement.executeQuery(sql);
-            while (rs.next()){
+            while (rs.next()) {
                 result.add(rs.getString("bfc"));
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             closed();
         }
         return result;

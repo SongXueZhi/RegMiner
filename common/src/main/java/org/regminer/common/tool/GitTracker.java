@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class GitTracker {
 
@@ -34,11 +33,11 @@ public class GitTracker {
         //add .gitattributes file to bfc
         File gitConfigFile = new File(bfcdir, ".gitattributes");
         try {
-            if(gitConfigFile.exists()){
+            if (gitConfigFile.exists()) {
                 gitConfigFile.deleteOnExit();
             }
             gitConfigFile.createNewFile();
-            FileUtils.writeStringToFile(gitConfigFile,"*.java\tdiff=java\n");
+            FileUtils.writeStringToFile(gitConfigFile, "*.java\tdiff=java\n");
         } catch (IOException e) {
             return false;
         }
@@ -47,7 +46,8 @@ public class GitTracker {
 
 
     /**
-     *  Don't use this feature in Search process
+     * Don't use this feature in Search process
+     *
      * @param Method
      * @param file_path
      * @param bfcDir
@@ -56,8 +56,8 @@ public class GitTracker {
     public int trackFunctionByGitBlogL(String Method, String file_path, File bfcDir) {
         String[] commitHistoryList =
                 new Executor(OSUtils.getOSType()).exec("git log -L:" + Method + ":" + file_path +
-                " --pretty" +
-                "=format:%h -s").getMessage().split("/n");
+                        " --pretty" +
+                        "=format:%h -s").getMessage().split("/n");
         return new HashSet<>(List.of(commitHistoryList)).size();
     }
 }

@@ -35,7 +35,7 @@ public interface AccountService {
      * description 重置密码
      *
      * @param accountName 用户的新密码
-     * @param password        用户权限
+     * @param password    用户权限
      */
     void resetPassword(String accountName, String password);
 

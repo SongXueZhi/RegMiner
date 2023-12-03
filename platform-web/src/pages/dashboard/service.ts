@@ -1,9 +1,9 @@
-import { message } from 'antd';
+import {message} from 'antd';
 import request from 'umi-request';
-import type { RegQueryParams } from './data';
+import type {RegQueryParams} from './data';
 
 export async function queryRegressionList(params?: RegQueryParams) {
-  const { code, msg, data } = await request<API.RegResponse<API.RegressionItem[]>>(
+  const {code, msg, data} = await request<API.RegResponse<API.RegressionItem[]>>(
     '/api/regression/all',
     {
       params,
@@ -50,6 +50,7 @@ export async function updateStatus(params: { regressionUuid: string; regressionS
     },
   );
 }
+
 export async function getProcessInfo() {
   const res = await request('/api/progress/info', {
     method: 'GET',

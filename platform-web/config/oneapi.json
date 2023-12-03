@@ -15,7 +15,9 @@
   "paths": {
     "/api/currentUser": {
       "get": {
-        "tags": ["api"],
+        "tags": [
+          "api"
+        ],
         "description": "获取当前的用户",
         "operationId": "currentUser",
         "responses": {
@@ -47,7 +49,9 @@
       "post": {
         "description": "发送验证码",
         "operationId": "getFakeCaptcha",
-        "tags": ["login"],
+        "tags": [
+          "login"
+        ],
         "parameters": [
           {
             "name": "phone",
@@ -76,7 +80,9 @@
       "post": {
         "description": "登录接口",
         "operationId": "outLogin",
-        "tags": ["login"],
+        "tags": [
+          "login"
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -104,7 +110,9 @@
     },
     "/api/login/account": {
       "post": {
-        "tags": ["login"],
+        "tags": [
+          "login"
+        ],
         "description": "登录接口",
         "operationId": "login",
         "requestBody": {
@@ -148,7 +156,9 @@
       "summary": "getNotices",
       "description": "NoticeIconItem",
       "get": {
-        "tags": ["api"],
+        "tags": [
+          "api"
+        ],
         "operationId": "getNotices",
         "responses": {
           "200": {
@@ -166,7 +176,9 @@
     },
     "/api/rule": {
       "get": {
-        "tags": ["rule"],
+        "tags": [
+          "rule"
+        ],
         "description": "获取规则列表",
         "operationId": "rule",
         "parameters": [
@@ -211,7 +223,9 @@
         }
       },
       "post": {
-        "tags": ["rule"],
+        "tags": [
+          "rule"
+        ],
         "description": "新建规则",
         "operationId": "addRule",
         "responses": {
@@ -238,7 +252,9 @@
         }
       },
       "put": {
-        "tags": ["rule"],
+        "tags": [
+          "rule"
+        ],
         "description": "新建规则",
         "operationId": "updateRule",
         "responses": {
@@ -265,7 +281,9 @@
         }
       },
       "delete": {
-        "tags": ["rule"],
+        "tags": [
+          "rule"
+        ],
         "description": "删除规则",
         "operationId": "removeRule",
         "responses": {
@@ -507,7 +525,9 @@
         }
       },
       "ErrorResponse": {
-        "required": ["errorCode"],
+        "required": [
+          "errorCode"
+        ],
         "type": "object",
         "properties": {
           "errorCode": {
@@ -548,7 +568,11 @@
         "description": "已读未读列表的枚举",
         "type": "string",
         "properties": {},
-        "enum": ["notification", "message", "event"]
+        "enum": [
+          "notification",
+          "message",
+          "event"
+        ]
       },
       "NoticeIconItem": {
         "type": "object",
@@ -560,7 +584,9 @@
             "type": "string",
             "format": "any"
           },
-          "key": { "type": "string" },
+          "key": {
+            "type": "string"
+          },
           "read": {
             "type": "boolean"
           },

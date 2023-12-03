@@ -25,8 +25,8 @@ import java.util.List;
  * @Description: Command Line Interface for Miner application.
  */
 public class MinerCli {
-    static Logger logger = org.slf4j.LoggerFactory.getLogger(MinerCli.class);
     private static final Options OPTIONS = new Options();
+    static Logger logger = org.slf4j.LoggerFactory.getLogger(MinerCli.class);
     private static CommandLine commandLine;
     private static String HELP_STRING = null;
 
@@ -60,7 +60,8 @@ public class MinerCli {
             printHelp();
             return false;
         }
-        return checkRequiredOptions(commandLine, "ws", "workspace") && checkRequiredOptions(commandLine, "pj", "project");
+        return checkRequiredOptions(commandLine, "ws", "workspace") && checkRequiredOptions(commandLine, "pj",
+                "project");
     }
 
     private static boolean checkRequiredOptions(CommandLine commandLine, String opt, String description) {
@@ -74,7 +75,8 @@ public class MinerCli {
     private static void processCommands() {
         Configurations.ROOT_DIR = commandLine.getOptionValue("ws");
         Configurations.PROJECT_NAME = commandLine.getOptionValue("pj");
-        Configurations.CONFIG_PATH = commandLine.getOptionValue("cfg", Configurations.CONFIG_PATH); // Default value if not specified
+        Configurations.CONFIG_PATH = commandLine.getOptionValue("cfg", Configurations.CONFIG_PATH); // Default value
+        // if not specified
         processTaskOption();
         // Additional processing for other options
     }
@@ -89,7 +91,7 @@ public class MinerCli {
             } catch (IOException e) {
                 logger.error("Error reading filter file: {}", e.getMessage());
             }
-        }else{
+        } else {
             // do
         }
         //do
@@ -100,7 +102,7 @@ public class MinerCli {
             String taskName = commandLine.getOptionValue("t");
             if (Constant.TASK_LIST.contains(taskName)) {
                 Configurations.TASK_NAME = taskName;
-                miner = new Miner(new SearchBFCContext(new BFCEvaluator(new TestCaseParser(),new TestCaseMigrator()),
+                miner = new Miner(new SearchBFCContext(new BFCEvaluator(new TestCaseParser(), new TestCaseMigrator()),
                         new PotentialBFCDetector()),
                         new SearchBICContext(new EnhancedBinarySearch()));
                 miner.start();

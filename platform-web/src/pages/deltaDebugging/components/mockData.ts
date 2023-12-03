@@ -1,5 +1,4 @@
-import { sources } from 'webpack';
-import type { DdResultItems } from '../data';
+import type {DdResultItems} from '../data';
 
 // case 6
 export const ddResult: DdResultItems = {

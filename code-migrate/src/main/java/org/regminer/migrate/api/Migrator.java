@@ -1,9 +1,5 @@
 package org.regminer.migrate.api;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.*;
 import org.regminer.common.constant.Configurations;
@@ -17,6 +13,10 @@ import org.regminer.common.utils.FileUtilx;
 import org.regminer.common.utils.GitUtils;
 import org.regminer.migrate.model.MergeTask;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
 /**
  * @Author: sxz
  * @Date: 2023/11/29/13:46
@@ -26,9 +26,10 @@ public class Migrator {
     public File checkoutCiForBFC(String bfcId, String commitId) throws IOException {
         File codeDir = FileUtilx.getDirFromBfcAndBic(bfcId, commitId);
         FileUtils.copyDirectoryToDirectory(new File(Configurations.META_PATH), codeDir);
-        GitUtils.checkout(commitId,codeDir);
+        GitUtils.checkout(commitId, codeDir);
         return codeDir;
     }
+
     public void mergeTwoVersion_BaseLine(PotentialBFC pRFC, File tDir) {
         /**
          *
@@ -47,7 +48,8 @@ public class Migrator {
         // merge测试文件
         // 整合任务
         MergeTask mergeJavaFileTask = new MergeTask();
-        mergeJavaFileTask.addAll(testSuite).addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();//XXX:TestDenpendency BlocK
+        mergeJavaFileTask.addAll(testSuite).addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();//XXX
+        // :TestDenpendency BlocK
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
         for (Map.Entry<String, ChangedFile> entry : mergeJavaFileTask.getMap().entrySet()) {
             String newPathInBfc = entry.getKey();
@@ -71,7 +73,6 @@ public class Migrator {
     }
 
     /**
-     *
      * @param pRFC
      * @param targetProjectDirectory
      * @throws IOException

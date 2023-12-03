@@ -6,7 +6,8 @@
 npm install
 ```
 
-> Except the first and the last step, if any error or warning is reported, you may try to install these followings dependencies to solve the problem. Otherwise, ignore it.
+> Except the first and the last step, if any error or warning is reported, you may try to install these followings
+> dependencies to solve the problem. Otherwise, ignore it.
 
 2. In order to install 'react-monaco-editor' and 'monaco-editor-webpack-plugin'
 
@@ -66,7 +67,10 @@ yarn start
 
 ### 1. How to mock ?
 
-The 'mock' at here means the request send by the model to the backend and return the simulated data. After 'npm start', mock will be enable by default, just refer to the official examples in the '/mock' folder to learn more. In other words, as long as the interface path in the mock is consistent with that in the backend, the mock method will be taken first, if there is no interface in the mock, then the backend interface will be requested.
+The 'mock' at here means the request send by the model to the backend and return the simulated data. After 'npm start',
+mock will be enable by default, just refer to the official examples in the '/mock' folder to learn more. In other words,
+as long as the interface path in the mock is consistent with that in the backend, the mock method will be taken first,
+if there is no interface in the mock, then the backend interface will be requested.
 
 ## TODO
 

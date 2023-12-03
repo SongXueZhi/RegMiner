@@ -19,31 +19,31 @@ import static com.fudan.annotation.platform.backend.enums.ResponseCodeMsg.SUCCES
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResponseBean<T> implements Serializable {
-  private int code;
-  private String msg;
-  private T data;
+    private int code;
+    private String msg;
+    private T data;
 
-  public static <T> ResponseBean<T> success() {
-    return new ResponseBean<>(SUCCESS.getCode(), SUCCESS.getMsg(), null);
-  }
+    public static <T> ResponseBean<T> success() {
+        return new ResponseBean<>(SUCCESS.getCode(), SUCCESS.getMsg(), null);
+    }
 
-  public static <T> ResponseBean<T> success(T data) {
-    return new ResponseBean<>(SUCCESS.getCode(), SUCCESS.getMsg(), data);
-  }
+    public static <T> ResponseBean<T> success(T data) {
+        return new ResponseBean<>(SUCCESS.getCode(), SUCCESS.getMsg(), data);
+    }
 
-  public static <T> ResponseBean<T> success(Integer code, String msg, T data) {
-    return new ResponseBean<>(code, msg, data);
-  }
+    public static <T> ResponseBean<T> success(Integer code, String msg, T data) {
+        return new ResponseBean<>(code, msg, data);
+    }
 
-  public static <T> ResponseBean<T> success(ResponseCodeMsg codeMsg, T data) {
-    return new ResponseBean<>(codeMsg.getCode(), codeMsg.getMsg(), data);
-  }
+    public static <T> ResponseBean<T> success(ResponseCodeMsg codeMsg, T data) {
+        return new ResponseBean<>(codeMsg.getCode(), codeMsg.getMsg(), data);
+    }
 
-  public static <T> ResponseBean<T> error() {
-    return new ResponseBean<>(ERROR.getCode(), ERROR.getMsg(), null);
-  }
+    public static <T> ResponseBean<T> error() {
+        return new ResponseBean<>(ERROR.getCode(), ERROR.getMsg(), null);
+    }
 
-  public static <T> ResponseBean<T> error(ResponseCodeMsg codeMsg) {
-    return new ResponseBean<>(codeMsg.getCode(), codeMsg.getMsg(), null);
-  }
+    public static <T> ResponseBean<T> error(ResponseCodeMsg codeMsg) {
+        return new ResponseBean<>(codeMsg.getCode(), codeMsg.getMsg(), null);
+    }
 }

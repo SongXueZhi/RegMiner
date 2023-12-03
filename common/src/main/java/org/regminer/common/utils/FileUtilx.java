@@ -21,7 +21,7 @@ public class FileUtilx {
 
         // 创建一个唯一的目录名
         String dirName =
-                Configurations.CACHE_PATH+File.separator+Configurations.PROJECT_NAME+ File.separator + shortBfc + File.separator + shortBic;
+                Configurations.CACHE_PATH + File.separator + Configurations.PROJECT_NAME + File.separator + shortBfc + File.separator + shortBic;
 
         // 创建一个File对象
         File directory = new File(dirName);
@@ -47,16 +47,19 @@ public class FileUtilx {
             e.printStackTrace();
         }
     }
-    public static synchronized void apendResultToFile(String line,File file) {
+
+    public static synchronized void apendResultToFile(String line, File file) {
         try {
             FileUtils.writeStringToFile(file, line + "\n", true);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
     @SuppressWarnings("deprecation")
     public static synchronized void log(String block) {
-        File file = new File(Configurations.PROJECT_PATH + File.separator + "miner-log."+Thread.currentThread().getName());
+        File file =
+                new File(Configurations.PROJECT_PATH + File.separator + "miner-log." + Thread.currentThread().getName());
         try {
             FileUtils.writeStringToFile(file, block + "\n", true);
         } catch (IOException e) {

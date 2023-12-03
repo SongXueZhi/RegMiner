@@ -28,15 +28,6 @@ import static com.fudan.annotation.platform.backend.core.ProbDD.*;
 @Service
 @Slf4j
 public class DeltaDebuggingServiceImpl implements DeltaDebuggingService {
-    @Autowired
-    private RegressionMapper regressionMapper;
-    @Autowired
-    private ProbDD probDD;
-    @Autowired
-    private SourceCodeManager sourceCodeManager;
-    @Autowired
-    private Migrator migrator;
-
     static BufferedWriter bw;
 
     static {
@@ -47,38 +38,18 @@ public class DeltaDebuggingServiceImpl implements DeltaDebuggingService {
         }
     }
 
-    @Override
-    public DeltaDebugResult getRunProbDD(String regressionUuid, String revisionName, String userToken, List<Integer> stepRange) throws IOException {
-        Regression regressionTest = regressionMapper.getRegressionInfo(regressionUuid);
-        // get projectFile
-        File projectDir = sourceCodeManager.getProjectDir(regressionTest.getProjectUuid(), regressionUuid, userToken);
-        // checkout
-        checkoutDD(regressionTest, projectDir, userToken);
-//        List<Revision> revisionList =  checkoutBugCode(regressionTest.getRegressionUuid, projectDir, userToken);
-        File bugDir = new File(SourceCodeManager.cacheProjectsDirPath + File.separator + userToken + File.separator + regressionUuid + File.separator + revisionName);
+    @Autowired
+    private RegressionMapper regressionMapper;
+    @Autowired
+    private ProbDD probDD;
+    @Autowired
+    private SourceCodeManager sourceCodeManager;
+    @Autowired
+    private Migrator migrator;
 
-        List<HunkEntity> hunks = GitUtil.getHunksBetweenCommits(projectDir, regressionTest.getBic(), regressionTest.getWork());
-//        long startTime = System.currentTimeMillis();
-        return probDD.probDD(bugDir.toString(), hunks, regressionTest.getTestcase(), stepRange, null, null, null);
-//        return probDD.runDeltaDebugging(regressionTest, projectDir, revisionList, stepRange, cProb, cProbLeftIdx2Test);
-    }
-
-    @Override
-    public DeltaDebugResult postRunProbDDbyStep(String regressionUuid, String revisionName, String userToken, List<Integer> stepRange, List<Double> cProb, List<Integer> leftIdx2Test, List<Integer> stepTestedInx) throws IOException {
-        Regression regressionTest = regressionMapper.getRegressionInfo(regressionUuid);
-        File projectDir = sourceCodeManager.getProjectDir(regressionTest.getProjectUuid(), regressionUuid, userToken);
-        checkoutDD(regressionTest, projectDir, userToken);
-
-        File bugDir = new File(SourceCodeManager.cacheProjectsDirPath + File.separator + userToken + File.separator + regressionUuid + File.separator + revisionName);
-        List<HunkEntity> hunks = GitUtil.getHunksBetweenCommits(projectDir, regressionTest.getBic(), regressionTest.getWork());
-
-        DDStepResult lastStepResult = RunProbDDOnce(bugDir.toString(), hunks, regressionTest.getTestcase(), stepRange, cProb, leftIdx2Test, stepTestedInx);
-        stepRange.set(0, stepRange.get(0) + 1);
-
-        return probDD.probDD(bugDir.toString(), hunks, regressionTest.getTestcase(), stepRange, lastStepResult.getCProb(), lastStepResult.getLeftIdx2Test(), lastStepResult);
-    }
-
-    public static DDStepResult RunProbDDOnce(String path, List<HunkEntity> hunkEntities, String testCase, List<Integer> stepRange, List<Double> firstCProb, List<Integer> leftIdx2Test, List<Integer> stepTestedInx) throws IOException {
+    public static DDStepResult RunProbDDOnce(String path, List<HunkEntity> hunkEntities, String testCase,
+                                             List<Integer> stepRange, List<Double> firstCProb,
+                                             List<Integer> leftIdx2Test, List<Integer> stepTestedInx) throws IOException {
         hunkEntities.removeIf(hunkEntity -> hunkEntity.getNewPath().contains("test"));
         hunkEntities.removeIf(hunkEntity -> hunkEntity.getOldPath().contains("test"));
 
@@ -144,8 +115,50 @@ public class DeltaDebuggingServiceImpl implements DeltaDebuggingService {
         return lastResult;
     }
 
+    @Override
+    public DeltaDebugResult getRunProbDD(String regressionUuid, String revisionName, String userToken,
+                                         List<Integer> stepRange) throws IOException {
+        Regression regressionTest = regressionMapper.getRegressionInfo(regressionUuid);
+        // get projectFile
+        File projectDir = sourceCodeManager.getProjectDir(regressionTest.getProjectUuid(), regressionUuid, userToken);
+        // checkout
+        checkoutDD(regressionTest, projectDir, userToken);
+//        List<Revision> revisionList =  checkoutBugCode(regressionTest.getRegressionUuid, projectDir, userToken);
+        File bugDir =
+                new File(SourceCodeManager.cacheProjectsDirPath + File.separator + userToken + File.separator + regressionUuid + File.separator + revisionName);
+
+        List<HunkEntity> hunks = GitUtil.getHunksBetweenCommits(projectDir, regressionTest.getBic(),
+                regressionTest.getWork());
+//        long startTime = System.currentTimeMillis();
+        return probDD.probDD(bugDir.toString(), hunks, regressionTest.getTestcase(), stepRange, null, null, null);
+//        return probDD.runDeltaDebugging(regressionTest, projectDir, revisionList, stepRange, cProb,
+//        cProbLeftIdx2Test);
+    }
+
+    @Override
+    public DeltaDebugResult postRunProbDDbyStep(String regressionUuid, String revisionName, String userToken,
+                                                List<Integer> stepRange, List<Double> cProb,
+                                                List<Integer> leftIdx2Test, List<Integer> stepTestedInx) throws IOException {
+        Regression regressionTest = regressionMapper.getRegressionInfo(regressionUuid);
+        File projectDir = sourceCodeManager.getProjectDir(regressionTest.getProjectUuid(), regressionUuid, userToken);
+        checkoutDD(regressionTest, projectDir, userToken);
+
+        File bugDir =
+                new File(SourceCodeManager.cacheProjectsDirPath + File.separator + userToken + File.separator + regressionUuid + File.separator + revisionName);
+        List<HunkEntity> hunks = GitUtil.getHunksBetweenCommits(projectDir, regressionTest.getBic(),
+                regressionTest.getWork());
+
+        DDStepResult lastStepResult = RunProbDDOnce(bugDir.toString(), hunks, regressionTest.getTestcase(), stepRange
+                , cProb, leftIdx2Test, stepTestedInx);
+        stepRange.set(0, stepRange.get(0) + 1);
+
+        return probDD.probDD(bugDir.toString(), hunks, regressionTest.getTestcase(), stepRange,
+                lastStepResult.getCProb(), lastStepResult.getLeftIdx2Test(), lastStepResult);
+    }
+
     public void checkoutDD(Regression regressionTest, File projectDir, String userToken) {
-        File bugDir = new File(SourceCodeManager.cacheProjectsDirPath + File.separator + userToken + File.separator + regressionTest.getRegressionUuid());
+        File bugDir =
+                new File(SourceCodeManager.cacheProjectsDirPath + File.separator + userToken + File.separator + regressionTest.getRegressionUuid());
         if (bugDir.exists()) {
             return;
         }
@@ -157,7 +170,8 @@ public class DeltaDebuggingServiceImpl implements DeltaDebuggingService {
         targetCodeVersions.add(new Revision("work", regressionTest.getWork()));
 
         targetCodeVersions.forEach(revision -> {
-            revision.setLocalCodeDir(sourceCodeManager.checkout(revision, projectDir, regressionTest.getRegressionUuid(), userToken));
+            revision.setLocalCodeDir(sourceCodeManager.checkout(revision, projectDir,
+                    regressionTest.getRegressionUuid(), userToken));
         });
         targetCodeVersions.remove(0);
         migrator.migrateTestAndDependency(rfc, targetCodeVersions, regressionTest.getTestcase());

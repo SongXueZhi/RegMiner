@@ -12,15 +12,11 @@ We recommend RegMiner running on `Linux` distributions and `MacOs`.
 
 > `Node.js`, `Yarn`
 
-
-
 ## Bug Runtime Env
 
 `Maven`, `gradle`, as many JDK versions as possible.
 
 In this demo we only need `java 8` and `Maven`.
-
-
 
 ## Step by Step
 
@@ -30,13 +26,12 @@ Here we take the `ubuntu20.04` system as an example.
 
 1. Regminer & backend
 
-   Paste the **miner_space.zip** we provided into the **{user.home}** directory, for example, the path of this article is `/home/sxz`
+   Paste the **miner_space.zip** we provided into the **{user.home}** directory, for example, the path of this article
+   is `/home/sxz`
 
    ```
    unzip miner_sapce.zip
    ```
-
-   
 
 ### Environment configuration
 
@@ -65,7 +60,8 @@ Here we take the `ubuntu20.04` system as an example.
    sudo update-alternatives --config java
    ```
 
-   Select the number for Java 8, and record the path for Java 11 as a backup. For example, the native Java 11 path is ` /usr/lib/jvm/java-11-openjdk-amd64/bin/java`
+   Select the number for Java 8, and record the path for Java 11 as a backup. For example, the native Java 11 path
+   is ` /usr/lib/jvm/java-11-openjdk-amd64/bin/java`
 
 5. install `Node.js` & `Yarn`
 
@@ -77,7 +73,10 @@ Here we take the `ubuntu20.04` system as an example.
 
 6. install `Mysql`
 
-   Please install `Mysql` according to the [official documentation](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-22-04). And confirm that the installation is successful (please set the mysql password to Aa110120, and verify that mysql -u root -p can log in), and run the following command to create a table:
+   Please install `Mysql` according to
+   the [official documentation](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-22-04).
+   And confirm that the installation is successful (please set the mysql password to Aa110120, and verify that mysql -u
+   root -p can log in), and run the following command to create a table:
 
    ```
    CREATE DATABASE code_annotation;
@@ -118,9 +117,7 @@ Here we take the `ubuntu20.04` system as an example.
    ) ENGINE=InnoDB AUTO_INCREMENT=904 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=DYNAMIC;
    ```
 
-   
-
-### Start 
+### Start
 
 1. start RegMiner
    First configure the `java 11` path for **{user.home}/miner_space/miner_jar/bash.sh**
@@ -131,7 +128,8 @@ Here we take the `ubuntu20.04` system as an example.
    cd {user.home}/miner_space/
    ```
 
-2. Modify the Mysql configuration in lines 64-68 of **{user.home}/miner_space/Automation.py**, such as the configuration in this machine:
+2. Modify the Mysql configuration in lines 64-68 of **{user.home}/miner_space/Automation.py**, such as the configuration
+   in this machine:
 
    ```
    if SQL_SUPPORT:
@@ -147,15 +145,11 @@ Here we take the `ubuntu20.04` system as an example.
    python3 Automation.py 
    ```
 
-
-
 ### Start backend
 
 ```
 /usr/lib/jvm/java-11-openjdk-amd64/bin/java -jar RegMiner-Backend-0.0.1-SNAPSHOT.jar
 ```
-
-
 
 ### Start UI
 

@@ -30,6 +30,7 @@ public class RegressionServiceImpl implements RegressionService {
     private final static String NULL = "/dev/null";
     private final static String GITHUB_URL = "https://github.com";
     private final static String COMMIT = "commit";
+    private static final JacocoMavenManager jacocoMavenManager = new JacocoMavenManager();
     private RegressionMapper regressionMapper;
     @Autowired
     private ProjectMapper projectMapper;
@@ -45,22 +46,23 @@ public class RegressionServiceImpl implements RegressionService {
     private CommentsMapper commentsMapper;
     @Autowired
     private BugToTypeMapper bugToTypeMapper;
-    private static final JacocoMavenManager jacocoMavenManager = new JacocoMavenManager();
     @Autowired
     private CodeCoverage codeCoverage;
+
     @Override
     public List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName,
                                            String keyWord, List<String> bugTypeName) {
-        List<Regression> regressionList = regressionMapper.selectRegression(regressionUuid, regressionStatus, projectName, keyWord);
+        List<Regression> regressionList = regressionMapper.selectRegression(regressionUuid, regressionStatus,
+                projectName, keyWord);
         regressionList.forEach(data -> {
             List<String> bugTypeNames = bugToTypeMapper.getBugTypeNamesByRegression(data.getRegressionUuid());
             data.setBugTypeNames(bugTypeNames);
         });
-        if(bugTypeName != null) {
+        if (bugTypeName != null) {
             List<Regression> targetRegressionList = new ArrayList<>();
             bugTypeName.forEach(BTName -> {
-                for(Regression r: regressionList) {
-                    if(r.getBugTypeNames().contains(BTName)) {
+                for (Regression r : regressionList) {
+                    if (r.getBugTypeNames().contains(BTName)) {
                         targetRegressionList.add(r);
                     }
                 }
@@ -377,14 +379,14 @@ public class RegressionServiceImpl implements RegressionService {
 
         try {
             jacocoMavenManager.addJacocoFeatureToMaven(codeDir);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
         new Thread(() -> {
             int state =
                     new Executor().setDirectory(codeDir).exec("mvn test -Dtest=" + testCase + " >> " + logFileName, 1);
-                    new Executor().setDirectory(codeDir).exec("mvn jacoco:report", 1);
+            new Executor().setDirectory(codeDir).exec("mvn jacoco:report", 1);
             try {
                 String endFlag = "REGMINER-TEST-END";
                 if (state < 0) {
@@ -403,7 +405,7 @@ public class RegressionServiceImpl implements RegressionService {
     @Override
     public Map<String, List<Integer>> codeCoverageMap(String regressionUuid, String userToken, String revisionFlag) throws Exception {
         File codeDir = sourceCodeManager.getCodeDir(regressionUuid, userToken, revisionFlag);
-        return  codeCoverage.parseJaCoCoReport(codeDir);
+        return codeCoverage.parseJaCoCoReport(codeDir);
     }
 
     @Override
@@ -478,14 +480,16 @@ public class RegressionServiceImpl implements RegressionService {
     }
 
 
-    public void updateCode(String userToken, String code, String projectName, String regressionUuid, String revisionName, String filePath) throws IOException {
+    public void updateCode(String userToken, String code, String projectName, String regressionUuid,
+                           String revisionName, String filePath) throws IOException {
 //        HashMap<String, String> revisionMap = new HashMap<>();
 //        revisionMap.put("bfc", "buggy");
 //        revisionMap.put("bic", "work");
 //        String revisionFlag = revisionMap.get(revisionName);
 
         File file = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath);
-        File backupFile = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath + ".back");
+        File backupFile = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath +
+                ".back");
         if (backupFile.exists()) {
             //有备份文件，直接更新
             FileUtil.writeInFile(file.getPath(), code);
@@ -496,7 +500,8 @@ public class RegressionServiceImpl implements RegressionService {
         }
     }
 
-    public void revertCode(String userToken, String projectName, String regressionUuid, String revisionName, String filePath) throws IOException {
+    public void revertCode(String userToken, String projectName, String regressionUuid, String revisionName,
+                           String filePath) throws IOException {
 
 //        HashMap<String, String> revisionMap = new HashMap<>();
 //        revisionMap.put("bfc", "buggy");
@@ -504,7 +509,8 @@ public class RegressionServiceImpl implements RegressionService {
 //        String revisionFlag = revisionMap.get(revisionName);
 
         File file = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath);
-        File backupFile = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath + ".back");
+        File backupFile = sourceCodeManager.getCacheProjectDir(userToken, regressionUuid, revisionName, filePath +
+                ".back");
         if (backupFile.exists()) {
             //有备份文件，将备份文件作为源文件
             FileUtil.DeleteFileByPath(file.getPath());
@@ -553,7 +559,8 @@ public class RegressionServiceImpl implements RegressionService {
 
     @Override
     public CriticalChangeReview getCriticalChangeReview(String regressionUuid, String revisionName) {
-        List<HunkEntityPlus> CCReview = criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid, revisionName);
+        List<HunkEntityPlus> CCReview = criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid,
+                revisionName);
         if (CCReview.size() != 0) {
             CriticalChangeReview criticalChangeReview = new CriticalChangeReview();
             criticalChangeReview.setRevisionName(revisionName);
@@ -596,7 +603,8 @@ public class RegressionServiceImpl implements RegressionService {
                                 null, null);
                     }
                 }
-                List<HunkEntityPlus> newCCReview = criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid, revisionName);
+                List<HunkEntityPlus> newCCReview = criticalChangeReviewMapper.getCriticalChangeReview(regressionUuid,
+                        revisionName);
                 CriticalChangeReview criticalChangeReview = new CriticalChangeReview();
                 criticalChangeReview.setRevisionName(revisionName);
                 criticalChangeReview.setHunkEntityPlusList(newCCReview);
@@ -608,7 +616,8 @@ public class RegressionServiceImpl implements RegressionService {
     }
 
     @Override
-    public void setCriticalChangeReview(String regressionUuid, String revisionName, Integer reviewId, String accountName,
+    public void setCriticalChangeReview(String regressionUuid, String revisionName, Integer reviewId,
+                                        String accountName,
                                         String feedback, HunkEntity hunkEntityDTO) {
         if (reviewId == null || reviewId.equals(0)) {
             criticalChangeReviewMapper.setCriticalChangeReview(regressionUuid, revisionName,

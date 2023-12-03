@@ -1,8 +1,7 @@
-import { clearSmellGraph, drawSmellGraph } from '@/components/G6Graph/hunkRelationGraph';
-import { drawAddNodeGraph } from '@/components/G6Graph/addNodeEdge';
+import {drawAddNodeGraph} from '@/components/G6Graph/addNodeEdge';
 // import { Spin } from 'antd';
-import { useEffect } from 'react';
-import { hunkRelationData, relationTreeData, addNodeEdgeData, addNodeEdgeDataFake } from './mockData';
+import {useEffect} from 'react';
+import {addNodeEdgeData, addNodeEdgeDataFake, hunkRelationData, relationTreeData} from './mockData';
 
 const DeltaDebuggingHunkRelationGraph: React.FC<{}> = () => {
   useEffect(() => {
@@ -18,7 +17,7 @@ const DeltaDebuggingHunkRelationGraph: React.FC<{}> = () => {
     <>
       {/* <div id="dd-hunk-relation-graph" style={{ width: '100%', height: '33%' }} />;
       <div id="tree" style={{ width: '100%', height: '33%' }} /> */}
-      <div id="add" style={{ width: '100%', height: '100%' }} />
+      <div id="add" style={{width: '100%', height: '100%'}}/>
     </>
   );
 };

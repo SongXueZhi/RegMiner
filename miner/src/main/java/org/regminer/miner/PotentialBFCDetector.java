@@ -30,24 +30,24 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         try (Repository repo = new FileRepository(Configurations.PROJECT_PATH); Git git = new Git(repo)) {
             Iterable<RevCommit> commits = git.log().all().call();
             // 开始迭代每一个commit
-            return detectAll(commits,git);
+            return detectAll(commits, git);
         }
     }
 
-    public List<PotentialBFC> detectPotentialBFC(List<String> commitsFilter,Git git) throws Exception {
+    public List<PotentialBFC> detectPotentialBFC(List<String> commitsFilter, Git git) throws Exception {
         // 获取所有的commit，我们需要对所有的commit进行分析
         Iterable<RevCommit> commits = git.log().all().call();
-        List<PotentialBFC> potentialRFCS = detectOnFilter(commitsFilter, commits,git);
+        List<PotentialBFC> potentialRFCS = detectOnFilter(commitsFilter, commits, git);
         return potentialRFCS;
     }
 
-    private List<PotentialBFC> detectAll(Iterable<RevCommit> commits,Git git) throws Exception {
+    private List<PotentialBFC> detectAll(Iterable<RevCommit> commits, Git git) throws Exception {
         List<PotentialBFC> potentialRFCs = new LinkedList<PotentialBFC>();
         // 定义需要记录的实验数据
         int countAll = 0;
         // 开始迭代每一个commit
         for (RevCommit commit : commits) {
-            detect(commit, potentialRFCs,git);
+            detect(commit, potentialRFCs, git);
             countAll++;
         }
         FileUtilx.log("总共分析了" + countAll + "条commit\n");
@@ -55,14 +55,14 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         return potentialRFCs;
     }
 
-    private List<PotentialBFC> detectOnFilter(List<String> commitsFilter, Iterable<RevCommit> commits,Git git) throws Exception {
+    private List<PotentialBFC> detectOnFilter(List<String> commitsFilter, Iterable<RevCommit> commits, Git git) throws Exception {
         List<PotentialBFC> potentialRFCs = new LinkedList<PotentialBFC>();
         // 定义需要记录的实验数据
         int countAll = 0;
         // 开始迭代每一个commit
         for (RevCommit commit : commits) {
             if (commitsFilter.contains(commit.getName())) {
-                detect(commit, potentialRFCs,git);
+                detect(commit, potentialRFCs, git);
                 countAll++;
             }
         }
@@ -95,13 +95,13 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
             // finally get the list of changed files
             List<DiffEntry> diffs = git.diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
             for (DiffEntry entry : diffs) {
-                getChangedFile(entry, files,git);
+                getChangedFile(entry, files, git);
             }
         }
         return files;
     }
 
-    private List<Edit> getEdits(DiffEntry entry,Git git ) throws Exception {
+    private List<Edit> getEdits(DiffEntry entry, Git git) throws Exception {
         List<Edit> result = new LinkedList<Edit>();
         try (DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE)) {
             diffFormatter.setRepository(git.getRepository());
@@ -123,7 +123,7 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
      * @return
      * @throws Exception
      */
-    private List<ChangedFile> getDiffFiles(RevCommit oldCommit, RevCommit newCommit,Git git) throws Exception {
+    private List<ChangedFile> getDiffFiles(RevCommit oldCommit, RevCommit newCommit, Git git) throws Exception {
         List<ChangedFile> files = new LinkedList<>();
         ObjectId id = newCommit.getTree().getId();
         ObjectId oldId = oldCommit.getTree().getId();
@@ -135,7 +135,7 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
             // finally get the list of changed files
             List<DiffEntry> diffs = git.diff().setNewTree(newTreeIter).setOldTree(oldTreeIter).call();
             for (DiffEntry entry : diffs) {
-                getChangedFile(entry, files,git);
+                getChangedFile(entry, files, git);
             }
         }
         return files;
@@ -208,18 +208,18 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         return sourceFiles;
     }
 
-    private void getChangedFile(DiffEntry entry, List<ChangedFile> files,Git git) throws Exception {
+    private void getChangedFile(DiffEntry entry, List<ChangedFile> files, Git git) throws Exception {
         String path = entry.getNewPath();
         if (path.contains("test") && path.endsWith(".java")) {
             ChangedFile file = new TestFile(entry.getNewPath());
             file.setOldPath(entry.getOldPath());
-            file.setEditList(getEdits(entry,git));
+            file.setEditList(getEdits(entry, git));
             files.add(file);
         }
         if ((!path.contains("test")) && path.endsWith(".java")) {
             ChangedFile file = new NormalFile(entry.getNewPath());
             file.setOldPath(entry.getOldPath());
-            file.setEditList(getEdits(entry,git));
+            file.setEditList(getEdits(entry, git));
             files.add(file);
         }
 
@@ -227,7 +227,7 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         if (!path.endsWith(".java")) {
             ChangedFile file = new SourceFile(entry.getNewPath());
             file.setOldPath(entry.getOldPath());
-            file.setEditList(getEdits(entry,git));
+            file.setEditList(getEdits(entry, git));
             files.add(file);
         }
     }
@@ -255,7 +255,7 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
      * @param potentialRFCs
      * @throws Exception
      */
-    private void detect(RevCommit commit, List<PotentialBFC> potentialRFCs,Git git) throws Exception {
+    private void detect(RevCommit commit, List<PotentialBFC> potentialRFCs, Git git) throws Exception {
         // 如果没有父亲，那么肯定不是bfc
         if (commit.getParentCount() <= 0) {
             return;

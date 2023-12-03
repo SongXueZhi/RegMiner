@@ -19,13 +19,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Revision {
+    List<ChangedFile> changedFiles = new ArrayList<>();
     /**
      * 1个regression包含四个Revision（bic\bfc\buggy\work）
      */
     private File localCodeDir;
     private String revisionName;
     private String commitID;
-    List<ChangedFile> changedFiles = new ArrayList<>();
 
     public Revision(String revisionName, String commitID) {
         this.revisionName = revisionName;

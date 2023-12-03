@@ -1,16 +1,16 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, message, Select, Skeleton, Tag, Tooltip } from 'antd';
-import React, { useState, useRef, useEffect } from 'react';
-import { PageContainer } from '@ant-design/pro-layout';
-import type { ProColumns, ActionType } from '@ant-design/pro-table';
+import {PlusOutlined} from '@ant-design/icons';
+import {Button, Divider, Input, message, Select, Skeleton, Tag, Tooltip} from 'antd';
+import React, {useEffect, useRef, useState} from 'react';
+import {PageContainer} from '@ant-design/pro-layout';
+import type {ActionType, ProColumns} from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import CreateForm from './components/CreateForm';
-import { queryRegressionList, addRegression, removeRegression, getAllBugTypes } from './service';
-import { Link } from 'react-router-dom';
-import { stringify } from 'query-string';
+import {addRegression, getAllBugTypes, queryRegressionList, removeRegression} from './service';
+import {Link} from 'react-router-dom';
+import {stringify} from 'query-string';
 import './index.less';
-import { useAccess } from 'umi';
-import type { AllBugTypes } from './data';
+import {useAccess} from 'umi';
+import type {AllBugTypes} from './data';
 
 /**
  * 添加节点
@@ -20,7 +20,7 @@ import type { AllBugTypes } from './data';
 const handleAdd = async (fields: API.RegressionItem) => {
   const hide = message.loading('Adding');
   try {
-    await addRegression({ ...fields });
+    await addRegression({...fields});
     hide();
     message.success('Successfully added!');
     return true;
@@ -80,7 +80,7 @@ const pageSize = 20;
 
 function withSkeleton(element: JSX.Element | string | number | number | undefined) {
   return (
-    element ?? <Skeleton title={{ width: '80px', style: { margin: 0 } }} paragraph={false} active />
+    element ?? <Skeleton title={{width: '80px', style: {margin: 0}}} paragraph={false} active/>
   );
 }
 
@@ -134,14 +134,14 @@ const RegressionListPage: React.FC<{}> = () => {
       title: 'Bug UUID',
       dataIndex: 'regressionUuid',
       width: 200,
-      render: (_, { projectFullName, regressionUuid, id }) => {
+      render: (_, {projectFullName, regressionUuid, id}) => {
         return withSkeleton(
           regressionUuid ? (
             // index <= 49 ? (
             <Link
               to={{
                 pathname: '/editor',
-                search: stringify({ regressionUuid }),
+                search: stringify({regressionUuid}),
               }}
             >
               <Tooltip title={regressionUuid}>
@@ -170,11 +170,11 @@ const RegressionListPage: React.FC<{}> = () => {
       //     />
       //   );
       // },
-      renderFormItem: (_, { type }, form) => {
+      renderFormItem: (_, {type}, form) => {
         if (type === 'form') {
           return null;
         }
-        return <Input placeholder="Regression UUID" />;
+        return <Input placeholder="Regression UUID"/>;
       },
     },
     {
@@ -182,7 +182,7 @@ const RegressionListPage: React.FC<{}> = () => {
       dataIndex: 'keyword',
       hideInTable: true,
       search: false,
-      render: (_, { regressionUuid, index }) => {
+      render: (_, {regressionUuid, index}) => {
         return withSkeleton(regressionUuid ? (index <= 49 ? '' : '') : '暂无数据');
       },
     },
@@ -254,11 +254,11 @@ const RegressionListPage: React.FC<{}> = () => {
       render: (_, record) => {
         return record.bugTypeNames
           ? record.bugTypeNames.map((resp) => {
-              return <Tag color="purple">{resp}</Tag>;
-            })
+            return <Tag color="purple">{resp}</Tag>;
+          })
           : '无分类';
       },
-      renderFormItem: (_, { type }, form) => {
+      renderFormItem: (_, {type}, form) => {
         if (type === 'form') {
           return null;
         }
@@ -266,10 +266,10 @@ const RegressionListPage: React.FC<{}> = () => {
           <Select
             mode="multiple"
             allowClear
-            style={{ width: '100%' }}
+            style={{width: '100%'}}
             placeholder="Please select"
             options={allBugTypes.map((resp) => {
-              return { value: resp.bugTypeName, label: resp.bugTypeName };
+              return {value: resp.bugTypeName, label: resp.bugTypeName};
             })}
             // onChange={(v) => {
             //   form.setFieldValue({bugtype});
@@ -282,12 +282,12 @@ const RegressionListPage: React.FC<{}> = () => {
       title: 'Bug DataSource', // 你可以更改此标题
       // dataIndex: 'toolSelector',
       hideInTable: true,
-      renderFormItem: (_, { type }, form) => {
+      renderFormItem: (_, {type}, form) => {
         if (type === 'form') {
           return null;
         }
         return (
-          <Select style={{ width: '100%' }} placeholder="Select a DataSource">
+          <Select style={{width: '100%'}} placeholder="Select a DataSource">
             <Select.Option value="regminer">Regminer</Select.Option>
             <Select.Option value="bugbuilder">BugBuilder</Select.Option>
             <Select.Option value="bugminer">Bugminer</Select.Option>
@@ -313,10 +313,10 @@ const RegressionListPage: React.FC<{}> = () => {
       filters: true,
       onFilter: true,
       valueEnum: {
-        0: { text: 'Not verified', status: 'Default' },
-        1: { text: 'confirmed', status: 'Success' },
-        2: { text: 'rejected', status: 'Error' },
-        3: { text: 'undecided', status: 'Processing' },
+        0: {text: 'Not verified', status: 'Default'},
+        1: {text: 'confirmed', status: 'Success'},
+        2: {text: 'rejected', status: 'Error'},
+        3: {text: 'undecided', status: 'Processing'},
       },
     },
     {
@@ -325,8 +325,8 @@ const RegressionListPage: React.FC<{}> = () => {
       hideInTable: true,
       search: false,
       fixed: 'right',
-      render: (_, { regressionUuid: regressionUuid }) => [
-        <Divider type="vertical" />,
+      render: (_, {regressionUuid: regressionUuid}) => [
+        <Divider type="vertical"/>,
         <Button
           type="primary"
           danger
@@ -353,7 +353,7 @@ const RegressionListPage: React.FC<{}> = () => {
       ...generateParams(params),
     };
     console.log(totalParams);
-    const resp = await queryRegressionList({ ...totalParams });
+    const resp = await queryRegressionList({...totalParams});
     const regressionList: string[] = resp.data.map((d) => {
       return d.regressionUuid;
     });
@@ -381,7 +381,7 @@ const RegressionListPage: React.FC<{}> = () => {
   return (
     <PageContainer
       header={{
-        style: { width: '100%' },
+        style: {width: '100%'},
         title: 'Bug Repository',
         // subTitle: (
         //   <Alert
@@ -433,7 +433,7 @@ const RegressionListPage: React.FC<{}> = () => {
               }
             }}
           >
-            <PlusOutlined /> add
+            <PlusOutlined/> add
           </Button>,
         ]}
         // @ts-ignore

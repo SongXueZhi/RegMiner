@@ -42,7 +42,8 @@ public class ProgressMonitor {
     @SuppressWarnings("deprecation")
     public static void addDone(String name) {
         try {
-            FileUtils.writeStringToFile(new File(Configurations.PROJECT_PATH + File.separator + "progress.details"), name + "\n",
+            FileUtils.writeStringToFile(new File(Configurations.PROJECT_PATH + File.separator + "progress.details"),
+                    name + "\n",
                     true);
         } catch (IOException e) {
             e.printStackTrace();

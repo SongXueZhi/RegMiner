@@ -16,13 +16,14 @@ public interface RegressionMapper {
 
     int insertSelective(Regression regressionInfo);
 
-    List<Regression> selectRegression(String regressionUuid, Integer regressionStatus, String projectName, String keyWord);
+    List<Regression> selectRegression(String regressionUuid, Integer regressionStatus, String projectName,
+                                      String keyWord);
 
     int updateRegressionStatus(String regressionUuid, Integer regressionStatus);
 
     List<Regression> getRegression();
 
-    void setProjectUuid(String regressionUuid,String projectUuid);
+    void setProjectUuid(String regressionUuid, String projectUuid);
 
     void setRegressionUuid(Integer id, String regressionUuid);
 

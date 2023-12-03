@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { getDistanceDay } from '../utils';
-import { SyncOutlined } from '@ant-design/icons';
-import { Alert, Button, Progress, Tag, Steps, message } from 'antd';
-import { getProcessInfo } from '../service';
-import { ProgressInfoItems } from '../data';
-import { useAccess } from 'umi';
+import React, {useEffect, useState} from 'react';
+import {getDistanceDay} from '../utils';
+import {SyncOutlined} from '@ant-design/icons';
+import {Alert, Button, message, Progress, Steps, Tag} from 'antd';
+import {getProcessInfo} from '../service';
+import {ProgressInfoItems} from '../data';
+import {useAccess} from 'umi';
 import './index.less';
 
-const { Step } = Steps;
+const {Step} = Steps;
 
 // dashiboard
 declare global {
@@ -110,7 +110,7 @@ const ProjectProgress: React.FC<any> = () => {
       <div style={progressContainer}>
         <div className="header-container">
           {/* <Spin size="small" /> */}
-          <h2 style={{ marginBottom: '20px' }}>
+          <h2 style={{marginBottom: '20px'}}>
             <div
               style={{
                 display: 'inline-block',
@@ -122,7 +122,7 @@ const ProjectProgress: React.FC<any> = () => {
             ></div>
             Processed Projects: {progressInfo.totalProjectNum} |{' '}
             <span>({progressInfo.totalProgress}%)</span>
-            <div style={{ position: 'absolute', right: '10px', top: '0px' }}>
+            <div style={{position: 'absolute', right: '10px', top: '0px'}}>
               <Button
                 type="primary"
                 onClick={() => {
@@ -135,10 +135,10 @@ const ProjectProgress: React.FC<any> = () => {
                   }
                 }}
               >
-                <span style={{ color: '#fff' }}>Start</span>
+                <span style={{color: '#fff'}}>Start</span>
               </Button>
               <Button
-                style={{ marginLeft: '10px' }}
+                style={{marginLeft: '10px'}}
                 onClick={() => {
                   if (access.onlyAdminFoo) {
                     resetProcessInfo.bind(ProjectProgress);
@@ -154,7 +154,7 @@ const ProjectProgress: React.FC<any> = () => {
             </div>
           </h2>
         </div>
-        <div style={{ padding: '0 20px' }}>
+        <div style={{padding: '0 20px'}}>
           <Steps current={1} size="small">
             <Step
               title="Finished"
@@ -162,7 +162,7 @@ const ProjectProgress: React.FC<any> = () => {
             />
             <Step
               title="In Progress"
-              icon={<SyncOutlined spin={!window.isStoping} />}
+              icon={<SyncOutlined spin={!window.isStoping}/>}
               subTitle={distanceTime}
               description={`${window.currentProjectName} is processing`}
             />
@@ -192,7 +192,7 @@ const ProjectProgress: React.FC<any> = () => {
             strokeWidth={10}
           />
         </div>
-        <div style={{ marginTop: '-10px' }} className="header-container">
+        <div style={{marginTop: '-10px'}} className="header-container">
           {/* <Spin size="small" /> */}
           <h2>
             <div
@@ -220,7 +220,7 @@ const ProjectProgress: React.FC<any> = () => {
                 /> */}
               ({progressInfo.currentRepoProgress}%)
             </span>
-            <h6 style={{ marginLeft: '20px', color: '#666' }}>spend: {repodistanceTime}</h6>
+            <h6 style={{marginLeft: '20px', color: '#666'}}>spend: {repodistanceTime}</h6>
           </h2>
         </div>
         {/* <Alert
@@ -228,7 +228,7 @@ const ProjectProgress: React.FC<any> = () => {
             message="100 project repositories are in queue, 10 are done and fastjson is processing."
             type="info"
           /> */}
-        <div style={{ padding: '0 20px', display: 'flex', alignItems: 'center', height: '40px' }}>
+        <div style={{padding: '0 20px', display: 'flex', alignItems: 'center', height: '40px'}}>
           {/* <Spin size="small" style={{ marginTop: '-10px', marginRight: '10px' }} /> */}
 
           <Progress
@@ -250,7 +250,7 @@ const ProjectProgress: React.FC<any> = () => {
           percent={99.9}
           status="active"
         /> */}
-        <div style={{ padding: '0 20px' }}>
+        <div style={{padding: '0 20px'}}>
           <div className="tips-container">
             <Alert
               type="info"

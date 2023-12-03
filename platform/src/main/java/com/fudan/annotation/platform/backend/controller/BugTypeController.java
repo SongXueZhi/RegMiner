@@ -76,8 +76,8 @@ public class BugTypeController {
 
     @PostMapping(value = "/agree")
     public ResponseBean postAgreeBugType(
-            @RequestParam(name="regression_uuid") String regressionUuid,
-            @RequestParam(name="bug_type_id") int bugTypeId) {
+            @RequestParam(name = "regression_uuid") String regressionUuid,
+            @RequestParam(name = "bug_type_id") int bugTypeId) {
         try {
             bugTypeService.postAgreeBugType(regressionUuid, bugTypeId);
             return new ResponseBean<>(200, "bug type agreed", null);
@@ -88,8 +88,8 @@ public class BugTypeController {
 
     @PostMapping(value = "/disagree")
     public ResponseBean postDisagreeBugType(
-            @RequestParam(name="regression_uuid") String regressionUuid,
-            @RequestParam(name="bug_type_id") int bugTypeId) {
+            @RequestParam(name = "regression_uuid") String regressionUuid,
+            @RequestParam(name = "bug_type_id") int bugTypeId) {
         try {
             bugTypeService.postDisagreeBugType(regressionUuid, bugTypeId);
             return new ResponseBean<>(200, "bug type disagreed", null);

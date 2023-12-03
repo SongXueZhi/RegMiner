@@ -4,19 +4,19 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.apache.tools.ant.DirectoryScanner;
 import org.regminer.common.exec.ExecResult;
 import org.regminer.common.exec.Executor;
+import org.regminer.common.model.TestCaseX;
+import org.regminer.common.utils.OSUtils;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.Compiler;
 import org.regminer.ct.domain.JDK;
 import org.regminer.ct.model.*;
 import org.regminer.ct.utils.CtUtils;
-import org.regminer.common.utils.OSUtils;
-import org.regminer.common.model.TestCaseX;
 
 import java.io.File;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class AutoCompileAndTest extends Strategy{
+public class AutoCompileAndTest extends Strategy {
     @Override
     public CompileResult compile() {
         CompileEnv compileEnv = new CompileEnv();
@@ -36,16 +36,16 @@ public class AutoCompileAndTest extends Strategy{
             envCommands.takeCommand(CtCommands.CommandKey.COMPILE, compileCommand);
             message = new Executor(osType).setDirectory(projectDir).exec(envCommands.compute()).getMessage();
             compileState = CtReferees.JudgeCompileState(message);
-            if(compileState == CompileResult.CompileState.SUCCESS){
+            if (compileState == CompileResult.CompileState.SUCCESS) {
                 compileEnv.setJdk(jdk);
-                compileResult = new CompileResult(compileState,envCommands,compileEnv);
+                compileResult = new CompileResult(compileState, envCommands, compileEnv);
                 break;
-            }else {
+            } else {
                 envCommands.remove(CtCommands.CommandKey.JDK);
                 envCommands.remove(CtCommands.CommandKey.COMPILE);
             }
         }
-        if(compileState == CompileResult.CompileState.CE){
+        if (compileState == CompileResult.CompileState.CE) {
             compileResult.setExceptionMessage(message);
         }
 
@@ -74,34 +74,35 @@ public class AutoCompileAndTest extends Strategy{
             envCommands.remove(CtCommands.CommandKey.COMPILE);
 
         });
-        return testResult;    }
+        return testResult;
+    }
 
-    public Compiler detectBuildTool(File projectDir){
+    public Compiler detectBuildTool(File projectDir) {
         Compiler buildTool = Compiler.MVN;
         DirectoryScanner scanner = new DirectoryScanner();
         scanner.setBasedir(projectDir);
-        scanner.setIncludes(new String[] {"pom.xml","**\\pom.xml","build.gradle","**\\build.gradle",
-                "maven-wrapper.properties","**\\maven-wrapper.properties",
-                "gradle-wrapper.properties","**\\gradle-wrapper.properties"});
+        scanner.setIncludes(new String[]{"pom.xml", "**\\pom.xml", "build.gradle", "**\\build.gradle",
+                "maven-wrapper.properties", "**\\maven-wrapper.properties",
+                "gradle-wrapper.properties", "**\\gradle-wrapper.properties"});
         scanner.setCaseSensitive(true);
         scanner.scan();
         String[] files = scanner.getIncludedFiles();
-        for(String file: files){
-            if(file.contains("maven-wrapper.properties")){
+        for (String file : files) {
+            if (file.contains("maven-wrapper.properties")) {
                 buildTool = Compiler.MVNW;
                 break;
-            } else if(file.contains("gradle-wrapper.properties")){
+            } else if (file.contains("gradle-wrapper.properties")) {
                 buildTool = Compiler.GRADLEW;
                 break;
-            } else if(file.contains("pom.xml")){
+            } else if (file.contains("pom.xml")) {
                 buildTool = Compiler.MVN;
-            }else if(file.contains("build.gradle")){
+            } else if (file.contains("build.gradle")) {
                 buildTool = Compiler.GRADLE;
-            }else {
+            } else {
                 System.out.println("没有找到构建工具配置文件，默认使用mvn命令");
             }
         }
         return buildTool;
     }
 
- }
+}

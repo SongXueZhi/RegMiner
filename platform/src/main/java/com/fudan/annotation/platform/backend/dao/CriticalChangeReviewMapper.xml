@@ -19,31 +19,30 @@
     <insert id="setCriticalChangeReview">
         insert into critical_change_review
         (regression_uuid, revision_name, new_path, old_path, beginA, beginB, endA, endB, type, tool,
-        account_name, feedback)
+         account_name, feedback)
         values (#{regressionUuid},
-        #{revisionName},
-        #{newPath},
-        #{oldPath},
-        #{beginA},
-        #{beginB},
-        #{endA},
-        #{endB},
-        #{type},
-        #{tool},
-        #{accountName},
-        #{feedback});
+                #{revisionName},
+                #{newPath},
+                #{oldPath},
+                #{beginA},
+                #{beginB},
+                #{endA},
+                #{endB},
+                #{type},
+                #{tool},
+                #{accountName},
+                #{feedback});
     </insert>
 
     <update id="updateCriticalChangeReview">
         update critical_change_review
-        set
-        beginA = #{beginA},
-        beginB = #{beginB},
-        endA = #{endA},
-        endB = #{endB},
-        tool = #{tool},
-        account_name = #{accountName},
-        feedback = #{feedback}
+        set beginA       = #{beginA},
+            beginB       = #{beginB},
+            endA         = #{endA},
+            endB         = #{endB},
+            tool         = #{tool},
+            account_name = #{accountName},
+            feedback     = #{feedback}
         where review_id = #{reviewId}
     </update>
 

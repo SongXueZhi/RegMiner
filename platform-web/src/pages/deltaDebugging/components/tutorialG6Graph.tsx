@@ -1,7 +1,7 @@
-import { drawSmellGraph } from '@/components/G6Graph/hunkRelationGraph';
+import {drawSmellGraph} from '@/components/G6Graph/hunkRelationGraph';
 // import { Spin } from 'antd';
-import { useEffect } from 'react';
-import { tutorialData } from './mockData';
+import {useEffect} from 'react';
+import {tutorialData} from './mockData';
 
 const TutorialGraph: React.FC<{}> = () => {
   useEffect(() => {
@@ -10,7 +10,7 @@ const TutorialGraph: React.FC<{}> = () => {
   }, []);
   return (
     <>
-      <div id="tutorial" style={{ width: 200, height: 50 }} />
+      <div id="tutorial" style={{width: 200, height: 50}}/>
     </>
   );
 };

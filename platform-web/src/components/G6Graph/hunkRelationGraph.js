@@ -226,4 +226,4 @@ const showSmellDetail = function (smells, tableId) {
   // $(`#${tableId}`).html(html);
 };
 
-export { drawSmellGraph, clearSmellGraph, showSmellDetail };
+export {drawSmellGraph, clearSmellGraph, showSmellDetail};

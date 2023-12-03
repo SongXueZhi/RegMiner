@@ -1,7 +1,7 @@
-import { PlayCircleOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import {PlayCircleOutlined, QuestionCircleOutlined} from '@ant-design/icons';
 import ProCard from '@ant-design/pro-card';
-import { PageContainer } from '@ant-design/pro-layout';
-import type { ActionType, ProColumns } from '@ant-design/pro-table';
+import {PageContainer} from '@ant-design/pro-layout';
+import type {ActionType, ProColumns} from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import {
   Button,
@@ -17,20 +17,20 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import type { IRouteComponentProps } from 'umi';
-import { queryRegressionDetail } from '../editor/service';
-import { queryRegressionList } from '../regression/service';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import type {IRouteComponentProps} from 'umi';
+import {queryRegressionDetail} from '../editor/service';
+import {queryRegressionList} from '../regression/service';
 import DeltaDebuggingHunkBlocks from './components/ddHunkBlocks';
 import DeltaDebuggingHunkRelationGraph from './components/ddHunkRelationGraph';
 import DeltaDebuggingStepResultTable from './components/ddStepResultTable';
 import TutorialGraph from './components/tutorialG6Graph';
-import type { DdStepsItems, HunkEntityItems } from './data';
-import { runDeltaDebugging, runDeltaDebuggingByStep } from './service';
+import type {DdStepsItems, HunkEntityItems} from './data';
+import {runDeltaDebugging, runDeltaDebuggingByStep} from './service';
 
 function withSkeleton(element: JSX.Element | string | number | number | undefined) {
   return (
-    element ?? <Skeleton title={{ width: '80px', style: { margin: 0 } }} paragraph={false} active />
+    element ?? <Skeleton title={{width: '80px', style: {margin: 0}}} paragraph={false} active/>
   );
 }
 
@@ -71,7 +71,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
       dataIndex: 'regressionUuid',
       search: false,
       width: 200,
-      render: (_, { projectFullName, regressionUuid, index }) => {
+      render: (_, {projectFullName, regressionUuid, index}) => {
         return withSkeleton(
           regressionUuid ? `${projectFullName?.split('/')[1]}_${index}` : 'No Data',
         );
@@ -80,7 +80,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
     {
       title: 'Revision',
       search: false,
-      render: (_, { projectFullName, regressionUuid, index }) => {
+      render: (_, {projectFullName, regressionUuid, index}) => {
         return withSkeleton(
           regressionUuid ? (
             <>
@@ -230,7 +230,7 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
   return (
     <PageContainer
       header={{
-        style: { width: '100%' },
+        style: {width: '100%'},
         title: 'Interactive Delta Debuging',
         subTitle: (
           <div className="sub-title-container">
@@ -246,43 +246,43 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
           </div>
         ),
         footer: (
-          <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-            <Descriptions column={3} style={{ flex: 1 }}>
-              <Descriptions.Item label={'Project'} labelStyle={{ fontWeight: 'bold' }}>
+          <div style={{display: 'inline-flex', alignItems: 'center'}}>
+            <Descriptions column={3} style={{flex: 1}}>
+              <Descriptions.Item label={'Project'} labelStyle={{fontWeight: 'bold'}}>
                 <Typography.Text strong>{currProjectName}</Typography.Text>
               </Descriptions.Item>
-              <Descriptions.Item label={'Revision'} labelStyle={{ fontWeight: 'bold' }}>
+              <Descriptions.Item label={'Revision'} labelStyle={{fontWeight: 'bold'}}>
                 {currRevisionName ? currRevisionName.toUpperCase() : null}
               </Descriptions.Item>
               {currRevisionName !== 'bfc' ? (
                 <Descriptions.Item
                   label={'Bug Inducing Commit'}
-                  labelStyle={{ fontWeight: 'bold' }}
+                  labelStyle={{fontWeight: 'bold'}}
                 >
                   <Typography.Link keyboard href={BICURL} target="_blank">
                     {BIC?.slice(0, 8)}...
                   </Typography.Link>
-                  <br />
+                  <br/>
                 </Descriptions.Item>
               ) : (
-                <Descriptions.Item label={'Bug Fixing Commit'} labelStyle={{ fontWeight: 'bold' }}>
+                <Descriptions.Item label={'Bug Fixing Commit'} labelStyle={{fontWeight: 'bold'}}>
                   <Typography.Link keyboard href={BFCURL} target="_blank">
                     {BFC?.slice(0, 8)}...
                   </Typography.Link>
-                  <br />
+                  <br/>
                 </Descriptions.Item>
               )}
-              <Descriptions.Item label={'Regression UUID'} labelStyle={{ fontWeight: 'bold' }}>
+              <Descriptions.Item label={'Regression UUID'} labelStyle={{fontWeight: 'bold'}}>
                 <Typography.Text>{currRegressionUuid}</Typography.Text>
               </Descriptions.Item>
 
               <Descriptions.Item
                 label={'Regression description'}
-                labelStyle={{ fontWeight: 'bold' }}
+                labelStyle={{fontWeight: 'bold'}}
               >
                 <Typography.Text>{regressionDescription}</Typography.Text>
               </Descriptions.Item>
-              <Descriptions.Item label={'Regression testcase'} labelStyle={{ fontWeight: 'bold' }}>
+              <Descriptions.Item label={'Regression testcase'} labelStyle={{fontWeight: 'bold'}}>
                 <Typography.Text>{testCaseName}</Typography.Text>
               </Descriptions.Item>
             </Descriptions>
@@ -290,68 +290,68 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
         ),
       }}
     >
-      <div style={{ display: 'flex', marginBottom: 10 }}>
+      <div style={{display: 'flex', marginBottom: 10}}>
         <ProCard
           title={
             <>
               <Button
-                icon={<PlayCircleOutlined />}
+                icon={<PlayCircleOutlined/>}
                 onClick={handleRunDD}
                 size="middle"
                 shape="round"
-                style={{ marginBottom: '10px' }}
+                style={{marginBottom: '10px'}}
                 type="primary"
               >
                 Delta Debug
               </Button>
             </>
           }
-          headStyle={{ height: 60 }}
-          bodyStyle={{ height: 700 }}
+          headStyle={{height: 60}}
+          bodyStyle={{height: 700}}
           bordered
-          style={{ width: '25%', overflow: 'auto' }}
+          style={{width: '25%', overflow: 'auto'}}
         >
           <Steps direction="vertical">
             {allStepInfo
               ? allStepInfo.map((resp) => {
-                  return (
-                    <Steps.Step
-                      onClick={() => handleStepClick(resp)}
-                      key={'step_' + resp.stepNum}
-                      status={
-                        resp.stepTestResult === 'FAIL'
-                          ? 'error'
-                          : resp.stepTestResult === 'CE'
+                return (
+                  <Steps.Step
+                    onClick={() => handleStepClick(resp)}
+                    key={'step_' + resp.stepNum}
+                    status={
+                      resp.stepTestResult === 'FAIL'
+                        ? 'error'
+                        : resp.stepTestResult === 'CE'
                           ? 'process'
                           : resp.stepTestResult === 'PASS'
-                          ? 'finish'
-                          : 'process'
-                      }
-                      title={`Step ${resp.stepNum} result: ${resp.stepTestResult}`}
-                      description={`Tested hunks: [ ${
-                        resp.stepTestedInx === null ? [] : resp.stepTestedInx
-                      } ]`}
-                    />
-                  );
-                })
+                            ? 'finish'
+                            : 'process'
+                    }
+                    title={`Step ${resp.stepNum} result: ${resp.stepTestResult}`}
+                    description={`Tested hunks: [ ${
+                      resp.stepTestedInx === null ? [] : resp.stepTestedInx
+                    } ]`}
+                  />
+                );
+              })
               : null}
           </Steps>
-          <Spin size="large" spinning={running} />
+          <Spin size="large" spinning={running}/>
         </ProCard>
         <ProCard
           title={
             <>
               {selectedStepInfo ? (
                 <>
-                  <Typography.Text style={{ fontSize: 20 }}>
+                  <Typography.Text style={{fontSize: 20}}>
                     Step {selectedStepInfo?.stepNum} Details{' '}
                   </Typography.Text>
                   <Button
-                    icon={<PlayCircleOutlined />}
+                    icon={<PlayCircleOutlined/>}
                     onClick={handleRunDDByStep}
                     size="middle"
                     shape="round"
-                    style={{ marginLeft: '5px', marginRight: '5px' }}
+                    style={{marginLeft: '5px', marginRight: '5px'}}
                     type="primary"
                   >
                     Delta Debug by steps
@@ -371,11 +371,11 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
                         message.error('Unexpected run times, please enter a integer number.');
                       }
                     }}
-                    style={{ width: 60 }}
+                    style={{width: 60}}
                     controls={false}
                   />
                   <Tooltip title={'Number of Runs'}>
-                    <QuestionCircleOutlined style={{ marginLeft: 5 }} />
+                    <QuestionCircleOutlined style={{marginLeft: 5}}/>
                   </Tooltip>
                 </>
               ) : (
@@ -383,10 +383,10 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
               )}
             </>
           }
-          headStyle={{ height: 60 }}
-          bodyStyle={{ height: 700 }}
+          headStyle={{height: 60}}
+          bodyStyle={{height: 700}}
           bordered
-          style={{ width: '75%', overflow: 'auto' }}
+          style={{width: '75%', overflow: 'auto'}}
           split={'horizontal'}
         >
           <ProCard split="horizontal" key={'DD-result-table'}>
@@ -409,19 +409,19 @@ const InteractiveDeltaDebuggingPage: React.FC<IRouteComponentProps> = () => {
       <div>
         <Card
           title={
-            <div style={{ display: 'flex' }}>
+            <div style={{display: 'flex'}}>
               <Typography.Title level={4}>Hunk Relation Graph</Typography.Title>
-              <Popover style={{ width: 500 }} content={<TutorialGraph />} trigger="hover">
-                <QuestionCircleOutlined style={{ fontSize: 18 }} />
+              <Popover style={{width: 500}} content={<TutorialGraph/>} trigger="hover">
+                <QuestionCircleOutlined style={{fontSize: 18}}/>
               </Popover>
             </div>
           }
-          headStyle={{ height: 85 }}
-          bodyStyle={{ height: 700 }}
+          headStyle={{height: 85}}
+          bodyStyle={{height: 700}}
           bordered
-          style={{ width: '100%', overflow: 'auto' }}
+          style={{width: '100%', overflow: 'auto'}}
         >
-          <DeltaDebuggingHunkRelationGraph />
+          <DeltaDebuggingHunkRelationGraph/>
         </Card>
       </div>
       <Drawer

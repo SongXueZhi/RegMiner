@@ -36,7 +36,7 @@ public class ProgressServiceImpl implements ProgressService {
 
     @Override
     public SearchDetails getSearchDetails(String projectName, String bfc) throws IOException {
-        return ProgressUtils.getSearchDetails(projectName,bfc);
+        return ProgressUtils.getSearchDetails(projectName, bfc);
     }
 
 }

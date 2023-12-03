@@ -5,13 +5,11 @@ import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.regminer.common.constant.Configurations;
 import org.regminer.common.tool.RepositoryProvider;
 import org.regminer.common.tool.SimpleProgressMonitor;
 
@@ -39,13 +37,13 @@ public class GitUtils {
 
     public static boolean checkout(String commitID, File codeDir) {
         try (Repository repository = RepositoryProvider.getRepoFromLocal(codeDir); Git git = new Git(repository)) {
-            if (commitID.contains("~1")){
+            if (commitID.contains("~1")) {
                 try (RevWalk revWalk = new RevWalk(repository);) {
                     RevCommit commit = revWalk.parseCommit(repository.resolve(commitID));
                     git.reset().setMode(ResetCommand.ResetType.HARD).call();
                     git.checkout().setName(commit.getName()).setCreateBranch(false).setForceRefUpdate(true).call();
                 }
-            }else{
+            } else {
                 git.reset().setMode(ResetCommand.ResetType.HARD).call();
                 git.checkout().setName(commitID).setCreateBranch(false).setForceRefUpdate(true).call();
             }
@@ -56,15 +54,15 @@ public class GitUtils {
         }
     }
 
-   // TODO Given projectDir,get ALL commits in project
+    // TODO Given projectDir,get ALL commits in project
     // all commits  format in
 
 
     public static List<DiffEntry> getDiffEntriesBetweenCommits(File codeDir, String newID, String oldID) {
         try (Repository repository = RepositoryProvider.getRepoFromLocal(codeDir); Git git = new Git(repository)) {
-             return git.diff().
-                    setOldTree(prepareTreeParser(repository,oldID)).
-                    setNewTree(prepareTreeParser(repository,newID)).
+            return git.diff().
+                    setOldTree(prepareTreeParser(repository, oldID)).
+                    setNewTree(prepareTreeParser(repository, newID)).
                     call();
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -89,8 +87,9 @@ public class GitUtils {
             return treeParser;
         }
     }
+
     // 使用拓扑排序遍历commitID前的所有commit
-    public static  List<String> revListCommand(String commitId,File codeDir) {
+    public static List<String> revListCommand(String commitId, File codeDir) {
         List<String> revList = new ArrayList<>();
         try (Repository repo = RepositoryProvider.getRepoFromLocal(codeDir)) {
             // Use RevWalk to traverse the commit history starting from the specified commit ID

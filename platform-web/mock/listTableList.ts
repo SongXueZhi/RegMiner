@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Request, Response } from 'express';
+import {Request, Response} from 'express';
 import moment from 'moment';
-import { parse } from 'url';
+import {parse} from 'url';
 
 // mock tableListDataSource
 const genList = (current: number, pageSize: number) => {
@@ -38,12 +38,12 @@ function getRule(req: Request, res: Response, u: string) {
   if (!realUrl || Object.prototype.toString.call(realUrl) !== '[object String]') {
     realUrl = req.url;
   }
-  const { current = 1, pageSize = 10 } = req.query;
+  const {current = 1, pageSize = 10} = req.query;
   const params = parse(realUrl, true).query as unknown as API.PageParams &
     API.RuleListItem & {
-      sorter: any;
-      filter: any;
-    };
+    sorter: any;
+    filter: any;
+  };
 
   let dataSource = [...tableListDataSource].slice(
     ((current as number) - 1) * (pageSize as number),
@@ -111,7 +111,7 @@ function postRule(req: Request, res: Response, u: string, b: Request) {
   }
 
   const body = (b && b.body) || req.body;
-  const { method, name, desc, key } = body;
+  const {method, name, desc, key} = body;
 
   switch (method) {
     /* eslint no-case-declarations:0 */
@@ -147,8 +147,8 @@ function postRule(req: Request, res: Response, u: string, b: Request) {
         let newRule = {};
         tableListDataSource = tableListDataSource.map((item) => {
           if (item.key === key) {
-            newRule = { ...item, desc, name };
-            return { ...item, desc, name };
+            newRule = {...item, desc, name};
+            return {...item, desc, name};
           }
           return item;
         });

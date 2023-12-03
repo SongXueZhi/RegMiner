@@ -51,11 +51,11 @@
 
     <insert id="insertBugToType" parameterType="com.fudan.annotation.platform.backend.entity.CreateBugToType">
         insert into bug_to_type
-        (regression_uuid, bug_type_id, bug_type_name, created_by)
+            (regression_uuid, bug_type_id, bug_type_name, created_by)
         values (#{regressionUuid},
-        #{bugTypeId},
-        #{bugTypeName},
-        #{accountName});
+                #{bugTypeId},
+                #{bugTypeName},
+                #{accountName});
     </insert>
 
 </mapper>

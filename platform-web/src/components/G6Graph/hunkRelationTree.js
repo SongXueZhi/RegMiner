@@ -82,7 +82,7 @@ const drawRelationTreeGraph = function (json_data, graphId) {
     plugins: [nodeTip, edgeTip],
     animate: true,
     defaultNode: {
-    //   type: 'rect',
+      //   type: 'rect',
       size: [26, 26],
       anchorPoints: [
         [0, 0.5],
@@ -218,4 +218,4 @@ const drawRelationTreeGraph = function (json_data, graphId) {
     };
 };
 
-export { drawRelationTreeGraph };
+export {drawRelationTreeGraph};

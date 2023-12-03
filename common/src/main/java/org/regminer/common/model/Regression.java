@@ -29,6 +29,28 @@ public class Regression {
     String testCase;
     int withGap;
 
+    /**
+     * @param bugId
+     * @param bfcId
+     * @param buggyId
+     * @param bicId
+     * @param workId
+     * @param testCase
+     */
+    public Regression(String regressionUUID, String bugId, String bfcId, String buggyId,
+                      String bicId, String workId,
+                      String testCase,
+                      int withGap) {
+        this.regressionUUID = regressionUUID;
+        this.bugId = bugId;
+        this.bfcId = bfcId;
+        this.buggyId = buggyId;
+        this.bicId = bicId;
+        this.workId = workId;
+        this.testCase = testCase;
+        this.withGap = withGap;
+    }
+
     public ProjectEntity getProjectEntity() {
         return projectEntity;
     }
@@ -99,28 +121,5 @@ public class Regression {
 
     public void setTestCase(String testCase) {
         this.testCase = testCase;
-    }
-
-    /**
-     *
-      * @param bugId
-     * @param bfcId
-     * @param buggyId
-     * @param bicId
-     * @param workId
-     * @param testCase
-     */
-    public Regression(String regressionUUID,String bugId, String bfcId, String buggyId,
-                      String bicId, String workId,
-                      String testCase,
-                      int withGap) {
-        this.regressionUUID= regressionUUID;
-        this.bugId = bugId;
-        this.bfcId = bfcId;
-        this.buggyId = buggyId;
-        this.bicId = bicId;
-        this.workId = workId;
-        this.testCase = testCase;
-        this.withGap = withGap;
     }
 }

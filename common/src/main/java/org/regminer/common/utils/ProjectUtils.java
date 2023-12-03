@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ProjectUtils {
 
-     public static String getProjectPath(String projectName) {
+    public static String getProjectPath(String projectName) {
         //get meta project path
         return StringUtils.EMPTY;
     }

@@ -1,5 +1,3 @@
-import { List } from 'lodash';
-
 export type TableListItem = {
   key: number;
   disabled?: boolean;

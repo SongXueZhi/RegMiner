@@ -69,7 +69,7 @@ public class Executor {
                 e.printStackTrace();
             }
         }
-        return  0;
+        return 0;
     }
 
     public String ddexec(String cmd) {

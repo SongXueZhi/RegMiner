@@ -24,7 +24,7 @@ const getBrowser = async () => {
     // eslint-disable-next-line import/no-unresolved
     const puppeteer = require('puppeteer-core');
     const findChromePath = await findChrome({});
-    const { executablePath } = findChromePath;
+    const {executablePath} = findChromePath;
     const browser = await puppeteer.launch({
       executablePath,
       args: [

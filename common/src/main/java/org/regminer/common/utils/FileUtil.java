@@ -2,23 +2,17 @@ package org.regminer.common.utils;
 
 import org.apache.commons.io.FileUtils;
 
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class FileUtil {
 
-    public void createdNewDirectory(String path) {
-
-    }
-
     public static String getDirectoryFromPath(String path) {
         return path.contains("/") ? path.substring(0, path.lastIndexOf("/")) : "";
     }
 
-
-    public static synchronized void apendResultToFile(String line,File file) {
+    public static synchronized void apendResultToFile(String line, File file) {
         try {
             FileUtils.writeStringToFile(file, line + "\n", true);
         } catch (IOException e) {
@@ -110,6 +104,9 @@ public class FileUtil {
         return result;
     }
 
+    public void createdNewDirectory(String path) {
+
+    }
 
 
 }

@@ -47,7 +47,7 @@ public class Migrator {
             String newPath = diffEntry.getNewPath();
             String oldPath = diffEntry.getOldPath();
             String newFile = newPath.substring(newPath.lastIndexOf("/") + 1);
-            List<Edit> editList = getEdits(diffEntry,repo);
+            List<Edit> editList = getEdits(diffEntry, repo);
             //TODO delete file need to handle
             if (!newFile.equals("null") && !newFile.equals("CHANGES")) {
                 ChangedFile changedFile = new ChangedFile();
@@ -72,10 +72,11 @@ public class Migrator {
     public void equipRfcWithChangeInfo(Revision rfc) {
         // method can just use to rfc revision
         assert (rfc.getRevisionName().equals("bfc"));
-        List<DiffEntry> diffEntries = GitUtil.getDiffEntriesBetweenCommits(rfc.getLocalCodeDir(), rfc.getCommitID(), rfc.getCommitID()+"~1");
+        List<DiffEntry> diffEntries = GitUtil.getDiffEntriesBetweenCommits(rfc.getLocalCodeDir(), rfc.getCommitID(),
+                rfc.getCommitID() + "~1");
         assert (diffEntries != null);
         diffEntries.forEach(diffEntry -> {
-            addChangedFileToRfc(diffEntry,rfc);
+            addChangedFileToRfc(diffEntry, rfc);
         });
     }
 

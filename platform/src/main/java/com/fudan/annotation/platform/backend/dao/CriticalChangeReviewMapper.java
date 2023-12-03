@@ -11,9 +11,11 @@ import java.util.List;
 public interface CriticalChangeReviewMapper {
 
     void setCriticalChangeReview(String regressionUuid, String revisionName, String newPath, String oldPath,
-                                 int beginA, int beginB, int endA, int endB, String type, String tool, String accountName, String feedback);
+                                 int beginA, int beginB, int endA, int endB, String type, String tool,
+                                 String accountName, String feedback);
 
-    void updateCriticalChangeReview(Integer reviewId, int beginA, int beginB, int endA, int endB, String tool, String accountName, String feedback);
+    void updateCriticalChangeReview(Integer reviewId, int beginA, int beginB, int endA, int endB, String tool,
+                                    String accountName, String feedback);
 
     List<HunkEntityPlus> getCriticalChangeReview(String regressionUuid, String revisionName);
 

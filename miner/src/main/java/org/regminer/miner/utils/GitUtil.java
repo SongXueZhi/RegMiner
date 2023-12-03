@@ -10,21 +10,21 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 
 public class GitUtil {
 
-	public static String getContextWithFile(Repository repo, RevCommit commit, String filePath) throws Exception {
-		RevWalk walk = new RevWalk(repo);
-		RevTree revTree = commit.getTree();
-		TreeWalk treeWalk = TreeWalk.forPath(repo, filePath, revTree);
-		// 文件名错误
-		if (treeWalk == null)
-			return null;
+    public static String getContextWithFile(Repository repo, RevCommit commit, String filePath) throws Exception {
+        RevWalk walk = new RevWalk(repo);
+        RevTree revTree = commit.getTree();
+        TreeWalk treeWalk = TreeWalk.forPath(repo, filePath, revTree);
+        // 文件名错误
+        if (treeWalk == null)
+            return null;
 
-		ObjectId blobId = treeWalk.getObjectId(0);
-		ObjectLoader loader = repo.open(blobId);
-		byte[] bytes = loader.getBytes();
-		if (bytes != null)
-			return new String(bytes);
-		return null;
+        ObjectId blobId = treeWalk.getObjectId(0);
+        ObjectLoader loader = repo.open(blobId);
+        byte[] bytes = loader.getBytes();
+        if (bytes != null)
+            return new String(bytes);
+        return null;
 
-	}
+    }
 
 }

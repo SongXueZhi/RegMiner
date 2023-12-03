@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 /**
  * Utility class for test-related operations.
+ *
  * @Author: sxz
  * @Date: 2023/11/29/22:54
  */
@@ -19,7 +20,7 @@ public class TestUtils {
     /**
      * Collects test cases based on a given state filter.
      *
-     * @param testResult The test result containing the cases.
+     * @param testResult  The test result containing the cases.
      * @param stateFilter A filter to apply on test case states.
      * @return A map of test case IDs and their results.
      */
@@ -34,8 +35,8 @@ public class TestUtils {
      * Removes test files from a PotentialBFC based on a specific test state.
      *
      * @param potentialBFC The potential BFC to modify.
-     * @param testResult The test results to use for filtering.
-     * @param testState The state of the test cases to remove.
+     * @param testResult   The test results to use for filtering.
+     * @param testState    The state of the test cases to remove.
      */
     public static void removeTestFilesInBFC(PotentialBFC potentialBFC, TestResult testResult,
                                             TestCaseResult.TestState testState) {

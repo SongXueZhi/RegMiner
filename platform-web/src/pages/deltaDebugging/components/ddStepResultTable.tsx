@@ -1,8 +1,8 @@
-import type { ProColumns } from '@ant-design/pro-table';
+import type {ProColumns} from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Col, Collapse, Row, Typography } from 'antd';
-import { useEffect, useMemo, useState } from 'react';
-import type { HunkEntityItems, DdStepsItems } from '../data';
+import {Col, Collapse, Row, Typography} from 'antd';
+import {useEffect, useMemo, useState} from 'react';
+import type {DdStepsItems, HunkEntityItems} from '../data';
 
 interface IProps {
   allHunks: HunkEntityItems[];
@@ -16,7 +16,7 @@ interface IProps {
 //   );
 // }
 
-const DeltaDebuggingStepResultTable: React.FC<IProps> = ({ allHunks, selectedHunk }) => {
+const DeltaDebuggingStepResultTable: React.FC<IProps> = ({allHunks, selectedHunk}) => {
   const [dataSource, setDataSource] = useState<DdStepsItems[]>([]);
 
   const columns: ProColumns<DdStepsItems>[] = useMemo(
@@ -34,7 +34,7 @@ const DeltaDebuggingStepResultTable: React.FC<IProps> = ({ allHunks, selectedHun
       {
         title: 'cProb',
         dataIndex: 'cprob',
-        render: (_, { stepTestedInx, cprob }) => {
+        render: (_, {stepTestedInx, cprob}) => {
           return (
             <Row justify="center" wrap={true}>
               {cprob.map((num, index) => {

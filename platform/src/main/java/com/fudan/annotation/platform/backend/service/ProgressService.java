@@ -15,5 +15,6 @@ import java.util.List;
  */
 public interface ProgressService {
     ProgressInfo getProgressInfo() throws IOException;
+
     SearchDetails getSearchDetails(String projectName, String bfc) throws IOException;
 }

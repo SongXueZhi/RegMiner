@@ -1,10 +1,10 @@
-import React, { useCallback } from 'react';
-import { LogoutOutlined } from '@ant-design/icons';
-import { Avatar, Menu, Spin } from 'antd';
-import { history, useModel } from 'umi';
+import React, {useCallback} from 'react';
+import {LogoutOutlined} from '@ant-design/icons';
+import {Avatar, Menu, Spin} from 'antd';
+import {history, useModel} from 'umi';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
-import type { MenuInfo } from 'rc-menu/lib/interface';
+import type {MenuInfo} from 'rc-menu/lib/interface';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -22,19 +22,19 @@ const loginOut = async () => {
   }
 };
 
-const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
-  const { initialState, setInitialState } = useModel('@@initialState');
+const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({menu}) => {
+  const {initialState, setInitialState} = useModel('@@initialState');
 
   const onMenuClick = useCallback(
     async (event: MenuInfo) => {
-      const { key } = event;
+      const {key} = event;
       if (key === 'logout') {
         await initialState?.fetchUserInfo?.({
           accountId: 0,
           accountName: '',
           role: '',
         });
-        setInitialState((s) => ({ ...s, currentUser: undefined }));
+        setInitialState((s) => ({...s, currentUser: undefined}));
         loginOut();
         return;
       }
@@ -57,7 +57,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
           </Menu.Item>
         )} */}
       <Menu.Item key="logout">
-        <LogoutOutlined />
+        <LogoutOutlined/>
         {!initialState || !initialState.currentUser || !initialState.currentUser.accountName
           ? 'Sign in'
           : 'Logout'}
@@ -80,7 +80,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   if (!initialState) {
     return loading;
   }
-  const { currentUser } = initialState;
+  const {currentUser} = initialState;
   if (!currentUser || !currentUser.accountName) {
     return loading;
   }

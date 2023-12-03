@@ -1,4 +1,4 @@
-import { message } from 'antd';
+import {message} from 'antd';
 import request from 'umi-request';
 import type {
   BugTypeItems,
@@ -13,7 +13,7 @@ export async function queryRegressionDetail(params: {
   regression_uuid: string;
   userToken: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<RegressionDetail>>(
+  const {code, msg, data} = await request<API.RegResponse<RegressionDetail>>(
     '/api/regression/detail',
     {
       method: 'GET',
@@ -32,7 +32,7 @@ export async function queryRegressionMigrate(params: {
   userToken: string;
   bic: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<RegressionDetail>>(
+  const {code, msg, data} = await request<API.RegResponse<RegressionDetail>>(
     '/api/regression/migrate',
     {
       method: 'GET',
@@ -47,7 +47,7 @@ export async function queryRegressionMigrate(params: {
 }
 
 export async function regressionCheckout(params: { regression_uuid: string; userToken: string }) {
-  const { code, msg, data } = await request<API.RegResponse<any>>('/api/regression/checkout', {
+  const {code, msg, data} = await request<API.RegResponse<any>>('/api/regression/checkout', {
     method: 'PUT',
     params,
   });
@@ -66,7 +66,7 @@ export async function queryRegressionCode(params: {
   new_path: string;
   revisionFlag: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<RegressionCode>>(
+  const {code, msg, data} = await request<API.RegResponse<RegressionCode>>(
     '/api/regression/code',
     {
       method: 'GET',
@@ -85,7 +85,7 @@ export async function getRegressionPath(params: {
   revisionFlag: string;
   userToken: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<string>>('/api/regression/test', {
+  const {code, msg, data} = await request<API.RegResponse<string>>('/api/regression/test', {
     method: 'GET',
     params,
   });
@@ -97,7 +97,7 @@ export async function getRegressionPath(params: {
 }
 
 export async function getRegressionConsole(params: { path: string }) {
-  const { code, msg, data } = await request<API.RegResponse<string>>('/api/regression/console', {
+  const {code, msg, data} = await request<API.RegResponse<string>>('/api/regression/console', {
     method: 'GET',
     params,
   });
@@ -135,10 +135,10 @@ export async function postRegressionRevert(params: {
   filePath: string;
   userToken: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<any>>('/api/regression/revert', {
+  const {code, msg, data} = await request<API.RegResponse<any>>('/api/regression/revert', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    params: { ...params },
+    headers: {'Content-Type': 'application/json'},
+    params: {...params},
   });
   if (code !== 200) {
     message.error(msg);
@@ -159,10 +159,10 @@ export async function postRegressionUpdateNewCode(
   },
   body: string,
 ) {
-  const { code, msg, data } = await request<API.RegResponse<any>>('/api/regression/update', {
+  const {code, msg, data} = await request<API.RegResponse<any>>('/api/regression/update', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    params: { ...params },
+    headers: {'Content-Type': 'application/json'},
+    params: {...params},
     body: body,
     // data: { body },
   });
@@ -180,10 +180,10 @@ export async function postClearCache(params: {
   projectFullName: string;
   regressionUuid: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<null>>('/api/regression/clearCache', {
+  const {code, msg, data} = await request<API.RegResponse<null>>('/api/regression/clearCache', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    params: { ...params },
+    headers: {'Content-Type': 'application/json'},
+    params: {...params},
   });
   if (code !== 200) {
     message.error(msg);
@@ -195,12 +195,12 @@ export async function postClearCache(params: {
 }
 
 export async function getCommentList(params: { regression_uuid: string }) {
-  const { code, msg, data } = await request<API.RegResponse<CommentListItems[]>>(
+  const {code, msg, data} = await request<API.RegResponse<CommentListItems[]>>(
     '/api/regression/comments',
     {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      params: { ...params },
+      headers: {'Content-Type': 'application/json'},
+      params: {...params},
     },
   );
   if (code !== 200) {
@@ -216,10 +216,10 @@ export async function addComment(params: {
   account_name: string | undefined;
   context: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<null>>('/api/regression/comments', {
+  const {code, msg, data} = await request<API.RegResponse<null>>('/api/regression/comments', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    params: { ...params },
+    headers: {'Content-Type': 'application/json'},
+    params: {...params},
   });
   if (code !== 200) {
     message.error(msg);
@@ -235,10 +235,10 @@ export async function deleteComment(params: {
   account_name: string;
   comment_id: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<null>>('/api/regression/comments', {
+  const {code, msg, data} = await request<API.RegResponse<null>>('/api/regression/comments', {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    params: { ...params },
+    headers: {'Content-Type': 'application/json'},
+    params: {...params},
   });
   if (code !== 200) {
     message.error(msg);
@@ -253,12 +253,12 @@ export async function getRetrievalCriticalChangeReviewList(params: {
   regression_uuid: string;
   revision_name: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<RegressionCriticalChangeDetail>>(
+  const {code, msg, data} = await request<API.RegResponse<RegressionCriticalChangeDetail>>(
     '/api/regression/criticalChange/review',
     {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      params: { ...params },
+      headers: {'Content-Type': 'application/json'},
+      params: {...params},
     },
   );
   if (code !== 200) {
@@ -280,7 +280,7 @@ export async function putCriticalChangeReviewById(
   },
   body: HunkEntityParams,
 ) {
-  const { code, msg, data } = await request<API.RegResponse<null>>(
+  const {code, msg, data} = await request<API.RegResponse<null>>(
     '/api/regression/criticalChange/review',
     {
       method: 'PUT',
@@ -305,7 +305,7 @@ export async function deleteCriticalChangeReviewById(params: {
   revision_name: 'bic' | 'bfc';
   review_id: number;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<RegressionCriticalChangeDetail>>(
+  const {code, msg, data} = await request<API.RegResponse<RegressionCriticalChangeDetail>>(
     '/api/regression/criticalChange/review',
     {
       method: 'DELETE',
@@ -324,7 +324,7 @@ export async function deleteCriticalChangeReviewById(params: {
 }
 
 export async function getRegressionBugTypes(params: { regression_uuid: string }) {
-  const { code, msg, data } = await request<API.RegResponse<BugTypeItems[]>>(
+  const {code, msg, data} = await request<API.RegResponse<BugTypeItems[]>>(
     '/api/bugType/regression/bugTypeDetail',
     {
       method: 'GET',
@@ -343,7 +343,7 @@ export async function getRegressionBugTypes(params: { regression_uuid: string })
 }
 
 export async function agreeBugType(params: { regression_uuid: string; bug_type_id: number }) {
-  const { code, msg, data } = await request<API.RegResponse<number>>('/api/bugType/agree', {
+  const {code, msg, data} = await request<API.RegResponse<number>>('/api/bugType/agree', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -359,7 +359,7 @@ export async function agreeBugType(params: { regression_uuid: string; bug_type_i
 }
 
 export async function disagreeBugType(params: { regression_uuid: string; bug_type_id: number }) {
-  const { code, msg, data } = await request<API.RegResponse<number>>('/api/bugType/disagree', {
+  const {code, msg, data} = await request<API.RegResponse<number>>('/api/bugType/disagree', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -380,7 +380,7 @@ export async function addBugTypeToRegression(body: {
   bugTypeName: string;
   accountName: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<void>>('/api/bugType/tagBugType', {
+  const {code, msg, data} = await request<API.RegResponse<void>>('/api/bugType/tagBugType', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -396,7 +396,7 @@ export async function addBugTypeToRegression(body: {
 }
 
 export async function createNewBugType(body: { bugTypeName: string; accountName?: string }) {
-  const { code, msg, data } = await request<API.RegResponse<string>>('/api/bugType/create', {
+  const {code, msg, data} = await request<API.RegResponse<string>>('/api/bugType/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

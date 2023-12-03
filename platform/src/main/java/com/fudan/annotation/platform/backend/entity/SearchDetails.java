@@ -17,6 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchDetails {
-    private  String  searchSpaceNum;
+    private String searchSpaceNum;
     private List<String[]> orderList;
 }

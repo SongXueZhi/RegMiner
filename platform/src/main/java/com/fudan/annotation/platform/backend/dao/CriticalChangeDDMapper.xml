@@ -24,17 +24,17 @@
 
     <insert id="setCriticalChangeDD">
         insert into critical_change_dd
-        (regression_uuid, revision_name)
+            (regression_uuid, revision_name)
         values (#{regressionUuid},
                 #{revisionName});
     </insert>
 
-<!--    <delete id="deleteCriticalChangeDD">-->
-<!--        delete from critical_change_dd-->
-<!--        <where>-->
-<!--            regression_uuid = #{regressionUuid} and revision_name = #{revisionName}-->
-<!--            and critical_change_id = #{criticalChangeId}-->
-<!--        </where>-->
-<!--    </delete>-->
+    <!--    <delete id="deleteCriticalChangeDD">-->
+    <!--        delete from critical_change_dd-->
+    <!--        <where>-->
+    <!--            regression_uuid = #{regressionUuid} and revision_name = #{revisionName}-->
+    <!--            and critical_change_id = #{criticalChangeId}-->
+    <!--        </where>-->
+    <!--    </delete>-->
 
 </mapper>

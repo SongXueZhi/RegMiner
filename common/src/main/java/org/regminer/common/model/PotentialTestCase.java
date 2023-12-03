@@ -8,35 +8,36 @@ import java.util.Map;
 public class PotentialTestCase {
 
 
-	List<TestFile> testFiles;
-	List<SourceFile> sourceFiles;
-	int level;
-	public Map<String, File> fileMap = new HashMap();
-	public PotentialTestCase(int index) {
-		this.level=index;
-	}
+    public Map<String, File> fileMap = new HashMap();
+    List<TestFile> testFiles;
+    List<SourceFile> sourceFiles;
+    int level;
 
-	public int getIndex() {
-		return level;
-	}
+    public PotentialTestCase(int index) {
+        this.level = index;
+    }
 
-	public void setIndex(int index) {
-		this.level = index;
-	}
+    public int getIndex() {
+        return level;
+    }
 
-	public List<TestFile> getTestFiles() {
-		return testFiles;
-	}
+    public void setIndex(int index) {
+        this.level = index;
+    }
 
-	public void setTestFiles(List<TestFile> testFiles) {
-		this.testFiles = testFiles;
-	}
+    public List<TestFile> getTestFiles() {
+        return testFiles;
+    }
 
-	public List<SourceFile> getSourceFiles() {
-		return sourceFiles;
-	}
+    public void setTestFiles(List<TestFile> testFiles) {
+        this.testFiles = testFiles;
+    }
 
-	public void setSourceFiles(List<SourceFile> sourceFiles) {
-		this.sourceFiles = sourceFiles;
-	}
+    public List<SourceFile> getSourceFiles() {
+        return sourceFiles;
+    }
+
+    public void setSourceFiles(List<SourceFile> sourceFiles) {
+        this.sourceFiles = sourceFiles;
+    }
 }

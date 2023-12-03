@@ -1,16 +1,16 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer } from 'antd';
-import React, { useState, useRef } from 'react';
-import { useIntl, FormattedMessage } from 'umi';
-import { PageContainer, FooterToolbar } from '@ant-design/pro-layout';
-import type { ProColumns, ActionType } from '@ant-design/pro-table';
+import {PlusOutlined} from '@ant-design/icons';
+import {Button, Drawer, Input, message} from 'antd';
+import React, {useRef, useState} from 'react';
+import {FormattedMessage, useIntl} from 'umi';
+import {FooterToolbar, PageContainer} from '@ant-design/pro-layout';
+import type {ActionType, ProColumns} from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
-import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
+import {ModalForm, ProFormText, ProFormTextArea} from '@ant-design/pro-form';
+import type {ProDescriptionsItemProps} from '@ant-design/pro-descriptions';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import type { FormValueType } from './components/UpdateForm';
+import type {FormValueType} from './components/UpdateForm';
 import UpdateForm from './components/UpdateForm';
-import { rule, addRule, updateRule, removeRule } from '@/services/ant-design-pro/rule';
+import {addRule, removeRule, rule, updateRule} from '@/services/ant-design-pro/rule';
 
 /**
  * @en-US Add node
@@ -20,7 +20,7 @@ import { rule, addRule, updateRule, removeRule } from '@/services/ant-design-pro
 const handleAdd = async (fields: API.RuleListItem) => {
   const hide = message.loading('正在添加');
   try {
-    await addRule({ ...fields });
+    await addRule({...fields});
     hide();
     message.success('Added successfully');
     return true;
@@ -127,7 +127,7 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleDesc" defaultMessage="Description" />,
+      title: <FormattedMessage id="pages.searchTable.titleDesc" defaultMessage="Description"/>,
       dataIndex: 'desc',
       valueType: 'textarea',
     },
@@ -148,7 +148,7 @@ const TableList: React.FC = () => {
         })}`,
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleStatus" defaultMessage="Status" />,
+      title: <FormattedMessage id="pages.searchTable.titleStatus" defaultMessage="Status"/>,
       dataIndex: 'status',
       hideInForm: true,
       valueEnum: {
@@ -163,13 +163,13 @@ const TableList: React.FC = () => {
         },
         1: {
           text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.running" defaultMessage="Running" />
+            <FormattedMessage id="pages.searchTable.nameStatus.running" defaultMessage="Running"/>
           ),
           status: 'Processing',
         },
         2: {
           text: (
-            <FormattedMessage id="pages.searchTable.nameStatus.online" defaultMessage="Online" />
+            <FormattedMessage id="pages.searchTable.nameStatus.online" defaultMessage="Online"/>
           ),
           status: 'Success',
         },
@@ -194,7 +194,7 @@ const TableList: React.FC = () => {
       sorter: true,
       dataIndex: 'updatedAt',
       valueType: 'dateTime',
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
+      renderFormItem: (item, {defaultRender, ...rest}, form) => {
         const status = form.getFieldValue('status');
         if (`${status}` === '0') {
           return false;
@@ -214,7 +214,7 @@ const TableList: React.FC = () => {
       },
     },
     {
-      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="Operating" />,
+      title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="Operating"/>,
       dataIndex: 'option',
       valueType: 'option',
       render: (_, record) => [
@@ -225,7 +225,7 @@ const TableList: React.FC = () => {
             setCurrentRow(record);
           }}
         >
-          <FormattedMessage id="pages.searchTable.config" defaultMessage="Configuration" />
+          <FormattedMessage id="pages.searchTable.config" defaultMessage="Configuration"/>
         </a>,
         <a key="subscribeAlert" href="https://procomponents.ant.design/">
           <FormattedMessage
@@ -257,7 +257,7 @@ const TableList: React.FC = () => {
               handleModalVisible(true);
             }}
           >
-            <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
+            <PlusOutlined/> <FormattedMessage id="pages.searchTable.new" defaultMessage="New"/>
           </Button>,
         ]}
         request={rule}
@@ -272,9 +272,9 @@ const TableList: React.FC = () => {
         <FooterToolbar
           extra={
             <div>
-              <FormattedMessage id="pages.searchTable.chosen" defaultMessage="Chosen" />{' '}
-              <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>{' '}
-              <FormattedMessage id="pages.searchTable.item" defaultMessage="项" />
+              <FormattedMessage id="pages.searchTable.chosen" defaultMessage="Chosen"/>{' '}
+              <a style={{fontWeight: 600}}>{selectedRowsState.length}</a>{' '}
+              <FormattedMessage id="pages.searchTable.item" defaultMessage="项"/>
               &nbsp;&nbsp;
               <span>
                 <FormattedMessage
@@ -282,7 +282,7 @@ const TableList: React.FC = () => {
                   defaultMessage="Total number of service calls"
                 />{' '}
                 {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)}{' '}
-                <FormattedMessage id="pages.searchTable.tenThousand" defaultMessage="万" />
+                <FormattedMessage id="pages.searchTable.tenThousand" defaultMessage="万"/>
               </span>
             </div>
           }
@@ -340,7 +340,7 @@ const TableList: React.FC = () => {
           width="md"
           name="name"
         />
-        <ProFormTextArea width="md" name="desc" />
+        <ProFormTextArea width="md" name="desc"/>
       </ModalForm>
       <UpdateForm
         onSubmit={async (value) => {

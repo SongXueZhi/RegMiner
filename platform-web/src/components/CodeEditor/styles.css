@@ -28,11 +28,11 @@ a:hover {
   flex-direction: column;
 }
 
-.flex>.none {
+.flex > .none {
   flex: none;
 }
 
-.flex>.auto {
+.flex > .auto {
   flex: auto;
 }
 
@@ -189,7 +189,7 @@ a:hover {
   -ms-flex-pack: center;
 }
 
-.InterfaceView.MarkView>* {
+.InterfaceView.MarkView > * {
   pointer-events: auto;
 }
 

@@ -1,4 +1,4 @@
-import { Avatar, List } from 'antd';
+import {Avatar, List} from 'antd';
 
 import React from 'react';
 import classNames from 'classnames';
@@ -20,17 +20,17 @@ export type NoticeIconTabProps = {
   onViewMore?: (e: any) => void;
 };
 const NoticeList: React.FC<NoticeIconTabProps> = ({
-  list = [],
-  onClick,
-  onClear,
-  title,
-  onViewMore,
-  emptyText,
-  showClear = true,
-  clearText,
-  viewMoreText,
-  showViewMore = false,
-}) => {
+                                                    list = [],
+                                                    onClick,
+                                                    onClear,
+                                                    title,
+                                                    onViewMore,
+                                                    emptyText,
+                                                    showClear = true,
+                                                    clearText,
+                                                    viewMoreText,
+                                                    showViewMore = false,
+                                                  }) => {
   if (!list || list.length === 0) {
     return (
       <div className={styles.notFound}>
@@ -54,7 +54,7 @@ const NoticeList: React.FC<NoticeIconTabProps> = ({
           // eslint-disable-next-line no-nested-ternary
           const leftIcon = item.avatar ? (
             typeof item.avatar === 'string' ? (
-              <Avatar className={styles.avatar} src={item.avatar} />
+              <Avatar className={styles.avatar} src={item.avatar}/>
             ) : (
               <span className={styles.iconElement}>{item.avatar}</span>
             )

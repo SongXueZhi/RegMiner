@@ -1,18 +1,18 @@
-import { Button, Form, Input, Select, Tag, Typography, message } from 'antd';
-import { useModel } from 'umi';
-import { useEffect, useState } from 'react';
-import { getAllBugTypes } from '@/pages/regression/service';
-import type { AllBugTypes } from '@/pages/regression/data';
-import { addBugTypeToRegression, createNewBugType, getRegressionBugTypes } from '../service';
-import type { BugTypeItems } from '../data';
+import {Button, Form, Input, message, Select, Tag, Typography} from 'antd';
+import {useModel} from 'umi';
+import {useEffect, useState} from 'react';
+import {getAllBugTypes} from '@/pages/regression/service';
+import type {AllBugTypes} from '@/pages/regression/data';
+import {addBugTypeToRegression, createNewBugType, getRegressionBugTypes} from '../service';
+import type {BugTypeItems} from '../data';
 
 interface IProps {
   regressionUuid: string;
   //   onUpdateTag: ({ bugTypeId, bugTypeName }: { bugTypeId: number; bugTypeName: string }) => void;
 }
 
-const TagBugTypes: React.FC<IProps> = ({ regressionUuid }) => {
-  const { initialState } = useModel('@@initialState');
+const TagBugTypes: React.FC<IProps> = ({regressionUuid}) => {
+  const {initialState} = useModel('@@initialState');
   const [update, setUpdate] = useState<boolean>(false);
   const [regressionBugTypes, setRegressionBugTypes] = useState<BugTypeItems[]>([]);
   const [allBugTypes, setAllBugTypes] = useState<AllBugTypes[]>([]);
@@ -53,7 +53,7 @@ const TagBugTypes: React.FC<IProps> = ({ regressionUuid }) => {
         <Form.Item label="All Bug Types">
           <Select
             allowClear
-            style={{ width: '90%' }}
+            style={{width: '90%'}}
             placeholder="Select one"
             onChange={(_, options) => {
               if (options !== undefined) {
@@ -69,7 +69,7 @@ const TagBugTypes: React.FC<IProps> = ({ regressionUuid }) => {
               }
             }}
             options={allBugTypes.map((resp) => {
-              return { value: resp.bugTypeId, label: resp.bugTypeName };
+              return {value: resp.bugTypeId, label: resp.bugTypeName};
             })}
           />
         </Form.Item>
@@ -98,7 +98,7 @@ const TagBugTypes: React.FC<IProps> = ({ regressionUuid }) => {
             <Input
               allowClear
               placeholder="Create New Bug Type"
-              style={{ width: 'calc(100% - 110px)' }}
+              style={{width: 'calc(100% - 110px)'}}
               onChange={(e) => {
                 setCreatedBugType(e.target.value);
               }}

@@ -1,16 +1,15 @@
-import { useState } from 'react';
-import React, { createRef } from 'react';
-import { monaco, MonacoDiffEditor } from 'react-monaco-editor';
-import { v4 as uuidv4 } from 'uuid';
-import type { Directory, Depandency } from './sidebar';
-import type { ResizeEntry } from '@blueprintjs/core';
-import { Divider, Button, ResizeSensor } from '@blueprintjs/core';
+import React, {createRef, useState} from 'react';
+import {monaco, MonacoDiffEditor} from 'react-monaco-editor';
+import {v4 as uuidv4} from 'uuid';
+import type {Depandency, Directory} from './sidebar';
+import type {ResizeEntry} from '@blueprintjs/core';
+import {Button, Divider, ResizeSensor} from '@blueprintjs/core';
 import EllipsisMiddle from '../EllipsisMiddle';
-import { Dropdown, Menu, message, Space } from 'antd';
-import type { DiffEditDetailItems, FeedbackList, HunkEntityItems } from '@/pages/editor/data';
-import { DownOutlined } from '@ant-design/icons';
-import { postRegressionRevert, postRegressionUpdateNewCode } from '@/pages/editor/service';
-import { useAccess } from 'umi';
+import {Dropdown, Menu, message, Space} from 'antd';
+import type {DiffEditDetailItems, FeedbackList, HunkEntityItems} from '@/pages/editor/data';
+import {DownOutlined} from '@ant-design/icons';
+import {postRegressionRevert, postRegressionUpdateNewCode} from '@/pages/editor/service';
+import {useAccess} from 'umi';
 
 import './styles.css';
 
@@ -48,26 +47,26 @@ interface IProps {
 const REVEAL_CONSOLE_HEIHGT = 31;
 const DEFAULT_HEIGHT = 40;
 const NewCodeEditor: React.FC<IProps> = ({
-  title,
-  regressionUuid,
-  filename,
-  extra,
-  oldVersionText,
-  newVersionText,
-  newPath,
-  oldPath,
-  darkTheme,
-  original,
-  value,
-  diffEditChanges,
-  isRunning,
-  consoleString,
-  CriticalChange,
-  projectFullName,
-  onRunCode,
-  onFeedbackList,
-  onRevertCode,
-}) => {
+                                           title,
+                                           regressionUuid,
+                                           filename,
+                                           extra,
+                                           oldVersionText,
+                                           newVersionText,
+                                           newPath,
+                                           oldPath,
+                                           darkTheme,
+                                           original,
+                                           value,
+                                           diffEditChanges,
+                                           isRunning,
+                                           consoleString,
+                                           CriticalChange,
+                                           projectFullName,
+                                           onRunCode,
+                                           onFeedbackList,
+                                           onRevertCode,
+                                         }) => {
   const access = useAccess();
   const [showConsole, setShowConsole] = useState<boolean>(false);
   const [version, setVersion] = useState<string>('firstOp');
@@ -75,7 +74,7 @@ const NewCodeEditor: React.FC<IProps> = ({
   const [monacoSize, setMonacoSize] = useState<{
     width: string | number;
     height: string | number;
-  }>({ width: 0, height: 0 });
+  }>({width: 0, height: 0});
   const [decorationIds, setDecorationIds] = useState<string[]>([]);
   const [modifiedNewCode, setModifiedNewCode] = useState<string | undefined>(value);
   const editorRef = createRef<MonacoDiffEditor>();
@@ -84,7 +83,7 @@ const NewCodeEditor: React.FC<IProps> = ({
 
   const options = {
     renderSideBySide: false,
-    minimap: { enabled: false },
+    minimap: {enabled: false},
     scrollbar: {
       verticalScrollbarSize: 0,
       verticalSliderSize: 14,
@@ -115,7 +114,7 @@ const NewCodeEditor: React.FC<IProps> = ({
     } else {
       height -= 30;
     } // 显示部分 ConsoleView，固定为 30px
-    setMonacoSize({ width: width, height: height });
+    setMonacoSize({width: width, height: height});
   };
   const handleShowConsole = () => {
     const width = monacoSize.width as number;
@@ -126,7 +125,7 @@ const NewCodeEditor: React.FC<IProps> = ({
     // true => false
     else nextH = height - consoleHeight + REVEAL_CONSOLE_HEIHGT; // false => true
     setShowConsole(!showConsole);
-    setMonacoSize({ width, height: nextH });
+    setMonacoSize({width, height: nextH});
   };
   const handleRunClick = async (option: string) => {
     if (access.allUsersFoo) {
@@ -247,7 +246,7 @@ const NewCodeEditor: React.FC<IProps> = ({
         <div
           className={darkTheme ? 'TitlebarView flex between dark' : 'TitlebarView flex between'}
           // style={{ width: '100%' }}
-          style={{ width: '100%', display: 'inline-flex' }}
+          style={{width: '100%', display: 'inline-flex'}}
         >
           <div className="project-title">
             <EllipsisMiddle suffixCount={12}>{title}</EllipsisMiddle>
@@ -256,7 +255,7 @@ const NewCodeEditor: React.FC<IProps> = ({
             <Button
               id="revert-new-code-btn"
               data-imitate
-              style={{ height: '30px' }}
+              style={{height: '30px'}}
               intent="success"
               icon="upload"
               onClick={handleUpdateNewCodeClick}
@@ -269,7 +268,7 @@ const NewCodeEditor: React.FC<IProps> = ({
             <Button
               id="revert-new-code-btn"
               data-imitate
-              style={{ height: '30px' }}
+              style={{height: '30px'}}
               intent="success"
               icon="repeat"
               onClick={handleRevertCode}
@@ -288,7 +287,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                   items={[
                     {
                       label: (
-                        <span style={{ fontSize: 16, fontWeight: 'bolder' }}>
+                        <span style={{fontSize: 16, fontWeight: 'bolder'}}>
                           {oldVersionText ?? 'firstOp'}
                         </span>
                       ),
@@ -296,7 +295,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                     },
                     {
                       label: (
-                        <span style={{ fontSize: 16, fontWeight: 'bolder' }}>
+                        <span style={{fontSize: 16, fontWeight: 'bolder'}}>
                           {newVersionText ?? 'secondOp'}
                         </span>
                       ),
@@ -304,7 +303,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                     },
                     {
                       label: (
-                        <span style={{ fontSize: 16, fontWeight: 'bolder' }}>
+                        <span style={{fontSize: 16, fontWeight: 'bolder'}}>
                           bug introduce with new code
                         </span>
                       ),
@@ -318,7 +317,7 @@ const NewCodeEditor: React.FC<IProps> = ({
               <Button intent="success" icon="play" loading={isRunning}>
                 <Space>
                   Run
-                  <DownOutlined />
+                  <DownOutlined/>
                 </Space>
               </Button>
             </Dropdown>
@@ -383,7 +382,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                               range: selectionRange,
                               options: {
                                 className: 'addContentClass',
-                                hoverMessage: { value: 'Feedback: Add' },
+                                hoverMessage: {value: 'Feedback: Add'},
                               },
                             },
                           ],
@@ -407,7 +406,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                               range: selectionRange,
                               options: {
                                 className: 'addContentClass',
-                                hoverMessage: { value: 'Feedback: Add' },
+                                hoverMessage: {value: 'Feedback: Add'},
                               },
                             },
                           ],
@@ -468,7 +467,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                               range: selectionRange,
                               options: {
                                 className: 'rejectContentClass',
-                                hoverMessage: { value: 'Feedback: Reject' },
+                                hoverMessage: {value: 'Feedback: Reject'},
                               },
                             },
                           ],
@@ -492,7 +491,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                               range: selectionRange,
                               options: {
                                 className: 'rejectContentClass',
-                                hoverMessage: { value: 'Feedback: Reject' },
+                                hoverMessage: {value: 'Feedback: Reject'},
                               },
                             },
                           ],
@@ -548,7 +547,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                               range: selectionRange,
                               options: {
                                 className: 'confirmContentClass',
-                                hoverMessage: { value: 'Feedback: Ground Truth' },
+                                hoverMessage: {value: 'Feedback: Ground Truth'},
                               },
                             },
                           ],
@@ -572,7 +571,7 @@ const NewCodeEditor: React.FC<IProps> = ({
                               range: selectionRange,
                               options: {
                                 className: 'confirmContentClass',
-                                hoverMessage: { value: 'Feedback: Confirm' },
+                                hoverMessage: {value: 'Feedback: Confirm'},
                               },
                             },
                           ],
@@ -608,22 +607,22 @@ const NewCodeEditor: React.FC<IProps> = ({
           className={showConsole ? 'ConsoleView open' : 'ConsoleView'}
           style={
             darkTheme
-              ? { backgroundColor: 'var(--dark-console-color)' }
-              : { backgroundColor: 'var(--light-console-color)' }
+              ? {backgroundColor: 'var(--dark-console-color)'}
+              : {backgroundColor: 'var(--light-console-color)'}
           }
         >
-          <Divider className={darkTheme ? 'divider dark' : 'divider'} />
-          <section className="flex vertical" style={{ width: '100%', height: '97%' }}>
+          <Divider className={darkTheme ? 'divider dark' : 'divider'}/>
+          <section className="flex vertical" style={{width: '100%', height: '97%'}}>
             <div className="header flex between none" onClick={handleShowConsole}>
-              <div className="title" style={{ fontSize: '16px', fontWeight: 'bolder' }}>
+              <div className="title" style={{fontSize: '16px', fontWeight: 'bolder'}}>
                 Console {version === 'firstOp' ? oldVersionText : newVersionText}
               </div>
               <div className="tools">
-                <Button minimal icon={showConsole ? 'chevron-down' : 'chevron-up'} />
+                <Button minimal icon={showConsole ? 'chevron-down' : 'chevron-up'}/>
               </div>
             </div>
             <div id="logsFlow" className="Logs">
-              <pre className="log output" style={{ overflow: 'unset' }}>
+              <pre className="log output" style={{overflow: 'unset'}}>
                 {consoleString}
               </pre>
             </div>

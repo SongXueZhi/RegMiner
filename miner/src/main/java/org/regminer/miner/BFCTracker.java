@@ -30,8 +30,8 @@ import java.util.Map;
 
 public class BFCTracker {
     private final static double PROB_UNIT = 0.005;
-    private double notRegProb = 1 - PROB_UNIT;
     GitTracker gitTracker = new GitTracker();
+    private double notRegProb = 1 - PROB_UNIT;
 
     public HashMap<String, Integer> handleTasks(List<CoverNode> coverNodes, File bfcDir) {
         HashMap<String, Integer> methodFrequencyMap = new HashMap<>();
@@ -39,7 +39,8 @@ public class BFCTracker {
         gitTracker.addJavaAttibuteToGit(bfcDir);
         for (CoverNode coverNode : coverNodes) {
             String methodName = coverNode.getCoverMethod().getName();
-            String packageAndClassPath = coverNode.getCoverPackage().getName() + File.separator + coverNode.getCoverClass().getFileName();
+            String packageAndClassPath =
+                    coverNode.getCoverPackage().getName() + File.separator + coverNode.getCoverClass().getFileName();
             String classPath = getJavaFilePath(javaFiles, packageAndClassPath);
             int frequency = 0;
             if (classPath != null) {
@@ -54,8 +55,8 @@ public class BFCTracker {
         int sum = 0;
         for (Map.Entry<String, Integer> entry : methodFrequencyMap.entrySet()) {
             int frequency = entry.getValue();
-            if(frequency > 0 ){
-                frequency =frequency-1;
+            if (frequency > 0) {
+                frequency = frequency - 1;
             }
             sum += frequency;
         }

@@ -14,7 +14,8 @@ import org.regminer.migrate.api.TestCaseMigrator;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @Author: sxz
@@ -22,20 +23,16 @@ import java.util.*;
  * @Description:
  */
 public class EnhancedBinarySearch extends BICSearchStrategy {
-    private TestCaseMigrator testMigrator;
-    private CtContext ctContext;
-
-    private PotentialBFC pRFC;
-
     final int level = 0;
+    protected Logger logger = org.slf4j.LoggerFactory.getLogger(this.getClass());
     TestCaseResult.TestState[] status; // 切勿直接访问该数组
-
     //XXX:CompileErrorSearch block
     //all related code need involve
     int passPoint = Integer.MIN_VALUE;
     int falPoint = Integer.MAX_VALUE;
-
-    protected Logger logger = org.slf4j.LoggerFactory.getLogger(this.getClass());
+    private TestCaseMigrator testMigrator;
+    private CtContext ctContext;
+    private PotentialBFC pRFC;
 
     public void setTestMigrator(TestCaseMigrator testCaseMigrator) {
         this.testMigrator = testCaseMigrator;
@@ -61,62 +58,62 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         String bfcId = pRFC.getCommit().getName();
         File bfcFile = new File(Configurations.CACHE_PATH + File.separator + bfcId);
         try {
-        logger.info(pRFC.getCommit().getName() + " Start search");
-        passPoint = Integer.MIN_VALUE;
-        // 方法主要逻辑
-        String[] arr = getSearchSpace(pRFC.getCommit().getParent(0).getName(),pRFC.fileMap.get(bfcId));
-        falPoint = arr.length - 1;
-        // 针对每一个BFC使用一个status数组记录状态，测试过的不再测试
-        status = new TestCaseResult.TestState[arr.length];
-        for (int i = 0; i < status.length; i++) {
-            status[i] = TestCaseResult.TestState.NOMARK;
-        }
-        // recursionBinarySearch(arr, 1, arr.length - 1);//乐观二分查找，只要不能编译，就往最新的时间走
-        int a = search(arr, 1, arr.length - 1); // 指数跳跃二分查找 XXX:CompileErrorSearch
-       
-        // 处理search结果
-        //have pass but not hit regression
-        if (a < 0 && passPoint >= 0) {
-            if (passPoint > falPoint) {
-                falPoint = arr.length - 1;
+            logger.info(pRFC.getCommit().getName() + " Start search");
+            passPoint = Integer.MIN_VALUE;
+            // 方法主要逻辑
+            String[] arr = getSearchSpace(pRFC.getCommit().getParent(0).getName(), pRFC.fileMap.get(bfcId));
+            falPoint = arr.length - 1;
+            // 针对每一个BFC使用一个status数组记录状态，测试过的不再测试
+            status = new TestCaseResult.TestState[arr.length];
+            for (int i = 0; i < status.length; i++) {
+                status[i] = TestCaseResult.TestState.NOMARK;
             }
-            if (passPoint < falPoint) {
-                logger.info("start searchStepByStep");
-                searchStepByStep(arr);
-            }
-            if (passPoint == falPoint) {
-                logger.info("Excepted! here passPoint eq falPoint");
-            }
-        }
+            // recursionBinarySearch(arr, 1, arr.length - 1);//乐观二分查找，只要不能编译，就往最新的时间走
+            int a = search(arr, 1, arr.length - 1); // 指数跳跃二分查找 XXX:CompileErrorSearch
 
-        //handle hit result
-        if (a >= 0 || (falPoint - passPoint) == 1) {
-            String working = "";
-            String bic = "";
-            if (a >= 0) {
-                working = arr[a];
-                bic = arr[a + 1];
-            } else if (passPoint >= 0 && falPoint - passPoint == 1) {
-                working = arr[passPoint];
-                bic = arr[falPoint];
-            }
-            if (working.isEmpty() && bic.isEmpty()) {
-                logger.error("work and bic eq empty");
-                return null;
+            // 处理search结果
+            //have pass but not hit regression
+            if (a < 0 && passPoint >= 0) {
+                if (passPoint > falPoint) {
+                    falPoint = arr.length - 1;
+                }
+                if (passPoint < falPoint) {
+                    logger.info("start searchStepByStep");
+                    searchStepByStep(arr);
+                }
+                if (passPoint == falPoint) {
+                    logger.info("Excepted! here passPoint eq falPoint");
+                }
             }
 
-            new SycFileCleanup().cleanDirectory(bfcFile);
-            return Triple.of(working, bic, 1);
-        } else if (passPoint >= 0 && falPoint - passPoint > 1) {
-            logger.info("regression+1,with gap");
-            return Triple.of(arr[passPoint], arr[falPoint], falPoint - passPoint);
-        }
-        return null;
-    }finally {
-           
+            //handle hit result
+            if (a >= 0 || (falPoint - passPoint) == 1) {
+                String working = "";
+                String bic = "";
+                if (a >= 0) {
+                    working = arr[a];
+                    bic = arr[a + 1];
+                } else if (passPoint >= 0 && falPoint - passPoint == 1) {
+                    working = arr[passPoint];
+                    bic = arr[falPoint];
+                }
+                if (working.isEmpty() && bic.isEmpty()) {
+                    logger.error("work and bic eq empty");
+                    return null;
+                }
+
+                new SycFileCleanup().cleanDirectory(bfcFile);
+                return Triple.of(working, bic, 1);
+            } else if (passPoint >= 0 && falPoint - passPoint > 1) {
+                logger.info("regression+1,with gap");
+                return Triple.of(arr[passPoint], arr[falPoint], falPoint - passPoint);
+            }
+            return null;
+        } finally {
+
             new SycFileCleanup().cleanDirectory(bfcFile);// 删除在regression定义以外的项目文件
+        }
     }
-}
 
     //该算法实际上是将git bisect的功能阉割实现了一遍，gitbisect实际上会考虑图的拓扑结构
     //这里我的考虑方式是使用拓扑排序，将提交历史变成线性结构。这是一种退而求其次的方式，但保证了真实的父子关系。
@@ -124,10 +121,10 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
     public void searchStepByStep(String[] arr) {
         int now = passPoint + 1;
         int i = 0;
-        TestCaseResult.TestState result=TestCaseResult.TestState.UNKNOWN;
+        TestCaseResult.TestState result = TestCaseResult.TestState.UNKNOWN;
         while (now <= falPoint && i < 2) {
             ++i;
-            result= getTestResult(arr[now], now);
+            result = getTestResult(arr[now], now);
             if (result == TestCaseResult.TestState.PASS) {
                 passPoint = now;
             } else if (result == TestCaseResult.TestState.FAL) {
@@ -150,7 +147,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
             --now;
         }
     }
-    
+
 
     public TestCaseResult.TestState getTestResult(String bic, int index) {
         logger.info("index:" + index + ":" + bic);
@@ -169,12 +166,12 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         logger.info(result.name().toString());
         return result;
     }
-    
+
 
     public TestCaseResult.TestState test(String bic, int index) {
         try {
             TestResult testResult = testMigrator.migrate(pRFC, bic);
-            status[index] = testResult.getCaseResultMap().values().contains(TestCaseResult.TestState.PASS)?
+            status[index] = testResult.getCaseResultMap().values().contains(TestCaseResult.TestState.PASS) ?
                     TestCaseResult.TestState.PASS :
                     TestCaseResult.TestState.FAL;
             return status[index];

@@ -2,26 +2,29 @@
 
 A Mining Approach towards Automating Regression Dataset Construction from Code Evolution History.
 
-Now regminer has an interactive visualization platform, you can use our platform to observe the data mining process and the mined regressions.
+Now regminer has an interactive visualization platform, you can use our platform to observe the data mining process and
+the mined regressions.
 The use of the platform is demonstrated as follows:
 
 [![RegMiner Data Platform](https://github.com/SongXueZhi/images/blob/main/regminer/platshow.png)](https://youtu.be/yzcM9Y4unok "RegMiner Data Platform")
 
 ## Regressions4J
-We also provide UI-free tools to help users replay test results for each regression bug,get that support in the [regs4J](https://github.com/SongXueZhi/regressions4j) project.
+
+We also provide UI-free tools to help users replay test results for each regression bug,get that support in
+the [regs4J](https://github.com/SongXueZhi/regressions4j) project.
 
 ## Contribute to miner
 
- **Env requirement: **  
+**Env requirement: **
 
- Distinguishing between miner and mined projects, Miner relies on JDK11 and we recommend developing in Ubuntu.  
+Distinguishing between miner and mined projects, Miner relies on JDK11 and we recommend developing in Ubuntu.
 
- **Regression test:**  
+**Regression test:**
 
- Regression testing needs to be done before submitting the code. Steps are as follow:  
+Regression testing needs to be done before submitting the code. Steps are as follow:
 
 1. Create a workspace for Miner,
- ``mkdir miner_space``
+   ``mkdir miner_space``
 
 2. Create a directory of projects to be mined(we used univocity-parsers as the test data in the regression test),
 
@@ -37,7 +40,8 @@ We also provide UI-free tools to help users replay test results for each regress
   git clone https://github.com/uniVocity/univocity-parsers.git meta
 ```
 
-4. Configure the  workspace of miner and project names for the projects to be mined, and turn off the use of SQL functionality,
+4. Configure the workspace of miner and project names for the projects to be mined, and turn off the use of SQL
+   functionality,
 
 ```properties
 # Configuration file path : xxx/Regminer/miner/env.properties
@@ -47,7 +51,9 @@ root_dir =/home/xxx/miner_space/
 sql_enable =0
 ```
 
-Note that! Miner does not reprocess already processed commits, so regression testing requires removing progress files generated in the mined project directory and turning off SQL functionality.
+Note that! Miner does not reprocess already processed commits, so regression testing requires removing progress files
+generated in the mined project directory and turning off SQL functionality.
+
 ```bash
 rm -f xxxx/miner_space/univocity-parsers/progress.details
 ```
@@ -55,11 +61,12 @@ rm -f xxxx/miner_space/univocity-parsers/progress.details
 ## Contribute regressions
 
 1. Download our latest [realase](https://github.com/SongXueZhi/RegMiner/releases), or install miner by self.
-   
-2. In order to avoid data duplication, we will update the latest batch database files continuously, load our database into local mysql, and set ``SQL_enable =1``.
+
+2. In order to avoid data duplication, we will update the latest batch database files continuously, load our database
+   into local mysql, and set ``SQL_enable =1``.
 
 3. Next add the configuration for local mysql
-   
+
 ```properties
 # Configuration file path : xxx/Regminer/miner/env.properties
 project_name =univocity-parsers
@@ -82,6 +89,8 @@ passwd =xxxx
 
 ## Paper
 
-1. Xuezhi Song, Yun Lin*, Siang Hwee Ng, Yijian Wu, Xin Peng, Jin Song Dong and Hong Mei. RegMiner: Towards Constructing a Large Regression Dataset from Code Evolution History  **[⚡ CCF Prototype Competition Award (1st Prize)]**
+1. Xuezhi Song, Yun Lin*, Siang Hwee Ng, Yijian Wu, Xin Peng, Jin Song Dong and Hong Mei. RegMiner: Towards Constructing
+   a Large Regression Dataset from Code Evolution History  **[⚡ CCF Prototype Competition Award (1st Prize)]**
 
-2. Xuezhi Song, Yun Lin*, Yijian Wu, Yifan Zhang, Xin Peng, Jin Song Dong, and Hong Mei. RegMiner: Mining Replicable Regression Dataset from Code Repositories
+2. Xuezhi Song, Yun Lin*, Yijian Wu, Yifan Zhang, Xin Peng, Jin Song Dong, and Hong Mei. RegMiner: Mining Replicable
+   Regression Dataset from Code Repositories

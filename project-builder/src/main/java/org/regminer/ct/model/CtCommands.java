@@ -10,7 +10,7 @@ import static org.regminer.ct.model.CtCommands.CommandKey.*;
 
 public class CtCommands implements Serializable {
 
-    Map<CommandKey,String> commands = new HashMap<>();
+    Map<CommandKey, String> commands = new HashMap<>();
     private Compiler compiler;
     private String osName;
 
@@ -34,11 +34,11 @@ public class CtCommands implements Serializable {
         if (command == null || command.trim() == "") {
             return this;
         }
-        commands.put(key,command);
+        commands.put(key, command);
         return this;
     }
 
-    public void remove(CommandKey key){
+    public void remove(CommandKey key) {
         commands.remove(key);
     }
 
@@ -48,21 +48,21 @@ public class CtCommands implements Serializable {
 
     public String compute() {
         String computeCommands = "";
-        if(commands.containsKey(JDK)){
+        if (commands.containsKey(JDK)) {
             computeCommands = computeCommands + commands.get(JDK) + ";";
         }
-        if(commands.containsKey(COMPILE)){
+        if (commands.containsKey(COMPILE)) {
             computeCommands = computeCommands + commands.get(COMPILE) + ";";
         }
-        if(commands.containsKey(TEST)){
+        if (commands.containsKey(TEST)) {
             computeCommands = computeCommands + commands.get(TEST) + ";";
         }
         return computeCommands;
 //        return String.join(";", commands.values());
     }
 
-    public enum CommandKey{
-         JDK,
+    public enum CommandKey {
+        JDK,
         COMPILE,
         TEST,
     }

@@ -9,5 +9,5 @@ import java.util.List;
  * @Description:
  */
 public class ProjectGraph {
-    public final List<ProjectModule>  modules = new ArrayList<>();
+    public final List<ProjectModule> modules = new ArrayList<>();
 }

@@ -8,5 +8,5 @@ import java.io.File;
  * @Description:
  */
 public abstract class AbstractTestMigrator {
- public abstract boolean migrateFromTo(File from , File to);
+    public abstract boolean migrateFromTo(File from, File to);
 }

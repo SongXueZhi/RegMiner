@@ -1,5 +1,5 @@
-import { GithubOutlined } from '@ant-design/icons';
-import { DefaultFooter } from '@ant-design/pro-layout';
+import {GithubOutlined} from '@ant-design/icons';
+import {DefaultFooter} from '@ant-design/pro-layout';
 
 const Footer: React.FC = () => {
   // const intl = useIntl();
@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
         },
         {
           key: 'icon',
-          title: <GithubOutlined />,
+          title: <GithubOutlined/>,
           href: 'https://github.com/SongXueZhi/BugMiner',
           blankTarget: true,
         },

@@ -1,4 +1,4 @@
-import G6, { Minimap } from '@antv/g6';
+import G6, {Minimap} from '@antv/g6';
 import insertCss from 'insert-css';
 
 insertCss(`
@@ -59,7 +59,7 @@ const drawAddNodeGraph = function (json_data, graphId) {
       const node = ev.item;
       const graph = self.graph;
       // The position where the mouse clicks
-      const point = { x: ev.x, y: ev.y };
+      const point = {x: ev.x, y: ev.y};
       const model = node.getModel();
       if (self.addingEdge && self.edge) {
         graph.updateItem(self.edge, {
@@ -82,7 +82,7 @@ const drawAddNodeGraph = function (json_data, graphId) {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
       // The current position the mouse clicks
-      const point = { x: ev.x, y: ev.y };
+      const point = {x: ev.x, y: ev.y};
       if (self.addingEdge && self.edge) {
         // Update the end node to the current node the mouse clicks
         self.graph.updateItem(self.edge, {
@@ -279,4 +279,4 @@ const drawAddNodeGraph = function (json_data, graphId) {
     };
 };
 
-export { drawAddNodeGraph };
+export {drawAddNodeGraph};

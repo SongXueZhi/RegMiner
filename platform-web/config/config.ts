@@ -1,13 +1,13 @@
 // https://umijs.org/config/
 import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
-import { defineConfig } from 'umi';
-import { join } from 'path';
+import {defineConfig} from 'umi';
+import {join} from 'path';
 
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
 
-const { REACT_APP_ENV } = process.env;
+const {REACT_APP_ENV} = process.env;
 
 const chainWebpack = (config: any, {}) => {
   config.plugin('monaco-editor').use(MonacoWebpackPlugin, [
@@ -127,7 +127,7 @@ export default defineConfig({
       projectName: 'swagger',
     },
   ],
-  nodeModulesTransform: { type: 'none' },
+  nodeModulesTransform: {type: 'none'},
   mfsu: {},
   webpack5: {},
   exportStatic: {},

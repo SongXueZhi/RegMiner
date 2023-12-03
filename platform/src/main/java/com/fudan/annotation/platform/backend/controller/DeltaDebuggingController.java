@@ -36,7 +36,8 @@ public class DeltaDebuggingController {
         stepRange.add(0);
         stepRange.add(null);
         try {
-            DeltaDebugResult result = deltaDebuggingService.getRunProbDD(regressionUuid, revisionName, userToken, stepRange);
+            DeltaDebugResult result = deltaDebuggingService.getRunProbDD(regressionUuid, revisionName, userToken,
+                    stepRange);
             return new ResponseBean<>(200, "Run complete, return critical change hunks", result);
         } catch (Exception e) {
             e.printStackTrace();

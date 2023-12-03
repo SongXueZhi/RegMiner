@@ -32,20 +32,21 @@ public class ProgressUtils {
         ProgressInfo progressInfo = new ProgressInfo();
         File workDir = new File(WORK_SPACE);
         //total start time
-        progressInfo.setTotalStartTime(FileUtils.readLines(new File(workDir,TIME_FILE)).get(0));
+        progressInfo.setTotalStartTime(FileUtils.readLines(new File(workDir, TIME_FILE)).get(0));
         // project info
         progressInfo.setTotalProjectNum(FileUtils.readLines(new File(workDir, PROJECT_LIST_FILE),
                 StandardCharsets.UTF_8).size());
-        File file = new File(workDir,PROJECT_POSTFIX);
-        List<String> content = FileUtils.readLines(file,StandardCharsets.UTF_8);
+        File file = new File(workDir, PROJECT_POSTFIX);
+        List<String> content = FileUtils.readLines(file, StandardCharsets.UTF_8);
         progressInfo.setCurrentProjectName(content.get(0));
         progressInfo.setProjectQueueNum(content.get(2));
-        progressInfo.setProjectStatTime( content.get(1));
+        progressInfo.setProjectStatTime(content.get(1));
 
         //rPFC
         File projrctDir = new File(
                 workDir, progressInfo.getCurrentProjectName().split("/")[1]);
-        List<String> pRFCList = FileUtils.readLines(new File(projrctDir,File.separator+BFC_LOG), StandardCharsets.UTF_8);
+        List<String> pRFCList = FileUtils.readLines(new File(projrctDir, File.separator + BFC_LOG),
+                StandardCharsets.UTF_8);
 
         Iterator<String> iterator = pRFCList.iterator();
         while (iterator.hasNext()) {
@@ -53,33 +54,33 @@ public class ProgressUtils {
                 iterator.remove();
             }
         }
-        progressInfo.setTotalPRFCNum(pRFCList.get(pRFCList.size()-1).split(PRFC_TOTAL_PREFIX)[1]);
+        progressInfo.setTotalPRFCNum(pRFCList.get(pRFCList.size() - 1).split(PRFC_TOTAL_PREFIX)[1]);
         File file1 = new File(projrctDir, PROGRESS_FILE);
-        if (file1.exists()){
+        if (file1.exists()) {
             progressInfo.setPRFCDoneNum(FileUtils.readLines(file1, StandardCharsets.UTF_8).size());
-        }else{
+        } else {
             progressInfo.setPRFCDoneNum(0);
         }
 
         return progressInfo;
     }
 
-    public static SearchDetails getSearchDetails(String projectName,String rfcID) throws IOException {
+    public static SearchDetails getSearchDetails(String projectName, String rfcID) throws IOException {
         SearchDetails searchDetails = new SearchDetails();
-        String[] allContent = FileUtils.readFileToString(new File(WORK_SPACE,projectName+File.separator+RFC_LOG),
+        String[] allContent = FileUtils.readFileToString(new File(WORK_SPACE, projectName + File.separator + RFC_LOG),
                 StandardCharsets.UTF_8).split("queue size:");
         List<String[]> steps = new ArrayList<>();
-        for (String item : allContent){
-            if (item.equals("")){
+        for (String item : allContent) {
+            if (item.equals("")) {
                 continue;
             }
-            String[] lines =item.split("\n");
-            if (lines[1].startsWith(rfcID)){
+            String[] lines = item.split("\n");
+            if (lines[1].startsWith(rfcID)) {
                 searchDetails.setSearchSpaceNum(lines[2].split(":")[1]);
-                for (int i =3;i<lines.length;i++){
-                    if (lines[i].startsWith("index")){
-                        String[] details =  lines[i].split(":");
-                        steps.add(new String[]{details[1],details[2],getTestStatus(lines[i+1])});
+                for (int i = 3; i < lines.length; i++) {
+                    if (lines[i].startsWith("index")) {
+                        String[] details = lines[i].split(":");
+                        steps.add(new String[]{details[1], details[2], getTestStatus(lines[i + 1])});
                     }
                 }
             }
@@ -88,14 +89,14 @@ public class ProgressUtils {
         return searchDetails;
     }
 
-    static String  getTestStatus(String message){
-        if (message.contains("PASS")){
+    static String getTestStatus(String message) {
+        if (message.contains("PASS")) {
             return "PASS";
-        }else if (message.contains("FAL")){
+        } else if (message.contains("FAL")) {
             return "FAL";
-        }else if (message.contains("CE")){
+        } else if (message.contains("CE")) {
             return "CE";
-        }else {
+        } else {
             return "UNKNOWN";
         }
     }

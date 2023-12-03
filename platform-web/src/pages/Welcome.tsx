@@ -1,10 +1,10 @@
 import React from 'react';
-import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Alert, Typography } from 'antd';
-import { useIntl, FormattedMessage } from 'umi';
+import {PageContainer} from '@ant-design/pro-layout';
+import {Alert, Card, Typography} from 'antd';
+import {FormattedMessage, useIntl} from 'umi';
 import styles from './Welcome.less';
 
-const CodePreview: React.FC = ({ children }) => (
+const CodePreview: React.FC = ({children}) => (
   <pre className={styles.pre}>
     <code>
       <Typography.Text copyable>{children}</Typography.Text>
@@ -31,13 +31,13 @@ const Welcome: React.FC = () => {
           }}
         />
         <Typography.Text strong>
-          <FormattedMessage id="pages.welcome.advancedComponent" defaultMessage="Advanced Form" />{' '}
+          <FormattedMessage id="pages.welcome.advancedComponent" defaultMessage="Advanced Form"/>{' '}
           <a
             href="https://procomponents.ant.design/components/table"
             rel="noopener noreferrer"
             target="__blank"
           >
-            <FormattedMessage id="pages.welcome.link" defaultMessage="Welcome" />
+            <FormattedMessage id="pages.welcome.link" defaultMessage="Welcome"/>
           </a>
         </Typography.Text>
         <CodePreview>yarn add @ant-design/pro-table</CodePreview>
@@ -47,13 +47,13 @@ const Welcome: React.FC = () => {
             marginBottom: 12,
           }}
         >
-          <FormattedMessage id="pages.welcome.advancedLayout" defaultMessage="Advanced layout" />{' '}
+          <FormattedMessage id="pages.welcome.advancedLayout" defaultMessage="Advanced layout"/>{' '}
           <a
             href="https://procomponents.ant.design/components/layout"
             rel="noopener noreferrer"
             target="__blank"
           >
-            <FormattedMessage id="pages.welcome.link" defaultMessage="Welcome" />
+            <FormattedMessage id="pages.welcome.link" defaultMessage="Welcome"/>
           </a>
         </Typography.Text>
         <CodePreview>yarn add @ant-design/pro-layout</CodePreview>

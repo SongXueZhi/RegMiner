@@ -22,7 +22,7 @@ class PuppeteerEnvironment extends NodeEnvironment {
   }
 
   async teardown() {
-    const { page, browser } = this.global;
+    const {page, browser} = this.global;
 
     if (page) {
       await page.close();

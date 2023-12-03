@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
+import {request} from 'umi';
 
 /** Update an existing pet PUT /pet */
 export async function updatePet(body: API.Pet, options?: { [key: string]: any }) {
@@ -73,10 +73,10 @@ export async function getPetById(
   },
   options?: { [key: string]: any },
 ) {
-  const { petId: param0 } = params;
+  const {petId: param0} = params;
   return request<API.Pet>(`/pet/${param0}`, {
     method: 'GET',
-    params: { ...params },
+    params: {...params},
 
     ...(options || {}),
   });
@@ -92,7 +92,7 @@ export async function updatePetWithForm(
   body: { name?: string; status?: string },
   options?: { [key: string]: any },
 ) {
-  const { petId: param0 } = params;
+  const {petId: param0} = params;
   const formData = new FormData();
 
   Object.keys(body).forEach((ele) => {
@@ -108,7 +108,7 @@ export async function updatePetWithForm(
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    params: { ...params },
+    params: {...params},
     data: formData,
     ...(options || {}),
   });
@@ -125,10 +125,10 @@ export async function deletePet(
   },
   options?: { [key: string]: any },
 ) {
-  const { petId: param0 } = params;
+  const {petId: param0} = params;
   return request<any>(`/pet/${param0}`, {
     method: 'DELETE',
-    params: { ...params },
+    params: {...params},
     ...(options || {}),
   });
 }
@@ -143,7 +143,7 @@ export async function uploadFile(
   body: { additionalMetadata?: string; file?: string },
   options?: { [key: string]: any },
 ) {
-  const { petId: param0 } = params;
+  const {petId: param0} = params;
   const formData = new FormData();
 
   Object.keys(body).forEach((ele) => {
@@ -159,7 +159,7 @@ export async function uploadFile(
     headers: {
       'Content-Type': 'multipart/form-data',
     },
-    params: { ...params },
+    params: {...params},
     data: formData,
     ...(options || {}),
   });

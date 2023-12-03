@@ -13,11 +13,12 @@ public class CompileResult {
     public CompileResult(CompileState state) {
         this.state = state;
     }
+
     public CompileResult(CompileState state, CtCommands envCommands) {
         this.state = state;
         this.envCommands = envCommands;
     }
-    
+
     public CompileResult(CompileState state, CtCommands envCommands, CompileEnv compileWay) {
         this.state = state;
         this.envCommands = envCommands;
@@ -56,8 +57,8 @@ public class CompileResult {
         this.exceptionMessage = exceptionMessage;
     }
 
-    public enum CompileState{
-       SUCCESS,
-       CE,
-   }
+    public enum CompileState {
+        SUCCESS,
+        CE,
+    }
 }

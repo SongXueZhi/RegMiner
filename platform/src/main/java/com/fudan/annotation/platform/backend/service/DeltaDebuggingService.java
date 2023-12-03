@@ -14,7 +14,8 @@ public interface DeltaDebuggingService {
      * @param stepRange      [start step num, end step num]
      * @param revisionName   revision name
      */
-    DeltaDebugResult getRunProbDD(String regressionUuid, String revisionName, String userToken, List<Integer> stepRange) throws IOException;
+    DeltaDebugResult getRunProbDD(String regressionUuid, String revisionName, String userToken,
+                                  List<Integer> stepRange) throws IOException;
 
     /**
      * description 插入新regression
@@ -24,5 +25,7 @@ public interface DeltaDebuggingService {
      * @param stepRange      [start step, end step]
      * @param cProb          previous step cProb
      */
-    DeltaDebugResult postRunProbDDbyStep(String regressionUuid, String revisionName, String userToken, List<Integer> stepRange, List<Double> cProb, List<Integer> leftIdx2Test, List<Integer> stepTestedInx) throws IOException;
+    DeltaDebugResult postRunProbDDbyStep(String regressionUuid, String revisionName, String userToken,
+                                         List<Integer> stepRange, List<Double> cProb, List<Integer> leftIdx2Test,
+                                         List<Integer> stepTestedInx) throws IOException;
 }

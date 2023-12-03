@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
+import {request} from 'umi';
 
 /** Create user This can only be done by the logged in user. POST /user */
 export async function createUser(body: API.User, options?: { [key: string]: any }) {
@@ -69,10 +69,10 @@ export async function getUserByName(
   },
   options?: { [key: string]: any },
 ) {
-  const { username: param0 } = params;
+  const {username: param0} = params;
   return request<API.User>(`/user/${param0}`, {
     method: 'GET',
-    params: { ...params },
+    params: {...params},
     ...(options || {}),
   });
 }
@@ -87,10 +87,10 @@ export async function updateUser(
   body: API.User,
   options?: { [key: string]: any },
 ) {
-  const { username: param0 } = params;
+  const {username: param0} = params;
   return request<any>(`/user/${param0}`, {
     method: 'PUT',
-    params: { ...params },
+    params: {...params},
     data: body,
     ...(options || {}),
   });
@@ -105,10 +105,10 @@ export async function deleteUser(
   },
   options?: { [key: string]: any },
 ) {
-  const { username: param0 } = params;
+  const {username: param0} = params;
   return request<any>(`/user/${param0}`, {
     method: 'DELETE',
-    params: { ...params },
+    params: {...params},
     ...(options || {}),
   });
 }

@@ -8,12 +8,10 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigLoader {
-    private static  Properties prop = new Properties();
     private final static String CONFIGPATH = "env.properties";
     private final static String PROJRCT_NAME = "project_name";
     private final static String PROJECTS_Dir = "projects_dir";
     private final static String PROJECT_IN = "project_in";
-
     private final static String SQL_ENABLE = "sql_enable";
     private final static String SQL_URL = "sql_url";
     private final static String USER_NAME = "username";
@@ -33,7 +31,6 @@ public class ConfigLoader {
     private final static String JDK16 = "j16_file";
     private final static String JDK17 = "j17_file";
     private final static String ROOT_DIR = "root_dir";
-
     public static String rootDir = "";
     public static String projectName = "";
     public static String projectPath = "";
@@ -53,10 +50,12 @@ public class ConfigLoader {
     public static String j15File = "";
     public static String j16File = "";
     public static String j17File = "";
+    private static Properties prop = new Properties();
 
     static {
         refresh();
     }
+
     public static void refresh() {
         try (InputStream inStream = new FileInputStream(CONFIGPATH)) {
             prop.load(inStream);

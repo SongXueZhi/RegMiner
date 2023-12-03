@@ -1,14 +1,14 @@
-import { QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Divider, Skeleton, Tooltip, Drawer } from 'antd';
-import React, { useState, useRef } from 'react';
-import { PageContainer } from '@ant-design/pro-layout';
-import type { ProColumns, ActionType } from '@ant-design/pro-table';
+import {QuestionCircleOutlined} from '@ant-design/icons';
+import {Button, Divider, Drawer, Skeleton, Tooltip} from 'antd';
+import React, {useRef, useState} from 'react';
+import {PageContainer} from '@ant-design/pro-layout';
+import type {ActionType, ProColumns} from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import TimeLine from './components/Timeline';
 
-import { queryRegressionList, getDeatil } from './service';
-import { Link } from 'react-router-dom';
-import { stringify } from 'query-string';
+import {getDeatil, queryRegressionList} from './service';
+import {Link} from 'react-router-dom';
+import {stringify} from 'query-string';
 import './index.less';
 import ProjectProgress from './components/projectProgress';
 
@@ -41,7 +41,7 @@ declare global {
 
 function withSkeleton(element: JSX.Element | string | number | number | undefined) {
   return (
-    element ?? <Skeleton title={{ width: '80px', style: { margin: 0 } }} paragraph={false} active />
+    element ?? <Skeleton title={{width: '80px', style: {margin: 0}}} paragraph={false} active/>
   );
 }
 
@@ -159,14 +159,14 @@ const DashboardPage: React.FC<{}> = () => {
       dataIndex: 'regressionUuid',
       search: false,
       width: 200,
-      render: (_, { projectFullName, regressionUuid, index }) => {
+      render: (_, {projectFullName, regressionUuid, index}) => {
         return withSkeleton(
           regressionUuid ? (
             // index <= 49 ? (
             <Link
               to={{
                 pathname: '/editor',
-                search: stringify({ regressionUuid }),
+                search: stringify({regressionUuid}),
               }}
             >
               {projectFullName?.split('/')[1]}_{index}
@@ -186,8 +186,8 @@ const DashboardPage: React.FC<{}> = () => {
       // hideInTable: true,
       search: false,
       // fixed: 'right',
-      render: (_, { bfc, regressionUuid, projectFullName, bic, bugId, work, index }) => [
-        <Divider type="vertical" />,
+      render: (_, {bfc, regressionUuid, projectFullName, bic, bugId, work, index}) => [
+        <Divider type="vertical"/>,
         <Button
           danger
           onClick={() => {
@@ -216,7 +216,7 @@ const DashboardPage: React.FC<{}> = () => {
   return (
     <PageContainer
       header={{
-        style: { width: '100%' },
+        style: {width: '100%'},
         title: 'Dashboard',
         subTitle: (
           <div className="sub-title-container">
@@ -236,7 +236,7 @@ const DashboardPage: React.FC<{}> = () => {
         ),
       }}
     >
-      <ProjectProgress ref={ProgressInfoRef} />
+      <ProjectProgress ref={ProgressInfoRef}/>
       {/* <CodeEditor ref={CodeEditorRef} /> */}
       <div className="regressionTimeline">
         <h2>
@@ -252,7 +252,7 @@ const DashboardPage: React.FC<{}> = () => {
           Time Line{' '}
           <Tooltip title="choose a regression to check timeline" key={1}>
             {' '}
-            <QuestionCircleOutlined />
+            <QuestionCircleOutlined/>
           </Tooltip>
         </h2>
         <div> Current Bug Id: {currentBugid}</div>

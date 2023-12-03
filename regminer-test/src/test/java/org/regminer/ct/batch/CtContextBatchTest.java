@@ -11,6 +11,7 @@ public class CtContextBatchTest extends TestCase {
         CtContextBatch contextBatch = new CtContextBatch();
         contextBatch.compileBatch();
     }
+
     @Test
     public void testCompileBatchProjects() throws Exception {
         ConfigLoader.refresh();

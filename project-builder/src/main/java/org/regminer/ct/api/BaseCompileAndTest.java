@@ -2,14 +2,17 @@ package org.regminer.ct.api;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.regminer.common.exec.ExecResult;
+import org.regminer.common.exec.Executor;
+import org.regminer.common.model.TestCaseX;
+import org.regminer.common.utils.OSUtils;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.Compiler;
 import org.regminer.ct.domain.JDK;
-import org.regminer.common.exec.Executor;
-import org.regminer.ct.model.*;
+import org.regminer.ct.model.CompileResult;
+import org.regminer.ct.model.CtCommands;
+import org.regminer.ct.model.TestCaseResult;
+import org.regminer.ct.model.TestResult;
 import org.regminer.ct.utils.CtUtils;
-import org.regminer.common.utils.OSUtils;
-import org.regminer.common.model.TestCaseX;
 
 import java.util.List;
 import java.util.stream.Stream;

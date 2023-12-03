@@ -55,7 +55,7 @@ public class JacocoMavenManager {
             }
         }
         List<Repository> repos = pomModel.getRepositories();
-        for (Repository repo: repos) {
+        for (Repository repo : repos) {
             String url = repo.getUrl();
             String[] split = url.split(":", 2);
             if (split[1].equalsIgnoreCase("//repo2.maven.org/maven2/")) {
@@ -92,7 +92,7 @@ public class JacocoMavenManager {
             }
         }
 
-        for (Plugin plugin: toRemove) {
+        for (Plugin plugin : toRemove) {
             build.removePlugin(plugin);
         }
     }

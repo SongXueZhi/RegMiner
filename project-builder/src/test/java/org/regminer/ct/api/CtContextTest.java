@@ -73,11 +73,10 @@ public class CtContextTest extends TestCase {
         CompileResult result = ctContext.compile();
 
         git.reset().setMode(ResetCommand.ResetType.HARD).call();
-        if(result.getCompileWay() != null) {
+        if (result.getCompileWay() != null) {
             System.out.println(commitID + ":" + result.getState().name()
                     + ":" + result.getCompileWay().getCompiler().name() + ":" + result.getCompileWay().getJdk().name());
-        }
-        else {
+        } else {
             System.out.println(commitID + ":" + result.getState().name() + ":" + "CompileWay NULL");
         }
 

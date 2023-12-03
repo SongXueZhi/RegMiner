@@ -1,10 +1,10 @@
 package org.regminer.ct.api;
 
+import org.regminer.common.model.TestCaseX;
 import org.regminer.ct.domain.JDK;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.CtCommands;
 import org.regminer.ct.model.TestResult;
-import org.regminer.common.model.TestCaseX;
 
 import java.io.File;
 import java.util.List;

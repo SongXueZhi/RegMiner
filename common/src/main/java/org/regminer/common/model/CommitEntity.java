@@ -1,9 +1,5 @@
 package org.regminer.common.model;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 
@@ -13,8 +9,8 @@ import org.eclipse.jgit.revwalk.RevCommit;
  * @Description:
  */
 public abstract class CommitEntity {
-    private String projectName;
     RevCommit revCommit;
+    private String projectName;
 
     public String getProjectName() {
         return projectName;

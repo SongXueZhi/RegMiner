@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Tag, message } from 'antd';
-import { groupBy } from 'lodash';
+import {useEffect, useState} from 'react';
+import {message, Tag} from 'antd';
+import {groupBy} from 'lodash';
 import moment from 'moment';
-import { useRequest } from 'umi';
-import { getNotices } from '@/services/ant-design-pro/api';
+import {useRequest} from 'umi';
+import {getNotices} from '@/services/ant-design-pro/api';
 
 import NoticeIcon from './NoticeIcon';
 import styles from './index.less';
@@ -20,7 +20,7 @@ const getNoticeData = (notices: API.NoticeIconItem[]): Record<string, API.Notice
   }
 
   const newNotices = notices.map((notice) => {
-    const newNotice = { ...notice };
+    const newNotice = {...notice};
 
     if (newNotice.datetime) {
       newNotice.datetime = moment(notice.datetime as string).fromNow();
@@ -74,7 +74,7 @@ const NoticeIconView: React.FC = () => {
   // const { initialState } = useModel('@@initialState');
   // const { currentUser } = initialState || {};
   const [notices, setNotices] = useState<API.NoticeIconItem[]>([]);
-  const { data } = useRequest(getNotices);
+  const {data} = useRequest(getNotices);
 
   useEffect(() => {
     setNotices(data || []);
@@ -86,7 +86,7 @@ const NoticeIconView: React.FC = () => {
   const changeReadState = (id: string) => {
     setNotices(
       notices.map((item) => {
-        const notice = { ...item };
+        const notice = {...item};
         if (notice.id === id) {
           notice.read = true;
         }
@@ -98,7 +98,7 @@ const NoticeIconView: React.FC = () => {
   const clearReadState = (title: string, key: string) => {
     setNotices(
       notices.map((item) => {
-        const notice = { ...item };
+        const notice = {...item};
         if (notice.type === key) {
           notice.read = true;
         }

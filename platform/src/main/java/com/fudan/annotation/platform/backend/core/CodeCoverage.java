@@ -17,16 +17,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @Component
 public class CodeCoverage {
-        final static String MAVEN_POM = "pom.xml";
-        final static String JACOCO_PATH = "site" + File.separator + "jacoco" + File.separator + "jacoco.xml";
+    final static String MAVEN_POM = "pom.xml";
+    final static String JACOCO_PATH = "site" + File.separator + "jacoco" + File.separator + "jacoco.xml";
 
-        public void addJacocoFeatureToProject(File codePath) throws Exception {
-            File pomFile = new File(codePath, MAVEN_POM);
-            JacocoMavenManager jacocoMaven = new JacocoMavenManager();
-            jacocoMaven.addJacocoFeatureToMaven(pomFile);
-        }
+    public void addJacocoFeatureToProject(File codePath) throws Exception {
+        File pomFile = new File(codePath, MAVEN_POM);
+        JacocoMavenManager jacocoMaven = new JacocoMavenManager();
+        jacocoMaven.addJacocoFeatureToMaven(pomFile);
+    }
 
     public Map<String, List<Integer>> parseJaCoCoReport(File codePath) {
         Map<String, List<Integer>> coveredLinesMap = new HashMap<>();
@@ -71,7 +72,6 @@ public class CodeCoverage {
 
         return coveredLinesMap;
     }
-
 
 
 //        public List<String> readJacocoReports(File codePath) {

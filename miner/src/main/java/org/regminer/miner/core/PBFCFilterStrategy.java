@@ -1,6 +1,5 @@
 package org.regminer.miner.core;
 
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.regminer.common.model.PotentialBFC;
 
 import java.util.List;
@@ -10,8 +9,8 @@ import java.util.List;
  * @Date: 2023/12/03/16:08
  * @Description:
  */
-public  abstract class PBFCFilterStrategy {
+public abstract class PBFCFilterStrategy {
 
-   public abstract List<PotentialBFC>  filter() throws Exception;
+    public abstract List<PotentialBFC> filter() throws Exception;
 }
 

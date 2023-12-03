@@ -45,7 +45,7 @@ public class Reducer {
         }
     }
 
-    private void reduceTestCase(TestFile testFile,String testName, File rfcDir) {
+    private void reduceTestCase(TestFile testFile, String testName, File rfcDir) {
         String path = testFile.getNewPath();
         File file = new File(rfcDir, path);
         try {
@@ -84,7 +84,7 @@ public class Reducer {
                     importDeclaration.delete();
                 }
             }
-            if (file.exists()){
+            if (file.exists()) {
                 file.delete();
             }
             FileUtils.writeStringToFile(file, unit.toString());

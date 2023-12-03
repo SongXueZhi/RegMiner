@@ -1,13 +1,13 @@
-import { message } from 'antd';
+import {message} from 'antd';
 import request from 'umi-request';
-import type { RegressionCode, RegressionDetail } from './data';
+import type {RegressionCode, RegressionDetail} from './data';
 
 export async function queryRegressionDetail(params: {
   regression_uuid: string;
   userToken: string;
   bic: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<RegressionDetail>>(
+  const {code, msg, data} = await request<API.RegResponse<RegressionDetail>>(
     '/api/regression/migrate',
     {
       method: 'GET',
@@ -22,7 +22,7 @@ export async function queryRegressionDetail(params: {
 }
 
 export async function regressionCheckout(params: { regression_uuid: string; userToken: string }) {
-  const { code, msg, data } = await request<API.RegResponse<any>>('/api/regression/checkout', {
+  const {code, msg, data} = await request<API.RegResponse<any>>('/api/regression/checkout', {
     method: 'PUT',
     params,
   });
@@ -41,7 +41,7 @@ export async function queryRegressionCode(params: {
   new_path: string;
   revisionFlag: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<RegressionCode>>(
+  const {code, msg, data} = await request<API.RegResponse<RegressionCode>>(
     '/api/regression/code',
     {
       method: 'GET',
@@ -60,7 +60,7 @@ export async function getRegressionPath(params: {
   revisionFlag: string;
   userToken: string;
 }) {
-  const { code, msg, data } = await request<API.RegResponse<string>>('/api/regression/test', {
+  const {code, msg, data} = await request<API.RegResponse<string>>('/api/regression/test', {
     method: 'GET',
     params,
   });
@@ -72,7 +72,7 @@ export async function getRegressionPath(params: {
 }
 
 export async function getRegressionConsole(params: { path: string }) {
-  const { code, msg, data } = await request<API.RegResponse<string>>('/api/regression/console', {
+  const {code, msg, data} = await request<API.RegResponse<string>>('/api/regression/console', {
     method: 'GET',
     params,
   });

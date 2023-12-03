@@ -1,20 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Card, Descriptions, Menu, Radio, Spin, Tag, Tooltip, Typography } from 'antd';
-import { AppstoreOutlined } from '@ant-design/icons';
+import React, {useCallback, useEffect, useState} from 'react';
+import {PageContainer} from '@ant-design/pro-layout';
+import {Button, Card, Menu, Spin, Tag, Tooltip, Typography} from 'antd';
+import {AppstoreOutlined} from '@ant-design/icons';
 import DiffEditorTabs from './components/DiffEditorTabs';
-import type { IRouteComponentProps } from 'umi';
+import type {IRouteComponentProps} from 'umi';
 import {
   getRegressionConsole,
+  getRegressionPath,
   queryRegressionCode,
   queryRegressionDetail,
-  getRegressionPath,
   regressionCheckout,
 } from './service';
-import type { CommitItem } from './data';
-import { parse } from 'query-string';
+import type {CommitItem} from './data';
+import {parse} from 'query-string';
 
-const { SubMenu } = Menu;
+const {SubMenu} = Menu;
 
 const testMethodList = [
   {
@@ -43,7 +43,7 @@ export interface FilePaneItem extends CommitFile {
   key: string;
 }
 
-const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
+const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
   const HISTORY_SEARCH = parse(location.search) as unknown as IHistorySearch;
   // const savedCallback = useRef<any>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -124,7 +124,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
       if (path !== null && path !== undefined) {
         setBICIsRunning(true);
         while (true) {
-          const data = await getRegressionConsole({ path: path });
+          const data = await getRegressionConsole({path: path});
           await wait(500);
           setBICConsoleResult(data ?? '');
           if (data && data.includes('REGMINER-TEST-END')) {
@@ -149,7 +149,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
       if (path !== null && path !== undefined) {
         setBICIsRunning(true);
         while (true) {
-          const data = await getRegressionConsole({ path: path });
+          const data = await getRegressionConsole({path: path});
           await wait(500);
           setBICConsoleResult(data ?? '');
           if (data && data.includes('REGMINER-TEST-END')) {
@@ -177,7 +177,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         setBFCIsRunning(true);
         while (true) {
           await wait(1000);
-          const data = await getRegressionConsole({ path: path });
+          const data = await getRegressionConsole({path: path});
           setBFCConsoleResult(data ?? '');
           if (data && data.includes('REGMINER-TEST-END')) {
             break;
@@ -203,7 +203,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
         setBFCIsRunning(true);
         while (true) {
           await wait(1000);
-          const data = await getRegressionConsole({ path: path });
+          const data = await getRegressionConsole({path: path});
           setBFCConsoleResult(data ?? '');
           if (data && data.includes('REGMINER-TEST-END')) {
             break;
@@ -246,7 +246,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             ) {
               setPanesBIC(panesBIC);
             } else {
-              setPanesBIC(panesBIC.concat({ ...resp, key }));
+              setPanesBIC(panesBIC.concat({...resp, key}));
             }
           }
           if (commit === 'BFC') {
@@ -257,7 +257,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             ) {
               setPanesBFC(panesBFC);
             } else {
-              setPanesBFC(panesBFC.concat({ ...resp, key }));
+              setPanesBFC(panesBFC.concat({...resp, key}));
             }
           }
         })
@@ -347,7 +347,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   };
 
   useEffect(() => {
-    regressionCheckout({ regression_uuid: HISTORY_SEARCH.regressionUuid, userToken: '123' }).then(
+    regressionCheckout({regression_uuid: HISTORY_SEARCH.regressionUuid, userToken: '123'}).then(
       () => {
         queryRegressionDetail({
           regression_uuid: HISTORY_SEARCH.regressionUuid,
@@ -385,11 +385,11 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
             ),
           }}
         >
-          <div style={{ display: 'flex' }}>
+          <div style={{display: 'flex'}}>
             <div>
               <Card
                 // bordered={false}
-                style={{ marginBottom: 10, width: 286, overflow: 'auto' }}
+                style={{marginBottom: 10, width: 286, overflow: 'auto'}}
                 tabList={testMethodList}
                 activeTabKey={testTabKey}
                 onTabChange={(key) => {
@@ -398,18 +398,18 @@ const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
               >
                 {contentListNoTitle[testTabKey]}
               </Card>
-              <Card title="Changed files" bordered={false} bodyStyle={{ padding: 0 }}>
+              <Card title="Changed files" bordered={false} bodyStyle={{padding: 0}}>
                 <Menu
                   title="菜单"
                   // onClick={handleMenuClick}
-                  style={{ width: 286, maxHeight: '70vh', overflow: 'auto' }}
+                  style={{width: 286, maxHeight: '70vh', overflow: 'auto'}}
                   defaultOpenKeys={['BIC', 'BFC']}
                   mode="inline"
                 >
                   {/* 优先显示test，在有match时显示check然后tooltip上加‘recomend to check’。
                 （migrate迁移）*/}
-                  <SubMenu key="BIC" icon={<AppstoreOutlined />} title="Target Commit">
-                    {listBIC.map(({ filename, match, oldPath, newPath, type }) => {
+                  <SubMenu key="BIC" icon={<AppstoreOutlined/>} title="Target Commit">
+                    {listBIC.map(({filename, match, oldPath, newPath, type}) => {
                       let mark: any;
                       if (match === 1 && type !== null && type !== undefined) {
                         mark = <Tag color="success">Migrate</Tag>;

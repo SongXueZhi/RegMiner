@@ -96,13 +96,13 @@ public class FileUtil {
         return result;
     }
 
-    public static void writeListToFile(String path,List<String> line) {
+    public static void writeListToFile(String path, List<String> line) {
         File file = new File(path);
         try {
-            FileOutputStream fos = new FileOutputStream(path,false);
+            FileOutputStream fos = new FileOutputStream(path, false);
             if (file.exists() && file.isFile()) {
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos, StandardCharsets.UTF_8));
-                for(String s:line) {
+                for (String s : line) {
                     bw.write(s);
                     bw.newLine();
                     bw.flush();

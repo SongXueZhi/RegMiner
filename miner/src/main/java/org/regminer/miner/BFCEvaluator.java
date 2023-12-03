@@ -2,6 +2,7 @@ package org.regminer.miner;
 
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.model.PotentialBFC;
+import org.regminer.common.tool.SycFileCleanup;
 import org.regminer.common.utils.FileUtilx;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
@@ -10,30 +11,31 @@ import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 import org.regminer.ct.utils.TestUtils;
-import org.regminer.common.tool.SycFileCleanup;
 import org.regminer.migrate.api.TestCaseMigrator;
 import org.regminer.miner.core.BFCSearchStrategy;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class BFCEvaluator extends BFCSearchStrategy {
+    protected Logger logger = org.slf4j.LoggerFactory.getLogger(BFCEvaluator.class);
     TestCaseParser testCaseParser;
     TestCaseMigrator testCaseMigrator;
-
-    protected Logger logger = org.slf4j.LoggerFactory.getLogger(BFCEvaluator.class);
 
     public BFCEvaluator(TestCaseParser testCaseParser, TestCaseMigrator testCaseMigrator) {
         this.testCaseParser = testCaseParser;
         this.testCaseMigrator = testCaseMigrator;
     }
+
     /**
      * Firstly,checkout BFC ,and manage BFC DIR In the map
      * Then try the code coverage feature
      * sort BFC
      *
-     * @param potentialRFCList
+     * @param potentialRFCList potential BFC list
      */
     public void evoluteBFCList(List<PotentialBFC> potentialRFCList) {
         Iterator<PotentialBFC> iterator = potentialRFCList.iterator();
@@ -50,7 +52,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 FileUtilx.log("pRFC total:" + i);
                 iterator.remove();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
                 iterator.remove();
             }
         }

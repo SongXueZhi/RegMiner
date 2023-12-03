@@ -9,22 +9,25 @@ import java.util.List;
 import java.util.Map;
 
 public class PotentialBFC {
-    public Map<String, File> fileMap = new HashMap<>();
+    public final static int TESTCASE_FROM_SELF = 0;
+    public final static int TESTCASE_FROM_SEARCH = 1;
     private final RevCommit commit;
+    private final List<TestFile> testRelates = new ArrayList<TestFile>(); //under test dir but not testcase
+    public Map<String, File> fileMap = new HashMap<>();
     private String buggyCommitId;
     private int priority;
     private int testcaseFrom;
     private Double score;
-    public final static int TESTCASE_FROM_SELF = 0;
-    public final static int TESTCASE_FROM_SEARCH =1;
-
     private List<NormalFile> normalJavaFiles; //which contains fix path
     private List<TestFile> testCaseFiles;    // All File Under test dir
-    private final List<TestFile> testRelates = new ArrayList<TestFile>(); //under test dir but not testcase
     private List<SourceFile> sourceFiles = new ArrayList<>(); //config file or data for test
 
     private List<PotentialTestCase> potentialTestCaseList;
 
+
+    public PotentialBFC(RevCommit commit) {
+        this.commit = commit;
+    }
 
     public List<PotentialTestCase> getPotentialTestCaseList() {
         return potentialTestCaseList;
@@ -32,10 +35,6 @@ public class PotentialBFC {
 
     public void setPotentialTestCaseList(List<PotentialTestCase> potentialTestCaseList) {
         this.potentialTestCaseList = potentialTestCaseList;
-    }
-
-    public PotentialBFC(RevCommit commit) {
-        this.commit = commit;
     }
 
     public RevCommit getCommit() {
@@ -70,6 +69,7 @@ public class PotentialBFC {
     public void setSourceFiles(List<SourceFile> sourceFiles) {
         this.sourceFiles = sourceFiles;
     }
+
     public Double getScore() {
         return score;
     }
@@ -77,6 +77,7 @@ public class PotentialBFC {
     public void setScore(Double score) {
         this.score = score;
     }
+
     public String getBuggyCommitId() {
         return buggyCommitId;
     }

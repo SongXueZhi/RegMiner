@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Button } from 'antd';
-import { Link } from 'react-router-dom';
-import { stringify } from 'querystring';
+import React, {useEffect, useState} from 'react';
+import {Button, Col, Row} from 'antd';
+import {Link} from 'react-router-dom';
+import {stringify} from 'querystring';
 import './index.less';
+
 export type TimeLineProps = {
   lineList?: any;
   total?: number;
@@ -12,7 +13,7 @@ export type TimeLineProps = {
 };
 
 const TimeLine: React.FC<TimeLineProps> = (props) => {
-  const { currentRegressionUuid, lineList, indicated, cur } = props;
+  const {currentRegressionUuid, lineList, indicated, cur} = props;
   const [currentStep, setCurrentStep] = useState<number>(cur);
   const [currentPoint, setCurrentPoint] = useState<any>(0);
   const [arr, setArr] = useState<any>([]);
@@ -81,28 +82,28 @@ const TimeLine: React.FC<TimeLineProps> = (props) => {
           <div className="col-container">
             <span className="name">
               {item.index === 'wc' || item.index === 'bfc' || window.currentBic === item.id ? (
-                <span style={{ color: 'rgb(255 89 29)', fontWeight: 600 }}>{item.name}</span>
+                <span style={{color: 'rgb(255 89 29)', fontWeight: 600}}>{item.name}</span>
               ) : (
                 <span>{item.name}</span>
               )}
               {window.currentBic === item.id ? (
-                <span style={{ color: 'rgb(255 89 29)', fontWeight: 600 }}>:bic</span>
+                <span style={{color: 'rgb(255 89 29)', fontWeight: 600}}>:bic</span>
               ) : (
                 ''
               )}{' '}
-              <span style={{ fontSize: '10px' }}>({item.status})</span> ({item.firstShow})
+              <span style={{fontSize: '10px'}}>({item.status})</span> ({item.firstShow})
             </span>
             {arr.indexOf(item.name) === -1 ? (
-              <div className="u-dot" style={{ background: item.color }}></div>
+              <div className="u-dot" style={{background: item.color}}></div>
             ) : (
-              <div className="u-dot u-passed-dot" style={{ background: item.color }}></div>
+              <div className="u-dot u-passed-dot" style={{background: item.color}}></div>
             )}
             {/* <div className="u-dot"></div> */}
 
             {indicated[currentStep] === item.index ? (
               <div>
                 <div className="u-dot current"></div>
-                <img height="16px" src="./projectStageLoc.svg" className="stage-loc" />
+                <img height="16px" src="./projectStageLoc.svg" className="stage-loc"/>
               </div>
             ) : (
               <div></div>
@@ -136,12 +137,12 @@ const TimeLine: React.FC<TimeLineProps> = (props) => {
         ) : null}
       </div>
       <div className="container">
-        <div className="u-tail" style={{ width: `${tailWidth}px` }}></div>
+        <div className="u-tail" style={{width: `${tailWidth}px`}}></div>
         <Row
           justify="space-around"
           align="middle"
           className="row-container"
-          style={{ width: `${tailWidth}px` }}
+          style={{width: `${tailWidth}px`}}
         >
           {listName}
         </Row>

@@ -1,7 +1,7 @@
 package org.regminer.ct;
 
-import org.regminer.ct.model.CompileResult;
 import org.regminer.common.exec.ExecResult;
+import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 
 public class CtReferees {
@@ -31,19 +31,19 @@ public class CtReferees {
             testState = TestCaseResult.TestState.FAL;
         }
         testCaseResult.setState(testState);
-        testCaseResult.setExceptionMessage(spiltExceptionMessage(message,testState));
+        testCaseResult.setExceptionMessage(spiltExceptionMessage(message, testState));
         return testCaseResult;
     }
 
     public static String spiltExceptionMessage(String message, TestCaseResult.TestState testState) {
-        if(testState != TestCaseResult.TestState.FAL){
+        if (testState != TestCaseResult.TestState.FAL) {
             return null;
         }
         int splitStartNum = message.indexOf("t e s t s\n[info] ") + ("t e s t s\n[info] ").length();
         int splitEndNum = message.indexOf("[info] results:");
-        String testResult = message.substring(splitStartNum, splitEndNum).replace("-","")
-                .replace("[info] ","").replace("[error] ","")
-                .replace("[info]","").replace("[error]","");
+        String testResult = message.substring(splitStartNum, splitEndNum).replace("-", "")
+                .replace("[info] ", "").replace("[error] ", "")
+                .replace("[info]", "").replace("[error]", "");
         System.out.println(testResult);
         return testResult;
     }

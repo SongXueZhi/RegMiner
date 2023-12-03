@@ -36,7 +36,8 @@ public class RegressionController {
             @RequestParam(name = "keyword", required = false) String keyWord,
             @RequestParam(name = "bug_type_name", required = false) List<String> bugTypeName) {
         try {
-            List<Regression> regressionList = regressionService.getRegressions(regressionUuid, regressionStatus, projectName, keyWord, bugTypeName);
+            List<Regression> regressionList = regressionService.getRegressions(regressionUuid, regressionStatus,
+                    projectName, keyWord, bugTypeName);
             return new ResponseBean<>(200, "get regression info success", regressionList);
         } catch (Exception e) {
             return new ResponseBean<>(401, "get failed :" + e.getMessage(), null);
@@ -140,7 +141,8 @@ public class RegressionController {
             @RequestParam(name = "new_path") String newPath,
             @RequestParam String revisionFlag) {
         try {
-            CodeDetails revisionCode = regressionService.getFilesCode(regressionUuid, userToken, filename, oldPath, newPath, revisionFlag);
+            CodeDetails revisionCode = regressionService.getFilesCode(regressionUuid, userToken, filename, oldPath,
+                    newPath, revisionFlag);
             return new ResponseBean<>(200, "get code success", revisionCode);
         } catch (Exception e) {
             return new ResponseBean<>(401, "get code failed :" + e.getMessage(), null);
@@ -298,7 +300,8 @@ public class RegressionController {
             @RequestParam(name = "regression_uuid") String regressionUuid,
             @RequestParam(name = "revision_name") String revisionName) {
         try {
-            CriticalChangeReview criticalChangeReview = regressionService.getCriticalChangeReview(regressionUuid, revisionName);
+            CriticalChangeReview criticalChangeReview = regressionService.getCriticalChangeReview(regressionUuid,
+                    revisionName);
             return new ResponseBean<>(200, "get critical change review success", criticalChangeReview);
         } catch (Exception e) {
             return new ResponseBean<>(401, "get critical change review failed: " + e.getMessage(), null);
@@ -314,7 +317,8 @@ public class RegressionController {
             @RequestParam(name = "review_id", required = false) Integer reviewId,
             @RequestBody HunkEntity hunkEntityDTO) {
         try {
-            regressionService.setCriticalChangeReview(regressionUuid, revisionName, reviewId, accountName, feedback, hunkEntityDTO);
+            regressionService.setCriticalChangeReview(regressionUuid, revisionName, reviewId, accountName, feedback,
+                    hunkEntityDTO);
             return new ResponseBean<>(200, "record critical change success", null);
         } catch (Exception e) {
             return new ResponseBean<>(401, "record critical change failed :" + e.getMessage(), null);

@@ -22,7 +22,7 @@ public class ChangedFile {
     private String oldPath;
     private Type type;
     private List<Edit> editList;
-    private int match=-1;
+    private int match = -1;
 
     public ChangedFile(String newPath) {
         this.newPath = newPath;

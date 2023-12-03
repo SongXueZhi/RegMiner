@@ -27,7 +27,7 @@
                 regression_status = #{regressionStatus}
             </if>
             <if test="projectName != null">
-               project_full_name like concat("%",#{projectName},"%")
+                project_full_name like concat("%",#{projectName},"%")
             </if>
             <if test="keyWord != null">
                 key_word like concat("%",#{keyWord},"%")
@@ -48,7 +48,8 @@
     </delete>
 
     <insert id="insert" parameterType="com.fudan.annotation.platform.backend.entity.Regression">
-        # alter table regression auto_increment = 3;
+        #
+        alter table regression auto_increment = 3;
         insert into regression
         (regression_uuid, regression_status, project_uuid, project_full_name,
          bug_id, bfc, buggy,

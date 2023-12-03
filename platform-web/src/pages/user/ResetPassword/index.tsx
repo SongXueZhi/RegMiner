@@ -1,10 +1,10 @@
-import { resetPassword } from '@/services/ant-design-pro/login';
-import { UserOutlined, LockOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import ProForm, { ProFormText } from '@ant-design/pro-form';
-import { Tabs, Image } from 'antd';
-import { Footer } from 'antd/lib/layout/layout';
-import { useState } from 'react';
-import { SelectLang, Link, FormattedMessage, useIntl, history } from 'umi';
+import {resetPassword} from '@/services/ant-design-pro/login';
+import {ArrowLeftOutlined, LockOutlined, UserOutlined} from '@ant-design/icons';
+import ProForm, {ProFormText} from '@ant-design/pro-form';
+import {Image, Tabs} from 'antd';
+import {Footer} from 'antd/lib/layout/layout';
+import {useState} from 'react';
+import {FormattedMessage, history, Link, SelectLang, useIntl} from 'umi';
 
 import styles from './style.less';
 
@@ -17,19 +17,19 @@ const ResetPassword: React.FC = () => {
 
   const handleSubmit = async (values: API.ResetPasswordParams) => {
     setSubmitting(true);
-    await resetPassword({ ...values });
+    await resetPassword({...values});
     history.push('/user/login');
     setSubmitting(false);
   };
 
   return (
     <div className={styles.container}>
-      <div className={styles.lang}>{SelectLang && <SelectLang />}</div>
+      <div className={styles.lang}>{SelectLang && <SelectLang/>}</div>
       <div className={styles.content}>
         <div className={styles.top}>
           <div className={styles.header}>
             <Link to="/">
-              <Image alt="logo" src="/favicon.ico" className={styles.logo} />
+              <Image alt="logo" src="/favicon.ico" className={styles.logo}/>
               <span className={styles.title}>BugShareHub</span>
             </Link>
           </div>
@@ -37,7 +37,7 @@ const ResetPassword: React.FC = () => {
         </div>
         <div className={styles.main}>
           <a href={loginPath}>
-            <ArrowLeftOutlined className={styles.prefixIcon} />
+            <ArrowLeftOutlined className={styles.prefixIcon}/>
           </a>
           <ProForm
             submitter={{
@@ -73,7 +73,7 @@ const ResetPassword: React.FC = () => {
               name="account_name"
               fieldProps={{
                 size: 'large',
-                prefix: <UserOutlined className={styles.prefixIcon} />,
+                prefix: <UserOutlined className={styles.prefixIcon}/>,
               }}
               placeholder={intl.formatMessage({
                 id: 'pages.login.username.placeholder',
@@ -95,7 +95,7 @@ const ResetPassword: React.FC = () => {
               name="password"
               fieldProps={{
                 size: 'large',
-                prefix: <LockOutlined className={styles.prefixIcon} />,
+                prefix: <LockOutlined className={styles.prefixIcon}/>,
               }}
               placeholder={intl.formatMessage({
                 id: 'pages.login.password.new.placeholder',
@@ -116,7 +116,7 @@ const ResetPassword: React.FC = () => {
           </ProForm>
         </div>
       </div>
-      <Footer />
+      <Footer/>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 class RegressionServiceImplTest {
     @Autowired
     RegressionService regressionService;
+
     @Test
     void checkoutByUser() {
 //        regressionService.checkoutByUser("6167d521-9b53-4f5f-aa02-1016e67c1cfb_a31ec08e","sxz-1234ß");

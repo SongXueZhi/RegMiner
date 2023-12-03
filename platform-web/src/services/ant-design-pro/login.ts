@@ -1,7 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
-import { request } from 'umi';
-import { handleResponse } from '../response';
+import {request} from 'umi';
+import {handleResponse} from '../response';
 
 // /** 发送验证码 POST /api/login/captcha */
 // export async function getFakeCaptcha(

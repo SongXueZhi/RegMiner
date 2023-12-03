@@ -1,8 +1,9 @@
 import React from 'react';
-import { getDistanceDay } from '../utils';
-import { SyncOutlined } from '@ant-design/icons';
+import {getDistanceDay} from '../utils';
+import {SyncOutlined} from '@ant-design/icons';
 
-import { getProcessInfo } from '../service';
+import {getProcessInfo} from '../service';
+import {Alert, Button, Progress, Steps, Tag} from 'antd';
 // dashiboard
 declare global {
   interface Window {
@@ -16,8 +17,9 @@ const progressContainer = {
   'margin-bottom': '20px',
   // marginBotton: '20px'
 };
-import { Alert, Button, Progress, Tag, Steps } from 'antd';
-const { Step } = Steps;
+
+const {Step} = Steps;
+
 class ProgressInfo extends React.Component {
   constructor(props: any) {
     super(props);
@@ -40,33 +42,6 @@ class ProgressInfo extends React.Component {
     };
   }
 
-  private updateProcessInfo = async (params?: any) => {
-    window.isStoping = false;
-    getProcessInfo().then((res: any) => {
-      const newData: any = res.data;
-      const distanceTime: any = getDistanceDay(Number(res.data.totalStartTime));
-      const repodistanceTime: any = getDistanceDay(res.data.projectStatTime);
-      window.currentProjectName = res.data.currentProjectName;
-      const watingProject = Number(res.data.totalProjectNum) - Number(res.data.projectQueueNum) - 1;
-      newData.watingProject = watingProject >= 0 ? watingProject : 0;
-      newData.finishedProject = res.data.projectQueueNum;
-      if (res.data.totalProjectNum) {
-        newData.totalProgress = (
-          (res.data.projectQueueNum / res.data.totalProjectNum) * 100 +
-          (res.data.prfcdoneNum / res.data.totalPRFCNum / Number(res.data.totalProjectNum)) * 100
-        ).toFixed(2);
-      }
-      if (res.data.totalPRFCNum) {
-        newData.currentRepoProgress = (
-          (res.data.prfcdoneNum / res.data.totalPRFCNum) *
-          100
-        ).toFixed(2);
-      }
-      this.setState({ progressInfo: newData });
-      this.setState({ distanceTime: distanceTime });
-      this.setState({ repodistanceTime: repodistanceTime });
-    });
-  };
   resetProcessInfo = () => {
     const data = {
       currentProjectName: 'no data',
@@ -81,10 +56,11 @@ class ProgressInfo extends React.Component {
       currentRepoProgress: 0,
       finishedProject: 0,
     };
-    this.setState({ progressInfo: data });
+    this.setState({progressInfo: data});
     window.isStoping = true;
     window.clearInterval(window.timer);
   };
+
   componentDidMount() {
     this.updateProcessInfo();
     window.timer = setInterval(() => {
@@ -92,8 +68,8 @@ class ProgressInfo extends React.Component {
       const time = getDistanceDay(this.state.progressInfo.totalStartTime);
       //@ts-ignore
       const repotime = getDistanceDay(this.state.progressInfo.projectStatTime);
-      this.setState({ distanceTime: time });
-      this.setState({ repodistanceTime: repotime });
+      this.setState({distanceTime: time});
+      this.setState({repodistanceTime: repotime});
       this.updateProcessInfo();
       // distanceTime = getDistanceDay(progressInfo.totalStartTime)
     }, 60 * 1000);
@@ -101,13 +77,13 @@ class ProgressInfo extends React.Component {
 
   render() {
     //@ts-ignore
-    const { progressInfo, distanceTime, repodistanceTime } = this.state;
+    const {progressInfo, distanceTime, repodistanceTime} = this.state;
     return (
       <>
         <div style={progressContainer}>
           <div className="header-container">
             {/* <Spin size="small" /> */}
-            <h2 style={{ marginBottom: '20px' }}>
+            <h2 style={{marginBottom: '20px'}}>
               <div
                 style={{
                   display: 'inline-block',
@@ -119,17 +95,17 @@ class ProgressInfo extends React.Component {
               ></div>
               Processed Projects: {progressInfo.totalProjectNum} |{' '}
               <span>({progressInfo.totalProgress}%)</span>
-              <div style={{ position: 'absolute', right: '10px', top: '0px' }}>
+              <div style={{position: 'absolute', right: '10px', top: '0px'}}>
                 <Button type="primary" onClick={this.updateProcessInfo.bind(this)}>
-                  <span style={{ color: '#fff' }}>Start</span>
+                  <span style={{color: '#fff'}}>Start</span>
                 </Button>
-                <Button style={{ marginLeft: '10px' }} onClick={this.resetProcessInfo.bind(this)}>
+                <Button style={{marginLeft: '10px'}} onClick={this.resetProcessInfo.bind(this)}>
                   Stop
                 </Button>
               </div>
             </h2>
           </div>
-          <div style={{ padding: '0 20px' }}>
+          <div style={{padding: '0 20px'}}>
             <Steps current={1} size="small">
               <Step
                 title="Finished"
@@ -137,7 +113,7 @@ class ProgressInfo extends React.Component {
               />
               <Step
                 title="In Progress"
-                icon={<SyncOutlined spin={!window.isStoping} />}
+                icon={<SyncOutlined spin={!window.isStoping}/>}
                 subTitle={distanceTime}
                 description={`${window.currentProjectName} is processing`}
               />
@@ -167,7 +143,7 @@ class ProgressInfo extends React.Component {
               strokeWidth={10}
             />
           </div>
-          <div style={{ marginTop: '-10px' }} className="header-container">
+          <div style={{marginTop: '-10px'}} className="header-container">
             {/* <Spin size="small" /> */}
             <h2>
               <div
@@ -195,7 +171,7 @@ class ProgressInfo extends React.Component {
                 /> */}
                 ({progressInfo.currentRepoProgress}%)
               </span>
-              <h6 style={{ marginLeft: '20px', color: '#666' }}>spend: {repodistanceTime}</h6>
+              <h6 style={{marginLeft: '20px', color: '#666'}}>spend: {repodistanceTime}</h6>
             </h2>
           </div>
           {/* <Alert
@@ -203,7 +179,7 @@ class ProgressInfo extends React.Component {
             message="100 project repositories are in queue, 10 are done and fastjson is processing."
             type="info"
           /> */}
-          <div style={{ padding: '0 20px', display: 'flex', alignItems: 'center', height: '40px' }}>
+          <div style={{padding: '0 20px', display: 'flex', alignItems: 'center', height: '40px'}}>
             {/* <Spin size="small" style={{ marginTop: '-10px', marginRight: '10px' }} /> */}
 
             <Progress
@@ -225,7 +201,7 @@ class ProgressInfo extends React.Component {
           percent={99.9}
           status="active"
         /> */}
-          <div style={{ padding: '0 20px' }}>
+          <div style={{padding: '0 20px'}}>
             <div className="tips-container">
               <Alert
                 type="info"
@@ -294,6 +270,34 @@ class ProgressInfo extends React.Component {
       </>
     );
   }
+
+  private updateProcessInfo = async (params?: any) => {
+    window.isStoping = false;
+    getProcessInfo().then((res: any) => {
+      const newData: any = res.data;
+      const distanceTime: any = getDistanceDay(Number(res.data.totalStartTime));
+      const repodistanceTime: any = getDistanceDay(res.data.projectStatTime);
+      window.currentProjectName = res.data.currentProjectName;
+      const watingProject = Number(res.data.totalProjectNum) - Number(res.data.projectQueueNum) - 1;
+      newData.watingProject = watingProject >= 0 ? watingProject : 0;
+      newData.finishedProject = res.data.projectQueueNum;
+      if (res.data.totalProjectNum) {
+        newData.totalProgress = (
+          (res.data.projectQueueNum / res.data.totalProjectNum) * 100 +
+          (res.data.prfcdoneNum / res.data.totalPRFCNum / Number(res.data.totalProjectNum)) * 100
+        ).toFixed(2);
+      }
+      if (res.data.totalPRFCNum) {
+        newData.currentRepoProgress = (
+          (res.data.prfcdoneNum / res.data.totalPRFCNum) *
+          100
+        ).toFixed(2);
+      }
+      this.setState({progressInfo: newData});
+      this.setState({distanceTime: distanceTime});
+      this.setState({repodistanceTime: repodistanceTime});
+    });
+  };
 }
 
 export default ProgressInfo;

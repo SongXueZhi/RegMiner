@@ -10,9 +10,9 @@
         <result column="context" property="context" jdbcType="LONGVARCHAR"/>
     </resultMap>
 
-    <insert id="setComments" >
+    <insert id="setComments">
         insert into comments
-        (regression_uuid, account_name, context, create_time)
+            (regression_uuid, account_name, context, create_time)
         values (#{regressionUuid},
                 #{accountName},
                 #{context},
@@ -26,10 +26,12 @@
         </where>
     </select>
 
-    <delete id="deleteComments" >
-        delete from comments
-        where regression_uuid = #{regressionUuid} and account_name = #{accountName}
-        and id = #{commentId}
+    <delete id="deleteComments">
+        delete
+        from comments
+        where regression_uuid = #{regressionUuid}
+          and account_name = #{accountName}
+          and id = #{commentId}
     </delete>
 
 </mapper>

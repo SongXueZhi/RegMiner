@@ -1,14 +1,14 @@
 import React from 'react';
-import { Modal } from 'antd';
+import {Modal} from 'antd';
 import {
+  ProFormDateTimePicker,
+  ProFormRadio,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
   StepsForm,
-  ProFormRadio,
-  ProFormDateTimePicker,
 } from '@ant-design/pro-form';
-import { useIntl, FormattedMessage } from 'umi';
+import {FormattedMessage, useIntl} from 'umi';
 
 export type FormValueType = {
   target?: string;
@@ -36,7 +36,7 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         return (
           <Modal
             width={640}
-            bodyStyle={{ padding: '32px 40px 48px' }}
+            bodyStyle={{padding: '32px 40px 48px'}}
             destroyOnClose
             title={intl.formatMessage({
               id: 'pages.searchTable.updateForm.ruleConfig',

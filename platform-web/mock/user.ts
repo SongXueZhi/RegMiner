@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import {Request, Response} from 'express';
 
 const waitTime = (time: number = 100) => {
   return new Promise((resolve) => {
@@ -13,7 +13,7 @@ async function getFakeCaptcha(req: Request, res: Response) {
   return res.json('captcha-xxx');
 }
 
-const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
+const {ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION} = process.env;
 
 /**
  * 当前用户的权限，如果为空代表没登录
@@ -118,7 +118,7 @@ export default {
     },
   ],
   'POST /api/login': async (req: Request, res: Response) => {
-    const { password, username, type } = req.body; 
+    const {password, username, type} = req.body;
     await waitTime(500);
     if (password === 'ant.design' && username === 'admin') {
       res.send({
@@ -157,10 +157,10 @@ export default {
   },
   'POST /api/login/outLogin': (req: Request, res: Response) => {
     access = '';
-    res.send({ data: {}, success: true });
+    res.send({data: {}, success: true});
   },
   'POST /api/register': (req: Request, res: Response) => {
-    res.send({ status: 'ok', currentAuthority: 'user', success: true });
+    res.send({status: 'ok', currentAuthority: 'user', success: true});
   },
   'GET /api/500': (req: Request, res: Response) => {
     res.status(500).send({

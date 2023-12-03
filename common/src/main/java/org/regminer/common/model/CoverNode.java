@@ -17,38 +17,40 @@
  */
 
 package org.regminer.common.model;
+
 // tuple <package,class,method>
 public class CoverNode {
- CoverMethod coverMethod;
- CoverPackage coverPackage;
- CoverClass coverClass;
+    CoverMethod coverMethod;
+    CoverPackage coverPackage;
+    CoverClass coverClass;
 
- public CoverNode(CoverPackage coverPackage,CoverClass coverClass,CoverMethod coverMethod){
-  this.coverPackage=coverPackage;
-  this.coverClass=coverClass;
-  this.coverMethod=coverMethod;
- }
- public CoverMethod getCoverMethod() {
-  return coverMethod;
- }
+    public CoverNode(CoverPackage coverPackage, CoverClass coverClass, CoverMethod coverMethod) {
+        this.coverPackage = coverPackage;
+        this.coverClass = coverClass;
+        this.coverMethod = coverMethod;
+    }
 
- public void setCoverMethod(CoverMethod coverMethod) {
-  this.coverMethod = coverMethod;
- }
+    public CoverMethod getCoverMethod() {
+        return coverMethod;
+    }
 
- public CoverPackage getCoverPackage() {
-  return coverPackage;
- }
+    public void setCoverMethod(CoverMethod coverMethod) {
+        this.coverMethod = coverMethod;
+    }
 
- public void setCoverPackage(CoverPackage coverPackage) {
-  this.coverPackage = coverPackage;
- }
+    public CoverPackage getCoverPackage() {
+        return coverPackage;
+    }
 
- public CoverClass getCoverClass() {
-  return coverClass;
- }
+    public void setCoverPackage(CoverPackage coverPackage) {
+        this.coverPackage = coverPackage;
+    }
 
- public void setCoverClass(CoverClass coverClass) {
-  this.coverClass = coverClass;
- }
+    public CoverClass getCoverClass() {
+        return coverClass;
+    }
+
+    public void setCoverClass(CoverClass coverClass) {
+        this.coverClass = coverClass;
+    }
 }

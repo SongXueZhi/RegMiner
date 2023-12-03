@@ -2,6 +2,7 @@ package org.regminer.common.exec;
 
 import org.apache.commons.io.IOUtils;
 import org.regminer.common.model.OS;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class Executor {
     }
 
     public ExecResult exec(String cmd) {
-            return this.exec(cmd, 0);
+        return this.exec(cmd, 0);
     }
 
     /**
@@ -41,7 +42,7 @@ public class Executor {
      * @param cmd command line
      * @return return result by exec command
      */
-    public ExecResult exec(String cmd, int timeout){
+    public ExecResult exec(String cmd, int timeout) {
 
         ExecResult execResult = new ExecResult();
 
@@ -91,7 +92,7 @@ public class Executor {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            execResult.setUsageTime(System.currentTimeMillis()-startTime);
+            execResult.setUsageTime(System.currentTimeMillis() - startTime);
             execResult.setMessage(builder.toString());
         }
         return execResult;

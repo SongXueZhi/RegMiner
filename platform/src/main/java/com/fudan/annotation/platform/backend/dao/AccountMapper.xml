@@ -27,31 +27,32 @@
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-        delete from account
+        delete
+        from account
         where account_id = #{accountId}
     </delete>
 
     <insert id="insert" parameterType="com.fudan.annotation.platform.backend.entity.Account">
         insert into account
-        (account_name, password, email, avatar, role)
+            (account_name, password, email, avatar, role)
         values (#{accountName},
-        #{password},
-        #{email},
-        #{avatar},
-        #{role});
+                #{password},
+                #{email},
+                #{avatar},
+                #{role});
     </insert>
 
     <update id="resetPassword" parameterType="java.lang.String">
         update account
-        set
-        password = #{password}
+        set password = #{password}
         where account_name = #{accountName}
     </update>
 
     <select id="login" resultMap="account">
-        select * from account
+        select *
+        from account
         where account_name = #{accountName}
-        and password = #{password}
+          and password = #{password}
     </select>
 
     <!--    <insert id="insertSelective" parameterType="com.fudan.annotation.platform.backend.entity.Account">-->

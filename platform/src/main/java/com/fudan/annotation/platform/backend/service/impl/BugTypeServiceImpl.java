@@ -41,7 +41,7 @@ public class BugTypeServiceImpl implements BugTypeService {
 
     @Override
     public void createNewBugType(CreateBugType newBugType) {
-        if(newBugType.getBugTypeName() == null || newBugType.getAccountName() == null) {
+        if (newBugType.getBugTypeName() == null || newBugType.getAccountName() == null) {
             throw new RuntimeException("param loss");
         }
         bugTypeMapper.insertBugType(newBugType);
@@ -60,7 +60,7 @@ public class BugTypeServiceImpl implements BugTypeService {
     @Override
     public void postAgreeBugType(String regressionUuid, int bugTypeId) {
         List<BugToTypeItems> bugToTypeList = bugToTypeMapper.getBugToTypeByRegressionUuid(regressionUuid);
-        if(regressionUuid == null || regressionUuid == "") {
+        if (regressionUuid == null || regressionUuid == "") {
             throw new RuntimeException("param loss");
         }
         if (bugToTypeList.equals(null) || bugToTypeList.isEmpty()) {
@@ -72,7 +72,7 @@ public class BugTypeServiceImpl implements BugTypeService {
     @Override
     public void postDisagreeBugType(String regressionUuid, int bugTypeId) {
         List<BugToTypeItems> bugToTypeList = bugToTypeMapper.getBugToTypeByRegressionUuid(regressionUuid);
-        if(regressionUuid == null || regressionUuid == "") {
+        if (regressionUuid == null || regressionUuid == "") {
             throw new RuntimeException("param loss");
         }
         if (bugToTypeList.isEmpty()) {
@@ -84,14 +84,15 @@ public class BugTypeServiceImpl implements BugTypeService {
     @Override
     public void createBugTypeToRegression(CreateBugToType newBugToType) {
         List<BugTypes> bugTypeList = bugTypeMapper.getAllBugTypes(newBugToType.getBugTypeName());
-        List<Regression> regressionList = regressionMapper.selectRegression(newBugToType.getRegressionUuid(), null, null, null);
-        if(newBugToType.getRegressionUuid() == null || newBugToType.getRegressionUuid().equals("") ||
+        List<Regression> regressionList = regressionMapper.selectRegression(newBugToType.getRegressionUuid(), null,
+                null, null);
+        if (newBugToType.getRegressionUuid() == null || newBugToType.getRegressionUuid().equals("") ||
                 newBugToType.getBugTypeName() == null || newBugToType.getBugTypeName().equals("") ||
                 newBugToType.getAccountName() == null || newBugToType.getAccountName().equals("") ||
                 newBugToType.getBugTypeId() == 0) {
             throw new RuntimeException("param loss");
         }
-        if(regressionList.isEmpty() || bugTypeList.isEmpty()) {
+        if (regressionList.isEmpty() || bugTypeList.isEmpty()) {
             throw new RuntimeException("Wrong params, please check if the regressionUuid or bugTypeId is right.");
         }
         bugToTypeMapper.insertBugToType(newBugToType);

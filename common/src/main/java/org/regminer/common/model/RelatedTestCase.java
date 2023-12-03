@@ -1,26 +1,26 @@
 package org.regminer.common.model;
 
 public class RelatedTestCase {
-	Methodx method;
-	Type type;
+    Methodx method;
+    Type type;
 
-	public Type getType() {
-		return type;
-	}
+    public Type getType() {
+        return type;
+    }
 
-	public void setType(Type type) {
-		this.type = type;
-	}
+    public void setType(Type type) {
+        this.type = type;
+    }
 
-	public Methodx getMethod() {
-		return method;
-	}
+    public Methodx getMethod() {
+        return method;
+    }
 
-	public void setMethod(Methodx method) {
-		this.method = method;
-	}
+    public void setMethod(Methodx method) {
+        this.method = method;
+    }
 
-	public enum Type {
-		Created, modified
-	}
+    public enum Type {
+        Created, modified
+    }
 }

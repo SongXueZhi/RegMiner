@@ -10,15 +10,15 @@ import java.util.List;
 import java.util.Map;
 
 public class JdtFieldRetriever extends ASTVisitor {
-	public Map<FieldDeclaration, List<VariableDeclarationFragment>> fieldMap = new HashMap<>();
+    public Map<FieldDeclaration, List<VariableDeclarationFragment>> fieldMap = new HashMap<>();
 
-	public boolean visit(FieldDeclaration field) {
-		List<VariableDeclarationFragment> nodeList = new ArrayList<>();
-		for (Object o : field.fragments()) {
-			VariableDeclarationFragment vd = (VariableDeclarationFragment) o;
-			nodeList.add(vd);
-		}
-		fieldMap.put(field, nodeList);
-		return false;
-	}
+    public boolean visit(FieldDeclaration field) {
+        List<VariableDeclarationFragment> nodeList = new ArrayList<>();
+        for (Object o : field.fragments()) {
+            VariableDeclarationFragment vd = (VariableDeclarationFragment) o;
+            nodeList.add(vd);
+        }
+        fieldMap.put(field, nodeList);
+        return false;
+    }
 }

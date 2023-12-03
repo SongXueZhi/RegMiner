@@ -8,7 +8,7 @@ import java.io.File;
 
 public class RepositoryProvider {
 
-    public static  Repository getRepoFromClone (String localPath,String cloneUrl) throws Exception {
+    public static Repository getRepoFromClone(String localPath, String cloneUrl) throws Exception {
         File client = new File(localPath);
         client.mkdir();
         try (Git result = Git.cloneRepository()
@@ -20,6 +20,7 @@ public class RepositoryProvider {
             return result.getRepository();
         }
     }
+
     public static Repository getRepoFromLocal(File codeDir) throws Exception {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         return builder

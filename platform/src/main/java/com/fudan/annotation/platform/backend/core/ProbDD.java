@@ -28,7 +28,9 @@ public class ProbDD {
         }
     }
 
-    public static DeltaDebugResult probDD(String path, List<HunkEntity> hunkEntities, String testCase, List<Integer> stepRange, List<Double> firstCProb, List<Integer> leftIdx2Test, DDStepResult lastStepResult) throws IOException {
+    public static DeltaDebugResult probDD(String path, List<HunkEntity> hunkEntities, String testCase,
+                                          List<Integer> stepRange, List<Double> firstCProb,
+                                          List<Integer> leftIdx2Test, DDStepResult lastStepResult) throws IOException {
         hunkEntities.removeIf(hunkEntity -> hunkEntity.getNewPath().contains("test"));
         hunkEntities.removeIf(hunkEntity -> hunkEntity.getOldPath().contains("test"));
         DeltaDebugResult deltaDebugResult = new DeltaDebugResult();
@@ -37,7 +39,7 @@ public class ProbDD {
         List<Integer> retIdx = new ArrayList<>();
         List<Double> initCProb = new ArrayList<>();
 
-        if(lastStepResult != null) {
+        if (lastStepResult != null) {
             DDStepResult data = CodeUtil.clone(lastStepResult);
             DDStepList.add(data);
         }
@@ -320,7 +322,8 @@ public class ProbDD {
     // Revert.java 文件直接ctrl+c/v的 因为没有其他相似的
     public static void revert(String path, List<HunkEntity> hunkEntities) {
         try {
-            Map<String, List<HunkEntity>> stringListMap = hunkEntities.stream().collect(Collectors.groupingBy(HunkEntity::getNewPath));
+            Map<String, List<HunkEntity>> stringListMap =
+                    hunkEntities.stream().collect(Collectors.groupingBy(HunkEntity::getNewPath));
             for (Map.Entry<String, List<HunkEntity>> entry : stringListMap.entrySet()) {
                 revertFile(path, entry.getValue());
             }

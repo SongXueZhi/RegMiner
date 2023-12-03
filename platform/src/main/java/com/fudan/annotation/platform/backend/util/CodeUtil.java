@@ -27,8 +27,9 @@ public class CodeUtil {
         CompilationUnit result = (CompilationUnit) parser.createAST(null);
         return result;
     }
+
     @SuppressWarnings("unchecked")
-    public static <T extends Serializable> T clone(T obj){
+    public static <T extends Serializable> T clone(T obj) {
         T cloneObj = null;
         try {
             //写入字节流

@@ -1,6 +1,6 @@
-import { DiffEditDetailItems } from '@/pages/editor/data';
+import {DiffEditDetailItems} from '@/pages/editor/data';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import { MonacoDiffEditor } from 'react-monaco-editor';
+import {MonacoDiffEditor} from 'react-monaco-editor';
 
 interface IProps {
   regressionUuid: string;
@@ -67,13 +67,13 @@ const mockData = [
 ];
 
 const CodeDetails: React.FC<IProps> = ({
-  regressionUuid,
-  revisionFlag,
-  criticalChangeOriginal,
-  criticalChangeNew,
-  diffEditDetails,
-  fileName,
-}) => {
+                                         regressionUuid,
+                                         revisionFlag,
+                                         criticalChangeOriginal,
+                                         criticalChangeNew,
+                                         diffEditDetails,
+                                         fileName,
+                                       }) => {
   const target = mockData.find((d) => {
     return d.uuid === regressionUuid;
   });
@@ -101,7 +101,7 @@ const CodeDetails: React.FC<IProps> = ({
             span={2}
             label="Critical Change"
             valueType="code"
-            style={{ width: 1000, height: 400 }}
+            style={{width: 1000, height: 400}}
           >
             <MonacoDiffEditor
               width={800}

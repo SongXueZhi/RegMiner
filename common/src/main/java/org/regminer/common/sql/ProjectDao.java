@@ -1,7 +1,7 @@
 package org.regminer.common.sql;
 
-import org.regminer.common.model.ProjectEntity;
 import org.regminer.common.constant.ConfigLoader;
+import org.regminer.common.model.ProjectEntity;
 
 /**
  * @Author: sxz
@@ -12,12 +12,14 @@ public class ProjectDao {
 
     public ProjectEntity checkProjectByName(String name) {
         String organizeName = name.split("/")[0];
-        String sql = new StringBuilder("select project_uuid,organization,project_name from project where project_name ='")
+        String sql = new StringBuilder("select project_uuid,organization,project_name from project where project_name" +
+                " ='")
                 .append(ConfigLoader.projectName).append("' ").append("and organization ='")
                 .append(organizeName).append("'").toString();
         return MysqlManager.getProject(sql);
     }
-    public void storageProject(ProjectEntity projectEntity){
+
+    public void storageProject(ProjectEntity projectEntity) {
         String organization = projectEntity.getOrganization();
         String projectName = projectEntity.getProject_name();
         //INSERT IGNORE INTO regressions_with_gap (project_name,bug_id,bfc,buggy,bic,work,testcase) VALUES

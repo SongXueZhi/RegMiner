@@ -29,8 +29,7 @@ import java.util.List;
 public class GitUtil {
     /**
      * codeDir: project files
-     *
-     * */
+     */
     public static List<DiffEntry> getDiffEntriesBetweenCommits(File codeDir, String newID, String oldID) {
         try (Repository repository = RepositoryUtil.getRepoFromLocal(codeDir);
              Git git = new Git(repository)) {

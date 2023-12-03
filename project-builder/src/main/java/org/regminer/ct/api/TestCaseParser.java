@@ -21,28 +21,31 @@ import java.util.regex.Pattern;
 //过滤完成后，如果若有测试文件都被移除，则pRFC移除
 public class TestCaseParser {
 
-    public void handlePotentialTestFile(@NotNull List<PotentialTestCase> potentialTestCaseList, File bfcDir, PotentialBFC pRFC){
+    public void handlePotentialTestFile(@NotNull List<PotentialTestCase> potentialTestCaseList, File bfcDir,
+                                        PotentialBFC pRFC) {
         for (PotentialTestCase potentialTestCase : potentialTestCaseList) {
             //if index > 0 ,test file in (c,c+2),we need copy test file to bfcdir
             //file map size > 0, meaning have test file need to copy
             if (potentialTestCase.getIndex() > 0 && !potentialTestCase.fileMap.isEmpty()) {
                 List<TestFile> testFiles = potentialTestCase.getTestFiles();
                 List<SourceFile> sourceFiles = potentialTestCase.getSourceFiles();
-                copyPotentialTestFileToBFC(testFiles,bfcDir,potentialTestCase);
-                copyPotentialTestFileToBFC(sourceFiles,bfcDir,potentialTestCase);
+                copyPotentialTestFileToBFC(testFiles, bfcDir, potentialTestCase);
+                copyPotentialTestFileToBFC(sourceFiles, bfcDir, potentialTestCase);
                 pRFC.setTestCaseFiles(testFiles);
                 pRFC.setSourceFiles(sourceFiles);
             }
         }
 
     }
-    private void copyPotentialTestFileToBFC(List<? extends ChangedFile> files, File bfcDir, PotentialTestCase potentialTestCase){
+
+    private void copyPotentialTestFileToBFC(List<? extends ChangedFile> files, File bfcDir,
+                                            PotentialTestCase potentialTestCase) {
         Iterator<? extends ChangedFile> iterator = files.iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             ChangedFile changedFile = iterator.next();
             try {
-                FileUtils.copyToDirectory(potentialTestCase.fileMap.get(changedFile.getNewPath()),bfcDir);
-            } catch (Exception e){
+                FileUtils.copyToDirectory(potentialTestCase.fileMap.get(changedFile.getNewPath()), bfcDir);
+            } catch (Exception e) {
                 iterator.remove();
                 e.printStackTrace();
             }
@@ -54,17 +57,17 @@ public class TestCaseParser {
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
         // Prepare for no testcase in bfc but in range of (c~2,c^2)
         if (pRFC.getTestcaseFrom() == PotentialBFC.TESTCASE_FROM_SEARCH) {
-            handlePotentialTestFile(pRFC.getPotentialTestCaseList(),bfcDir,pRFC);
+            handlePotentialTestFile(pRFC.getPotentialTestCaseList(), bfcDir, pRFC);
         }
 
 //        System.out.println("prfc testcase file size: " + pRFC.getTestCaseFiles().size());
         Iterator<TestFile> iterator = pRFC.getTestCaseFiles().iterator();
         while (iterator.hasNext()) {
             TestFile file = iterator.next();
-            if (file.getNewPath().equals(Constant.NONE_PATH)){
+            if (file.getNewPath().equals(Constant.NONE_PATH)) {
                 continue;
             }
-            String code = FileUtilx.readContentFromFile(new File(bfcDir,file.getNewPath()));
+            String code = FileUtilx.readContentFromFile(new File(bfcDir, file.getNewPath()));
             if (code == null) {
                 continue;
             }
@@ -107,7 +110,7 @@ public class TestCaseParser {
 
     //
     private void match(Edit edit, Methodx method, Map<String, RelatedTestCase> testCaseMap) {
-        int editStart = edit.getBeginB()+1;
+        int editStart = edit.getBeginB() + 1;
         int editEnd = edit.getEndB();
 
         int methodStart = method.getStartLine();

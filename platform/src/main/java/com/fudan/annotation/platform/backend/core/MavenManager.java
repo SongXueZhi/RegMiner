@@ -56,10 +56,10 @@ public class MavenManager {
                     .append(dependency.getGroupId().replace(".", File.separator)).append(File.separator)
                     .append(dependency.getArtifactId());
             String version = dependency.getVersion();
-            if (!version.contains(".")||version.contains("$")){
+            if (!version.contains(".") || version.contains("$")) {
                 File[] childList = new File(sb.toString()).listFiles();
-                for (int i =0;i<childList.length;i++){
-                    if (childList[i].isDirectory()){
+                for (int i = 0; i < childList.length; i++) {
+                    if (childList[i].isDirectory()) {
                         version = childList[i].getName();
                     }
                 }
@@ -68,18 +68,18 @@ public class MavenManager {
                     .append(dependency.getArtifactId()).append("-")
                     .append(version).append(".").append(dependency.getType());
             String tt = sb.toString();
-            File file =new File(tt);
+            File file = new File(tt);
             try {
-                if (!file.exists()){
+                if (!file.exists()) {
                     File[] cc = file.getParentFile().listFiles();
-                    for(int j=0;j<cc.length;j++){
-                        if(cc[j].getName().endsWith(".jar")){
+                    for (int j = 0; j < cc.length; j++) {
+                        if (cc[j].getName().endsWith(".jar")) {
                             tt = cc[j].getAbsolutePath();
                             break;
                         }
                     }
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
 
@@ -101,7 +101,7 @@ public class MavenManager {
         return SystemUtils.getUserHome().toString();
     }
 
-    public String getSrcDir(File codePath) throws Exception{
+    public String getSrcDir(File codePath) throws Exception {
         Model pomModel = getPomModel(new File(codePath, "pom.xml"));
         List<String> modules = pomModel.getModules();
         String module = "";
@@ -110,7 +110,7 @@ public class MavenManager {
             pomModel = getPomModel(new File(codePath, module + "pom.xml"));
         }
         String srcDir = pomModel.getBuild().getSourceDirectory();
-        return module + (srcDir == null ? String.format("src%cmain%cjava", File.separatorChar, File.separatorChar):
+        return module + (srcDir == null ? String.format("src%cmain%cjava", File.separatorChar, File.separatorChar) :
                 replaceProperties(srcDir, pomModel));
     }
 
@@ -120,7 +120,7 @@ public class MavenManager {
         Matcher m = p.matcher(s);
         StringBuilder sb = new StringBuilder();
         int start = 0;
-        while(m.find()) {
+        while (m.find()) {
             sb.append(s.substring(start, m.start()));
             String prop = props.getProperty(m.group(1));
             if (prop != null) {
