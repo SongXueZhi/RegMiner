@@ -7,6 +7,7 @@ public class RelatedTestCase {
     private String enclosingClassName;
     private String methodName;
     private Methodx method;
+
     public Methodx getMethod() {
         return method;
     }

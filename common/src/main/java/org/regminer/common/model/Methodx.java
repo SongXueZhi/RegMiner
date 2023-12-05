@@ -68,6 +68,7 @@ public class Methodx {
     public void setMethodDeclaration(MethodDeclaration methodDeclaration) {
         this.methodDeclaration = methodDeclaration;
     }
+
     public String getEnclosingClassName() {
         return enclosingClassName;
     }

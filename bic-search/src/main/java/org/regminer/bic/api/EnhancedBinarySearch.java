@@ -1,6 +1,8 @@
 package org.regminer.bic.api;
 
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.regminer.bic.api.core.BICSearchStrategy;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.model.PotentialBFC;
@@ -11,7 +13,6 @@ import org.regminer.ct.api.CtContext;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 import org.regminer.migrate.api.TestCaseMigrator;
-import org.slf4j.Logger;
 
 import java.io.File;
 import java.util.Collections;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 public class EnhancedBinarySearch extends BICSearchStrategy {
     final int level = 0;
-    protected Logger logger = org.slf4j.LoggerFactory.getLogger(this.getClass());
+    protected Logger logger = LogManager.getLogger(EnhancedBinarySearch.class);
     TestCaseResult.TestState[] status; // 切勿直接访问该数组
     //XXX:CompileErrorSearch block
     //all related code need involve

@@ -8,7 +8,7 @@ import org.regminer.common.model.RelatedTestCase;
 import org.regminer.common.utils.OSUtils;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.Compiler;
-import org.regminer.ct.domain.JDK;
+import org.regminer.ct.domain.JDKs;
 import org.regminer.ct.model.*;
 import org.regminer.ct.utils.CtUtils;
 
@@ -17,52 +17,100 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class AutoCompileAndTest extends Strategy {
+
+    public AutoCompileAndTest() {
+        super();
+
+    }
+
     @Override
     public CompileResult compile() {
-        CompileEnv compileEnv = new CompileEnv();
-        CtCommands envCommands = new CtCommands();
-        compileEnv.setCompiler(detectBuildTool(projectDir));
-        envCommands.setCompiler(compileEnv.getCompiler());
-        String osType = OSUtils.getOSType();
-        envCommands.setOsName(osType);
-        String compileCommand = compileEnv.getCompiler().getCompileCommand(osType);
+        CompileResult compileResult = new CompileResult();
 
-        CompileResult.CompileState compileState = CompileResult.CompileState.CE;
-        CompileResult compileResult = new CompileResult(compileState);
-        String message = "";
+        CompileTestEnv compileTestEnv = initializeCompileTestEnv();
+        initializeCompileCommand(compileTestEnv);
 
-        for (JDK jdk : JDK.values()) {
-            envCommands.takeCommand(CtCommands.CommandKey.JDK, jdk.getCommand());
-            envCommands.takeCommand(CtCommands.CommandKey.COMPILE, compileCommand);
-            message = new Executor(osType).setDirectory(projectDir).exec(envCommands.compute()).getMessage();
-            compileState = CtReferees.JudgeCompileState(message);
-            if (compileState == CompileResult.CompileState.SUCCESS) {
-                compileEnv.setJdk(jdk);
-                compileResult = new CompileResult(compileState, envCommands, compileEnv);
-                break;
-            } else {
-                envCommands.remove(CtCommands.CommandKey.JDK);
-                envCommands.remove(CtCommands.CommandKey.COMPILE);
-            }
-        }
+        String message =
+                new Executor(compileTestEnv.getOsName()).setDirectory(projectDir).exec(compileTestEnv.getCtCommand().compute()).getMessage();
+
+        CompileResult.CompileState compileState = CtReferees.JudgeCompileState(message);
         if (compileState == CompileResult.CompileState.CE) {
             compileResult.setExceptionMessage(message);
+        } else {
+            compileResult.setCompileWay(compileTestEnv);
         }
-
         return compileResult;
 
     }
 
     @Override
-    public TestResult test(List<RelatedTestCase> testCaseXES, CtCommands recordCommands, boolean parallel) {
+    public CompileResult compile(CompileTestEnv compileTestEnv) {
+        CompileResult compileResult = new CompileResult();
+        String message =
+                new Executor(compileTestEnv.getOsName()).setDirectory(projectDir).exec(compileTestEnv.getCtCommand().compute()).getMessage();
+
+        CompileResult.CompileState compileState = CtReferees.JudgeCompileState(message);
+        compileResult.setState(compileState);
+        if (compileState == CompileResult.CompileState.CE) {
+            compileResult.setExceptionMessage(message);
+        } else {
+            compileResult.setCompileWay(compileTestEnv);
+        }
+        return compileResult;
+    }
+
+    private void initializeCompileCommand(CompileTestEnv compileTestEnv) {
+        compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.JDK,
+                JDKs.jdkSearchRange[JDKs.getCurIndex()].getCommand());
+        compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.COMPILE,
+                compileTestEnv.getCompiler().getCompileCommand(compileTestEnv.getOsName()));
+    }
+
+    private CompileTestEnv initializeCompileTestEnv() {
+        CompileTestEnv compileTestEnv = new CompileTestEnv(); //编译、测试环境
+        compileTestEnv.setCtCommand(new CtCommands());// 编译和测试命令集合
+        compileTestEnv.setOsName(OSUtils.getOSType());
+        compileTestEnv.setProjectDir(projectDir);
+        compileTestEnv.setCompiler(detectBuildTool(projectDir));//配置编译器，例如mvn、gradle
+        return compileTestEnv;
+    }
+
+    @Override
+    public CompileResult compile(CompileFixWay... compileFixWays) {
+        CompileResult compileResult = new CompileResult();
+
+        CompileTestEnv compileTestEnv = initializeCompileTestEnv();
+        initializeCompileCommand(compileTestEnv);
+
+        String message =
+                new Executor(compileTestEnv.getOsName()).setDirectory(projectDir).exec(compileTestEnv.getCtCommand().compute()).getMessage();
+
+        CompileResult.CompileState compileState = CtReferees.JudgeCompileState(message);
+        compileResult.setState(compileState);
+        if (compileState == CompileResult.CompileState.SUCCESS) {
+            compileResult.setCompileWay(compileTestEnv);
+            return compileResult;
+        }
+        //TODO 根据编译失败的原因，选择不同的修复方式
+        //装填编译命令，包括环境配置和编译指令
+        //获取最高分的JDK，作为环境配置
+        for (CompileFixWay compileFixWay : compileFixWays) {
+            compileResult = compileFixWay.fix(compileTestEnv);
+        }
+
+        return compileResult;
+    }
+
+    @Override
+    public TestResult test(List<RelatedTestCase> testCaseXES, CompileTestEnv compileTestEnv) {
         TestResult testResult = new TestResult();
-        String osName = recordCommands.getOsName();
-        Compiler compiler = recordCommands.getCompiler();
-        CtCommands envCommands = SerializationUtils.clone(recordCommands);
+        String osName = compileTestEnv.getOsName();
+        Compiler compiler = compileTestEnv.getCompiler();
+        CtCommands envCommands = SerializationUtils.clone(compileTestEnv.getCtCommand());
 
         envCommands.remove(CtCommands.CommandKey.COMPILE);
 
-        Stream<RelatedTestCase> stream = parallel ? testCaseXES.parallelStream() : testCaseXES.stream();
+        Stream<RelatedTestCase> stream = testCaseXES.stream();
         stream.forEach(testCaseX -> {
             String testCommand = CtUtils.combineTestCommand(testCaseX, compiler, osName);
             envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
@@ -71,11 +119,11 @@ public class AutoCompileAndTest extends Strategy {
             TestCaseResult testCaseResult = CtReferees.judgeTestCaseResult(execResult);
             testCaseResult.setTestCommands(testCommand);
             testResult.takeTestCaseResult(testCaseX.toString(), testCaseResult);
-            envCommands.remove(CtCommands.CommandKey.COMPILE);
 
         });
         return testResult;
     }
+
 
     public Compiler detectBuildTool(File projectDir) {
         Compiler buildTool = Compiler.MVN;

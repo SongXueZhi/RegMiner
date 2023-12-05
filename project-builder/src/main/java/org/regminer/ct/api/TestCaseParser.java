@@ -56,9 +56,9 @@ public class TestCaseParser {
     public void parseTestCases(PotentialBFC pRFC) {
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
         // Prepare for no testcase in bfc but in range of (c~2,c^2)
-        if (pRFC.getTestcaseFrom() == PotentialBFC.TESTCASE_FROM_SEARCH) {
-            handlePotentialTestFile(pRFC.getPotentialTestCaseList(), bfcDir, pRFC);
-        }
+//        if (pRFC.getTestcaseFrom() == PotentialBFC.TESTCASE_FROM_SEARCH) {
+//            handlePotentialTestFile(pRFC.getPotentialTestCaseList(), bfcDir, pRFC);
+//        }
 
 //        System.out.println("prfc testcase file size: " + pRFC.getTestCaseFiles().size());
         Iterator<TestFile> iterator = pRFC.getTestCaseFiles().iterator();

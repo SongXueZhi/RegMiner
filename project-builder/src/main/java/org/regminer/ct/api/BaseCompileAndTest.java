@@ -8,10 +8,7 @@ import org.regminer.common.utils.OSUtils;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.Compiler;
 import org.regminer.ct.domain.JDK;
-import org.regminer.ct.model.CompileResult;
-import org.regminer.ct.model.CtCommands;
-import org.regminer.ct.model.TestCaseResult;
-import org.regminer.ct.model.TestResult;
+import org.regminer.ct.model.*;
 import org.regminer.ct.utils.CtUtils;
 
 import java.util.List;
@@ -21,33 +18,44 @@ public class BaseCompileAndTest extends Strategy {
 
     @Override
     public CompileResult compile() {
-        CtCommands envCommands = new CtCommands();
-        envCommands.setCompiler(Compiler.MVN);
+        CompileTestEnv compileTestEnv = new CompileTestEnv();
+        compileTestEnv.setCtCommand(new CtCommands());
+        compileTestEnv.setCompiler(Compiler.MVN);
         String osType = OSUtils.getOSType();
-        envCommands.setOsName(osType);
-        envCommands.takeCommand(CtCommands.CommandKey.JDK, JDK.J8.getCommand());
+        compileTestEnv.setOsName(osType);
+        compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.JDK, JDK.J8.getCommand());
 
         String compileCommand = Compiler.MVN.getCompileCommand(osType);
 
-        envCommands.takeCommand(CtCommands.CommandKey.COMPILE, compileCommand);
+        compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.COMPILE, compileCommand);
 
         return new CompileResult(
                 CtReferees.JudgeCompileState(new Executor(osType).setDirectory(projectDir)
-                        .exec(envCommands.compute()).getMessage()), envCommands
+                        .exec(compileTestEnv.getCtCommand().compute()).getMessage()), compileTestEnv.getCtCommand()
         );
 
     }
 
     @Override
-    public TestResult test(List<RelatedTestCase> testCaseXES, CtCommands recordCommands, boolean parallel) {
+    public CompileResult compile(CompileTestEnv compileTestEnv) {
+        return null;
+    }
+
+    @Override
+    public CompileResult compile(CompileFixWay... compileFixWay) {
+        return null;
+    }
+
+    @Override
+    public TestResult test(List<RelatedTestCase> testCaseXES, CompileTestEnv compileTestEnv) {
         TestResult testResult = new TestResult();
-        String osName = recordCommands.getOsName();
-        Compiler compiler = recordCommands.getCompiler();
-        CtCommands envCommands = SerializationUtils.clone(recordCommands);
+        String osName = compileTestEnv.getOsName();
+        Compiler compiler = compileTestEnv.getCompiler();
+        CtCommands envCommands = SerializationUtils.clone(compileTestEnv.getCtCommand());
 
         envCommands.remove(CtCommands.CommandKey.COMPILE);
 
-        Stream<RelatedTestCase> stream = parallel ? testCaseXES.parallelStream() : testCaseXES.stream();
+        Stream<RelatedTestCase> stream = testCaseXES.stream();
         stream.forEach(testCaseX -> {
             String testCommand = CtUtils.combineTestCommand(testCaseX, compiler, osName);
             envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);

@@ -6,6 +6,7 @@ import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.tool.SycFileCleanup;
 import org.regminer.common.utils.FileUtilx;
 import org.regminer.ct.api.AutoCompileAndTest;
+import org.regminer.ct.api.CompileFixWay;
 import org.regminer.ct.api.CtContext;
 import org.regminer.ct.api.TestCaseParser;
 import org.regminer.ct.model.CompileResult;
@@ -69,7 +70,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
             //2. 尝试编译BFC
             CtContext ctContext = new CtContext(new AutoCompileAndTest());
             ctContext.setProjectDir(bfcDirectory);
-            CompileResult compileResult = ctContext.compile();
+            CompileResult compileResult = ctContext.compile(CompileFixWay.values());
             if (compileResult.getState() == CompileResult.CompileState.CE) {
                 pRFC.getTestCaseFiles().clear();
                 logger.info("BFC compile error");
@@ -80,7 +81,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
             testCaseParser.parseTestCases(pRFC);
             //4. 测试BFC
             TestResult testResult = testCaseMigrator.test(pRFC.getTestCaseFiles(), ctContext,
-                    compileResult.getEnvCommands());
+                    compileResult.getCompileWay());
 
             TestUtils.removeTestFilesInBFC(pRFC, testResult, TestCaseResult.TestState.FAL);
 
@@ -104,7 +105,6 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 TestResult bfcpTestResult = testCaseMigrator.migrate(pRFC, bfcpID);
 
                 if (bfcpTestResult == null) { //这说明编译失败
-                    logger.info("BFC~1 compile error");
                     continue;
                 }
                 TestUtils.removeTestFilesInBFC(pRFC, bfcpTestResult, TestCaseResult.TestState.PASS);

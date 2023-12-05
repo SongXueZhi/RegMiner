@@ -8,6 +8,7 @@ import java.util.Map;
 public class TestFile extends ChangedFile {
     public Type type;
     private Map<String, RelatedTestCase> testMethodMap = new HashMap<>();
+
     public TestFile(String newPath) {
         super(newPath);
     }

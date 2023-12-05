@@ -26,11 +26,10 @@ public class CtContextTest extends TestCase {
         Assert.assertEquals(CompileResult.CompileState.SUCCESS, compileResult.getState());
         List<RelatedTestCase> testCaseXES = new ArrayList<>();
         RelatedTestCase testCaseX = new RelatedTestCase();
-        testCaseX.setPackageName("com.alibaba.json.bvt.parser.deser.list");
-        testCaseX.setEnclosingClassName("ListFieldTest");
+        testCaseX.setEnclosingClassName("com.alibaba.json.bvt.parser.deser.list.ListFieldTest");
         testCaseX.setMethodName("test_for_list");
         testCaseXES.add(testCaseX);
-        TestResult testResult = ctContext.test(testCaseXES, compileResult.getEnvCommands());
+        TestResult testResult = ctContext.test(testCaseXES, compileResult.getCompileWay());
         testResult.getCaseResultMap().forEach((key, value) -> {
             Assert.assertEquals(TestCaseResult.TestState.PASS, value.getState());
             Assert.assertNotNull(value.getTestCommands());
@@ -49,11 +48,10 @@ public class CtContextTest extends TestCase {
         ctContext.setJdkSearchRange(jdks);
         List<RelatedTestCase> testCaseXES = new ArrayList<>();
         RelatedTestCase testCaseX = new RelatedTestCase();
-        testCaseX.setPackageName("com.alibaba.json.bvt.parser.deser.list");
-        testCaseX.setEnclosingClassName("ListFieldTest");
+        testCaseX.setEnclosingClassName("com.alibaba.json.bvt.parser.deser.list.ListFieldTest");
         testCaseX.setMethodName("test_for_list");
         testCaseXES.add(testCaseX);
-        TestResult testResult = ctContext.test(testCaseXES, compileResult.getEnvCommands());
+        TestResult testResult = ctContext.test(testCaseXES, compileResult.getCompileWay());
         testResult.getCaseResultMap().forEach((key, value) -> {
             Assert.assertEquals(TestCaseResult.TestState.PASS, value.getState());
             Assert.assertNotNull(value.getTestCommands());

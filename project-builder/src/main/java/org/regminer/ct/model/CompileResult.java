@@ -4,7 +4,7 @@ public class CompileResult {
 
     private CompileState state;
     private CtCommands envCommands;
-    private CompileEnv compileWay;
+    private CompileTestEnv compileWay;
     private String exceptionMessage;
 
     public CompileResult() {
@@ -19,7 +19,7 @@ public class CompileResult {
         this.envCommands = envCommands;
     }
 
-    public CompileResult(CompileState state, CtCommands envCommands, CompileEnv compileWay) {
+    public CompileResult(CompileState state, CtCommands envCommands, CompileTestEnv compileWay) {
         this.state = state;
         this.envCommands = envCommands;
         this.compileWay = compileWay;
@@ -41,11 +41,11 @@ public class CompileResult {
         this.envCommands = envCommands;
     }
 
-    public CompileEnv getCompileWay() {
+    public CompileTestEnv getCompileWay() {
         return compileWay;
     }
 
-    public void setCompileWay(CompileEnv compileWay) {
+    public void setCompileWay(CompileTestEnv compileWay) {
         this.compileWay = compileWay;
     }
 

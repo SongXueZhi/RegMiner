@@ -3,7 +3,7 @@ package org.regminer.ct.api;
 import org.regminer.common.model.RelatedTestCase;
 import org.regminer.ct.domain.JDK;
 import org.regminer.ct.model.CompileResult;
-import org.regminer.ct.model.CtCommands;
+import org.regminer.ct.model.CompileTestEnv;
 import org.regminer.ct.model.TestResult;
 
 import java.io.File;
@@ -31,5 +31,9 @@ abstract class Strategy {
 
     public abstract CompileResult compile();
 
-    public abstract TestResult test(List<RelatedTestCase> testCaseXES, CtCommands recordCommands, boolean parallel);
+    public abstract CompileResult compile(CompileTestEnv compileTestEnv);
+
+    public abstract CompileResult compile(CompileFixWay... compileFixWay);
+
+    public abstract TestResult test(List<RelatedTestCase> testCaseXES, CompileTestEnv recordCommands);
 }

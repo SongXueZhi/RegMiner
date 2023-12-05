@@ -46,7 +46,6 @@ public class Configurations {
     public static boolean sqlEnable = false;
 
 
-
     public static String jdkDir = "";
     public static String jdkHome = "";
     public static String j6File = "";
@@ -63,6 +62,7 @@ public class Configurations {
     public static String j17File = "";
     public static String[] JDK_FILES = new String[12];
     static Properties prop = new Properties();
+
     static {
         loadConfigurations();
     }
@@ -107,6 +107,7 @@ public class Configurations {
         resultPath = projectPath + File.separator + "regression.csv";
         cachePath = rootDir + File.separator + "cache";
     }
+
     // TODO luzhengjie 现在获取JDK的方式不合理，写死了。写一个sh脚本如果检测JDK_DIR下的JDK.并加入到数组中。
     // 现在的代码只是demo，数组中应该放的是JDK枚举中的对象。getCommand也应该被优化。export那里显然是冗余的。
     private static void loadJDKPaths() {
