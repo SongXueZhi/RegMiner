@@ -15,7 +15,7 @@ import java.util.List;
  * @Description:
  */
 public class TestSuiteX {
-    public final List<TestCaseX> testCaseXList = SetUniqueList.setUniqueList(new LinkedList<>());
+    public final List<RelatedTestCase> testCaseXList = SetUniqueList.setUniqueList(new LinkedList<>());
     private String filePath;
     private String packageName;
     private String className;

@@ -1,6 +1,6 @@
 package org.regminer.ct.api;
 
-import org.regminer.common.model.TestCaseX;
+import org.regminer.common.model.RelatedTestCase;
 import org.regminer.ct.domain.JDK;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.CtCommands;
@@ -31,5 +31,5 @@ abstract class Strategy {
 
     public abstract CompileResult compile();
 
-    public abstract TestResult test(List<TestCaseX> testCaseXES, CtCommands recordCommands, boolean parallel);
+    public abstract TestResult test(List<RelatedTestCase> testCaseXES, CtCommands recordCommands, boolean parallel);
 }

@@ -3,7 +3,7 @@ package org.regminer.ct.api;
 import org.apache.commons.lang3.SerializationUtils;
 import org.regminer.common.exec.ExecResult;
 import org.regminer.common.exec.Executor;
-import org.regminer.common.model.TestCaseX;
+import org.regminer.common.model.RelatedTestCase;
 import org.regminer.common.utils.OSUtils;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.Compiler;
@@ -39,7 +39,7 @@ public class BaseCompileAndTest extends Strategy {
     }
 
     @Override
-    public TestResult test(List<TestCaseX> testCaseXES, CtCommands recordCommands, boolean parallel) {
+    public TestResult test(List<RelatedTestCase> testCaseXES, CtCommands recordCommands, boolean parallel) {
         TestResult testResult = new TestResult();
         String osName = recordCommands.getOsName();
         Compiler compiler = recordCommands.getCompiler();
@@ -47,7 +47,7 @@ public class BaseCompileAndTest extends Strategy {
 
         envCommands.remove(CtCommands.CommandKey.COMPILE);
 
-        Stream<TestCaseX> stream = parallel ? testCaseXES.parallelStream() : testCaseXES.stream();
+        Stream<RelatedTestCase> stream = parallel ? testCaseXES.parallelStream() : testCaseXES.stream();
         stream.forEach(testCaseX -> {
             String testCommand = CtUtils.combineTestCommand(testCaseX, compiler, osName);
             envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);

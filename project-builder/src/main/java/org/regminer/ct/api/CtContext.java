@@ -1,6 +1,6 @@
 package org.regminer.ct.api;
 
-import org.regminer.common.model.TestCaseX;
+import org.regminer.common.model.RelatedTestCase;
 import org.regminer.ct.domain.JDK;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.CtCommands;
@@ -31,11 +31,11 @@ public class CtContext {
     }
 
 
-    public TestResult test(List<TestCaseX> testCaseXES, CtCommands envCommands) {
+    public TestResult test(List<RelatedTestCase> testCaseXES, CtCommands envCommands) {
         return this.strategy.test(testCaseXES, envCommands, false);
     }
 
-    public TestResult test(List<TestCaseX> testCaseXES, CtCommands envCommands, boolean parallel) {
+    public TestResult test(List<RelatedTestCase> testCaseXES, CtCommands envCommands, boolean parallel) {
         return this.strategy.test(testCaseXES, envCommands, parallel);
     }
 }

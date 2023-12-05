@@ -2,7 +2,6 @@ package org.regminer.miner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.regminer.common.constant.Configurations;
 import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.tool.SycFileCleanup;
 import org.regminer.common.utils.FileUtilx;

@@ -78,7 +78,6 @@ public class TestCaseParser {
                 iterator.remove();
             } else {
                 file.setType(Type.TEST_SUITE);
-                file.setQualityClassName(CompilationUtil.getQualityClassName(code));
                 Map<String, RelatedTestCase> methodMap = parse(file, code);
                 file.setTestMethodMap(methodMap);
             }
@@ -88,6 +87,7 @@ public class TestCaseParser {
 
     private Map<String, RelatedTestCase> parse(TestFile file, String code) {
         List<Edit> editList = file.getEditList();
+
 //		cleanEmpty(editList);
         List<Methodx> methodList = CompilationUtil.getAllMethod(code);
         Map<String, RelatedTestCase> testCaseMap = new HashMap<>();
@@ -124,7 +124,9 @@ public class TestCaseParser {
                 RelatedTestCase testCase = new RelatedTestCase();
                 // 暂时不设定方法的类型
                 // testCase.setType(RelatedTestCase.Type.Created);
+                testCase.setEnclosingClassName(method.getEnclosingClassName());
                 testCase.setMethod(method);
+                testCase.setMethodName(method.getSimpleName());
                 testCaseMap.put(name, testCase);
             }
         }

@@ -1,7 +1,7 @@
 package org.regminer.migrate.api;
 
 import org.regminer.common.model.PotentialBFC;
-import org.regminer.common.model.TestCaseX;
+import org.regminer.common.model.RelatedTestCase;
 import org.regminer.common.model.TestFile;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
@@ -42,11 +42,11 @@ public class TestCaseMigrator extends Migrator {
     }
 
 
-    public List<TestCaseX> convertTestFilesToTestCaseXList(List<TestFile> testFiles) {
-        List<TestCaseX> allTestCaseXs = new ArrayList<>();
+    public List<RelatedTestCase> convertTestFilesToTestCaseXList(List<TestFile> testFiles) {
+        List<RelatedTestCase> allTestCaseXs = new ArrayList<>();
 
         for (TestFile testFile : testFiles) {
-            List<TestCaseX> testCaseXs = testFile.toTestCaseXList();
+            List<RelatedTestCase> testCaseXs = testFile.getTestCaseList();
             allTestCaseXs.addAll(testCaseXs);
         }
 
