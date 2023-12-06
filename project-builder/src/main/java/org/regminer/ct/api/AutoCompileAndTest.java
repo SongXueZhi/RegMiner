@@ -76,7 +76,7 @@ public class AutoCompileAndTest extends Strategy {
     }
 
     @Override
-    public CompileResult compile(CompileFixWay... compileFixWays) {
+    public CompileResult compile(OriginCompileFixWay... compileFixWays) {
         CompileResult compileResult = new CompileResult();
 
         CompileTestEnv compileTestEnv = initializeCompileTestEnv();
@@ -94,7 +94,7 @@ public class AutoCompileAndTest extends Strategy {
         //TODO 根据编译失败的原因，选择不同的修复方式
         //装填编译命令，包括环境配置和编译指令
         //获取最高分的JDK，作为环境配置
-        for (CompileFixWay compileFixWay : compileFixWays) {
+        for (OriginCompileFixWay compileFixWay : compileFixWays) {
             compileResult = compileFixWay.fix(compileTestEnv);
         }
 

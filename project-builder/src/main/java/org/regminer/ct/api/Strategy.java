@@ -33,7 +33,7 @@ abstract class Strategy {
 
     public abstract CompileResult compile(CompileTestEnv compileTestEnv);
 
-    public abstract CompileResult compile(CompileFixWay... compileFixWay);
+    public abstract CompileResult compile(OriginCompileFixWay... compileFixWay);
 
     public abstract TestResult test(List<RelatedTestCase> testCaseXES, CompileTestEnv recordCommands);
 }

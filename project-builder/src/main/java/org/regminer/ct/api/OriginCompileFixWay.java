@@ -11,7 +11,7 @@ import org.regminer.ct.model.CtCommands;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-public enum CompileFixWay {
+public enum OriginCompileFixWay {
     JDK_SEARCH {
         @Override
         CompileResult fix(CompileTestEnv compileEnv) {
@@ -41,7 +41,7 @@ public enum CompileFixWay {
         private CompileResult tryCompileWithJDK(CompileTestEnv compileEnv, JDK jdk) {
             logger.info("Trying to compile with JDK " + jdk.name());
             compileEnv.getCtCommand().takeCommand(CtCommands.CommandKey.JDK, jdk.getCommand());
-            CompileResult result = CompileFixWay.recompileProject(compileEnv);
+            CompileResult result = OriginCompileFixWay.recompileProject(compileEnv);
             if (result.getState() == CompileResult.CompileState.SUCCESS) {
                 compileEnv.setJdk(jdk);
             } else {

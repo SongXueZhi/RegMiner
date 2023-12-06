@@ -35,7 +35,7 @@ public class CtContext {
     }
 
 
-    public CompileResult compile(CompileFixWay... compileFixWays) {
+    public CompileResult compile(OriginCompileFixWay... compileFixWays) {
         return this.strategy.compile(compileFixWays);
     }
 

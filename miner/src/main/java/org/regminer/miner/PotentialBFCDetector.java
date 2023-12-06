@@ -22,6 +22,7 @@ import org.regminer.miner.core.PBFCFilterStrategy;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class PotentialBFCDetector extends PBFCFilterStrategy {
 
@@ -52,8 +53,8 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
             detect(commit, potentialRFCs, git);
             countAll++;
         }
-        FileUtilx.log("总共分析了" + countAll + "条commit\n");
-        FileUtilx.log("pRFC in total :" + potentialRFCs.size());
+        logger.info("total " + countAll + "commit in this project");
+        logger.info("pRFC in total :" + potentialRFCs.size());
         return potentialRFCs;
     }
 
@@ -68,8 +69,8 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
                 countAll++;
             }
         }
-        FileUtilx.log("总共分析了" + countAll + "条commit\n");
-        FileUtilx.log("pRFC in total :" + potentialRFCs.size());
+        logger.info("total " + countAll + "commit in this project");
+        logger.info("pRFC in total :" + potentialRFCs.size());
         return potentialRFCs;
     }
 

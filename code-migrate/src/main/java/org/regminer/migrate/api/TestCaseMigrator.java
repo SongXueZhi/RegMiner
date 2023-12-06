@@ -6,8 +6,9 @@ import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.model.RelatedTestCase;
 import org.regminer.common.model.TestFile;
 import org.regminer.ct.api.AutoCompileAndTest;
-import org.regminer.ct.api.CompileFixWay;
+import org.regminer.ct.api.OriginCompileFixWay;
 import org.regminer.ct.api.CtContext;
+import org.regminer.ct.model.CommitBuildResult;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.CompileTestEnv;
 import org.regminer.ct.model.TestResult;
@@ -27,7 +28,13 @@ public class TestCaseMigrator extends Migrator {
         pRFC.fileMap.put(bic, bicDirectory);
         CtContext ctContext = new CtContext(new AutoCompileAndTest());
         ctContext.setProjectDir(bicDirectory);
-        CompileResult compileResult = ctContext.compile(CompileFixWay.values());
+
+        CompileResult compileResult =
+                CommitBuildResult.originalCompileResult.containsKey(bic)?
+                        CommitBuildResult.originalCompileResult.get(bic) :
+                        ctContext.compile(OriginCompileFixWay.values());
+        CommitBuildResult.originalCompileResult.putIfAbsent(bic,compileResult);
+
         if (compileResult.getState() == CompileResult.CompileState.CE) {
             logger.debug("compile error before migrate");
             return null;
@@ -63,4 +70,5 @@ public class TestCaseMigrator extends Migrator {
         TestResult testResult = ctContext.test(convertTestFilesToTestCaseXList(testFiles), compileTestEnv);
         return testResult;
     }
+
 }

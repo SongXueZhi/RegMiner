@@ -6,9 +6,10 @@ import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.tool.SycFileCleanup;
 import org.regminer.common.utils.FileUtilx;
 import org.regminer.ct.api.AutoCompileAndTest;
-import org.regminer.ct.api.CompileFixWay;
+import org.regminer.ct.api.OriginCompileFixWay;
 import org.regminer.ct.api.CtContext;
 import org.regminer.ct.api.TestCaseParser;
+import org.regminer.ct.model.CommitBuildResult;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
@@ -22,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class BFCEvaluator extends BFCSearchStrategy {
-    protected Logger logger = LogManager.getLogger(BFCEvaluator.class);
+
     TestCaseParser testCaseParser;
     TestCaseMigrator testCaseMigrator;
 
@@ -50,7 +51,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
                     continue;
                 }
                 ++i;
-                FileUtilx.log("pRFC total:" + i);
+                logger.info("pRFC total:" + i);
                 iterator.remove();
             } catch (Exception e) {
                 logger.error(e.getMessage());
@@ -70,7 +71,10 @@ public class BFCEvaluator extends BFCSearchStrategy {
             //2. 尝试编译BFC
             CtContext ctContext = new CtContext(new AutoCompileAndTest());
             ctContext.setProjectDir(bfcDirectory);
-            CompileResult compileResult = ctContext.compile(CompileFixWay.values());
+
+            CompileResult compileResult = ctContext.compile(OriginCompileFixWay.values());
+            CommitBuildResult.originalCompileResult.putIfAbsent(bfcID, compileResult);
+
             if (compileResult.getState() == CompileResult.CompileState.CE) {
                 pRFC.getTestCaseFiles().clear();
                 logger.info("BFC compile error");

@@ -42,7 +42,7 @@ public class BaseCompileAndTest extends Strategy {
     }
 
     @Override
-    public CompileResult compile(CompileFixWay... compileFixWay) {
+    public CompileResult compile(OriginCompileFixWay... compileFixWay) {
         return null;
     }
 

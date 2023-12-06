@@ -13,6 +13,7 @@ import java.util.Properties;
 public class Configurations {
 
     private static final String SQL_ENABLE_KEY = "sql_enable";
+    private static final String JENV_ENABLE_KEY = "jenv_enable";
     private static final String SQL_URL_KEY = "sql_url";
     private static final String USER_NAME_KEY = "username";
     private static final String PASSWD_KEY = "passwd";
@@ -47,19 +48,20 @@ public class Configurations {
 
 
     public static String jdkDir = "";
-    public static String jdkHome = "";
-    public static String j6File = "";
+//    public static String jdkHome = "";
+//    public static String j6File = "";
     public static String j7File = "";
     public static String j8File = "";
-    public static String j9File = "";
-    public static String j10File = "";
+//    public static String j9File = "";
+//    public static String j10File = "";
     public static String j11File = "";
-    public static String j12File = "";
-    public static String j13File = "";
-    public static String j14File = "";
-    public static String j15File = "";
-    public static String j16File = "";
+//    public static String j12File = "";
+//    public static String j13File = "";
+//    public static String j14File = "";
+//    public static String j15File = "";
+//    public static String j16File = "";
     public static String j17File = "";
+    public static boolean jenv_enable = false;
     static Properties prop = new Properties();
 
     static {
@@ -73,6 +75,8 @@ public class Configurations {
 
             // Load configuration properties
             sqlEnable = "1".equals(prop.getProperty(SQL_ENABLE_KEY));
+            jenv_enable = "1".equals(prop.getProperty(JENV_ENABLE_KEY));
+
             if (sqlEnable) {
                 MysqlManager.url = prop.getProperty(SQL_URL_KEY);
                 MysqlManager.name = prop.getProperty(USER_NAME_KEY);
@@ -80,17 +84,17 @@ public class Configurations {
             }
             // ... load other properties ...
             jdkDir = prop.getProperty(JDK_DIR);
-            j6File = prop.getProperty(JDK6);
+//            j6File = prop.getProperty(JDK6);
             j7File = prop.getProperty(JDK7);
             j8File = prop.getProperty(JDK8);
-            j9File = prop.getProperty(JDK9);
-            j10File = prop.getProperty(JDK10);
+//            j9File = prop.getProperty(JDK9);
+//            j10File = prop.getProperty(JDK10);
             j11File = prop.getProperty(JDK11);
-            j12File = prop.getProperty(JDK12);
-            j13File = prop.getProperty(JDK13);
-            j14File = prop.getProperty(JDK14);
-            j15File = prop.getProperty(JDK15);
-            j16File = prop.getProperty(JDK16);
+//            j12File = prop.getProperty(JDK12);
+//            j13File = prop.getProperty(JDK13);
+//            j14File = prop.getProperty(JDK14);
+//            j15File = prop.getProperty(JDK15);
+//            j16File = prop.getProperty(JDK16);
             j17File = prop.getProperty(JDK17);
         } catch (IOException ex) {
             System.out.println("Error loading configuration: " + ex.getMessage());
