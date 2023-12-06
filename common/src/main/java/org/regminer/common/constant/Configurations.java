@@ -2,6 +2,7 @@ package org.regminer.common.constant;
 
 
 import org.regminer.common.sql.MysqlManager;
+import org.regminer.common.utils.OSUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,7 +11,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Configurations {
-
 
     private static final String SQL_ENABLE_KEY = "sql_enable";
     private static final String SQL_URL_KEY = "sql_url";
@@ -60,7 +60,6 @@ public class Configurations {
     public static String j15File = "";
     public static String j16File = "";
     public static String j17File = "";
-    public static String[] JDK_FILES = new String[12];
     static Properties prop = new Properties();
 
     static {
@@ -81,19 +80,18 @@ public class Configurations {
             }
             // ... load other properties ...
             jdkDir = prop.getProperty(JDK_DIR);
-            jdkHome = prop.getProperty(JDK_HOME);
-            j6File = jdkDir + prop.getProperty(JDK6) + jdkHome;
-            j7File = jdkDir + prop.getProperty(JDK7) + jdkHome;
-            j8File = jdkDir + prop.getProperty(JDK8) + jdkHome;
-            j9File = jdkDir + prop.getProperty(JDK9) + jdkHome;
-            j10File = jdkDir + prop.getProperty(JDK10) + jdkHome;
-            j11File = jdkDir + prop.getProperty(JDK11) + jdkHome;
-            j12File = jdkDir + prop.getProperty(JDK12) + jdkHome;
-            j13File = jdkDir + prop.getProperty(JDK13) + jdkHome;
-            j14File = jdkDir + prop.getProperty(JDK14) + jdkHome;
-            j15File = jdkDir + prop.getProperty(JDK15) + jdkHome;
-            j16File = jdkDir + prop.getProperty(JDK16) + jdkHome;
-            j17File = jdkDir + prop.getProperty(JDK17) + jdkHome;
+            j6File = prop.getProperty(JDK6);
+            j7File = prop.getProperty(JDK7);
+            j8File = prop.getProperty(JDK8);
+            j9File = prop.getProperty(JDK9);
+            j10File = prop.getProperty(JDK10);
+            j11File = prop.getProperty(JDK11);
+            j12File = prop.getProperty(JDK12);
+            j13File = prop.getProperty(JDK13);
+            j14File = prop.getProperty(JDK14);
+            j15File = prop.getProperty(JDK15);
+            j16File = prop.getProperty(JDK16);
+            j17File = prop.getProperty(JDK17);
         } catch (IOException ex) {
             System.out.println("Error loading configuration: " + ex.getMessage());
         }
@@ -106,13 +104,5 @@ public class Configurations {
         tmpFile = projectPath + File.separator + "tmp";
         resultPath = projectPath + File.separator + "regression.csv";
         cachePath = rootDir + File.separator + "cache";
-    }
-
-    // TODO luzhengjie 现在获取JDK的方式不合理，写死了。写一个sh脚本如果检测JDK_DIR下的JDK.并加入到数组中。
-    // 现在的代码只是demo，数组中应该放的是JDK枚举中的对象。getCommand也应该被优化。export那里显然是冗余的。
-    private static void loadJDKPaths() {
-        for (int i = 6; i <= 17; i++) {
-            JDK_FILES[i - 6] = JDK_DIR + prop.getProperty("j" + i + "_file") + JDK_HOME;
-        }
     }
 }
