@@ -2,6 +2,7 @@ package org.regminer.common.constant;
 
 
 import org.regminer.common.sql.MysqlManager;
+import org.regminer.common.utils.OSUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +12,7 @@ import java.util.Properties;
 
 public class Configurations {
 
-
+    public static final String SEPARATOR = System.getProperty("file.separator");
     private static final String SQL_ENABLE_KEY = "sql_enable";
     private static final String SQL_URL_KEY = "sql_url";
     private static final String USER_NAME_KEY = "username";
@@ -69,7 +70,7 @@ public class Configurations {
 
     private static void loadConfigurations() {
 
-        try (InputStream inStream = new FileInputStream(configPath)) {
+        try (InputStream inStream = new FileInputStream(getModuleAbsDir("") + SEPARATOR + configPath)) {
             prop.load(inStream);
 
             // Load configuration properties
@@ -81,19 +82,32 @@ public class Configurations {
             }
             // ... load other properties ...
             jdkDir = prop.getProperty(JDK_DIR);
-            jdkHome = prop.getProperty(JDK_HOME);
-            j6File = jdkDir + prop.getProperty(JDK6) + jdkHome;
-            j7File = jdkDir + prop.getProperty(JDK7) + jdkHome;
-            j8File = jdkDir + prop.getProperty(JDK8) + jdkHome;
-            j9File = jdkDir + prop.getProperty(JDK9) + jdkHome;
-            j10File = jdkDir + prop.getProperty(JDK10) + jdkHome;
-            j11File = jdkDir + prop.getProperty(JDK11) + jdkHome;
-            j12File = jdkDir + prop.getProperty(JDK12) + jdkHome;
-            j13File = jdkDir + prop.getProperty(JDK13) + jdkHome;
-            j14File = jdkDir + prop.getProperty(JDK14) + jdkHome;
-            j15File = jdkDir + prop.getProperty(JDK15) + jdkHome;
-            j16File = jdkDir + prop.getProperty(JDK16) + jdkHome;
-            j17File = jdkDir + prop.getProperty(JDK17) + jdkHome;
+            j6File = prop.getProperty(JDK6);
+            j7File = prop.getProperty(JDK7);
+            j8File = prop.getProperty(JDK8);
+            j9File = prop.getProperty(JDK9);
+            j10File = prop.getProperty(JDK10);
+            j11File = prop.getProperty(JDK11);
+            j12File = prop.getProperty(JDK12);
+            j13File = prop.getProperty(JDK13);
+            j14File = prop.getProperty(JDK14);
+            j15File = prop.getProperty(JDK15);
+            j16File = prop.getProperty(JDK16);
+            j17File = prop.getProperty(JDK17);
+            loadJDKPaths();
+            jdkHome = prop.getProperty(JDK_HOME);//todo may discard this field!
+//            j6File = jdkDir + prop.getProperty(JDK6) + jdkHome;
+//            j7File = jdkDir + prop.getProperty(JDK7) + jdkHome;
+//            j8File = jdkDir + prop.getProperty(JDK8) + jdkHome;
+//            j9File = jdkDir + prop.getProperty(JDK9) + jdkHome;
+//            j10File = jdkDir + prop.getProperty(JDK10) + jdkHome;
+//            j11File = jdkDir + prop.getProperty(JDK11) + jdkHome;
+//            j12File = jdkDir + prop.getProperty(JDK12) + jdkHome;
+//            j13File = jdkDir + prop.getProperty(JDK13) + jdkHome;
+//            j14File = jdkDir + prop.getProperty(JDK14) + jdkHome;
+//            j15File = jdkDir + prop.getProperty(JDK15) + jdkHome;
+//            j16File = jdkDir + prop.getProperty(JDK16) + jdkHome;
+//            j17File = jdkDir + prop.getProperty(JDK17) + jdkHome;
         } catch (IOException ex) {
             System.out.println("Error loading configuration: " + ex.getMessage());
         }
@@ -108,10 +122,46 @@ public class Configurations {
         cachePath = rootDir + File.separator + "cache";
     }
     // TODO luzhengjie 现在获取JDK的方式不合理，写死了。写一个sh脚本如果检测JDK_DIR下的JDK.并加入到数组中。
+    // todo: check: first run the get_jdk.py(write jdk alsolute paths to env.properties), then load the config!
     // 现在的代码只是demo，数组中应该放的是JDK枚举中的对象。getCommand也应该被优化。export那里显然是冗余的。
     private static void loadJDKPaths() {
-        for (int i = 6; i <= 17; i++) {
-            JDK_FILES[i - 6] = JDK_DIR + prop.getProperty("j" + i + "_file") + JDK_HOME;
+        String os = OSUtils.getOSType();
+        for (int i = 6; i <= 17; i++) {//jdk6 to jdk17
+            JDK_FILES[i - 6] = /*JDK_DIR +*/ prop.getProperty("j" + i + "_file") /*+ JDK_HOME*/;
         }
+    }
+
+    //give an empty string to get the root dir
+    //give a module name to get the abs dir of the module
+    //not ends with separator
+    //eg: getModuleAbsDir("")->/home/xxx/RegMiner, getModuleAbsDir("miner")->/home/xxx/RegMiner/miner
+    public static String getModuleAbsDir(String moduleName) {//return the abs dir for each module("" for the root project)
+        String moduleDir = System.getProperty("user.dir");
+        String[] split = moduleDir.split(SEPARATOR);
+        boolean lastIsModuleName = split[split.length - 1].equals(moduleName);
+        boolean secondLastIsProjectName = split[split.length - 2].equals("RegMiner");
+
+        if (lastIsModuleName && secondLastIsProjectName) {
+            return moduleDir;
+        }
+
+        if (!lastIsModuleName && secondLastIsProjectName) {
+            //change the last one to moduleName
+            split[split.length - 1] = moduleName;
+            moduleDir = String.join(SEPARATOR, split);
+            if (moduleDir.endsWith(SEPARATOR)) {
+                return moduleDir.substring(0, moduleDir.length() - 1);
+            }
+            return moduleDir;
+        }
+
+        if (split[split.length - 1].equals("RegMiner")) {
+            moduleDir += SEPARATOR + moduleName;
+        }
+
+        if (moduleDir.endsWith(SEPARATOR)) {
+            return moduleDir.substring(0, moduleDir.length() - 1);
+        }
+        return moduleDir;
     }
 }
