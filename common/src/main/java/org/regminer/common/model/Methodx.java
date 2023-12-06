@@ -8,6 +8,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
  */
 public class Methodx {
 
+    private String enclosingClassName;
     private String signature;
     private int startLine;
     private int stopLine;
@@ -18,8 +19,9 @@ public class Methodx {
         this.signature = signature;
     }
 
-    public Methodx(String signature, int startLine, int stopLine, String simpleName,
+    public Methodx(String enclosingClassName, String signature, int startLine, int stopLine, String simpleName,
                    MethodDeclaration methodDeclaration) {
+        this.enclosingClassName = enclosingClassName;
         this.signature = signature;
         this.startLine = startLine;
         this.stopLine = stopLine;
@@ -65,6 +67,14 @@ public class Methodx {
 
     public void setMethodDeclaration(MethodDeclaration methodDeclaration) {
         this.methodDeclaration = methodDeclaration;
+    }
+
+    public String getEnclosingClassName() {
+        return enclosingClassName;
+    }
+
+    public void setEnclosingClassName(String enclosingClassName) {
+        this.enclosingClassName = enclosingClassName;
     }
 
 }

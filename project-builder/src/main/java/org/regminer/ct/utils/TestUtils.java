@@ -40,17 +40,16 @@ public class TestUtils {
      */
     public static void removeTestFilesInBFC(PotentialBFC potentialBFC, TestResult testResult,
                                             TestCaseResult.TestState testState) {
-        //TODO luzhengjie: 获取TestResult中的Testcase，根据Testcase的状态，删除PotentialBFC的TestFile.getTestMethodMap()
-        // 中满足条件的case，如果TestFile.getTestMethodMap()为空，则删除该TestFile。
         Set<String> testCasesToRemove = collectTestCases(testResult, state -> state == testState).keySet();
 
         potentialBFC.getTestCaseFiles().removeIf(testFile -> {
-            testFile.getTestMethodMap().keySet().removeIf(testCasesToRemove::contains);
+            testFile.getTestMethodMap().entrySet().removeIf(
+                    entry -> testCasesToRemove.contains(entry.getValue().toString())
+            );
             // Return true if the test file is now empty, indicating it should be removed.
             return testFile.getTestMethodMap().isEmpty();
         });
 
-        // TODO: Review alignment issues raised by Song Xuezhi during debugging.
     }
 
 }

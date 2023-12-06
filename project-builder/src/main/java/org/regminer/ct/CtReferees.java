@@ -4,7 +4,11 @@ import org.regminer.common.exec.ExecResult;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
 public class CtReferees {
+    static Logger logger = LogManager.getLogManager().getLogger("org.regminer.ct.CtReferees");
 
     public static CompileResult.CompileState JudgeCompileState(String message) {
         return message.toLowerCase().contains("build success") ? CompileResult.CompileState.SUCCESS :
@@ -31,7 +35,7 @@ public class CtReferees {
             testState = TestCaseResult.TestState.FAL;
         }
         testCaseResult.setState(testState);
-        testCaseResult.setExceptionMessage(spiltExceptionMessage(message, testState));
+//        testCaseResult.setExceptionMessage(spiltExceptionMessage(message, testState));
         return testCaseResult;
     }
 
@@ -39,12 +43,18 @@ public class CtReferees {
         if (testState != TestCaseResult.TestState.FAL) {
             return null;
         }
-        int splitStartNum = message.indexOf("t e s t s\n[info] ") + ("t e s t s\n[info] ").length();
-        int splitEndNum = message.indexOf("[info] results:");
-        String testResult = message.substring(splitStartNum, splitEndNum).replace("-", "")
-                .replace("[info] ", "").replace("[error] ", "")
-                .replace("[info]", "").replace("[error]", "");
-        System.out.println(testResult);
+        String testResult = null;
+        try {
+            int splitStartNum = message.indexOf("t e s t s\n[info] ") + ("t e s t s\n[info] ").length();
+            int splitEndNum = message.indexOf("[info] results:");
+            testResult = message.substring(splitStartNum, splitEndNum).replace("-", "")
+                    .replace("[info] ", "").replace("[error] ", "")
+                    .replace("[info]", "").replace("[error]", "");
+            System.out.println(testResult);
+        } catch (Exception e) {
+            logger.info(e.getLocalizedMessage());
+        }
+
         return testResult;
     }
 

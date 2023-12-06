@@ -1,13 +1,13 @@
 package org.regminer.ct.utils;
 
-import org.regminer.common.model.TestCaseX;
+import org.regminer.common.model.RelatedTestCase;
 import org.regminer.ct.domain.Compiler;
 
 public class CtUtils {
 
-    public static String combineTestCommand(TestCaseX testCaseX, Compiler compiler, String osName) {
+    public static String combineTestCommand(RelatedTestCase testCaseX, Compiler compiler, String osName) {
         //TODO handle multi-modules project
-        String result = testCaseX.getPackageName() + "." + testCaseX.getClassName();
+        String result = testCaseX.getEnclosingClassName();
         switch (compiler) {
             case GRADLE:
                 return Compiler.GRADLE.getTestCommand(osName) + result + "." + testCaseX.getMethodName();

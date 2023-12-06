@@ -4,10 +4,10 @@ import org.regminer.common.constant.Configurations;
 
 public enum JDK {
 
-    J8 {
+    J6 {
         @Override
         public String getCommand() {
-            return "export JAVA_HOME=" + Configurations.j8File;
+            return "export JAVA_HOME=" + Configurations.j6File;
         }
     },
 
@@ -18,32 +18,10 @@ public enum JDK {
 
         }
     },
-
-    J11 {
+    J8 {
         @Override
         public String getCommand() {
-            return "export JAVA_HOME=" + Configurations.j11File;
-        }
-    },
-
-    J17 {
-        @Override
-        public String getCommand() {
-            return "export JAVA_HOME=" + Configurations.j17File;
-        }
-    },
-
-
-    J15 {
-        @Override
-        public String getCommand() {
-            return "export JAVA_HOME=" + Configurations.j15File;
-        }
-    },
-    J6 {
-        @Override
-        public String getCommand() {
-            return "export JAVA_HOME=" + Configurations.j6File;
+            return "export JAVA_HOME=" + Configurations.j8File;
         }
     },
     J9 {
@@ -52,10 +30,18 @@ public enum JDK {
             return "export JAVA_HOME=" + Configurations.j9File;
         }
     },
+
     J10 {
         @Override
         public String getCommand() {
             return "export JAVA_HOME=" + Configurations.j10File;
+        }
+    },
+
+    J11 {
+        @Override
+        public String getCommand() {
+            return "export JAVA_HOME=" + Configurations.j11File;
         }
     },
     J12 {
@@ -64,6 +50,7 @@ public enum JDK {
             return "export JAVA_HOME=" + Configurations.j12File;
         }
     },
+
     J13 {
         @Override
         public String getCommand() {
@@ -76,10 +63,23 @@ public enum JDK {
             return "export JAVA_HOME=" + Configurations.j14File;
         }
     },
+    J15 {
+        @Override
+        public String getCommand() {
+            return "export JAVA_HOME=" + Configurations.j15File;
+        }
+    },
+
     J16 {
         @Override
         public String getCommand() {
             return "export JAVA_HOME=" + Configurations.j16File;
+        }
+    },
+    J17 {
+        @Override
+        public String getCommand() {
+            return "export JAVA_HOME=" + Configurations.j17File;
         }
     };
 

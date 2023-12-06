@@ -3,7 +3,6 @@ package org.regminer.common.utils;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
 import org.regminer.common.ast.JdtClassRetriever;
-import org.regminer.common.ast.JdtMethodRetriever;
 import org.regminer.common.model.Methodx;
 
 import java.util.ArrayList;
@@ -27,29 +26,41 @@ public class CompilationUtil {
 
     public static List<Methodx> getAllMethod(String codeContent) {
         List<Methodx> methods = new ArrayList<>();
-        JdtMethodRetriever retriever = new JdtMethodRetriever();
         CompilationUnit unit = parseCompliationUnit(codeContent);
-        unit.accept(retriever);
-        List<MethodDeclaration> methodNodes = retriever.getMemberList();
-        for (ASTNode node : methodNodes) {
-            if (!(node.getParent().getParent() instanceof CompilationUnit)) {
-                continue;
+
+        // 获取包名
+        String packageName = unit.getPackage() != null ? unit.getPackage().getName().getFullyQualifiedName() : "";
+
+        // 类访问者
+        unit.accept(new ASTVisitor() {
+            @Override
+            public boolean visit(TypeDeclaration typeDecl) {
+                String className = typeDecl.getName().getIdentifier();
+                // 创建完整的类名（包括包名）
+                String fullClassName = packageName.isEmpty() ? className : packageName + "." + className;
+
+                for (MethodDeclaration method : typeDecl.getMethods()) {
+                    // 处理每个方法
+                    String simpleName = method.getName().toString();
+                    List<ASTNode> parameters = method.parameters();
+                    StringJoiner sj = new StringJoiner(",", simpleName + "(", ")");
+                    for (ASTNode param : parameters) {
+                        sj.add(param.toString());
+                    }
+                    String signature = sj.toString();
+                    int startLine = unit.getLineNumber(method.getStartPosition()) - 1;
+                    int endLine = unit.getLineNumber(method.getStartPosition() + method.getLength()) - 1;
+
+                    // 使用完整的类名
+                    methods.add(new Methodx(fullClassName, signature, startLine, endLine, simpleName, method));
+                }
+                return super.visit(typeDecl);
             }
-            MethodDeclaration methodDeclaration = (MethodDeclaration) node;
-            String simpleName = methodDeclaration.getName().toString();
-            List<ASTNode> parameters = methodDeclaration.parameters();
-            // SingleVariableDeclaration
-            StringJoiner sj = new StringJoiner(",", simpleName + "(", ")");
-            for (ASTNode param : parameters) {
-                sj.add(param.toString());
-            }
-            String signature = sj.toString();
-            int startLine = unit.getLineNumber(methodDeclaration.getStartPosition()) - 1;
-            int endLine = unit.getLineNumber(methodDeclaration.getStartPosition() + node.getLength()) - 1;
-            methods.add(new Methodx(signature, startLine, endLine, simpleName, methodDeclaration));
-        }
+        });
+
         return methods;
     }
+
 
     public static String getQualityClassName(String codeContent) {
         String result;

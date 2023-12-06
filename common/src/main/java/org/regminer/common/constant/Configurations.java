@@ -46,7 +46,6 @@ public class Configurations {
     public static boolean sqlEnable = false;
 
 
-
     public static String jdkDir = "";
     public static String jdkHome = "";
     public static String j6File = "";
@@ -62,6 +61,7 @@ public class Configurations {
     public static String j16File = "";
     public static String j17File = "";
     static Properties prop = new Properties();
+
     static {
         loadConfigurations();
     }

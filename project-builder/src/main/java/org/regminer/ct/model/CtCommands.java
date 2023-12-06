@@ -1,7 +1,5 @@
 package org.regminer.ct.model;
 
-import org.regminer.ct.domain.Compiler;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,24 +9,6 @@ import static org.regminer.ct.model.CtCommands.CommandKey.*;
 public class CtCommands implements Serializable {
 
     Map<CommandKey, String> commands = new HashMap<>();
-    private Compiler compiler;
-    private String osName;
-
-    public Compiler getCompiler() {
-        return compiler;
-    }
-
-    public void setCompiler(Compiler compiler) {
-        this.compiler = compiler;
-    }
-
-    public String getOsName() {
-        return osName;
-    }
-
-    public void setOsName(String osName) {
-        this.osName = osName;
-    }
 
     public CtCommands takeCommand(CommandKey key, String command) {
         if (command == null || command.trim() == "") {
@@ -58,7 +38,7 @@ public class CtCommands implements Serializable {
             computeCommands = computeCommands + commands.get(TEST) + ";";
         }
         return computeCommands;
-//        return String.join(";", commands.values());
+//        return String.join(";", commands.values()); //在组合的时候有顺序，使用了if
     }
 
     public enum CommandKey {

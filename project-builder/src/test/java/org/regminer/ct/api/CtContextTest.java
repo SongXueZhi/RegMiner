@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.lib.Repository;
-import org.regminer.common.model.TestCaseX;
+import org.regminer.common.model.RelatedTestCase;
 import org.regminer.common.tool.RepositoryProvider;
 import org.regminer.ct.domain.JDK;
 import org.regminer.ct.model.CompileResult;
@@ -24,13 +24,12 @@ public class CtContextTest extends TestCase {
         //ctContext.setProjectDir(new File("../projects-for-test/fastjson-84835dd3cfb46939eb595742ea8d7d74918034bd"));
         CompileResult compileResult = ctContext.compile();
         Assert.assertEquals(CompileResult.CompileState.SUCCESS, compileResult.getState());
-        List<TestCaseX> testCaseXES = new ArrayList<>();
-        TestCaseX testCaseX = new TestCaseX();
-        testCaseX.setPackageName("com.alibaba.json.bvt.parser.deser.list");
-        testCaseX.setClassName("ListFieldTest");
+        List<RelatedTestCase> testCaseXES = new ArrayList<>();
+        RelatedTestCase testCaseX = new RelatedTestCase();
+        testCaseX.setEnclosingClassName("com.alibaba.json.bvt.parser.deser.list.ListFieldTest");
         testCaseX.setMethodName("test_for_list");
         testCaseXES.add(testCaseX);
-        TestResult testResult = ctContext.test(testCaseXES, compileResult.getEnvCommands());
+        TestResult testResult = ctContext.test(testCaseXES, compileResult.getCompileWay());
         testResult.getCaseResultMap().forEach((key, value) -> {
             Assert.assertEquals(TestCaseResult.TestState.PASS, value.getState());
             Assert.assertNotNull(value.getTestCommands());
@@ -47,13 +46,12 @@ public class CtContextTest extends TestCase {
         Assert.assertEquals(CompileResult.CompileState.SUCCESS, compileResult.getState());
         JDK[] jdks = {compileResult.getCompileWay().getJdk()};
         ctContext.setJdkSearchRange(jdks);
-        List<TestCaseX> testCaseXES = new ArrayList<>();
-        TestCaseX testCaseX = new TestCaseX();
-        testCaseX.setPackageName("com.alibaba.json.bvt.parser.deser.list");
-        testCaseX.setClassName("ListFieldTest");
+        List<RelatedTestCase> testCaseXES = new ArrayList<>();
+        RelatedTestCase testCaseX = new RelatedTestCase();
+        testCaseX.setEnclosingClassName("com.alibaba.json.bvt.parser.deser.list.ListFieldTest");
         testCaseX.setMethodName("test_for_list");
         testCaseXES.add(testCaseX);
-        TestResult testResult = ctContext.test(testCaseXES, compileResult.getEnvCommands());
+        TestResult testResult = ctContext.test(testCaseXES, compileResult.getCompileWay());
         testResult.getCaseResultMap().forEach((key, value) -> {
             Assert.assertEquals(TestCaseResult.TestState.PASS, value.getState());
             Assert.assertNotNull(value.getTestCommands());
