@@ -1,4 +1,4 @@
-# RegMiner
+# RegMiner 2.0
 
 A Mining Approach towards Automating Regression Dataset Construction from Code Evolution History.
 
@@ -17,16 +17,20 @@ the [regs4J](https://github.com/SongXueZhi/regressions4j) project.
 
 **Env requirements for Regminer:**
 
-OS: Macos/Ubuntu/CenterOS 
-JDK: 11
-Python: 3.0+
+1. OS: Macos/Ubuntu/CenterOS 
+
+2. JDK: 11
+
+3. Python: 3.0+
 
 Although we have support for the Windows system in our implementation, it has not undergone thorough testing.
 **Env requirements for mining projects:**
 
-JDK LTS: 1.7,1.8,11,17 
-Jenv*(optional)
-Others*: The specific environment required for a particular mining project, such as projects related to MongoDB middleware, may necessitate the installation of MongoDB.
+1. JDK LTS: 1.7,1.8,11,17 
+
+2. Jenv*(optional)
+
+3. Others*: The specific environment required for a particular mining project, such as projects related to MongoDB middleware, may necessitate the installation of MongoDB.
 
 **Easy Start:**
 
