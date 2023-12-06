@@ -3,11 +3,11 @@
 import os
 import re
 import sys
-
+import subprocess
 DEFAULT_LINUX_DIR = '/usr/lib/jvm'
 DEFAULT_MAC_DIR = '/Library/Java/JavaVirtualMachines'
 DEFAULT_WIN_DIR = 'C:\\Program Files\\Java'
-DEFAULT_OUT_FILE = '../env.properties'
+DEFAULT_OUT_FILE = 'env.properties'
 
 DEFAULT_DIRS = {
     'Linux': DEFAULT_LINUX_DIR,
@@ -22,6 +22,19 @@ def get_jdk_dir(osname):
     if len(sys.argv) > 1:
         return sys.argv[1]
     return DEFAULT_DIRS[osname]
+
+def get_jdk_version(java_bin_path):
+    try:
+        # Execute the java -version command and capture stderr
+        result = subprocess.run([java_bin_path, '-version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if result.returncode == 0:
+            # Parse stderr output to get version information
+            version_info = re.search(r'version "(.*?)"', result.stderr)  # Changed from result.stdout to result.stderr
+            if version_info:
+                return version_info.group(1)
+    except Exception as e:
+        print(f"Error getting version for {java_bin_path}: {e}")
+    return "Unknown"
 
 
 jdk_root_dir = ""
@@ -63,33 +76,43 @@ else:
     exit(1)
 
 # regex for matching jd version
-version_pattern = re.compile(r'(?:jdk|java?)(?:-|)(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:_.+)?')
-
+# version_pattern = re.compile(r'(?:jdk|java?)(?:-|)(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:_.+)?')
+version_pattern = re.compile(r'(?:1\.)?(\d+)')
 # print the jdk dir and version
 print("Found JDK installations:")
 jdk_map = {}
+# 在循环中调用新函数
 for jd in java_dirs:
     full_path = os.path.join(jdk_root_dir, jd)
 
-    # for macOS, add 'Contents/Home' after jdk path
+    # 对于 macOS, 添加 'Contents/Home'
     if OS == 'Darwin' and 'Contents' in os.listdir(full_path):
         full_path = os.path.join(full_path, 'Contents/Home')
 
-    match = version_pattern.match(jd)
-    if match:
-        version_parts = match.groups()
-        if version_parts[0] == '1':
-            version = version_parts[1]
-        else:
-            version = version_parts[0]
-
-    else:
-        version = "Unknown"
-    if 'bin' in os.listdir(full_path):
+    java_bin_path = os.path.join(full_path, 'bin/java')
+    if os.path.exists(java_bin_path):
+        version = get_jdk_version(java_bin_path)
         print(f"- {full_path} (Version: JDK {version})")
-        jdk_map[version] = full_path
+
+        # Simplified version pattern match
+        match = version_pattern.search(version)
+        if match:
+            # Extract major version number
+            major_version = match.group(1)
+            # Convert to 'J' format (e.g., '6' becomes 'J6')
+            jdk_key = f"J{major_version}"
+            # Choose the JDK path for this version (replace if already exists)
+            jdk_map[jdk_key] = full_path
+        else:
+            print(f"- {full_path} (Cannot determine JDK major version)")
     else:
-        print(f"- {full_path} (Version: JDK {version}) (Not a JDK installation)")
+        print(f"- {full_path} (Not a valid JDK installation)")
+
+# Writing to config file
+with open(DEFAULT_OUT_FILE, 'w') as f:  # Use 'w' to overwrite existing content
+    for jdk_key, path in jdk_map.items():
+        f.write(f'{jdk_key}_file={path}\n')
+
 
 
 # if no jdk for a specific version, write a default
