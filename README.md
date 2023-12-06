@@ -13,79 +13,63 @@ The use of the platform is demonstrated as follows:
 We also provide UI-free tools to help users replay test results for each regression bug,get that support in
 the [regs4J](https://github.com/SongXueZhi/regressions4j) project.
 
-## Contribute to miner
+## Tutorial
 
-**Env requirement: **
+**Env requirements for Regminer:**
 
-Distinguishing between miner and mined projects, Miner relies on JDK11 and we recommend developing in Ubuntu.
+OS: Macos/Ubuntu/CenterOS 
+JDK: 11
+Python: 3.0+
 
-**Regression test:**
+Although we have support for the Windows system in our implementation, it has not undergone thorough testing.
+**Env requirements for mining projects:**
 
-Regression testing needs to be done before submitting the code. Steps are as follow:
+JDK LTS: 1.7,1.8,11,17 
+Jenv*(optional)
+Others*: The specific environment required for a particular mining project, such as projects related to MongoDB middleware, may necessitate the installation of MongoDB.
 
-1. Create a workspace for Miner,
+**Easy Start:**
+
+ Steps are as follow:
+(1) Prepare the data.
+
+1. Create a workspace for Miner.
    ``mkdir miner_space``
 
-2. Create a directory of projects to be mined(we used univocity-parsers as the test data in the regression test),
+2. Create a directory for maintaining the source code of the mined project. 
 
 ```bash
   cd miner_space
-  mkdir univocity-parsers
+  mkdir meta_projects
 ```
 
-3. Provide metadata for miner on projects,
+3. Prepare source code of the mined project. In example, we use uniVocity/univocity-parsers.
 
 ```bash
-  cd miner_space
-  git clone https://github.com/uniVocity/univocity-parsers.git meta
+  cd meta_projects
+  git clone https://github.com/uniVocity/univocity-parsers.git 
 ```
+(2) Generate the configuration.
 
-4. Configure the workspace of miner and project names for the projects to be mined, and turn off the use of SQL
-   functionality,
-
-```properties
-# Configuration file path : xxx/Regminer/miner/env.properties
-project_name =univocity-parsers
-root_dir =/home/xxx/miner_space/
-# Turn off sql function
-sql_enable =0
-```
-
-Note that! Miner does not reprocess already processed commits, so regression testing requires removing progress files
-generated in the mined project directory and turning off SQL functionality.
+1. Generate a configuration file.
 
 ```bash
-rm -f xxxx/miner_space/univocity-parsers/progress.details
+cd /xxx/xxxx/RegMiner/scripts
+rm env.properties
+python gen_config.py
+mv env.properties ../
 ```
 
-## Contribute regressions
-
-1. Download our latest [realase](https://github.com/SongXueZhi/RegMiner/releases), or install miner by self.
-
-2. In order to avoid data duplication, we will update the latest batch database files continuously, load our database
-   into local mysql, and set ``SQL_enable =1``.
-
-3. Next add the configuration for local mysql
-
-```properties
-# Configuration file path : xxx/Regminer/miner/env.properties
-project_name =univocity-parsers
-root_dir =/home/xxx/miner_space/
-################mysql config######################
-sql_enable =1
-sql_url =jdbc:mysql://x.x.x.x:3306/regression?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF8
-username =root
-passwd =xxxx
-```
-
-4. Execute "Regminer/miner/resources/sql/regression.sql" file in mysql to import data.
-
-5. Configure the JDk11 path for the execution file "run.sh"
-   E.g.
-
-   ```bash
-   /usr/lib/jvm/java-11-openjdk-amd64/bin/java -jar ./miner.jar
+2. Load RegMiner Project to IDEA.
+3. Config debug params.
+4. 
    ```
+   -ws /xxx/xxx/miner_space/ -pj univocity-parsers -cfg env.properties -t bfc
+   ```
+   ``-t bfc`` means just mine bfc, ``-t bfc&bic`` mean search regression.
+
+5. Run RegMimer in ``miner/src/main/java/org/regminer/miner/start/MinerCli.java``, you can find progress info in ``logs/app.log``
+
 
 ## Paper
 
