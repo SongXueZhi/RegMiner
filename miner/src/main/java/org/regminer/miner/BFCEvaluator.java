@@ -19,6 +19,7 @@ import org.regminer.miner.core.BFCSearchStrategy;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -87,7 +88,8 @@ public class BFCEvaluator extends BFCSearchStrategy {
             TestResult testResult = testCaseMigrator.test(pRFC.getTestCaseFiles(), ctContext,
                     compileResult.getCompileWay());
 
-            TestUtils.removeTestFilesInBFC(pRFC, testResult, TestCaseResult.TestState.FAL);
+            //TODO:张建 判断搜有的测试如果都是NONTEST 则需要使用其他的测试方式
+            TestUtils.removeTestFilesInBFCNotMeet(pRFC, testResult, TestCaseResult.TestState.PASS);
 
             if (pRFC.getTestCaseFiles().isEmpty()) {
                 logger.error("BFC all test fal");
@@ -111,7 +113,11 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 if (bfcpTestResult == null) { //这说明编译失败
                     continue;
                 }
-                TestUtils.removeTestFilesInBFC(pRFC, bfcpTestResult, TestCaseResult.TestState.PASS);
+                //TODO:张建 判断搜有的测试如果都是NONTEST 则需要使用其他的测试方式
+                TestUtils.removeTestFilesInBFCMeet(pRFC, bfcpTestResult, Arrays.asList(TestCaseResult.TestState.PASS,
+                                TestCaseResult.TestState.CE, TestCaseResult.TestState.NOMARK,
+                                TestCaseResult.TestState.UNKNOWN, TestCaseResult.TestState.NOTEST)
+                        );
                 logger.info(bfcpTestResult.getCaseResultMap());
                 if (!pRFC.getTestCaseFiles().isEmpty()) {
                     //查找成功，删除无关的测试用例

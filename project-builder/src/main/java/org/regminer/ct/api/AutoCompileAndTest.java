@@ -110,17 +110,16 @@ public class AutoCompileAndTest extends Strategy {
 
         envCommands.remove(CtCommands.CommandKey.COMPILE);
 
-        Stream<RelatedTestCase> stream = testCaseXES.stream();
-        stream.forEach(testCaseX -> {
-            String testCommand = CtUtils.combineTestCommand(testCaseX, compiler, osName);
+        for (RelatedTestCase relatedTestCase: testCaseXES) {
+            String testCommand = CtUtils.combineTestCommand(relatedTestCase, compiler, osName);
             envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
 
             ExecResult execResult = new Executor().setDirectory(projectDir).exec(envCommands.compute());
             TestCaseResult testCaseResult = CtReferees.judgeTestCaseResult(execResult);
             testCaseResult.setTestCommands(testCommand);
-            testResult.takeTestCaseResult(testCaseX.toString(), testCaseResult);
+            testResult.takeTestCaseResult(relatedTestCase.toString(), testCaseResult);
 
-        });
+        }
         return testResult;
     }
 

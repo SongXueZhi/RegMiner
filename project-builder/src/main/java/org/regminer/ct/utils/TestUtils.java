@@ -4,6 +4,7 @@ import org.regminer.common.model.PotentialBFC;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -38,9 +39,23 @@ public class TestUtils {
      * @param testResult   The test results to use for filtering.
      * @param testState    The state of the test cases to remove.
      */
-    public static void removeTestFilesInBFC(PotentialBFC potentialBFC, TestResult testResult,
+    public static void removeTestFilesInBFCMeet(PotentialBFC potentialBFC, TestResult testResult,
+                                            List<TestCaseResult.TestState> testStateList) {
+        Set<String> testCasesToRemove = collectTestCases(testResult, state -> testStateList.contains(state)).keySet();
+
+        potentialBFC.getTestCaseFiles().removeIf(testFile -> {
+            testFile.getTestMethodMap().entrySet().removeIf(
+                    entry -> testCasesToRemove.contains(entry.getValue().toString())
+            );
+            // Return true if the test file is now empty, indicating it should be removed.
+            return testFile.getTestMethodMap().isEmpty();
+        });
+
+    }
+
+    public static void removeTestFilesInBFCNotMeet(PotentialBFC potentialBFC, TestResult testResult,
                                             TestCaseResult.TestState testState) {
-        Set<String> testCasesToRemove = collectTestCases(testResult, state -> state == testState).keySet();
+        Set<String> testCasesToRemove = collectTestCases(testResult, state -> state!=testState).keySet();
 
         potentialBFC.getTestCaseFiles().removeIf(testFile -> {
             testFile.getTestMethodMap().entrySet().removeIf(

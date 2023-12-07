@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -79,34 +80,34 @@ public class MinerCli {
         Configurations.configPath = commandLine.getOptionValue("cfg", Configurations.configPath);
         Configurations.updateDependentFields();
         processTaskOption();
-        // Additional processing for other options
+        processFilterOption();
     }
 
     private static void processFilterOption() {
-        boolean filter = false;
+        List<String> filterList =new ArrayList<>();
         if (commandLine.hasOption("f")) {
             String filterPath = commandLine.getOptionValue("f");
             try {
-                List<String> filterList = FileUtils.readLines(new File(filterPath), "UTF-8");
-
+                filterList = FileUtils.readLines(new File(filterPath), "UTF-8");
             } catch (IOException e) {
+                filterList = new ArrayList<>();
                 logger.error("Error reading filter file: {}", e.getMessage());
             }
-        } else {
-            // do
         }
-        //do
+        startMining(filterList);
     }
 
+    private static void startMining(List<String> filterList) {
+        miner = new Miner(new SearchBFCContext(new BFCEvaluator(new TestCaseParser(), new TestCaseMigrator()),
+                new PotentialBFCDetector(filterList)),
+                new SearchBICContext(new EnhancedBinarySearch()));
+        miner.start();
+    }
     private static void processTaskOption() {
         if (commandLine.hasOption("t")) {
             String taskName = commandLine.getOptionValue("t");
             if (Constant.TASK_LIST.contains(taskName)) {
                 Configurations.taskName = taskName;
-                miner = new Miner(new SearchBFCContext(new BFCEvaluator(new TestCaseParser(), new TestCaseMigrator()),
-                        new PotentialBFCDetector()),
-                        new SearchBICContext(new EnhancedBinarySearch()));
-                miner.start();
             } else {
                 logger.error("Task name '{}' is not valid. Defaulting to BFC collection.", taskName);
             }

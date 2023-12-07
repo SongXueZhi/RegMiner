@@ -26,7 +26,11 @@ import java.util.logging.Logger;
 
 public class PotentialBFCDetector extends PBFCFilterStrategy {
 
+    private  List<String> filterList;
 
+    public PotentialBFCDetector(List<String> filterList){
+        this.filterList = filterList;
+    }
     public List<PotentialBFC> detectPotentialBFC() throws Exception {
         // 获取所有的commit，我们需要对所有的commit进行分析
         try (Repository repo = RepositoryProvider.getRepoFromLocal(new File(Configurations.projectPath)); Git git =
@@ -37,12 +41,6 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         }
     }
 
-    public List<PotentialBFC> detectPotentialBFC(List<String> commitsFilter, Git git) throws Exception {
-        // 获取所有的commit，我们需要对所有的commit进行分析
-        Iterable<RevCommit> commits = git.log().all().call();
-        List<PotentialBFC> potentialRFCS = detectOnFilter(commitsFilter, commits, git);
-        return potentialRFCS;
-    }
 
     private List<PotentialBFC> detectAll(Iterable<RevCommit> commits, Git git) throws Exception {
         List<PotentialBFC> potentialRFCs = new LinkedList<PotentialBFC>();
@@ -50,24 +48,14 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         int countAll = 0;
         // 开始迭代每一个commit
         for (RevCommit commit : commits) {
-            detect(commit, potentialRFCs, git);
-            countAll++;
-        }
-        logger.info("total " + countAll + "commit in this project");
-        logger.info("pRFC in total :" + potentialRFCs.size());
-        return potentialRFCs;
-    }
-
-    private List<PotentialBFC> detectOnFilter(List<String> commitsFilter, Iterable<RevCommit> commits, Git git) throws Exception {
-        List<PotentialBFC> potentialRFCs = new LinkedList<PotentialBFC>();
-        // 定义需要记录的实验数据
-        int countAll = 0;
-        // 开始迭代每一个commit
-        for (RevCommit commit : commits) {
-            if (commitsFilter.contains(commit.getName())) {
-                detect(commit, potentialRFCs, git);
-                countAll++;
+            if (filterList.size()>0) {
+                if(this.filterList.contains(commit.getName())) {
+                    detect(commit, potentialRFCs, git);
+                }
+            }else {
+                detect(commit,potentialRFCs,git);
             }
+            countAll++;
         }
         logger.info("total " + countAll + "commit in this project");
         logger.info("pRFC in total :" + potentialRFCs.size());
