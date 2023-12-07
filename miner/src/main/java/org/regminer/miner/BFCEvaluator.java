@@ -52,7 +52,6 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 }
                 ++i;
                 logger.info("pRFC total:" + i);
-                iterator.remove();
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 iterator.remove();
@@ -66,6 +65,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
         try {
             // 1.checkout bfc
             logger.info(bfcID + " checkout ");
+            logger.info("commit message:{}",pRFC.getCommit().getShortMessage());
             File bfcDirectory = testCaseMigrator.checkoutCiForBFC(bfcID, bfcID);
             pRFC.fileMap.put(bfcID, bfcDirectory);
             //2. 尝试编译BFC
@@ -112,7 +112,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
                     continue;
                 }
                 TestUtils.removeTestFilesInBFC(pRFC, bfcpTestResult, TestCaseResult.TestState.PASS);
-
+                logger.info(bfcpTestResult.getCaseResultMap());
                 if (!pRFC.getTestCaseFiles().isEmpty()) {
                     //查找成功，删除无关的测试用例
                     //跳出，找到一个就够了

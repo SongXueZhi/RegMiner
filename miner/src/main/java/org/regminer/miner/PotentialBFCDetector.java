@@ -74,6 +74,37 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         return potentialRFCs;
     }
 
+    private void detect(RevCommit commit, List<PotentialBFC> potentialRFCs, Git git) throws Exception {
+        // 如果没有父亲，那么肯定不是bfc
+        if (commit.getParentCount() <= 0) {
+            return;
+        }
+        // 1)首先我们将记录所有的标题中包含fix的commti
+        String message1 = commit.getFullMessage().toLowerCase();
+
+        // 针对标题包含fix的commit我们进一步分析本次提交修改的文件路径
+        List<ChangedFile> files = getLastDiffFiles(commit, git);
+        if (files == null) return;
+        List<TestFile> testcaseFiles = getTestFiles(files);
+        List<NormalFile> normalJavaFiles = getNormalJavaFiles(files);
+        List<SourceFile> sourceFiles = getSourceFiles(files);
+        // 1）若所有路径中存在任意一个路径包含test相关的Java文件则我们认为本次提交中包含测试用例。
+        // 2）若所有路径中除了测试用例还包含其他的非测试用例的Java文件则commit符合条件
+        if (testcaseFiles.size() > 0 && normalJavaFiles.size() > 0) {
+            PotentialBFC pRFC = new PotentialBFC(commit);
+            pRFC.setTestCaseFiles(testcaseFiles);
+            pRFC.setTestcaseFrom(PotentialBFC.TESTCASE_FROM_SELF);
+            pRFC.setNormalJavaFiles(normalJavaFiles);
+            pRFC.setSourceFiles(sourceFiles);
+            potentialRFCs.add(pRFC);
+        } else if (justNormalJavaFile(files) && (message1.contains("fix") || message1.contains("repair"))) {
+            PotentialBFC pRFC = new PotentialBFC(commit);
+            pRFC.setNormalJavaFiles(normalJavaFiles);
+            pRFC.setTestcaseFrom(PotentialBFC.TESTCASE_FROM_SEARCH);
+            potentialRFCs.add(pRFC);
+        }
+    }
+
     /**
      * 获取与父亲的差别
      *
@@ -258,36 +289,6 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
      * @param potentialRFCs
      * @throws Exception
      */
-    private void detect(RevCommit commit, List<PotentialBFC> potentialRFCs, Git git) throws Exception {
-        // 如果没有父亲，那么肯定不是bfc
-        if (commit.getParentCount() <= 0) {
-            return;
-        }
-        // 1)首先我们将记录所有的标题中包含fix的commti
-        String message1 = commit.getFullMessage().toLowerCase();
-
-        // 针对标题包含fix的commit我们进一步分析本次提交修改的文件路径
-        List<ChangedFile> files = getLastDiffFiles(commit, git);
-        if (files == null) return;
-        List<TestFile> testcaseFiles = getTestFiles(files);
-        List<NormalFile> normalJavaFiles = getNormalJavaFiles(files);
-        List<SourceFile> sourceFiles = getSourceFiles(files);
-        // 1）若所有路径中存在任意一个路径包含test相关的Java文件则我们认为本次提交中包含测试用例。
-        // 2）若所有路径中除了测试用例还包含其他的非测试用例的Java文件则commit符合条件
-        if (testcaseFiles.size() > 0 && normalJavaFiles.size() > 0) {
-            PotentialBFC pRFC = new PotentialBFC(commit);
-            pRFC.setTestCaseFiles(testcaseFiles);
-            pRFC.setTestcaseFrom(PotentialBFC.TESTCASE_FROM_SELF);
-            pRFC.setNormalJavaFiles(normalJavaFiles);
-            pRFC.setSourceFiles(sourceFiles);
-            potentialRFCs.add(pRFC);
-        } else if (justNormalJavaFile(files) && (message1.contains("fix") || message1.contains("repair"))) {
-            PotentialBFC pRFC = new PotentialBFC(commit);
-            pRFC.setNormalJavaFiles(normalJavaFiles);
-            pRFC.setTestcaseFrom(PotentialBFC.TESTCASE_FROM_SEARCH);
-            potentialRFCs.add(pRFC);
-        }
-    }
 
     @Override
     public List<PotentialBFC> filter() throws Exception {

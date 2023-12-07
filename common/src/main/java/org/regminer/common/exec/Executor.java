@@ -1,6 +1,7 @@
 package org.regminer.common.exec;
 
 import org.apache.commons.io.IOUtils;
+import org.regminer.common.constant.Configurations;
 import org.regminer.common.model.OS;
 
 import java.io.BufferedReader;
@@ -15,11 +16,6 @@ import java.util.concurrent.TimeUnit;
 public class Executor {
 
     ProcessBuilder pb = new ProcessBuilder();
-    String osName;
-
-    public Executor(String osName) {
-        this.osName = osName;
-    }
 
     /**
      * Set working directory to process
@@ -54,7 +50,7 @@ public class Executor {
 
         long startTime = System.currentTimeMillis();
         try {
-            if (osName.equals(OS.WINDOWS)) {
+            if (Configurations.osName.equals(OS.WINDOWS)) {
                 pb.command("cmd.exe", "/c", cmd);
             } else {
                 pb.command("bash", "-c", cmd);

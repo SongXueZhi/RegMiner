@@ -1,6 +1,7 @@
 package org.regminer.common.constant;
 
 
+import org.regminer.common.model.OS;
 import org.regminer.common.sql.MysqlManager;
 import org.regminer.common.utils.OSUtils;
 
@@ -64,8 +65,10 @@ public class Configurations {
     public static boolean jenv_enable = false;
     static Properties prop = new Properties();
 
+    public static String osName= OS.UNIX;
     static {
         loadConfigurations();
+        osName = OSUtils.getOSType();
     }
 
     private static void loadConfigurations() {

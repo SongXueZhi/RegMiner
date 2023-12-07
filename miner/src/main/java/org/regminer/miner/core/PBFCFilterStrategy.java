@@ -1,9 +1,11 @@
 package org.regminer.miner.core;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.regminer.common.model.PotentialBFC;
 
 import java.util.List;
-import java.util.logging.Logger;
+
 
 /**
  * @Author: sxz
@@ -12,7 +14,7 @@ import java.util.logging.Logger;
  */
 public abstract class PBFCFilterStrategy {
 
-    protected Logger logger = Logger.getLogger(PBFCFilterStrategy.class.getName());
+    protected Logger logger = LogManager.getLogger(this);
     public abstract List<PotentialBFC> filter() throws Exception;
 }
 

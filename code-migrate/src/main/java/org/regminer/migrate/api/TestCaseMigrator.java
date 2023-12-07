@@ -46,7 +46,7 @@ public class TestCaseMigrator extends Migrator {
         if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
             return test(pRFC.getTestCaseFiles(), ctContext, compileResult.getCompileWay());
         } else {
-            logger.debug("compile error after before migrate");
+            logger.debug("compile error after migrate");
             return null; //或许返回NULL可能会引发空指针，但在当前阶段是合理的，如果编译失败，就没有测试结果。
         }
     }

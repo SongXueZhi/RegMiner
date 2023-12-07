@@ -71,7 +71,7 @@ public enum OriginCompileFixWay {
     protected Logger logger = LogManager.getLogManager().getLogger(this.name());
 
     private static CompileResult recompileProject(CompileTestEnv compileEnv) {
-        String message = new Executor(compileEnv.getOsName())
+        String message = new Executor()
                 .setDirectory(compileEnv.getProjectDir())
                 .exec(compileEnv.getCtCommand().compute())
                 .getMessage();

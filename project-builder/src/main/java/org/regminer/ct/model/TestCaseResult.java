@@ -48,4 +48,12 @@ public class TestCaseResult {
         UNKNOWN,
         NOMARK
     }
+
+    @Override
+    public String toString() {
+        return "TestCaseResult{" +
+                "TestState='" + state.name() + '\'' +
+                ", usageTime='" + usageTime + '\'' +
+                '}';
+    }
 }

@@ -3,7 +3,6 @@ package org.regminer.common.model;
 import java.util.Objects;
 
 public class RelatedTestCase {
-    private String filePath;
     private String enclosingClassName;
     private String methodName;
     private Methodx method;
@@ -18,9 +17,8 @@ public class RelatedTestCase {
 
     @Override
     public String toString() {
-        return "TestCaseX{" +
-                "filePath='" + filePath + '\'' +
-                ", className='" + enclosingClassName + '\'' +
+        return "TestCase{" +
+                "className='" + enclosingClassName + '\'' +
                 ", methodName='" + methodName + '\'' +
                 '}';
     }
@@ -30,28 +28,18 @@ public class RelatedTestCase {
         if (this == o) return true;
         if (!(o instanceof RelatedTestCase)) return false;
         RelatedTestCase testCaseX = (RelatedTestCase) o;
-        return Objects.equals(getFilePath(), testCaseX.getFilePath())
-                && Objects.equals(getEnclosingClassName(), testCaseX.getEnclosingClassName())
+        return Objects.equals(getEnclosingClassName(), testCaseX.getEnclosingClassName())
                 && Objects.equals(getMethodName(), testCaseX.getMethodName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getFilePath(), getEnclosingClassName(), getMethodName());
+        return Objects.hash(getEnclosingClassName(), getMethodName());
     }
 
     public String getName() {
         return String.join(".", enclosingClassName, methodName);
     }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
 
     public String getEnclosingClassName() {
         return enclosingClassName;

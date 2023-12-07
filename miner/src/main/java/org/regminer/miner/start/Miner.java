@@ -28,10 +28,10 @@ public class Miner {
     }
 
     public void start() {
-        logger.info("Start mining...");
+        logger.info("Start {} task on {}...", Configurations.taskName, Configurations.projectName);
         try {
             List<PotentialBFC> pBFCs = bfcContext.searchBFC();
-            logger.info("find {} potential BFCs", pBFCs.size());
+            logger.info("find {} BFCs", pBFCs.size());
             if (Configurations.taskName.equals(Constant.BFC_BIC_TASK)) {
                 logger.info("start to search bic");
                 for (PotentialBFC pBFC : pBFCs) {

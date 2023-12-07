@@ -2,6 +2,7 @@ package org.regminer.ct.api;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.tools.ant.DirectoryScanner;
+import org.regminer.common.constant.Configurations;
 import org.regminer.common.exec.ExecResult;
 import org.regminer.common.exec.Executor;
 import org.regminer.common.model.RelatedTestCase;
@@ -22,7 +23,6 @@ public class AutoCompileAndTest extends Strategy {
         super();
 
     }
-
     @Override
     public CompileResult compile() {
         CompileResult compileResult = new CompileResult();
@@ -31,7 +31,7 @@ public class AutoCompileAndTest extends Strategy {
         initializeCompileCommand(compileTestEnv);
 
         String message =
-                new Executor(compileTestEnv.getOsName()).setDirectory(projectDir).exec(compileTestEnv.getCtCommand().compute()).getMessage();
+                new Executor().setDirectory(projectDir).exec(compileTestEnv.getCtCommand().compute()).getMessage();
 
         CompileResult.CompileState compileState = CtReferees.JudgeCompileState(message);
         if (compileState == CompileResult.CompileState.CE) {
@@ -47,7 +47,7 @@ public class AutoCompileAndTest extends Strategy {
     public CompileResult compile(CompileTestEnv compileTestEnv) {
         CompileResult compileResult = new CompileResult();
         String message =
-                new Executor(compileTestEnv.getOsName()).setDirectory(projectDir).exec(compileTestEnv.getCtCommand().compute()).getMessage();
+                new Executor().setDirectory(projectDir).exec(compileTestEnv.getCtCommand().compute()).getMessage();
 
         CompileResult.CompileState compileState = CtReferees.JudgeCompileState(message);
         compileResult.setState(compileState);
@@ -69,7 +69,7 @@ public class AutoCompileAndTest extends Strategy {
     private CompileTestEnv initializeCompileTestEnv() {
         CompileTestEnv compileTestEnv = new CompileTestEnv(); //编译、测试环境
         compileTestEnv.setCtCommand(new CtCommands());// 编译和测试命令集合
-        compileTestEnv.setOsName(OSUtils.getOSType());
+        compileTestEnv.setOsName(Configurations.osName);
         compileTestEnv.setProjectDir(projectDir);
         compileTestEnv.setCompiler(detectBuildTool(projectDir));//配置编译器，例如mvn、gradle
         return compileTestEnv;
@@ -83,7 +83,7 @@ public class AutoCompileAndTest extends Strategy {
         initializeCompileCommand(compileTestEnv);
 
         String message =
-                new Executor(compileTestEnv.getOsName()).setDirectory(projectDir).exec(compileTestEnv.getCtCommand().compute()).getMessage();
+                new Executor().setDirectory(projectDir).exec(compileTestEnv.getCtCommand().compute()).getMessage();
 
         CompileResult.CompileState compileState = CtReferees.JudgeCompileState(message);
         compileResult.setState(compileState);
@@ -115,7 +115,7 @@ public class AutoCompileAndTest extends Strategy {
             String testCommand = CtUtils.combineTestCommand(testCaseX, compiler, osName);
             envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
 
-            ExecResult execResult = new Executor(osName).setDirectory(projectDir).exec(envCommands.compute());
+            ExecResult execResult = new Executor().setDirectory(projectDir).exec(envCommands.compute());
             TestCaseResult testCaseResult = CtReferees.judgeTestCaseResult(execResult);
             testCaseResult.setTestCommands(testCommand);
             testResult.takeTestCaseResult(testCaseX.toString(), testCaseResult);

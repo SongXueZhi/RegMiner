@@ -55,7 +55,7 @@ public class GitTracker {
      */
     public int trackFunctionByGitBlogL(String Method, String file_path, File bfcDir) {
         String[] commitHistoryList =
-                new Executor(OSUtils.getOSType()).exec("git log -L:" + Method + ":" + file_path +
+                new Executor().exec("git log -L:" + Method + ":" + file_path +
                         " --pretty" +
                         "=format:%h -s").getMessage().split("/n");
         return new HashSet<>(List.of(commitHistoryList)).size();
