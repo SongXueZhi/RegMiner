@@ -15,6 +15,8 @@ import org.regminer.migrate.model.MergeTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 /**
@@ -58,13 +60,15 @@ public class Migrator {
             }
             File bfcFile = new File(bfcDir, newPathInBfc);
             File tFile = new File(tDir, newPathInBfc);
+            try {
             if (tFile.exists()) {
-                tFile.deleteOnExit();
+                FileUtils.deleteQuietly(tFile);
             }
             // 直接copy过去
-            try {
-                FileUtils.forceMkdirParent(tFile);
-                FileUtils.copyFileToDirectory(bfcFile, tFile.getParentFile());
+            if (!tFile.getParentFile().exists()){
+                tFile.getParentFile().mkdirs();
+            }
+                Files.copy(bfcFile.toPath(), tFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
