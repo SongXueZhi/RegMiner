@@ -6,7 +6,6 @@ import org.regminer.common.constant.Configurations;
 import org.regminer.common.exec.ExecResult;
 import org.regminer.common.exec.Executor;
 import org.regminer.common.model.RelatedTestCase;
-import org.regminer.common.utils.OSUtils;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.Compiler;
 import org.regminer.ct.domain.JDKs;
@@ -15,7 +14,6 @@ import org.regminer.ct.utils.CtUtils;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class AutoCompileAndTest extends Strategy {
 
@@ -59,21 +57,6 @@ public class AutoCompileAndTest extends Strategy {
         return compileResult;
     }
 
-    private void initializeCompileCommand(CompileTestEnv compileTestEnv) {
-        compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.JDK,
-                JDKs.jdkSearchRange[JDKs.getCurIndex()].getCommand());
-        compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.COMPILE,
-                compileTestEnv.getCompiler().getCompileCommand(compileTestEnv.getOsName()));
-    }
-
-    private CompileTestEnv initializeCompileTestEnv() {
-        CompileTestEnv compileTestEnv = new CompileTestEnv(); //编译、测试环境
-        compileTestEnv.setCtCommand(new CtCommands());// 编译和测试命令集合
-        compileTestEnv.setOsName(Configurations.osName);
-        compileTestEnv.setProjectDir(projectDir);
-        compileTestEnv.setCompiler(detectBuildTool(projectDir));//配置编译器，例如mvn、gradle
-        return compileTestEnv;
-    }
 
     @Override
     public CompileResult compile(OriginCompileFixWay... compileFixWays) {
@@ -97,8 +80,23 @@ public class AutoCompileAndTest extends Strategy {
         for (OriginCompileFixWay compileFixWay : compileFixWays) {
             compileResult = compileFixWay.fix(compileTestEnv);
         }
-
         return compileResult;
+    }
+
+    private void initializeCompileCommand(CompileTestEnv compileTestEnv) {
+        compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.JDK,
+                JDKs.jdkSearchRange[JDKs.getCurIndex()].getCommand());
+        compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.COMPILE,
+                compileTestEnv.getCompiler().getCompileCommand(compileTestEnv.getOsName()));
+    }
+
+    private CompileTestEnv initializeCompileTestEnv() {
+        CompileTestEnv compileTestEnv = new CompileTestEnv(); //编译、测试环境
+        compileTestEnv.setCtCommand(new CtCommands());// 编译和测试命令集合
+        compileTestEnv.setOsName(Configurations.osName);
+        compileTestEnv.setProjectDir(projectDir);
+        compileTestEnv.setCompiler(detectBuildTool(projectDir));//配置编译器，例如mvn、gradle
+        return compileTestEnv;
     }
 
     @Override
@@ -113,8 +111,8 @@ public class AutoCompileAndTest extends Strategy {
         for (RelatedTestCase relatedTestCase: testCaseXES) {
             String testCommand = CtUtils.combineTestCommand(relatedTestCase, compiler, osName);
             envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
-
-            ExecResult execResult = new Executor().setDirectory(projectDir).exec(envCommands.compute());
+            //Test need have a timeout limit
+            ExecResult execResult = new Executor().setDirectory(projectDir).exec(envCommands.compute(),2);
             TestCaseResult testCaseResult = CtReferees.judgeTestCaseResult(execResult);
             testCaseResult.setTestCommands(testCommand);
             testResult.takeTestCaseResult(relatedTestCase.toString(), testCaseResult);

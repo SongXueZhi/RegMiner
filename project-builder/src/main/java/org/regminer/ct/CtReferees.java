@@ -1,5 +1,6 @@
 package org.regminer.ct;
 
+import org.jetbrains.annotations.NotNull;
 import org.regminer.common.exec.ExecResult;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
@@ -18,14 +19,30 @@ public class CtReferees {
     public static TestCaseResult judgeTestCaseResult(ExecResult execResult) {
 
         TestCaseResult testCaseResult = new TestCaseResult();
+        if (execResult.isTimeOut()){
+            testCaseResult.setState(TestCaseResult.TestState.TE);
+            return testCaseResult;
+        }
+
         testCaseResult.setUsageTime(execResult.getUsageTime());
         String message = execResult.getMessage();
 
-        message = message.toLowerCase();
+        // 检查message是否为null
+        if (message != null) {
+            message = message.toLowerCase();
+            TestCaseResult.TestState testState = getTestState(message);
+            testCaseResult.setState(testState);
+        } else {
+            testCaseResult.setState(TestCaseResult.TestState.UNKNOWN);
+        }
+//        testCaseResult.setExceptionMessage(spiltExceptionMessage(message, testState));
+        return testCaseResult;
+    }
+
+    @NotNull
+    private static TestCaseResult.TestState getTestState(String message) {
         TestCaseResult.TestState testState;
-        if (execResult.isTimeOut()) {
-            testState = TestCaseResult.TestState.TE;
-        } else if (message.contains("build success")) {
+        if (message.contains("build success")) {
             testState = TestCaseResult.TestState.PASS;
         } else if (message.contains("compilation error") || message.contains("compilation failure")) {
             testState = TestCaseResult.TestState.CE;
@@ -34,9 +51,7 @@ public class CtReferees {
         } else {
             testState = TestCaseResult.TestState.FAL;
         }
-        testCaseResult.setState(testState);
-//        testCaseResult.setExceptionMessage(spiltExceptionMessage(message, testState));
-        return testCaseResult;
+        return testState;
     }
 
     public static String spiltExceptionMessage(String message, TestCaseResult.TestState testState) {

@@ -5,7 +5,6 @@ import org.regminer.common.constant.Configurations;
 import org.regminer.common.exec.ExecResult;
 import org.regminer.common.exec.Executor;
 import org.regminer.common.model.RelatedTestCase;
-import org.regminer.common.utils.OSUtils;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.Compiler;
 import org.regminer.ct.domain.JDK;

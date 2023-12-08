@@ -27,6 +27,9 @@ public class Executor {
         return this;
     }
 
+    public ExecResult exec(String cmd, int timeout) {
+        return this.exeCmd(cmd, timeout);
+    }
     public ExecResult exec(String cmd) {
         return this.exec(cmd, 0);
     }
@@ -38,7 +41,7 @@ public class Executor {
      * @param cmd command line
      * @return return result by exec command
      */
-    public ExecResult exec(String cmd, int timeout) {
+    public ExecResult exeCmd(String cmd, int timeout) {
 
         ExecResult execResult = new ExecResult();
 
@@ -60,6 +63,7 @@ public class Executor {
                 boolean completed = process.waitFor(timeout, TimeUnit.MINUTES);
                 if (!completed) {
                     execResult.setTimeOut(true);
+                    return execResult;
                 }
             }
 
