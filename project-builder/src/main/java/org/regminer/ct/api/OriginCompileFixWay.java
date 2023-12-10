@@ -54,8 +54,8 @@ public enum OriginCompileFixWay {
     POM_FIX {
         @Override
         CompileResult fix(CompileTestEnv compileEnv) {
-            // Implement logic for POM_FIX
-            // Example: Modify the pom.xml file, handle exceptions, and recompile
+            // TODO zhangjian fix pom for modify compile in 1.6  to 1.7，
+            //  Remove snapshot suffix from version
             return recompileProject(compileEnv);
         }
     },
