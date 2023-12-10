@@ -28,7 +28,6 @@ public class ProgressMonitor {
     }
 
     public static void rePlan(List<PotentialBFC> pRFCs) {
-        FileUtilx.log("Completed: " + doneTaskList.size());
         Iterator<PotentialBFC> iterator = pRFCs.iterator();
         while (iterator.hasNext()) {
             PotentialBFC pRfc = iterator.next();
@@ -36,7 +35,6 @@ public class ProgressMonitor {
                 iterator.remove();
             }
         }
-        FileUtilx.log("The remaining: " + pRFCs.size());
     }
 
     @SuppressWarnings("deprecation")

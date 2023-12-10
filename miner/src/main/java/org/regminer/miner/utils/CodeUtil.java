@@ -42,7 +42,6 @@ public class CodeUtil {
         for (Method method : ms) {
             String s = method.getSignature();
             String ss = method.toString();
-            FileUtilx.log("");
         }
         return null;
     }

@@ -267,7 +267,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
     public int search(String[] arr, int low, int high) {
         // 失败条件
         if (low > high || low < 0 || high > arr.length - 1) {
-            FileUtilx.log("search fal");
+            logger.info("search fal");
             return -1;
         }
 
@@ -311,7 +311,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
                     return b;
                 }
             }
-            FileUtilx.log("search fal");
+            logger.info("search fal");
             return -1;
         } else if (result == TestCaseResult.TestState.FAL) {
             // notest 等unresolved的情况都乐观的往右
