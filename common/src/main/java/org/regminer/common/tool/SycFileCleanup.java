@@ -1,33 +1,42 @@
 package org.regminer.common.tool;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * @author sxz
+ * Improved file cleanup utility with directory existence check.
  */
 public class SycFileCleanup {
-    /**
-     * @param dir    root path to delete
-     * @param filter don't delete filter
-     */
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SycFileCleanup.class);
+
     public void cleanDirectoryOnFilter(File dir, List<String> filter) {
-        new SycCleaner(dir, filter, true).start();
+        if (!dir.exists()) {
+            return;
+        }
+        new SycCleaner(dir, new HashSet<>(filter), true).start();
     }
 
     public void cleanDirectory(File dir) {
+        if (!dir.exists()) {
+            return;
+        }
         new SycCleaner(dir, null, false).start();
     }
 
     static class SycCleaner extends Thread {
         File dir;
-        List<String> filter;
+        Set<String> filter;
         boolean onFilter;
 
-        public SycCleaner(File dir, List<String> filter, boolean onFilter) {
+        public SycCleaner(File dir, Set<String> filter, boolean onFilter) {
             this.dir = dir;
             this.filter = filter;
             this.onFilter = onFilter;
@@ -35,50 +44,38 @@ public class SycFileCleanup {
 
         @Override
         public void run() {
-            if (onFilter) {
-                cleanDirectoryOnFilter();
-            } else {
-                cleanDirectory();
+            try {
+                if (onFilter) {
+                    cleanDirectoryOnFilter();
+                } else {
+                    cleanDirectory();
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error cleaning directory: {}", e.getMessage(), e);
             }
         }
 
-        public void cleanDirectoryOnFilter() {
+        private void cleanDirectoryOnFilter() {
             File[] childrenArray = dir.listFiles();
-            for (File file : childrenArray) {
-                // 如果不在filter中则删除
-                if (filter.contains(file.getName())) {
-                    continue;
-                }
-                boolean isDelete = FileUtils.deleteQuietly(file);
-                if (!isDelete) {
-                    try {
-                        FileUtils.forceDelete(file);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            if (childrenArray != null) {
+                for (File file : childrenArray) {
+                    if (filter.contains(file.getName())) {
+                        continue;
                     }
+                    deleteFile(file);
                 }
             }
         }
 
-        /**
-         * Note that, here I still can't delete directory in windows 10 system
-         * cause by be occupied
-         */
-        public void cleanDirectory() {
-            boolean isDelete = FileUtils.deleteQuietly(dir);
-            if (!isDelete) {
-                try {
-                    if (!dir.canRead()) {
-                        dir.setWritable(true, false);
-                    }
-                    if (!dir.canWrite()) {
-                        dir.setWritable(true, false);
-                    }
-//					System.gc();
-                    FileUtils.forceDelete(dir);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        private void cleanDirectory() {
+            deleteFile(dir);
+        }
+
+        private void deleteFile(File file) {
+            try {
+                FileUtils.forceDelete(file);
+            } catch (IOException e) {
+                LOGGER.error("Failed to delete file: {}", file.getAbsolutePath(), e);
             }
         }
     }
