@@ -140,7 +140,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 pRFC.setTestCaseFiles(new ArrayList<>());
             }
             pRFC.getTestCaseFiles().clear();
-
+            emptyCache(pRFC.fileMap.get(bfcID));
             logger.error(e.getMessage());
         }
         finally {
