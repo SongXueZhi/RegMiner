@@ -1,13 +1,12 @@
 package org.regminer.miner;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.regminer.common.constant.Configurations;
+import org.regminer.common.constant.Constant;
 import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.tool.SycFileCleanup;
-import org.regminer.common.utils.FileUtilx;
 import org.regminer.ct.api.AutoCompileAndTest;
-import org.regminer.ct.api.OriginCompileFixWay;
 import org.regminer.ct.api.CtContext;
+import org.regminer.ct.api.OriginCompileFixWay;
 import org.regminer.ct.api.TestCaseParser;
 import org.regminer.ct.model.CommitBuildResult;
 import org.regminer.ct.model.CompileResult;
@@ -141,8 +140,13 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 pRFC.setTestCaseFiles(new ArrayList<>());
             }
             pRFC.getTestCaseFiles().clear();
-            emptyCache(pRFC.fileMap.get(bfcID));
+
             logger.error(e.getMessage());
+        }
+        finally {
+            if (Configurations.taskName.equals(Constant.BFC_TASK)) {
+                emptyCache(pRFC.fileMap.get(bfcID));
+            }
         }
     }
 
