@@ -103,6 +103,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
             boolean findBFCPFlag = false;
             for (int i = 0; i < count; i++) {
                 String bfcpID = pRFC.getCommit().getParent(i).getName();
+                logger.info("bfc~1 {} of {}", bfcpID, bfcID);
                 TestResult bfcpTestResult = testCaseMigrator.migrate(pRFC, bfcpID);
                 if (bfcpTestResult == null) { //这说明编译失败
                     continue;

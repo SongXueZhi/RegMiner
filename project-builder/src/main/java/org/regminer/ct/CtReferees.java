@@ -5,8 +5,14 @@ import org.regminer.common.exec.ExecResult;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CtReferees {
     static Logger logger = LogManager.getLogManager().getLogger("org.regminer.ct.CtReferees");
@@ -72,5 +78,25 @@ public class CtReferees {
 
         return testResult;
     }
+    public static List<String> analyzeCompilationLog(String message) {
+        Set<String> problematicDependencies = new HashSet<>();
+        // 查找依赖问题的正则表达式
+        // [FATAL] ... com.fasterxml.jackson.core:jackson-databind:2.9.8 ... com.fasterxml.jackson:jackson-base:pom:2.9.8-SNAPSHOT
+        // 匹配形如 "groupId:artifactId[:type]:version" 的依赖项
+        String regex = "([a-zA-Z0-9\\.\\-_]+:[a-zA-Z0-9\\.\\-_]+(:[a-zA-Z0-9\\.\\-_]+)?:[a-zA-Z0-9\\.\\-_]+)";
+        Pattern pattern = Pattern.compile(regex);
+
+        Matcher matcher = pattern.matcher(message);
+
+        // 遍历日志消息以查找与依赖相关的部分
+        while (matcher.find()) {
+            String dependency = matcher.group(1);
+            // 将找到的依赖项添加到列表中
+            problematicDependencies.add(dependency);
+        }
+
+        return new ArrayList<>(problematicDependencies);
+    }
+
 
 }

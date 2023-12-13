@@ -60,12 +60,12 @@ public class MavenManager {
         return result;
     }
 
-    protected Model getPomModel(File pomFile) throws Exception {
+    public Model getPomModel(File pomFile) throws Exception {
         Model pomModel = mavenReader.read(new FileReader(pomFile));
         return pomModel;
     }
 
-    protected void saveModel(File pomFile, Model pomModel) throws Exception {
+    public void saveModel(File pomFile, Model pomModel) throws Exception {
         mavenXpp3Writer.write(new FileWriter(pomFile), pomModel);
     }
 
