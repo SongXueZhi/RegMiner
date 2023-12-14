@@ -5,8 +5,11 @@ import org.regminer.common.exec.ExecResult;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 
+import java.util.*;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CtReferees {
     static Logger logger = LogManager.getLogManager().getLogger("org.regminer.ct.CtReferees");
@@ -19,7 +22,7 @@ public class CtReferees {
     public static TestCaseResult judgeTestCaseResult(ExecResult execResult) {
 
         TestCaseResult testCaseResult = new TestCaseResult();
-        if (execResult.isTimeOut()){
+        if (execResult.isTimeOut()) {
             testCaseResult.setState(TestCaseResult.TestState.TE);
             return testCaseResult;
         }
@@ -73,4 +76,70 @@ public class CtReferees {
         return testResult;
     }
 
+    public static List<String> detectProblematicDependencies(String message) {
+        Set<String> problematicDependencies = new HashSet<>();
+        // 查找依赖问题的正则表达式
+        // [FATAL] ... com.fasterxml.jackson.core:jackson-databind:2.9.8 ... com.fasterxml.jackson:jackson-base:pom:2.9.8-SNAPSHOT
+        // 匹配形如 "groupId:artifactId[:type]:version" 的依赖项
+        String regex = "([a-zA-Z0-9\\.\\-_]+:[a-zA-Z0-9\\.\\-_]+(:[a-zA-Z0-9\\.\\-_]+)?:[a-zA-Z0-9\\.\\-_]+)";
+        Pattern pattern = Pattern.compile(regex);
+
+        Matcher matcher = pattern.matcher(message);
+
+        // 遍历日志消息以查找与依赖相关的部分
+        while (matcher.find()) {
+            String dependency = matcher.group(1);
+            // 将找到的依赖项添加到列表中
+            problematicDependencies.add(dependency);
+        }
+
+        return new ArrayList<>(problematicDependencies);
+    }
+
+    public static Map<String, List<String>> detectClassNameConflicts(String logMessage) {
+        Map<String, List<String>> fileToConflictingPackages = new HashMap<>();
+
+        // 查找类名冲突问题的正则表达式
+        String regex = "\\[ERROR\\] ([^\\[]+?):\\[\\d+,\\d+\\] 对.*的引用不明确\\s+(.*) 中的类 (.*) 和 (.*) 中的类 (.*) 都匹配";
+        Pattern pattern = Pattern.compile(regex);
+
+        Matcher matcher = pattern.matcher(logMessage);
+
+        // 遍历日志消息以查找与类名冲突相关的部分
+        while (matcher.find()) {
+            String fileName = matcher.group(1).trim(); // 冲突的文件
+            String package1 = matcher.group(3).trim(); // 第一个冲突的完整类名
+            String package2 = matcher.group(5).trim(); // 第二个冲突的完整类名
+
+            // 将包名添加到对应文件名的集合中
+            fileToConflictingPackages.computeIfAbsent(fileName, k -> new ArrayList<>()).add(package1);
+            fileToConflictingPackages.get(fileName).add(package2);
+        }
+
+        return fileToConflictingPackages;
+    }
+
+    public static Set<String> findMissingDependencies(String logMessage) {
+        Set<String> missingDependencies = new HashSet<>();
+        if (logMessage == null) {
+            return missingDependencies;
+        }
+        // 查找“找不到符号”或“程序包不存在”错误的正则表达式
+        String regex = "\\[ERROR\\].*(程序包|package)([a-zA-Z0-9\\.]+)不存在|找不到符号.*类 ([a-zA-Z0-9\\.]+)";
+        Pattern pattern = Pattern.compile(regex);
+
+        Matcher matcher = pattern.matcher(logMessage);
+
+        // 遍历日志消息以查找与缺失的依赖相关的部分
+        while (matcher.find()) {
+            // 根据错误类型捕获相应的包或类名
+            if (matcher.group(2) != null) {
+                missingDependencies.add(matcher.group(2)); // 包名
+            } else if (matcher.group(3) != null) {
+                missingDependencies.add(matcher.group(3)); // 类名
+            }
+        }
+
+        return missingDependencies;
+    }
 }

@@ -10,27 +10,27 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.patch.HunkHeader;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.model.*;
 import org.regminer.common.tool.RepositoryProvider;
-import org.regminer.common.utils.FileUtilx;
 import org.regminer.miner.core.PBFCFilterStrategy;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Optional;
 
 public class PotentialBFCDetector extends PBFCFilterStrategy {
+    private List<String> filterList;
 
-    private  List<String> filterList;
-
-    public PotentialBFCDetector(List<String> filterList){
+    public PotentialBFCDetector(List<String> filterList) {
         this.filterList = filterList;
     }
+
     public List<PotentialBFC> detectPotentialBFC() throws Exception {
         // 获取所有的commit，我们需要对所有的commit进行分析
         try (Repository repo = RepositoryProvider.getRepoFromLocal(new File(Configurations.projectPath)); Git git =
@@ -48,12 +48,12 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         int countAll = 0;
         // 开始迭代每一个commit
         for (RevCommit commit : commits) {
-            if (filterList.size()>0) {
-                if(this.filterList.contains(commit.getName())) {
+            if (!filterList.isEmpty()) {
+                if (this.filterList.contains(commit.getName())) {
                     detect(commit, potentialRFCs, git);
                 }
-            }else {
-                detect(commit,potentialRFCs,git);
+            } else {
+                detect(commit, potentialRFCs, git);
             }
             countAll++;
         }
@@ -78,7 +78,7 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         List<SourceFile> sourceFiles = getSourceFiles(files);
         // 1）若所有路径中存在任意一个路径包含test相关的Java文件则我们认为本次提交中包含测试用例。
         // 2）若所有路径中除了测试用例还包含其他的非测试用例的Java文件则commit符合条件
-        if (testcaseFiles.size() > 0 && normalJavaFiles.size() > 0) {
+        if (!testcaseFiles.isEmpty() && !normalJavaFiles.isEmpty()) {
             PotentialBFC pRFC = new PotentialBFC(commit);
             pRFC.setTestCaseFiles(testcaseFiles);
             pRFC.setTestcaseFrom(PotentialBFC.TESTCASE_FROM_SELF);
@@ -105,7 +105,15 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         ObjectId id = commit.getTree().getId();
         ObjectId oldId = null;
         if (commit.getParentCount() > 0) {
-            oldId = commit.getParent(0).getTree().getId();
+            oldId = Optional.ofNullable(commit.getParent(0).getTree() == null ? null : commit.getParent(0).getTree().getId())
+                    .orElseGet(() -> {
+                        try (RevWalk revWalk = new RevWalk(git.getRepository())) {
+                            return revWalk.parseCommit(ObjectId.fromString(commit.getParent(0).getName())).getTree().getId();
+                        } catch (Exception e) {
+                            logger.error("parse parent {} failed", commit.getParent(0).getName());
+                            return null;
+                        }
+                    });
         } else {
             return null;
         }
@@ -273,8 +281,6 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
     }
 
     /**
-     * @param commit
-     * @param potentialRFCs
      * @throws Exception
      */
 

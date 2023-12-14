@@ -73,6 +73,9 @@ public class SycFileCleanup {
 
         private void deleteFile(File file) {
             try {
+                if (!file.exists()) {
+                    return;
+                }
                 FileUtils.forceDelete(file);
             } catch (IOException e) {
                 LOGGER.error("Failed to delete file: {}", file.getAbsolutePath(), e);

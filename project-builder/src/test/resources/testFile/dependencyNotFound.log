@@ -1,0 +1,359 @@
+/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home/bin/java -Dmaven.multiModuleProjectDirectory=/Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml -Djansi.passthrough=true -Dmaven.home=/Applications/IntelliJ IDEA.app/Contents/plugins/maven/lib/maven3 -Dclassworlds.conf=/Applications/IntelliJ IDEA.app/Contents/plugins/maven/lib/maven3/bin/m2.conf -Dmaven.ext.class.path=/Applications/IntelliJ IDEA.app/Contents/plugins/maven/lib/maven-event-listener.jar -javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=56123:/Applications/IntelliJ IDEA.app/Contents/bin -Dfile.encoding=UTF-8 -classpath /Applications/IntelliJ IDEA.app/Contents/plugins/maven/lib/maven3/boot/plexus-classworlds.license:/Applications/IntelliJ IDEA.app/Contents/plugins/maven/lib/maven3/boot/plexus-classworlds-2.7.0.jar org.codehaus.classworlds.Launcher -Didea.version=2023.2.4 clean compile test-compile
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------< com.fasterxml.jackson.dataformat:jackson-dataformat-xml >-------
+[INFO] Building Jackson-dataformat-XML 2.7.0-rc3-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[INFO]
+[INFO] --- clean:2.5:clean (default-clean) @ jackson-dataformat-xml ---
+[INFO] Deleting /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/target
+[INFO]
+[INFO] --- enforcer:1.3.1:enforce (enforce-java) @ jackson-dataformat-xml ---
+[INFO]
+[INFO] --- build-helper:1.7:add-source (add-generated-sources) @ jackson-dataformat-xml ---
+[INFO] Source directory: /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/target/generated-sources added.
+[INFO]
+[INFO] --- replacer:1.5.2:replace (process-packageVersion) @ jackson-dataformat-xml ---
+[INFO] Replacement run on 1 file.
+[INFO]
+[INFO] --- resources:2.6:resources (default-resources) @ jackson-dataformat-xml ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 4 resources
+[INFO]
+[INFO] --- compiler:3.2:compile (default-compile) @ jackson-dataformat-xml ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 36 source files to /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/target/classes
+[WARNING] 未与 -source 7 一起设置引导类路径
+[WARNING] 源值7已过时, 将在未来所有发行版中删除
+[WARNING] 目标值7已过时, 将在未来所有发行版中删除
+[WARNING] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+[WARNING] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/main/java/com/fasterxml/jackson/dataformat/xml/ser/ToXmlGenerator.java:[538,19] com.fasterxml.jackson.core.JsonGenerationException中的JsonGenerationException(java.lang.String)已过时
+[WARNING] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/main/java/com/fasterxml/jackson/dataformat/xml/ser/ToXmlGenerator.java:[1089,23] com.fasterxml.jackson.core.JsonGenerationException中的JsonGenerationException(java.lang.Throwable)已过时
+[WARNING] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/main/java/com/fasterxml/jackson/dataformat/xml/ser/ToXmlGenerator.java:[1137,15] com.fasterxml.jackson.core.JsonGenerationException中的JsonGenerationException(java.lang.String)已过时
+[WARNING] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/main/java/com/fasterxml/jackson/dataformat/xml/XmlFactory.java:[191,84] java.lang.Class中的newInstance()已过时
+[WARNING] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/main/java/com/fasterxml/jackson/dataformat/xml/XmlFactory.java:[192,88] java.lang.Class中的newInstance()已过时
+[INFO]
+[INFO] --- enforcer:1.3.1:enforce (enforce-java) @ jackson-dataformat-xml ---
+[INFO]
+[INFO] --- build-helper:1.7:add-source (add-generated-sources) @ jackson-dataformat-xml ---
+[INFO] Source directory: /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/target/generated-sources added.
+[INFO]
+[INFO] --- replacer:1.5.2:replace (process-packageVersion) @ jackson-dataformat-xml ---
+[INFO] Replacement run on 1 file.
+[INFO]
+[INFO] --- resources:2.6:resources (default-resources) @ jackson-dataformat-xml ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 4 resources
+[INFO]
+[INFO] --- compiler:3.2:compile (default-compile) @ jackson-dataformat-xml ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 36 source files to /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/target/classes
+[WARNING] 未与 -source 7 一起设置引导类路径
+[WARNING] 源值7已过时, 将在未来所有发行版中删除
+[WARNING] 目标值7已过时, 将在未来所有发行版中删除
+[WARNING] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+[WARNING] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/main/java/com/fasterxml/jackson/dataformat/xml/ser/ToXmlGenerator.java:[538,19] com.fasterxml.jackson.core.JsonGenerationException中的JsonGenerationException(java.lang.String)已过时
+[WARNING] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/main/java/com/fasterxml/jackson/dataformat/xml/ser/ToXmlGenerator.java:[1089,23] com.fasterxml.jackson.core.JsonGenerationException中的JsonGenerationException(java.lang.Throwable)已过时
+[WARNING] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/main/java/com/fasterxml/jackson/dataformat/xml/ser/ToXmlGenerator.java:[1137,15] com.fasterxml.jackson.core.JsonGenerationException中的JsonGenerationException(java.lang.String)已过时
+[WARNING] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/main/java/com/fasterxml/jackson/dataformat/xml/XmlFactory.java:[191,84] java.lang.Class中的newInstance()已过时
+[WARNING] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/main/java/com/fasterxml/jackson/dataformat/xml/XmlFactory.java:[192,88] java.lang.Class中的newInstance()已过时
+[INFO]
+[INFO] --- resources:2.6:testResources (default-testResources) @ jackson-dataformat-xml ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/resources
+[INFO]
+[INFO] --- compiler:3.2:testCompile (default-testCompile) @ jackson-dataformat-xml ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 61 source files to /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/target/test-classes
+[INFO] -------------------------------------------------------------
+[WARNING] COMPILATION WARNING :
+[INFO] -------------------------------------------------------------
+[WARNING] 未与 -source 7 一起设置引导类路径
+[WARNING] 源值7已过时, 将在未来所有发行版中删除
+[WARNING] 目标值7已过时, 将在未来所有发行版中删除
+[WARNING] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+[INFO] 4 warnings
+[INFO] -------------------------------------------------------------
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR :
+[INFO] -------------------------------------------------------------
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/ListAsObjectTest.java:[7,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/ListAsObjectTest.java:[8,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[6,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[7,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[8,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[20,6] 找不到符号
+  符号:   类 XmlRootElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.ElementWrapperTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[29,6] 找不到符号
+  符号:   类 XmlRootElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.ElementWrapperTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[5,1] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[14,6] 找不到符号
+  符号:   类 XmlAccessorType
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[23,6] 找不到符号
+  符号:   类 XmlRootElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[6,1] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[35,6] 找不到符号
+  符号:   类 XmlType
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[36,6] 找不到符号
+  符号:   类 XmlAccessorType
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListWithEmptyCData129Test.java:[5,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[5,1] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[29,6] 找不到符号
+  符号:   类 XmlRootElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[41,31] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[51,6] 找不到符号
+  符号:   类 XmlRootElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[7,1] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[8,1] 程序包javax.xml.bind.annotation.adapters不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[18,6] 找不到符号
+  符号:   类 XmlJavaTypeAdapter
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[33,58] 找不到符号
+  符号:   类 XmlAdapter
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[68,6] 找不到符号
+  符号:   类 XmlRootElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[75,6] 找不到符号
+  符号:   类 XmlRootElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListsTest.java:[5,1] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListsTest.java:[22,6] 找不到符号
+  符号:   类 XmlRootElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.lists.UnwrappedListsTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListsTest.java:[30,6] 找不到符号
+  符号:   类 XmlRootElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.lists.UnwrappedListsTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/ListAsObjectTest.java:[20,10] 找不到符号
+  符号:   类 XmlElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.lists.ListAsObjectTest.Value
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/ListAsObjectTest.java:[31,10] 找不到符号
+  符号:   类 XmlAttribute
+  位置: 类 com.fasterxml.jackson.dataformat.xml.lists.ListAsObjectTest.Values
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[24,12] 找不到符号
+  符号:   类 XmlElementWrapper
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.ElementWrapperTest.MyPerson
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[25,12] 找不到符号
+  符号:   类 XmlElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.ElementWrapperTest.MyPerson
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[14,30] 找不到符号
+  符号:   变量 XmlAccessType
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[16,10] 找不到符号
+  符号:   类 XmlAttribute
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest.Jurisdiction
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[19,10] 找不到符号
+  符号:   类 XmlAttribute
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest.Jurisdiction
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[25,10] 找不到符号
+  符号:   类 XmlAttribute
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest.Problem
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[36,22] 找不到符号
+  符号:   变量 XmlAccessType
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[38,8] 找不到符号
+  符号:   类 XmlAttribute
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test.Employee
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[39,8] 找不到符号
+  符号:   类 XmlID
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test.Employee
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[42,8] 找不到符号
+  符号:   类 XmlAttribute
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test.Employee
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[45,8] 找不到符号
+  符号:   类 XmlIDREF
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test.Employee
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListWithEmptyCData129Test.java:[15,10] 找不到符号
+  符号:   类 XmlElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.lists.UnwrappedListWithEmptyCData129Test.ListValues
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[37,10] 找不到符号
+  符号:   类 XmlAttribute
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest.AttrBean
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[44,35] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[47,35] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[53,10] 找不到符号
+  符号:   类 XmlAttribute
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest.MyPerson
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[56,10] 找不到符号
+  符号:   类 XmlElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest.MyPerson
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[59,10] 找不到符号
+  符号:   类 XmlElement
+  位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest.MyPerson
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[71,10] 找不到符号
+  符号:   类 XmlJavaTypeAdapter
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest.DocWithMapData
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[78,10] 找不到符号
+  符号:   类 XmlJavaTypeAdapter
+  位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest.DocWithMapDataSimpleAnnotation
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListsTest.java:[25,10] 找不到符号
+  符号:   类 XmlElementWrapper
+  位置: 类 com.fasterxml.jackson.dataformat.xml.lists.UnwrappedListsTest.WrappedList
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/XmlTestBase.java:[302,27] 程序包javax.xml.bind不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/XmlTestBase.java:[304,27] 程序包javax.xml.bind不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[37,9] 方法不会覆盖或实现超类型的方法
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[48,9] 方法不会覆盖或实现超类型的方法
+[INFO] 54 errors
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.220 s
+[INFO] Finished at: 2023-12-14T16:58:46+08:00
+[INFO] ------------------------------------------------------------------------
+[WARNING]
+[WARNING] Plugin validation issues were detected in 7 plugin(s)
+[WARNING]
+[WARNING]  * org.apache.maven.plugins:maven-clean-plugin:2.5
+[WARNING]  * org.apache.maven.plugins:maven-resources-plugin:2.6
+[WARNING]  * org.codehaus.mojo:build-helper-maven-plugin:1.7
+[WARNING]  * org.apache.maven.plugins:maven-enforcer-plugin:1.3.1
+[WARNING]  * com.google.code.maven-replacer-plugin:replacer:1.5.2
+[WARNING]  * org.apache.maven.plugins:maven-site-plugin:3.1
+[WARNING]  * org.apache.maven.plugins:maven-compiler-plugin:3.2
+[WARNING]
+[WARNING] For more or less details, use 'maven.plugin.validation' property with one of the values (case insensitive): [BRIEF, DEFAULT, VERBOSE]
+[WARNING]
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.2:testCompile (default-testCompile) on project jackson-dataformat-xml: Compilation failure: Compilation failure:
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/ListAsObjectTest.java:[7,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/ListAsObjectTest.java:[8,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[6,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[7,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[8,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[20,6] 找不到符号
+[ERROR]   符号:   类 XmlRootElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.ElementWrapperTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[29,6] 找不到符号
+[ERROR]   符号:   类 XmlRootElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.ElementWrapperTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[5,1] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[14,6] 找不到符号
+[ERROR]   符号:   类 XmlAccessorType
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[23,6] 找不到符号
+[ERROR]   符号:   类 XmlRootElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[6,1] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[35,6] 找不到符号
+[ERROR]   符号:   类 XmlType
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[36,6] 找不到符号
+[ERROR]   符号:   类 XmlAccessorType
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListWithEmptyCData129Test.java:[5,33] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[5,1] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[29,6] 找不到符号
+[ERROR]   符号:   类 XmlRootElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[41,31] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[51,6] 找不到符号
+[ERROR]   符号:   类 XmlRootElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[7,1] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[8,1] 程序包javax.xml.bind.annotation.adapters不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[18,6] 找不到符号
+[ERROR]   符号:   类 XmlJavaTypeAdapter
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[33,58] 找不到符号
+[ERROR]   符号:   类 XmlAdapter
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[68,6] 找不到符号
+[ERROR]   符号:   类 XmlRootElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[75,6] 找不到符号
+[ERROR]   符号:   类 XmlRootElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListsTest.java:[5,1] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListsTest.java:[22,6] 找不到符号
+[ERROR]   符号:   类 XmlRootElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.lists.UnwrappedListsTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListsTest.java:[30,6] 找不到符号
+[ERROR]   符号:   类 XmlRootElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.lists.UnwrappedListsTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/ListAsObjectTest.java:[20,10] 找不到符号
+[ERROR]   符号:   类 XmlElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.lists.ListAsObjectTest.Value
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/ListAsObjectTest.java:[31,10] 找不到符号
+[ERROR]   符号:   类 XmlAttribute
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.lists.ListAsObjectTest.Values
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[24,12] 找不到符号
+[ERROR]   符号:   类 XmlElementWrapper
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.ElementWrapperTest.MyPerson
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/ElementWrapperTest.java:[25,12] 找不到符号
+[ERROR]   符号:   类 XmlElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.ElementWrapperTest.MyPerson
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[14,30] 找不到符号
+[ERROR]   符号:   变量 XmlAccessType
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[16,10] 找不到符号
+[ERROR]   符号:   类 XmlAttribute
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest.Jurisdiction
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[19,10] 找不到符号
+[ERROR]   符号:   类 XmlAttribute
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest.Jurisdiction
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/AttributesWithJAXBTest.java:[25,10] 找不到符号
+[ERROR]   符号:   类 XmlAttribute
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.AttributesWithJAXBTest.Problem
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[36,22] 找不到符号
+[ERROR]   符号:   变量 XmlAccessType
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[38,8] 找不到符号
+[ERROR]   符号:   类 XmlAttribute
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test.Employee
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[39,8] 找不到符号
+[ERROR]   符号:   类 XmlID
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test.Employee
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[42,8] 找不到符号
+[ERROR]   符号:   类 XmlAttribute
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test.Employee
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/JAXBObjectId170Test.java:[45,8] 找不到符号
+[ERROR]   符号:   类 XmlIDREF
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.JAXBObjectId170Test.Employee
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListWithEmptyCData129Test.java:[15,10] 找不到符号
+[ERROR]   符号:   类 XmlElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.lists.UnwrappedListWithEmptyCData129Test.ListValues
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[37,10] 找不到符号
+[ERROR]   符号:   类 XmlAttribute
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest.AttrBean
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[44,35] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[47,35] 程序包javax.xml.bind.annotation不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[53,10] 找不到符号
+[ERROR]   符号:   类 XmlAttribute
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest.MyPerson
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[56,10] 找不到符号
+[ERROR]   符号:   类 XmlElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest.MyPerson
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/jaxb/WithJAXBAnnotationsTest.java:[59,10] 找不到符号
+[ERROR]   符号:   类 XmlElement
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.jaxb.WithJAXBAnnotationsTest.MyPerson
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[71,10] 找不到符号
+[ERROR]   符号:   类 XmlJavaTypeAdapter
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest.DocWithMapData
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[78,10] 找不到符号
+[ERROR]   符号:   类 XmlJavaTypeAdapter
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.failing.Issue37AdapterTest.DocWithMapDataSimpleAnnotation
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/lists/UnwrappedListsTest.java:[25,10] 找不到符号
+[ERROR]   符号:   类 XmlElementWrapper
+[ERROR]   位置: 类 com.fasterxml.jackson.dataformat.xml.lists.UnwrappedListsTest.WrappedList
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/XmlTestBase.java:[302,27] 程序包javax.xml.bind不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/XmlTestBase.java:[304,27] 程序包javax.xml.bind不存在
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[37,9] 方法不会覆盖或实现超类型的方法
+[ERROR] /Users/doughit/fdse/miner_space/meta_projects/jackson-dataformat-xml/src/test/java/com/fasterxml/jackson/dataformat/xml/failing/Issue37AdapterTest.java:[48,9] 方法不会覆盖或实现超类型的方法
+[ERROR] -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+
+Process finished with exit code 1
