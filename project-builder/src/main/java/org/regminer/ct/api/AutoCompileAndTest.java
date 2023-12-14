@@ -72,6 +72,7 @@ public class AutoCompileAndTest extends Strategy {
 
         CompileResult.CompileState compileState = CtReferees.JudgeCompileState(message);
         compileResult.setState(compileState);
+        compileResult.setExceptionMessage(message);
         if (compileState == CompileResult.CompileState.SUCCESS) {
             compileResult.setCompileWay(compileTestEnv);
             return compileResult;
@@ -83,7 +84,7 @@ public class AutoCompileAndTest extends Strategy {
         List<OriginCompileFixWay> originCompileFixWayList = Arrays.asList(compileFixWays);
         originCompileFixWayList.sort(Comparator.comparing(OriginCompileFixWay::getOrder));
         for (OriginCompileFixWay compileFixWay : originCompileFixWayList) {
-            compileResult = compileFixWay.fix(compileTestEnv, message);
+            compileResult = compileFixWay.fix(compileTestEnv, compileResult.getExceptionMessage());
             if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
                 return compileResult;
             }

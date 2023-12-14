@@ -6,6 +6,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.regminer.common.exec.Executor;
 import org.regminer.common.tool.MavenManager;
+import org.regminer.common.utils.FileUtil;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.JDK;
 import org.regminer.ct.domain.JDKs;
@@ -15,6 +16,7 @@ import org.regminer.ct.model.CtCommands;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 public enum OriginCompileFixWay {
 
@@ -64,7 +66,7 @@ public enum OriginCompileFixWay {
         @Override
         CompileResult fix(CompileTestEnv compileEnv, String errorMessage) {
             // 分析编译日志，找到有问题的依赖
-            List<String> problematicDependencies = CtReferees.analyzeCompilationLog(errorMessage);
+            List<String> problematicDependencies = CtReferees.detectProblematicDependencies(errorMessage);
 
             File pomFile = new File(compileEnv.getProjectDir(), "pom.xml");
             MavenManager mavenManager = new MavenManager();
@@ -90,7 +92,7 @@ public enum OriginCompileFixWay {
 
                     if (isModified) {
                         mavenManager.saveModel(pomFile, model);
-
+                        logger.info("removed");
                         // 再次尝试编译
                         CompileResult attemptResult = recompileProject(compileEnv);
                         if (attemptResult.getState() == CompileResult.CompileState.SUCCESS) {
@@ -138,6 +140,39 @@ public enum OriginCompileFixWay {
             // Example: Resolve dependency issues, handle exceptions, and recompile
             return recompileProject(compileEnv);
         }
+    },
+    PACKAGE_FIX(4) {
+        @Override
+        CompileResult fix(CompileTestEnv compileEnv, String errorMessage) {
+            // 分析编译日志，找到有冲突的包
+            Map<String, List<String>> conflictingPackages = CtReferees.detectClassNameConflicts(errorMessage);
+
+            for (Map.Entry<String, List<String>> entry : conflictingPackages.entrySet()) {
+                String fileName = entry.getKey();
+                List<String> packages = entry.getValue();
+
+                for (String pkg : packages) {
+                    try {
+                        logger.info("Trying to import {} in {}", pkg, fileName);
+                        // 添加正确的包导入
+                        FileUtil.addImportStatement(fileName, pkg);
+                        logger.info("imported");
+                        // 再次尝试编译
+                        CompileResult attemptResult = recompileProject(compileEnv);
+                        if (attemptResult.getState() == CompileResult.CompileState.SUCCESS) {
+                            logger.info("Compile successful after import {} in {}", pkg, fileName);
+                            return attemptResult;
+                        }
+                    } catch (Exception e) {
+                        logger.error("Error while modifying {} for package statement {}: {}", fileName, pkg, e.getMessage());
+                    }
+                    // 只尝试引入一个 package
+                    break;
+                }
+            }
+
+            return new CompileResult(CompileResult.CompileState.CE);
+        }
     };
     private Integer order;
 
@@ -148,6 +183,7 @@ public enum OriginCompileFixWay {
     OriginCompileFixWay(Integer order) {
         this.order = order;
     }
+
     protected Logger logger = LogManager.getLogger(OriginCompileFixWay.class);
 
     private static CompileResult recompileProject(CompileTestEnv compileEnv) {
@@ -156,7 +192,9 @@ public enum OriginCompileFixWay {
                 .exec(compileEnv.getCtCommand().compute())
                 .getMessage();
 
-        return new CompileResult(CtReferees.JudgeCompileState(message), compileEnv.getCtCommand(), compileEnv);
+        CompileResult result = new CompileResult(CtReferees.JudgeCompileState(message), compileEnv.getCtCommand(), compileEnv);
+        result.setExceptionMessage(message);
+        return result;
     }
 
     abstract CompileResult fix(CompileTestEnv compileEnv, String errorMessage);
