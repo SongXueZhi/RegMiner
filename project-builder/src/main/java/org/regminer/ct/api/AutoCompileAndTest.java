@@ -86,6 +86,7 @@ public class AutoCompileAndTest extends Strategy {
         for (OriginCompileFixWay compileFixWay : originCompileFixWayList) {
             compileResult = compileFixWay.fix(compileTestEnv, compileResult.getExceptionMessage());
             if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
+                logger.info("command: {}", compileTestEnv.getCtCommand().compute());
                 return compileResult;
             }
         }

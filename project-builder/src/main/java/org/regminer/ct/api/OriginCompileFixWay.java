@@ -4,7 +4,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.regminer.common.exec.Executor;
+import org.regminer.common.tool.MavenDependencyProvider;
 import org.regminer.common.tool.MavenManager;
 import org.regminer.common.utils.FileUtil;
 import org.regminer.ct.CtReferees;
@@ -15,8 +18,10 @@ import org.regminer.ct.model.CompileTestEnv;
 import org.regminer.ct.model.CtCommands;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public enum OriginCompileFixWay {
 
@@ -24,7 +29,7 @@ public enum OriginCompileFixWay {
         @Override
         CompileResult fix(CompileTestEnv compileEnv, String errorMessage) {
             CompileResult compileResult = new CompileResult(CompileResult.CompileState.CE);
-
+            compileResult.setExceptionMessage(errorMessage);
             // Iterate left from the current index
             for (int i = JDKs.getCurIndex() - 1; i >= 0; i--) {
                 compileResult = tryCompileWithJDK(compileEnv, JDKs.jdkSearchRange[i]);
@@ -65,51 +70,60 @@ public enum OriginCompileFixWay {
 
         @Override
         CompileResult fix(CompileTestEnv compileEnv, String errorMessage) {
+            CompileResult compileResult = new CompileResult(CompileResult.CompileState.CE);
+            compileResult.setExceptionMessage(errorMessage);
             // 分析编译日志，找到有问题的依赖
             List<String> problematicDependencies = CtReferees.detectProblematicDependencies(errorMessage);
 
             File pomFile = new File(compileEnv.getProjectDir(), "pom.xml");
             MavenManager mavenManager = new MavenManager();
 
-            // 尝试移除每一个有问题的依赖的 SNAPSHOT 版本
-            for (String dependency : problematicDependencies) {
-                try {
-                    // 只修复 SNAPSHOT 问题
-                    if (!dependency.endsWith(SNAPSHOT)) {
-                        continue;
-                    }
-                    // 写在循环体内，相当于针对每个 dependency 做修改前都恢复成默认值
-                    Model model = mavenManager.getPomModel(pomFile);
-
-                    boolean isModified = false;
-                    if (model.getParent() != null &&
-                            (dependency.equals(model.getParent().getGroupId() + ":" + model.getParent().getArtifactId() + ":" + model.getParent().getVersion()) ||
-                                    dependency.equals(model.getParent().toString()))) {
-                        isModified = removeSnapshotFromParent(model);
-                    }
-
-                    isModified = isModified || removeSnapshotFromDependency(model, dependency);
-
-                    if (isModified) {
-                        mavenManager.saveModel(pomFile, model);
-                        logger.info("removed");
-                        // 再次尝试编译
-                        CompileResult attemptResult = recompileProject(compileEnv);
-                        if (attemptResult.getState() == CompileResult.CompileState.SUCCESS) {
-                            logger.info("Compile successful after fixing dependency: {}", dependency);
-                            return attemptResult;
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Error while modifying POM for dependency {}: {}", dependency, e.getMessage());
+            // 只修复 SNAPSHOT 问题
+            problematicDependencies = problematicDependencies
+                    .stream().filter(s -> s.endsWith(SNAPSHOT))
+                    .collect(Collectors.toList());
+            try {
+                // 尝试移除每一个有问题的依赖的 SNAPSHOT 版本
+                Model model = mavenManager.getPomModel(pomFile);
+                boolean isModified = false;
+                for (String dependency : problematicDependencies) {
+                    isModified |= removeSnapshotFromCurrent(model, dependency);
+                    isModified |= removeSnapshotFromParent(model, dependency);
+                    isModified |= removeSnapshotFromDependency(model, dependency);
                 }
+                if (isModified) {
+                    mavenManager.saveModel(pomFile, model);
+                    logger.info("removed");
+                    // 再次尝试编译
+                    CompileResult attemptResult = recompileProject(compileEnv);
+                    if (attemptResult.getState() == CompileResult.CompileState.SUCCESS) {
+                        logger.info("Compile successful after fixing dependencies: {}", problematicDependencies);
+                        return attemptResult;
+                    }
+                    compileResult.setExceptionMessage(attemptResult.getExceptionMessage());
+                }
+            } catch (Exception e) {
+                logger.error("Error while modifying POM for dependencies {}: {}", problematicDependencies, e.getMessage());
             }
 
-            return new CompileResult(CompileResult.CompileState.CE);
+            return compileResult;
         }
 
-        private boolean removeSnapshotFromParent(Model model) {
-            if (model.getParent() != null) {
+        private boolean removeSnapshotFromCurrent(Model model, String probDepend) {
+            if (model.getVersion() != null
+                    && probDepend.startsWith(model.getGroupId() + ":" + model.getArtifactId())
+                    && model.getVersion().endsWith(SNAPSHOT)) {
+                logger.info("Trying to remove '{}' from {}", SNAPSHOT, model.getVersion());
+                model.setVersion(model.getVersion().replace(SNAPSHOT, ""));
+                return true;
+            }
+            return false;
+        }
+
+        private boolean removeSnapshotFromParent(Model model, String probDepend) {
+            if (model.getParent() != null
+                    && probDepend.startsWith(model.getParent().getGroupId() + ":" + model.getParent().getArtifactId())
+                    && model.getParent().getVersion().endsWith(SNAPSHOT)) {
                 logger.info("Trying to remove '{}' of parent {}", SNAPSHOT, model.getParent());
                 String parentVersion = model.getParent().getVersion();
                 model.getParent().setVersion(parentVersion.replace(SNAPSHOT, ""));
@@ -120,30 +134,85 @@ public enum OriginCompileFixWay {
 
         private boolean removeSnapshotFromDependency(Model model, String probDepend) {
             boolean isModified = false;
+            Properties properties = model.getProperties();
             for (Dependency dependency : model.getDependencies()) {
-                // 检查依赖项是否匹配有问题的依赖
-                if ((dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + dependency.getVersion()).equals(probDepend) ||
-                        dependency.toString().equals(probDepend)) {
+                // 构建 groupId 和 artifactId 的组合
+                String dependencyIdentifier = dependency.getGroupId() + ":" + dependency.getArtifactId();
+
+                if (probDepend.startsWith(dependencyIdentifier)) {
                     logger.info("Trying to remove '{}' from dependency of {}", SNAPSHOT, dependency);
-                    String depVersion = dependency.getVersion();
-                    dependency.setVersion(depVersion.replace(SNAPSHOT, ""));
-                    isModified = true;
+                    String depVersion = resolveProperty(dependency.getVersion(), properties);
+
+                    if (depVersion.endsWith(SNAPSHOT)) {
+                        dependency.setVersion(depVersion.replace(SNAPSHOT, ""));
+                        isModified = true;
+                    }
                 }
             }
             return isModified;
+        }
+
+        private String resolveProperty(String value, Properties properties) {
+            if (value.startsWith("${") && value.endsWith("}")) {
+                String propertyName = value.substring(2, value.length() - 1);
+                return properties.getProperty(propertyName, value);
+            }
+            return value;
         }
     },
     DEPENDENCY_FIX(2) {
         @Override
         CompileResult fix(CompileTestEnv compileEnv, String errorMessage) {
+            CompileResult compileResult = new CompileResult(CompileResult.CompileState.CE);
+            compileResult.setExceptionMessage(errorMessage);
             // Implement logic for DEPENDENCY_FIX
             // Example: Resolve dependency issues, handle exceptions, and recompile
-            return recompileProject(compileEnv);
+            Set<String> missingDependencies = CtReferees.findMissingDependencies(errorMessage);
+            List<Dependency> dependencies = new ArrayList<>();
+            for (String missingDependency : missingDependencies) {
+                dependencies.addAll(MavenDependencyProvider.getAllMavenDependencies(missingDependency));
+            }
+            File pomFile = new File(compileEnv.getProjectDir(), "pom.xml");
+            MavenManager mavenManager = new MavenManager();
+            try {
+                logger.info("Trying to add missing dependencies");
+                Model model = mavenManager.getPomModel(pomFile);
+                // 可能只有一个是有用的
+                for (Dependency dependency : dependencies) {
+                    Model modelCopy = cloneModel(model);
+                    modelCopy.addDependency(dependency);
+                    mavenManager.saveModel(pomFile, modelCopy);
+//                    logger.info("added");
+                    // 再次尝试编译
+                    compileResult = recompileProject(compileEnv);
+                    if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
+                        logger.info("Compile successful after add dependency: {}", dependency);
+                        return compileResult;
+                    }
+                }
+                // 如果都没成功，就恢复原文件
+                mavenManager.saveModel(pomFile, model);
+
+            } catch (Exception e) {
+                logger.error("Error while modifying POM for dependencies {}: {}", dependencies, e.getMessage());
+            }
+            return compileResult;
         }
+        private Model cloneModel(Model originalModel) throws Exception {
+            MavenXpp3Reader reader = new MavenXpp3Reader();
+            MavenXpp3Writer writer = new MavenXpp3Writer();
+            StringWriter stringWriter = new StringWriter();
+
+            writer.write(stringWriter, originalModel);
+            return reader.read(new StringReader(stringWriter.toString()));
+        }
+
     },
     PACKAGE_FIX(4) {
         @Override
         CompileResult fix(CompileTestEnv compileEnv, String errorMessage) {
+            CompileResult compileResult = new CompileResult(CompileResult.CompileState.CE);
+            compileResult.setExceptionMessage(errorMessage);
             // 分析编译日志，找到有冲突的包
             Map<String, List<String>> conflictingPackages = CtReferees.detectClassNameConflicts(errorMessage);
 
@@ -171,7 +240,7 @@ public enum OriginCompileFixWay {
                 }
             }
 
-            return new CompileResult(CompileResult.CompileState.CE);
+            return compileResult;
         }
     };
     private Integer order;

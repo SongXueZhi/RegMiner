@@ -22,7 +22,7 @@ public class CtReferees {
     public static TestCaseResult judgeTestCaseResult(ExecResult execResult) {
 
         TestCaseResult testCaseResult = new TestCaseResult();
-        if (execResult.isTimeOut()){
+        if (execResult.isTimeOut()) {
             testCaseResult.setState(TestCaseResult.TestState.TE);
             return testCaseResult;
         }
@@ -75,6 +75,7 @@ public class CtReferees {
 
         return testResult;
     }
+
     public static List<String> detectProblematicDependencies(String message) {
         Set<String> problematicDependencies = new HashSet<>();
         // 查找依赖问题的正则表达式
@@ -116,5 +117,29 @@ public class CtReferees {
         }
 
         return fileToConflictingPackages;
+    }
+
+    public static Set<String> findMissingDependencies(String logMessage) {
+        Set<String> missingDependencies = new HashSet<>();
+        if (logMessage == null) {
+            return missingDependencies;
+        }
+        // 查找“找不到符号”或“程序包不存在”错误的正则表达式
+        String regex = "\\[ERROR\\].*(程序包|package)([a-zA-Z0-9\\.]+)不存在|找不到符号.*类 ([a-zA-Z0-9\\.]+)";
+        Pattern pattern = Pattern.compile(regex);
+
+        Matcher matcher = pattern.matcher(logMessage);
+
+        // 遍历日志消息以查找与缺失的依赖相关的部分
+        while (matcher.find()) {
+            // 根据错误类型捕获相应的包或类名
+            if (matcher.group(2) != null) {
+                missingDependencies.add(matcher.group(2)); // 包名
+            } else if (matcher.group(3) != null) {
+                missingDependencies.add(matcher.group(3)); // 类名
+            }
+        }
+
+        return missingDependencies;
     }
 }
