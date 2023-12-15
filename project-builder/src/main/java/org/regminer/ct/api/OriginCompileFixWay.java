@@ -8,8 +8,8 @@ import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.CompileTestEnv;
 import org.regminer.ct.model.CtCommands;
 
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public enum OriginCompileFixWay {
     JDK_SEARCH {
@@ -68,7 +68,8 @@ public enum OriginCompileFixWay {
         }
     };
 
-    protected Logger logger = LogManager.getLogManager().getLogger(this.name());
+//    protected Logger logger = LogManager.getLogManager().getLogger(this.name());
+    protected Logger logger = LogManager.getLogger(this.name());
 
     private static CompileResult recompileProject(CompileTestEnv compileEnv) {
         String message = new Executor()
