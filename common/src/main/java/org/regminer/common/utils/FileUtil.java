@@ -4,6 +4,9 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class FileUtil {
@@ -102,6 +105,35 @@ public class FileUtil {
 
         }
         return result;
+    }
+
+    public static void addImportStatement(String filePath, String packageName) throws IOException {
+        Path path = Paths.get(filePath);
+        List<String> lines = Files.readAllLines(path);
+
+        String importStatement = "import " + packageName + ";";
+
+        if (lines.contains(importStatement)) {
+            return;
+        }
+
+        int packagePosition = -1;
+        int importInsertPosition;
+        for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).startsWith("package ")) {
+                packagePosition = i;
+                break;
+            }
+        }
+
+        if (packagePosition != -1) {
+            importInsertPosition = packagePosition + 1;
+        } else {
+            importInsertPosition = 0;
+        }
+        lines.add(importInsertPosition, importStatement);
+
+        Files.write(path, lines);
     }
 
     public void createdNewDirectory(String path) {

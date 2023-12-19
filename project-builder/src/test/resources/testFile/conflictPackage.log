@@ -1,0 +1,136 @@
+
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------< com.fasterxml.jackson.core:jackson-databind >-------------
+[INFO] Building jackson-databind 2.9.6-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] -------------------------------[ bundle ]-------------------------------
+[WARNING] The artifact javax.measure:jsr-275:jar:1.0.0 has been relocated to javax.measure:jsr-275:jar:0.9.1
+[INFO]
+[INFO] --- enforcer:3.0.0-M1:enforce (enforce-java) @ jackson-databind ---
+[INFO]
+[INFO] --- enforcer:3.0.0-M1:enforce (enforce-properties) @ jackson-databind ---
+[INFO]
+[INFO] --- build-helper:1.7:add-source (add-generated-sources) @ jackson-databind ---
+[INFO] Source directory: /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/target/generated-sources added.
+[INFO]
+[INFO] --- replacer:1.5.3:replace (process-packageVersion) @ jackson-databind ---
+[INFO] Replacement run on 1 file.
+[INFO]
+[INFO] --- resources:2.7:resources (default-resources) @ jackson-databind ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 3 resources
+[INFO]
+[INFO] --- compiler:3.7.0:compile (default-compile) @ jackson-databind ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 419 source files to /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/target/classes
+[WARNING] 未与 -source 7 一起设置引导类路径
+[WARNING] 源值7已过时, 将在未来所有发行版中删除
+[WARNING] 目标值7已过时, 将在未来所有发行版中删除
+[WARNING] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/ObjectMapper.java:[6,21] java.security 中的 java.security.AccessController 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/introspect/AnnotatedConstructor.java:[198,22] java.lang.reflect.AccessibleObject中的isAccessible()已过时
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/introspect/AnnotatedMethod.java:[269,19] java.lang.reflect.AccessibleObject中的isAccessible()已过时
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/introspect/AnnotatedField.java:[168,19] java.lang.reflect.AccessibleObject中的isAccessible()已过时
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/ObjectMapper.java:[1001,15] java.lang 中的 java.lang.SecurityManager 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/ObjectMapper.java:[1001,42] java.lang.System 中的 getSecurityManager() 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/ObjectMapper.java:[1006,16] java.security 中的 java.security.AccessController 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/util/ClassUtil.java:[896,20] java.lang.reflect.AccessibleObject中的isAccessible()已过时
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/ser/PropertyBuilder.java:[220,63] com.fasterxml.jackson.databind.SerializationFeature中的WRITE_EMPTY_JSON_ARRAYS已过时
+[INFO] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/node/ObjectNode.java: 某些输入文件使用了未经检查或不安全的操作。
+[INFO] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/node/ObjectNode.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO]
+[INFO] --- enforcer:3.0.0-M1:enforce (enforce-java) @ jackson-databind ---
+[INFO]
+[INFO] --- enforcer:3.0.0-M1:enforce (enforce-properties) @ jackson-databind ---
+[INFO]
+[INFO] --- build-helper:1.7:add-source (add-generated-sources) @ jackson-databind ---
+[INFO] Source directory: /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/target/generated-sources added.
+[INFO]
+[INFO] --- replacer:1.5.3:replace (process-packageVersion) @ jackson-databind ---
+[INFO] Replacement run on 1 file.
+[INFO]
+[INFO] --- resources:2.7:resources (default-resources) @ jackson-databind ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 3 resources
+[INFO]
+[INFO] --- compiler:3.7.0:compile (default-compile) @ jackson-databind ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 419 source files to /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/target/classes
+[WARNING] 未与 -source 7 一起设置引导类路径
+[WARNING] 源值7已过时, 将在未来所有发行版中删除
+[WARNING] 目标值7已过时, 将在未来所有发行版中删除
+[WARNING] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/ObjectMapper.java:[6,21] java.security 中的 java.security.AccessController 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/introspect/AnnotatedConstructor.java:[198,22] java.lang.reflect.AccessibleObject中的isAccessible()已过时
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/introspect/AnnotatedMethod.java:[269,19] java.lang.reflect.AccessibleObject中的isAccessible()已过时
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/introspect/AnnotatedField.java:[168,19] java.lang.reflect.AccessibleObject中的isAccessible()已过时
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/ObjectMapper.java:[1001,15] java.lang 中的 java.lang.SecurityManager 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/ObjectMapper.java:[1001,42] java.lang.System 中的 getSecurityManager() 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/ObjectMapper.java:[1006,16] java.security 中的 java.security.AccessController 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/util/ClassUtil.java:[896,20] java.lang.reflect.AccessibleObject中的isAccessible()已过时
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/ser/PropertyBuilder.java:[220,63] com.fasterxml.jackson.databind.SerializationFeature中的WRITE_EMPTY_JSON_ARRAYS已过时
+[INFO] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/node/ObjectNode.java: 某些输入文件使用了未经检查或不安全的操作。
+[INFO] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/main/java/com/fasterxml/jackson/databind/node/ObjectNode.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO]
+[INFO] --- resources:2.7:testResources (default-testResources) @ jackson-databind ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO]
+[INFO] --- compiler:3.7.0:testCompile (default-testCompile) @ jackson-databind ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 496 source files to /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/target/test-classes
+[INFO] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/BaseMapTest.java: /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/BaseMapTest.java使用了未经检查或不安全的操作。
+[INFO] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/BaseMapTest.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] -------------------------------------------------------------
+[WARNING] COMPILATION WARNING :
+[INFO] -------------------------------------------------------------
+[WARNING] 未与 -source 7 一起设置引导类路径
+[WARNING] 源值7已过时, 将在未来所有发行版中删除
+[WARNING] 目标值7已过时, 将在未来所有发行版中删除
+[WARNING] 要隐藏有关已过时选项的警告, 请使用 -Xlint:-options。
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/jsonschema/TestReadJsonSchema.java:[6,49] com.fasterxml.jackson.databind.jsonschema中的com.fasterxml.jackson.databind.jsonschema.JsonSchema已过时
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/deser/creators/TestValueInstantiator.java:[131,27] java.lang.Class中的newInstance()已过时
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/jsontype/deftyping/TestDefaultForScalars.java:[20,43] java.lang.Integer 中的 Integer(int) 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/misc/AccessFixTest.java:[12,17] java.lang 中的 java.lang.SecurityManager 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/misc/AccessFixTest.java:[26,15] java.lang 中的 java.lang.SecurityManager 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/misc/AccessFixTest.java:[26,50] java.lang.System 中的 getSecurityManager() 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/misc/AccessFixTest.java:[30,19] java.lang.System 中的 setSecurityManager(java.lang.SecurityManager) 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/misc/AccessFixTest.java:[33,19] java.lang.System 中的 setSecurityManager(java.lang.SecurityManager) 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/databind/deser/creators/TestCreators.java:[318,22] java.lang.Double 中的 Double(java.lang.String) 已过时, 且标记为待删除
+[WARNING] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/failing/TestUnknownProperty426.java:[21,23] java.lang.Integer 中的 Integer(java.lang.String) 已过时, 且标记为待删除
+[INFO] 14 warnings
+[INFO] -------------------------------------------------------------
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR :
+[INFO] -------------------------------------------------------------
+[ERROR] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/failing/NodeContext2049Test.java:[137,41] 对Module的引用不明确
+  com.fasterxml.jackson.databind 中的类 com.fasterxml.jackson.databind.Module 和 java.lang 中的类 java.lang.Module 都匹配
+[ERROR] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/failing/NodeContext2049Test.java:[147,39] 找不到符号
+  符号: 类 SetupContext
+[ERROR] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/failing/NodeContext2049Test.java:[138,15] 方法不会覆盖或实现超类型的方法
+[ERROR] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/failing/NodeContext2049Test.java:[142,15] 方法不会覆盖或实现超类型的方法
+[ERROR] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/failing/NodeContext2049Test.java:[146,15] 方法不会覆盖或实现超类型的方法
+[INFO] 5 errors
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.525 s
+[INFO] Finished at: 2023-12-13T14:14:26+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.7.0:testCompile (default-testCompile) on project jackson-databind: Compilation failure: Compilation failure:
+[ERROR] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/failing/NodeContext2049Test.java:[137,41] 对Module的引用不明确
+[ERROR]   com.fasterxml.jackson.databind 中的类 com.fasterxml.jackson.databind.Module 和 java.lang 中的类 java.lang.Module 都匹配
+[ERROR] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/failing/NodeContext2049Test.java:[147,39] 找不到符号
+[ERROR]   符号: 类 SetupContext
+[ERROR] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/failing/NodeContext2049Test.java:[138,15] 方法不会覆盖或实现超类型的方法
+[ERROR] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/failing/NodeContext2049Test.java:[142,15] 方法不会覆盖或实现超类型的方法
+[ERROR] /Users/doughit/fdse/miner_space/cache/jackson-databind/12f82c6/12f82c6/src/test/java/com/fasterxml/jackson/failing/NodeContext2049Test.java:[146,15] 方法不会覆盖或实现超类型的方法
+[ERROR] -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

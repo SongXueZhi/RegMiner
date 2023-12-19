@@ -13,6 +13,8 @@ import org.regminer.ct.model.*;
 import org.regminer.ct.utils.CtUtils;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class AutoCompileAndTest extends Strategy {
@@ -70,6 +72,7 @@ public class AutoCompileAndTest extends Strategy {
 
         CompileResult.CompileState compileState = CtReferees.JudgeCompileState(message);
         compileResult.setState(compileState);
+        compileResult.setExceptionMessage(message);
         if (compileState == CompileResult.CompileState.SUCCESS) {
             compileResult.setCompileWay(compileTestEnv);
             return compileResult;
@@ -77,8 +80,15 @@ public class AutoCompileAndTest extends Strategy {
         //TODO 根据编译失败的原因，选择不同的修复方式
         //装填编译命令，包括环境配置和编译指令
         //获取最高分的JDK，作为环境配置
-        for (OriginCompileFixWay compileFixWay : compileFixWays) {
-            compileResult = compileFixWay.fix(compileTestEnv);
+        //排序。迁移前，优先修复 pom 问题
+        List<OriginCompileFixWay> originCompileFixWayList = Arrays.asList(compileFixWays);
+        originCompileFixWayList.sort(Comparator.comparing(OriginCompileFixWay::getOrder));
+        for (OriginCompileFixWay compileFixWay : originCompileFixWayList) {
+            compileResult = compileFixWay.fix(compileTestEnv, compileResult.getExceptionMessage());
+            if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
+                logger.info("command: {}", compileTestEnv.getCtCommand().compute());
+                return compileResult;
+            }
         }
         return compileResult;
     }

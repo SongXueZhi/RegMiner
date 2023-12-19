@@ -24,6 +24,7 @@ public class TestCaseMigrator extends Migrator {
     protected Logger logger = LogManager.getLogger(Migrator.class);
 
     public TestResult migrate(PotentialBFC pRFC, String bic) throws Exception {
+        logger.info("start to migrate in {}", pRFC.getCommit().getName());
         File bicDirectory = checkoutCiForBFC(pRFC.getCommit().getName(), bic);
         pRFC.fileMap.put(bic, bicDirectory);
         CtContext ctContext = new CtContext(new AutoCompileAndTest());
