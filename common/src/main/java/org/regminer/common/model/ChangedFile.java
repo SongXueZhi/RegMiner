@@ -5,6 +5,7 @@ import org.eclipse.jgit.diff.Edit;
 import java.util.List;
 
 public class ChangedFile {
+    private String newCommitId;
     private String newPath;
     private String oldPath;
     private List<Methodx> methods;
@@ -13,6 +14,14 @@ public class ChangedFile {
 
     public ChangedFile(String newPath) {
         this.newPath = newPath;
+    }
+
+    public void setNewCommitId(String newCommitId) {
+        this.newCommitId = newCommitId;
+    }
+
+    public String getNewCommitId() {
+        return newCommitId;
     }
 
     public Type getType() {
