@@ -1,6 +1,8 @@
 package org.regminer.migrate.api;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.dom.*;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
  * @Description:
  */
 public class Migrator {
+
+    private static final Logger LOGGER = LogManager.getLogger(Migrator.class);
     public File checkoutCiForBFC(String bfcId, String commitId) throws IOException {
         File codeDir = FileUtilx.getDirFromBfcAndBic(bfcId, commitId);
         FileUtils.copyDirectory(new File(Configurations.metaPath), codeDir);
@@ -54,6 +58,7 @@ public class Migrator {
         File bfcDir = pRFC.fileMap.get("BASE");
         String head = GitUtils.getHead(bfcDir);
         testSuiteMap.forEach((s, testFiles) -> {
+            LOGGER.info("migrate testFiles from {} to {}", s, pRFC.getCommit().getName());
             GitUtils.checkout(s, bfcDir);
             mergeTestFiles(bfcDir, tDir, testFiles,
                     underTestDirJavaFilesMap.getOrDefault(s, new ArrayList<>()),
