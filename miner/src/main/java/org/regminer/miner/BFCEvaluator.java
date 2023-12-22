@@ -3,6 +3,7 @@ package org.regminer.miner;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.model.PotentialBFC;
+import org.regminer.common.sql.BugStorage;
 import org.regminer.common.tool.SycFileCleanup;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
@@ -23,10 +24,12 @@ public class BFCEvaluator extends BFCSearchStrategy {
 
     TestCaseParser testCaseParser;
     TestCaseMigrator testCaseMigrator;
+    BugStorage bugStorage;
 
     public BFCEvaluator(TestCaseParser testCaseParser, TestCaseMigrator testCaseMigrator) {
         this.testCaseParser = testCaseParser;
         this.testCaseMigrator = testCaseMigrator;
+        bugStorage = new BugStorage();
     }
 
     /**
@@ -48,7 +51,8 @@ public class BFCEvaluator extends BFCSearchStrategy {
                     continue;
                 }
                 ++i;
-                logger.info("pRFC total:" + i);
+                logger.info("pRFC total: {}", i);
+                bugStorage.saveBFC(potentialRFC);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 iterator.remove();
