@@ -40,4 +40,15 @@ public class PotentialTestCase {
     public void setSourceFiles(List<SourceFile> sourceFiles) {
         this.sourceFiles = sourceFiles;
     }
+
+    public String joinTestcaseString() {
+        if (testFiles == null || testFiles.isEmpty()){
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(testFiles.get(0).joinTestcaseString());
+        for (int i = 1; i < testFiles.size(); i++) {
+            sb.append(";").append(testFiles.get(i).joinTestcaseString());
+        }
+        return sb.toString();
+    }
 }

@@ -93,4 +93,15 @@ public class PotentialBFC {
     public void setTestcaseFrom(int testcaseFrom) {
         this.testcaseFrom = testcaseFrom;
     }
+
+    public String joinTestcaseString() {
+        if (testCaseFiles == null || testCaseFiles.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(testCaseFiles.get(0).joinTestcaseString());
+        for (int i = 1; i < testCaseFiles.size(); i++) {
+            sb.append(";").append(testCaseFiles.get(i).joinTestcaseString());
+        }
+        return sb.toString();
+    }
 }
