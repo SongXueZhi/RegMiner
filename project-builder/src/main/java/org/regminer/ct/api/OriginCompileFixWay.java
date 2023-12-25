@@ -17,6 +17,8 @@ import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.CompileTestEnv;
 import org.regminer.ct.model.CtCommands;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -253,7 +255,10 @@ public enum OriginCompileFixWay {
         this.order = order;
     }
 
-    protected Logger logger = LogManager.getLogger(OriginCompileFixWay.class);
+
+//    protected Logger logger = LogManager.getLogManager().getLogger(this.name());
+    protected Logger logger = LogManager.getLogger(this.name());
+
 
     private static CompileResult recompileProject(CompileTestEnv compileEnv) {
         String message = new Executor()

@@ -18,11 +18,13 @@
 
 package org.regminer.common.sql;
 
+import org.regminer.common.constant.Configurations;
+import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.model.ProjectEntity;
 import org.regminer.common.model.Regression;
 
 public class BugStorage {
-    public void saveBug(Regression regression) {
+    public void saveRegression(Regression regression) {
         ProjectEntity projectEntity = regression.getProjectEntity();
         String sql = "INSERT IGNORE INTO regression (regression_uuid,project_uuid,project_full_name," +
                 "bug_id,bfc,buggy,bic," +
@@ -33,6 +35,18 @@ public class BugStorage {
                 + regression.getBugId() + "','" + regression.getBfcId() + "','"
                 + regression.getBuggyId() + "','" + regression.getBicId() + "','" + regression.getWorkId() + "','"
                 + regression.getTestCase() + "','" + regression.getWithGap() + "')";
+        MysqlManager.executeUpdate(sql);
+    }
+
+    public void saveBFC(PotentialBFC potentialBFC) {
+        saveBFC(potentialBFC, "bfc");
+    }
+
+    public void saveBFC(PotentialBFC potentialBFC, String tableName) {//save general bugs
+        String projectName = Configurations.projectName;
+        String sql = "INSERT IGNORE INTO " + tableName + " (project_name,bic,bfc,testcase) VALUES " +
+                "('" + projectName + "','" + potentialBFC.getBuggyCommitId() + "','" +
+                potentialBFC.getCommit().getName() + "','" + potentialBFC.joinTestcaseString() + "')";
         MysqlManager.executeUpdate(sql);
     }
 }

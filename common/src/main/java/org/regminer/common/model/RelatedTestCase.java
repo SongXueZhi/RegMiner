@@ -38,7 +38,7 @@ public class RelatedTestCase {
     }
 
     public String getName() {
-        return String.join(".", enclosingClassName, methodName);
+        return String.join("#", enclosingClassName, methodName);//use # to split class name and method name
     }
 
     public String getEnclosingClassName() {

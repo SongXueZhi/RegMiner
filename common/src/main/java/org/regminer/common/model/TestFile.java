@@ -26,4 +26,16 @@ public class TestFile extends ChangedFile {
         return new ArrayList<>(testMethodMap.values());
     }
 
+    public String joinTestcaseString() {
+        if (testMethodMap == null || testMethodMap.isEmpty()) {
+            return "";
+        }
+        ArrayList<RelatedTestCase> testCaseArrayList = new ArrayList<>(testMethodMap.values());
+        StringBuilder sb = new StringBuilder(testCaseArrayList.get(0).getName());
+        for (int i = 1; i < testCaseArrayList.size(); i++) {
+            sb.append(";").append(testCaseArrayList.get(i).getName());
+        }
+        return sb.toString();
+    }
+
 }

@@ -3,6 +3,7 @@ package org.regminer.miner;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.model.PotentialBFC;
+import org.regminer.common.sql.BugStorage;
 import org.regminer.common.tool.SycFileCleanup;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
@@ -24,10 +25,12 @@ public class BFCEvaluator extends BFCSearchStrategy {
 
     TestCaseParser testCaseParser;
     TestCaseMigrator testCaseMigrator;
+    BugStorage bugStorage;
 
     public BFCEvaluator(TestCaseParser testCaseParser, TestCaseMigrator testCaseMigrator) {
         this.testCaseParser = testCaseParser;
         this.testCaseMigrator = testCaseMigrator;
+        bugStorage = new BugStorage();
     }
 
     /**
@@ -44,12 +47,13 @@ public class BFCEvaluator extends BFCSearchStrategy {
             PotentialBFC potentialRFC = iterator.next();
             try {
                 evolute(potentialRFC);
-                if (potentialRFC.getTestCaseFiles().isEmpty()) {
+                if (potentialRFC.getTestCaseFiles() == null || potentialRFC.getTestCaseFiles().isEmpty()) {
                     iterator.remove();
                     continue;
                 }
                 ++i;
-                logger.info("pRFC total:" + i);
+                logger.info("pRFC total: {}", i);
+                bugStorage.saveBFC(potentialRFC);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 iterator.remove();
@@ -62,8 +66,9 @@ public class BFCEvaluator extends BFCSearchStrategy {
         String bfcID = pRFC.getCommit().getName();
         try {
             // 1.checkout bfc
-            logger.info(bfcID + " checkout ");
-            logger.info("commit message:{}", pRFC.getCommit().getShortMessage());
+            logger.info("{} checkout ", bfcID);
+            logger.info("commit message:{}",pRFC.getCommit().getShortMessage());
+            logger.info("before analysis, test case size: {}", pRFC.getTestCaseFiles().size());
             File bfcDirectory = testCaseMigrator.checkoutCiForBFC(bfcID, bfcID);
             pRFC.fileMap.put(bfcID, bfcDirectory);
             //2. 尝试编译BFC
@@ -74,7 +79,9 @@ public class BFCEvaluator extends BFCSearchStrategy {
             CommitBuildResult.originalCompileResult.putIfAbsent(bfcID, compileResult);
 
             if (compileResult.getState() == CompileResult.CompileState.CE) {
-                pRFC.getTestCaseFiles().clear();
+                if (pRFC.getTestCaseFiles() != null) {
+                    pRFC.getTestCaseFiles().clear();
+                }
                 logger.info("BFC compile error");
                 emptyCache(pRFC.fileMap.get(bfcID));
                 return;
@@ -137,19 +144,24 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 break;  //跳出，找到一个就够了
             }
             if (!findBFCPFlag) {
-                pRFC.getTestCaseFiles().clear();
+                if (pRFC.getTestCaseFiles() != null) {
+                    pRFC.getTestCaseFiles().clear();
+                }
                 logger.info("Can't find a bfc-1");
                 emptyCache(pRFC.fileMap.get(bfcID));
                 return;
             }
         } catch (Exception e) {
             if (pRFC.getTestCaseFiles() == null) {
+                logger.error("pbfc test case is null");
                 pRFC.setTestCaseFiles(new ArrayList<>());
             }
+            logger.info("pbfc test case size: {}", pRFC.getTestCaseFiles().size());
             pRFC.getTestCaseFiles().clear();
             emptyCache(pRFC.fileMap.get(bfcID));
             logger.error(e.getMessage());
-        } finally {
+        } 
+        finally {
             if (Configurations.taskName.equals(Constant.BFC_TASK)) {
                 emptyCache(pRFC.fileMap.get(bfcID));
             }
