@@ -88,6 +88,8 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
             pRFC.fileMap.put("BASE", new File(Configurations.projectPath));
             potentialRFCs.add(pRFC);
         } else if (justNormalJavaFile(files) && (message1.contains("fix") || message1.contains("repair"))) {
+            //TODO 张健 我觉得 所谓的测试搜索其实就是BFC Evaluation 的过程，当找不到测试pBFC就不是真的BFC。
+            // 所以我建议把测试搜索的过程放在BFC Evaluation中
             PotentialBFC pRFC = new PotentialBFC(commit);
             pRFC.setNormalJavaFiles(normalJavaFiles);
             pRFC.setTestcaseFrom(PotentialBFC.TESTCASE_FROM_SEARCH);
