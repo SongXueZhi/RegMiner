@@ -14,6 +14,7 @@ import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 import org.regminer.ct.utils.TestUtils;
+import org.regminer.migrate.api.Migrator;
 import org.regminer.migrate.api.TestCaseMigrator;
 import org.regminer.miner.core.BFCSearchStrategy;
 
@@ -85,9 +86,18 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 emptyCache(pRFC.fileMap.get(bfcID));
                 return;
             }
-            //3. parser Testcase
+            //3. 检测 BFC 是否包含测试
+            if (pRFC.getTestCaseFiles().stream()
+                    .noneMatch(testFile -> pRFC.getCommit().getName().equals(testFile.getNewCommitId()))) {
+                logger.info("BFC doesn't contains TestCases, try to migrate");
+                // 不包含当前 commit 中的测试文件时，测试前也需要迁移测试文件
+                // 先迁移，再解析 4. 否则解析结果可能和 git 提供的文件修改记录对应不上
+                Migrator.mergeTwoVersion_BaseLine(pRFC, pRFC.fileMap.get(pRFC.getCommit().getName()));
+            }
+
+            //4. parser Testcase
             testCaseParser.parseTestCases(pRFC);
-            //4. 测试BFC
+            //5. 测试BFC
             TestResult testResult = testCaseMigrator.test(pRFC.getTestCaseFiles(), ctContext,
                     compileResult.getCompileWay());
 
@@ -99,7 +109,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 return;
             }
 
-            //5. 选择BFCP
+            //6. 选择BFCP
             int count = pRFC.getCommit().getParentCount();
             if (count == 0) {
                 logger.error("BFC has no parent");
@@ -117,11 +127,11 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 }
 
                 Set<String> matchTestCase = TestUtils.collectTestCases(bfcpTestResult,
-                        testState ->  Arrays.asList(TestCaseResult.TestState.FAL,
+                        testState -> Arrays.asList(TestCaseResult.TestState.FAL,
                                 TestCaseResult.TestState.TE).contains(testState)).keySet();
 
-                if (matchTestCase.isEmpty()){
-                 continue;
+                if (matchTestCase.isEmpty()) {
+                    continue;
                 }
                 //查找成功，删除无关的测试用例
                 TestUtils.retainTestFilesMatchingFilter(pRFC, matchTestCase);
@@ -149,9 +159,8 @@ public class BFCEvaluator extends BFCSearchStrategy {
             logger.info("pbfc test case size: {}", pRFC.getTestCaseFiles().size());
             pRFC.getTestCaseFiles().clear();
             emptyCache(pRFC.fileMap.get(bfcID));
-            logger.error("Exception msg: {}", e.getMessage());
-            e.printStackTrace();
-        }
+            logger.error(e.getMessage());
+        } 
         finally {
             if (Configurations.taskName.equals(Constant.BFC_TASK)) {
                 emptyCache(pRFC.fileMap.get(bfcID));

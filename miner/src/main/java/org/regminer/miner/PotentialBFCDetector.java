@@ -20,12 +20,13 @@ import org.regminer.common.tool.RepositoryProvider;
 import org.regminer.miner.core.PBFCFilterStrategy;
 
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 
 public class PotentialBFCDetector extends PBFCFilterStrategy {
     private List<String> filterList;
+    private static final int SEARCH_DEPTH = 5;
+
 
     public PotentialBFCDetector(List<String> filterList) {
         this.filterList = filterList;
@@ -57,7 +58,7 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
             }
             countAll++;
         }
-        logger.info("total " + countAll + "commit in this project");
+        logger.info("total " + countAll + " commits in this project");
         logger.info("pRFC in total :" + potentialRFCs.size());
         return potentialRFCs;
     }
@@ -67,7 +68,7 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         if (commit.getParentCount() <= 0) {
             return;
         }
-        // 1)首先我们将记录所有的标题中包含fix的commti
+        // 1)首先我们将记录所有的标题中包含fix的commit
         String message1 = commit.getFullMessage().toLowerCase();
 
         // 针对标题包含fix的commit我们进一步分析本次提交修改的文件路径
@@ -84,13 +85,113 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
             pRFC.setTestcaseFrom(PotentialBFC.TESTCASE_FROM_SELF);
             pRFC.setNormalJavaFiles(normalJavaFiles);
             pRFC.setSourceFiles(sourceFiles);
+            pRFC.fileMap.put("BASE", new File(Configurations.projectPath));
             potentialRFCs.add(pRFC);
         } else if (justNormalJavaFile(files) && (message1.contains("fix") || message1.contains("repair"))) {
             PotentialBFC pRFC = new PotentialBFC(commit);
             pRFC.setNormalJavaFiles(normalJavaFiles);
             pRFC.setTestcaseFrom(PotentialBFC.TESTCASE_FROM_SEARCH);
+            pRFC.fileMap.put("BASE", new File(Configurations.projectPath));
+            // todo 可能在这里找不到测试，需要尝试在本次 commit 四周寻找是否有单独的新增测试
+            if (searchPotentialTestFiles(commit, git, testcaseFiles, sourceFiles)) {
+                pRFC.setTestCaseFiles(testcaseFiles);
+                pRFC.setSourceFiles(sourceFiles);
+            }
             potentialRFCs.add(pRFC);
         }
+    }
+
+    private boolean searchPotentialTestFiles(RevCommit curCommit, Git git, List<TestFile> testFiles,
+                                             List<SourceFile> sourceFiles) throws Exception {
+        if (curCommit == null) {
+            return false;
+        }
+        // 前后找 5? 个 commit
+        // 先往后找
+        if (searchPotentialTestFilesFromChildren(curCommit, git, testFiles, sourceFiles, SEARCH_DEPTH)) {
+            return true;
+        }
+        // 再往前找
+        return searchPotentialTestFilesFromParents(curCommit, git, testFiles, sourceFiles, SEARCH_DEPTH);
+    }
+
+    private boolean searchPotentialTestFilesFromParents(RevCommit curCommit, Git git, List<TestFile> testFiles,
+                                                        List<SourceFile> sourceFiles, int maxDepth) throws Exception {
+        // todo 找到 parent 的数据，按理来说不需要迁移
+        // 拓扑排序，找到 parent 的数据
+        Queue<RevCommit> queue = new LinkedList<>();
+        queue.offer(curCommit);
+        while (!queue.isEmpty() && maxDepth > 0) {
+            int levelSize = queue.size();
+            while (levelSize-- > 0) {
+                RevCommit commit = queue.poll();
+                for (RevCommit parent : commit.getParents()) {
+                    queue.offer(parent);
+                }
+                List<ChangedFile> files = getLastDiffFiles(commit, git);
+                if (files == null) continue;
+                List<TestFile> tmpTestFiles = getTestFiles(files);
+                List<NormalFile> tmpNormalJavaFiles = getNormalJavaFiles(files);
+                List<SourceFile> tmpSourceFiles = getSourceFiles(files);
+                if (!tmpTestFiles.isEmpty() && tmpNormalJavaFiles.isEmpty()) {
+                    // 找到一个就行了？
+                    testFiles.addAll(tmpTestFiles);
+                    sourceFiles.addAll(tmpSourceFiles);
+                    return true;
+                }
+            }
+            maxDepth--;
+        }
+        return false;
+    }
+
+    private boolean searchPotentialTestFilesFromChildren(RevCommit curCommit, Git git, List<TestFile> testFiles,
+                                                         List<SourceFile> sourceFiles, int maxDepth) throws Exception {
+        // 反向拓扑排序，保证先找到最近的子 commit
+        Map<ObjectId, List<RevCommit>> childrenMap = buildChildrenMap(git, curCommit);
+        Queue<RevCommit> commitsToCheck = new LinkedList<>();
+        commitsToCheck.add(curCommit);
+
+        while (!commitsToCheck.isEmpty() && maxDepth > 0) {
+            RevCommit commit = commitsToCheck.poll();
+            List<RevCommit> children = childrenMap.get(commit.getId());
+            if (children != null) {
+                for (RevCommit child : children) {
+                    // 将子提交加入到待检查队列中
+                    commitsToCheck.offer(child);
+                    List<ChangedFile> files = getLastDiffFiles(child, git);
+                    if (files == null) continue;
+                    List<TestFile> tmpTestFiles = getTestFiles(files);
+                    List<NormalFile> tmpNormalJavaFiles = getNormalJavaFiles(files);
+                    List<SourceFile> tmpSourceFiles = getSourceFiles(files);
+                    if (!tmpTestFiles.isEmpty() && tmpNormalJavaFiles.isEmpty()) {
+                        // 找到一个就行了？
+                        testFiles.addAll(tmpTestFiles);
+                        sourceFiles.addAll(tmpSourceFiles);
+                        return true;
+                    }
+                }
+            }
+            maxDepth--;
+        }
+        return false;
+    }
+
+    private Map<ObjectId, List<RevCommit>> buildChildrenMap(Git git, RevCommit endCommit) throws IOException {
+        Map<ObjectId, List<RevCommit>> map = new HashMap<>();
+        try (RevWalk walk = new RevWalk(git.getRepository())) {
+            // 获取当前分支的最新提交
+            ObjectId branchHead = git.getRepository().resolve(git.getRepository().getBranch());
+            walk.markStart(walk.parseCommit(branchHead));
+            for (RevCommit commit : walk) {
+                for (RevCommit parent : commit.getParents()) {
+                    map.computeIfAbsent(parent.getId(), k -> new ArrayList<>()).add(commit);
+                }
+                // 只获取 child，对于更早的就没必要构建了
+                if (commit.equals(endCommit)) break;
+            }
+        }
+        return map;
     }
 
     /**
@@ -128,11 +229,12 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
                 getChangedFile(entry, files, git);
             }
         }
+        files.forEach(file -> file.setNewCommitId(commit.getName()));
         return files;
     }
 
     private List<Edit> getEdits(DiffEntry entry, Git git) throws Exception {
-        List<Edit> result = new LinkedList<Edit>();
+        List<Edit> result = new LinkedList<>();
         try (DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE)) {
             diffFormatter.setRepository(git.getRepository());
             FileHeader fileHeader = diffFormatter.toFileHeader(entry);

@@ -1,6 +1,8 @@
 package org.regminer.migrate.api;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.dom.*;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author: sxz
@@ -25,6 +28,8 @@ import java.util.*;
  * @Description:
  */
 public class Migrator {
+
+    private static final Logger LOGGER = LogManager.getLogger(Migrator.class);
     public File checkoutCiForBFC(String bfcId, String commitId) throws IOException {
         File codeDir = FileUtilx.getDirFromBfcAndBic(bfcId, commitId);
         FileUtils.copyDirectory(new File(Configurations.metaPath), codeDir);
@@ -32,27 +37,43 @@ public class Migrator {
         return codeDir;
     }
 
-    public void mergeTwoVersion_BaseLine(PotentialBFC pRFC, File tDir) {
+    public static void mergeTwoVersion_BaseLine(PotentialBFC pRFC, File tDir) {
         /**
          *
          * 注意！bfc的patch中可能存在 普通java文件，测试文件（相关测试用例，非测试用例但测试目录下的java文件），配置文件(测试目录下的，其他)
          * 在base_line中我们只迁移 测试文件，和之前不存在的配置文件（暂时不做文本的merge）
          */
+        // 根据需要迁移的测试文件所在的 commit 进行分组
         // 相关测试用例
-        List<TestFile> testSuite = pRFC.getTestCaseFiles();
+        Map<String, List<TestFile>> testSuiteMap = pRFC.getTestCaseFiles()
+                .stream().collect(Collectors.groupingBy(TestFile::getNewCommitId));
         // 非测试用例的在测试目录下的其他文件
 
         //###XXX:TestDenpendency BlocK
-        List<TestFile> underTestDirJavaFiles = pRFC.getTestRelates();
-        List<SourceFile> sourceFiles = pRFC.getSourceFiles();
+        Map<String, List<TestFile>> underTestDirJavaFilesMap = pRFC.getTestRelates()
+                .stream().collect(Collectors.groupingBy(TestFile::getNewCommitId));
+        Map<String, List<SourceFile>> sourceFilesMap = pRFC.getSourceFiles()
+                .stream().collect(Collectors.groupingBy(SourceFile::getNewCommitId));
         //##block end
+        File bfcDir = pRFC.fileMap.get("BASE");
+        String head = GitUtils.getHead(bfcDir);
+        testSuiteMap.forEach((s, testFiles) -> {
+            LOGGER.info("migrate testFiles from {} to {}", s, pRFC.getCommit().getName());
+            GitUtils.checkout(s, bfcDir);
+            mergeTestFiles(bfcDir, tDir, testFiles,
+                    underTestDirJavaFilesMap.getOrDefault(s, new ArrayList<>()),
+                    sourceFilesMap.getOrDefault(s, new ArrayList<>()));
+        });
+        // checkout 回去
+        GitUtils.checkout(head, bfcDir);
+    }
 
+    private static void mergeTestFiles(File bfcDir, File tDir, List<TestFile> testSuite, List<TestFile> underTestDirJavaFiles, List<SourceFile> sourceFiles) {
         // merge测试文件
         // 整合任务
         MergeTask mergeJavaFileTask = new MergeTask();
         mergeJavaFileTask.addAll(testSuite).addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();//XXX
         // :TestDenpendency BlocK
-        File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
         for (Map.Entry<String, ChangedFile> entry : mergeJavaFileTask.getMap().entrySet()) {
             String newPathInBfc = entry.getKey();
             if (newPathInBfc.contains(Constant.NONE_PATH)) {
@@ -61,19 +82,18 @@ public class Migrator {
             File bfcFile = new File(bfcDir, newPathInBfc);
             File tFile = new File(tDir, newPathInBfc);
             try {
-            if (tFile.exists()) {
-                FileUtils.deleteQuietly(tFile);
-            }
-            // 直接copy过去
-            if (!tFile.getParentFile().exists()){
-                tFile.getParentFile().mkdirs();
-            }
+                if (tFile.exists()) {
+                    FileUtils.deleteQuietly(tFile);
+                }
+                // 直接copy过去
+                if (!tFile.getParentFile().exists()) {
+                    tFile.getParentFile().mkdirs();
+                }
                 Files.copy(bfcFile.toPath(), tFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
         }
-
     }
 
     /**
