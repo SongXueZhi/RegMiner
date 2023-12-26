@@ -3,6 +3,7 @@ package org.regminer.miner;
 import org.regminer.common.model.PotentialBFC;
 import org.regminer.miner.core.BFCSearchStrategy;
 import org.regminer.miner.core.PBFCFilterStrategy;
+import org.regminer.miner.monitor.ProgressMonitor;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class SearchBFCContext {
 
     public List<PotentialBFC> searchBFC() throws Exception {
         List<PotentialBFC> potentialBFCS = pbfcFilterStrategy.filter();
+        ProgressMonitor.rePlan(potentialBFCS);
         bfcSearchStrategy.searchRealBFC(potentialBFCS);
         return potentialBFCS;
     }

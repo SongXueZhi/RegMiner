@@ -17,6 +17,7 @@ import org.regminer.ct.utils.TestUtils;
 import org.regminer.migrate.api.Migrator;
 import org.regminer.migrate.api.TestCaseMigrator;
 import org.regminer.miner.core.BFCSearchStrategy;
+import org.regminer.miner.monitor.ProgressMonitor;
 
 import java.io.File;
 import java.util.*;
@@ -149,8 +150,12 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 }
                 logger.info("Can't find a bfc-1");
                 emptyCache(pRFC.fileMap.get(bfcID));
-                return;
             }
+
+            if (Configurations.taskName.equals(Constant.BFC_TASK)) {
+                ProgressMonitor.updateState(bfcID);
+            }
+
         } catch (Exception e) {
             if (pRFC.getTestCaseFiles() == null) {
                 logger.error("pbfc test case is null");

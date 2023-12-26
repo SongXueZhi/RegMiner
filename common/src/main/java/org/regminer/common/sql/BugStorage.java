@@ -39,7 +39,7 @@ public class BugStorage {
     }
 
     public void saveBFC(PotentialBFC potentialBFC) {
-        saveBFC(potentialBFC, "bfc");
+        saveBFC(potentialBFC, "bfcs");
     }
 
     public void saveBFC(PotentialBFC potentialBFC, String tableName) {//save general bugs

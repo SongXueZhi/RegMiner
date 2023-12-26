@@ -11,4 +11,10 @@ public class BugRetrieve {
         Set<String> result = MysqlManager.executeSql(sql);
         return result;
     }
+
+    public Set<String> getBFCsFromDB() {
+        String sql = "select bfc from bfcs where project_name ='" + Configurations.projectName + "'";
+        Set<String> result = MysqlManager.executeSql(sql);
+        return result;
+    }
 }

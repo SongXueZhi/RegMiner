@@ -43,6 +43,7 @@ public class Configurations {
     public static String tmpFile = projectPath + File.separator + "tmp";
     public static String resultPath = projectPath + File.separator + "regression.csv";
     public static String cachePath = rootDir + File.separator + "cache";
+
     // extra with clone
     public static String cloneUrl = "";
     public static boolean sqlEnable = false;
