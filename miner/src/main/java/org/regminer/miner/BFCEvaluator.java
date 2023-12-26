@@ -1,5 +1,6 @@
 package org.regminer.miner;
 
+import org.apache.commons.io.FileUtils;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.model.PotentialBFC;
@@ -18,6 +19,7 @@ import org.regminer.migrate.api.TestCaseMigrator;
 import org.regminer.miner.core.BFCSearchStrategy;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class BFCEvaluator extends BFCSearchStrategy {
@@ -53,6 +55,9 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 ++i;
                 logger.info("pRFC total: {}", i);
                 bugStorage.saveBFC(potentialRFC);
+
+                FileUtils.writeStringToFile(new File(Configurations.projectName + "_skip.txt"),
+                        potentialRFC.getCommit().getName() + System.lineSeparator(), StandardCharsets.UTF_8, true);
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 iterator.remove();

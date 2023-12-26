@@ -27,8 +27,14 @@ import java.util.Optional;
 public class PotentialBFCDetector extends PBFCFilterStrategy {
     private List<String> filterList;
 
+    private List<String> skipList = null;
+
     public PotentialBFCDetector(List<String> filterList) {
         this.filterList = filterList;
+    }
+
+    public void setSkipList(List<String> skipList) {
+        this.skipList = skipList;
     }
 
     public List<PotentialBFC> detectPotentialBFC() throws Exception {
@@ -48,6 +54,9 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
         int countAll = 0;
         // 开始迭代每一个commit
         for (RevCommit commit : commits) {
+            if (skipList != null && skipList.contains(commit.getName())) {
+                continue;
+            }
             if (!filterList.isEmpty()) {
                 if (this.filterList.contains(commit.getName())) {
                     detect(commit, potentialRFCs, git);
@@ -57,7 +66,7 @@ public class PotentialBFCDetector extends PBFCFilterStrategy {
             }
             countAll++;
         }
-        logger.info("total " + countAll + "commit in this project");
+        logger.info("total " + countAll + " commits in this project");
         logger.info("pRFC in total :" + potentialRFCs.size());
         return potentialRFCs;
     }

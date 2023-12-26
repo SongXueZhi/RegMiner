@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +89,7 @@ public class MinerCli {
         if (commandLine.hasOption("f")) {
             String filterPath = commandLine.getOptionValue("f");
             try {
-                filterList = FileUtils.readLines(new File(filterPath), "UTF-8");
+                filterList = FileUtils.readLines(new File(filterPath), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 filterList = new ArrayList<>();
                 logger.error("Error reading filter file: {}", e.getMessage());
@@ -98,8 +99,17 @@ public class MinerCli {
     }
 
     private static void startMining(List<String> filterList) {
+        PotentialBFCDetector bfcDetector = new PotentialBFCDetector(filterList);
+        List<String> skipList = new ArrayList<>();
+        try {
+            skipList = FileUtils.readLines(new File(Configurations.projectName + "_skip.txt"), StandardCharsets.UTF_8);
+            logger.info("skip commit list size: {}", skipList.size());
+        } catch (IOException e) {
+            logger.warn("Error reading skip list file: {}, no commit will be skipped", e.getMessage());
+        }
+        bfcDetector.setSkipList(skipList);
         miner = new Miner(new SearchBFCContext(new BFCEvaluator(new TestCaseParser(), new TestCaseMigrator()),
-                new PotentialBFCDetector(filterList)),
+                bfcDetector),
                 new SearchBICContext(new EnhancedBinarySearch()));
         miner.start();
     }
