@@ -4,6 +4,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -15,8 +16,11 @@ import org.regminer.common.tool.RepositoryProvider;
 import org.regminer.common.tool.SimpleProgressMonitor;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class GitUtils {
@@ -135,4 +139,20 @@ public class GitUtils {
     }
 
 
+    public static Map<ObjectId, List<RevCommit>> buildChildrenMap(Git git, RevCommit endCommit) throws IOException {
+        Map<ObjectId, List<RevCommit>> map = new HashMap<>();
+        try (RevWalk walk = new RevWalk(git.getRepository())) {
+            // 获取当前分支的最新提交
+            ObjectId branchHead = git.getRepository().resolve(git.getRepository().getBranch());
+            walk.markStart(walk.parseCommit(branchHead));
+            for (RevCommit commit : walk) {
+                for (RevCommit parent : commit.getParents()) {
+                    map.computeIfAbsent(parent.getId(), k -> new ArrayList<>()).add(commit);
+                }
+                // 只获取 child，对于更早的就没必要构建了
+                if (commit.equals(endCommit)) break;
+            }
+        }
+        return map;
+    }
 }

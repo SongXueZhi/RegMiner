@@ -1,6 +1,4 @@
-package org.regminer.migrate.model;
-
-import org.regminer.common.model.ChangedFile;
+package org.regminer.common.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

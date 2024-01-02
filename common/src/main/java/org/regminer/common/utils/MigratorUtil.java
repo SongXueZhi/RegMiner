@@ -1,4 +1,4 @@
-package org.regminer.migrate.api;
+package org.regminer.common.utils;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -6,14 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.dom.*;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
-import org.regminer.common.model.ChangedFile;
-import org.regminer.common.model.PotentialBFC;
-import org.regminer.common.model.SourceFile;
-import org.regminer.common.model.TestFile;
-import org.regminer.common.utils.CompilationUtil;
-import org.regminer.common.utils.FileUtilx;
-import org.regminer.common.utils.GitUtils;
-import org.regminer.migrate.model.MergeTask;
+import org.regminer.common.model.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,10 +20,10 @@ import java.util.stream.Collectors;
  * @Date: 2023/11/29/13:46
  * @Description:
  */
-public class Migrator {
+public class MigratorUtil {
 
-    private static final Logger LOGGER = LogManager.getLogger(Migrator.class);
-    public File checkoutCiForBFC(String bfcId, String commitId) throws IOException {
+    private static final Logger LOGGER = LogManager.getLogger(MigratorUtil.class);
+    public static File checkoutCiForBFC(String bfcId, String commitId) throws IOException {
         File codeDir = FileUtilx.getDirFromBfcAndBic(bfcId, commitId);
         FileUtils.copyDirectory(new File(Configurations.metaPath), codeDir);
         GitUtils.checkout(commitId, codeDir);
@@ -132,7 +125,7 @@ public class Migrator {
         }
     }
 
-    public void purgeUnlessTestcase(List<TestFile> testSuiteList, PotentialBFC pRFC) {
+    public static void purgeUnlessTestcase(List<TestFile> testSuiteList, PotentialBFC pRFC) {
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
         for (TestFile testFile : testSuiteList) {
             String path = testFile.getNewPath();

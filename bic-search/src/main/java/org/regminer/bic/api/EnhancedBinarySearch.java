@@ -7,7 +7,6 @@ import org.regminer.bic.api.core.BICSearchStrategy;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.tool.SycFileCleanup;
-import org.regminer.common.utils.FileUtilx;
 import org.regminer.common.utils.GitUtils;
 import org.regminer.ct.api.CtContext;
 import org.regminer.ct.model.TestCaseResult;
@@ -171,7 +170,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
 
     public TestCaseResult.TestState test(String bic, int index) {
         try {
-            TestResult testResult = testMigrator.migrate(pRFC, bic);
+            TestResult testResult = testMigrator.migrateAndTest(pRFC, bic);
             status[index] = testResult.getCaseResultMap().values().contains(TestCaseResult.TestState.PASS) ?
                     TestCaseResult.TestState.PASS :
                     TestCaseResult.TestState.FAL;
