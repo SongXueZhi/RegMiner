@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.regminer</groupId>
+        <artifactId>RegMiner</artifactId>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.regminer.fl</groupId>
+    <artifactId>fault-localization</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>com.github.spoonlabs</groupId>
+            <artifactId>flacoco</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.29</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gzoltar</groupId>
+            <artifactId>gzoltar</artifactId>
+            <version>0.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.6.0</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <!-- com.gzoltar:gzoltar:jar:0.1.1: -->
+            <id>sachaproject.gforge.inria.fr-release</id>
+            <name>Maven Repository for Spoon Release</name>
+            <url>https://sachaproject.gforge.inria.fr/repositories/releases/</url>
+            <snapshots />
+        </repository>
+    </repositories>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+</project>

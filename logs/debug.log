@@ -1,0 +1,7 @@
+2023-12-07 09:37:54 [main] INFO  org.regminer.miner.start.Miner - Start mining...
+2023-12-07 09:37:56 [main] INFO  org.regminer.miner.BFCEvaluator - 7e7d1b3c0a3dceaed4a8413875eb1500f2a028ec checkout 
+2023-12-07 09:38:58 [main] DEBUG org.regminer.migrate.api.Migrator - compile error after before migrate
+2023-12-07 09:39:04 [main] INFO  org.regminer.miner.BFCEvaluator - Can't find a bfc-1
+2023-12-07 09:39:07 [main] INFO  org.regminer.miner.BFCEvaluator - c170dcdf29c226e8c67d6cbe945ab3b2842a452e checkout 
+2023-12-07 09:40:17 [main] ERROR org.regminer.miner.BFCEvaluator - null
+2023-12-07 09:40:17 [main] INFO  org.regminer.miner.BFCEvaluator - ed3d0d3848d1ab96aba7ea4883d5c208b6f4c5e5 checkout 

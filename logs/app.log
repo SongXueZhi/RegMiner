@@ -1,0 +1,71 @@
+2023-12-11 21:58:29 [main] INFO  org.regminer.miner.start.Miner - Start bfc task on jsoup...
+2023-12-11 21:58:37 [main] INFO  org.regminer.miner.PotentialBFCDetector - total 2388commit in this project
+2023-12-11 21:58:37 [main] INFO  org.regminer.miner.PotentialBFCDetector - pRFC in total :1080
+2023-12-11 21:58:37 [main] INFO  org.regminer.miner.BFCEvaluator - 7e9160110f3cac233e748f4f31c2ec22f0286f6b checkout 
+2023-12-11 21:58:37 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Sub-query should terminate on a combinator after any clause
+2023-12-11 21:58:52 [main] ERROR org.regminer.miner.BFCEvaluator - BFC all test fal
+2023-12-11 21:58:52 [main] INFO  org.regminer.miner.BFCEvaluator - 0e94a36445c4ea744bc72d3393f36ae19c4c1680 checkout 
+2023-12-11 21:58:52 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Typoed previous bug number
+2023-12-11 21:58:56 [main] ERROR org.regminer.miner.BFCEvaluator - Cannot invoke "java.util.List.iterator()" because the return value of "org.regminer.common.model.PotentialBFC.getTestCaseFiles()" is null
+2023-12-11 21:58:56 [main] INFO  org.regminer.miner.BFCEvaluator - 954c46a92a1a0c5052ed241d4398db8b0331e1f3 checkout 
+2023-12-11 21:58:56 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Removed character range check (>= 0xD800 &&  <= 0xDFFF)
+2023-12-11 21:59:06 [main] ERROR org.regminer.miner.BFCEvaluator - BFC all test fal
+2023-12-11 21:59:06 [main] INFO  org.regminer.miner.BFCEvaluator - b4751ad1c3e49acf06824ba2e3d9e046be159f0d checkout 
+2023-12-11 21:59:06 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Attribute accessor, and maintain source range after key change
+2023-12-11 21:59:17 [main] ERROR org.regminer.miner.BFCEvaluator - BFC all test fal
+2023-12-11 21:59:17 [main] INFO  org.regminer.miner.BFCEvaluator - daef8bb412db6c94b9895837ae6e28c5770c65ad checkout 
+2023-12-11 21:59:17 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Initialise current token to the virtual start token
+2023-12-11 21:59:25 [main] ERROR org.regminer.miner.BFCEvaluator - BFC all test fal
+2023-12-11 21:59:25 [main] INFO  org.regminer.miner.BFCEvaluator - 244db10b40f6b8138747a99d93d95eb57bf47156 checkout 
+2023-12-11 21:59:25 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Moved attribute source range normal+dedupe into Token
+2023-12-11 21:59:32 [main] ERROR org.regminer.miner.BFCEvaluator - BFC all test fal
+2023-12-11 21:59:32 [main] INFO  org.regminer.miner.BFCEvaluator - fc4b175e02df2ceabdec9371d1874a014a35472d checkout 
+2023-12-11 21:59:32 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Normalize and dedupe attribute source ranges
+2023-12-11 22:00:11 [main] ERROR org.regminer.miner.BFCEvaluator - BFC all test fal
+2023-12-11 22:00:11 [main] INFO  org.regminer.miner.BFCEvaluator - 73d450657932370e516f205537b395d1d055d043 checkout 
+2023-12-11 22:00:11 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Refactored UserData to be tucked into a hash (#2060)
+2023-12-11 22:00:20 [main] ERROR org.regminer.miner.BFCEvaluator - BFC all test fal
+2023-12-11 22:00:20 [main] INFO  org.regminer.miner.BFCEvaluator - 58521a45067f5c4fa558cb090480fa4b2e407056 checkout 
+2023-12-11 22:00:20 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Allow any XML mimetype in Connection
+2023-12-11 22:00:30 [main] ERROR org.regminer.miner.BFCEvaluator - BFC all test fal
+2023-12-11 22:00:30 [main] INFO  org.regminer.miner.BFCEvaluator - 4669e14039a976644e8fcd53bed422b11d32dfeb checkout 
+2023-12-11 22:00:30 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Make Attributes iterator throw NoSuchElementException
+2023-12-11 22:00:31 [main] ERROR org.regminer.miner.BFCEvaluator - Cannot invoke "java.util.logging.Logger.info(String)" because "this.logger" is null
+2023-12-11 22:00:31 [main] INFO  org.regminer.miner.BFCEvaluator - 297ea4ff7a0e2ee38d46c3ae16f6004b5c8bf43f checkout 
+2023-12-11 22:00:31 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Tiny tidy up
+2023-12-11 22:00:33 [main] ERROR org.regminer.miner.BFCEvaluator - Cannot invoke "java.util.logging.Logger.info(String)" because "this.logger" is null
+2023-12-11 22:00:33 [main] INFO  org.regminer.miner.BFCEvaluator - adce86ef40fbbb185ba4ff6f6b1e5c015e8cd7d0 checkout 
+2023-12-11 22:00:33 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Normalize attribute names on creation
+2023-12-11 22:00:39 [main] ERROR org.regminer.miner.BFCEvaluator - BFC all test fal
+2023-12-11 22:00:39 [main] INFO  org.regminer.miner.BFCEvaluator - 94af4ec25ded5c74b4a5748d59378fb955b5ecc1 checkout 
+2023-12-11 22:00:39 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:In Cleaner, use the normalized tag name in the tail hit
+2023-12-11 22:00:44 [main] ERROR org.regminer.miner.BFCEvaluator - BFC all test fal
+2023-12-11 22:00:44 [main] INFO  org.regminer.miner.BFCEvaluator - f638410d05d486d7851163acdb43a9c41774e9c9 checkout 
+2023-12-11 22:00:44 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Avoid BufferedInputStream synchronized reads (#2058)
+2023-12-11 22:01:04 [main] INFO  org.regminer.miner.start.Miner - Start bfc task on jsoup...
+2023-12-11 22:01:05 [main] INFO  org.regminer.miner.PotentialBFCDetector - total 2388commit in this project
+2023-12-11 22:01:05 [main] INFO  org.regminer.miner.PotentialBFCDetector - pRFC in total :1
+2023-12-11 22:01:05 [main] INFO  org.regminer.miner.BFCEvaluator - 9031164b7f2acfd99391a7149d4f865b6b79e9d7 checkout 
+2023-12-11 22:01:05 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Make sure null elements aren't added to the stack
+2023-12-11 22:01:19 [main] INFO  org.regminer.miner.BFCEvaluator - {TestCase{className='org.jsoup.integration.FuzzFixesTest', methodName='scope1579'}=TestCaseResult{TestState='FAL', usageTime='2380'}}
+2023-12-11 22:01:19 [main] INFO  org.regminer.miner.BFCEvaluator - bfc~1 test fal
+2023-12-11 22:01:19 [main] INFO  org.regminer.miner.BFCEvaluator - pRFC total:1
+2023-12-11 22:01:19 [main] INFO  org.regminer.miner.start.Miner - find 1 BFCs
+2023-12-11 22:08:02 [main] INFO  org.regminer.miner.start.Miner - Start bfc task on jsoup...
+2023-12-11 22:08:03 [main] INFO  org.regminer.miner.PotentialBFCDetector - total 2388commit in this project
+2023-12-11 22:08:03 [main] INFO  org.regminer.miner.PotentialBFCDetector - pRFC in total :1
+2023-12-11 22:08:03 [main] INFO  org.regminer.miner.BFCEvaluator - 9031164b7f2acfd99391a7149d4f865b6b79e9d7 checkout 
+2023-12-11 22:08:03 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Make sure null elements aren't added to the stack
+2023-12-11 22:08:17 [main] INFO  org.regminer.miner.BFCEvaluator - {TestCase{className='org.jsoup.integration.FuzzFixesTest', methodName='scope1579'}=TestCaseResult{TestState='FAL', usageTime='2359'}}
+2023-12-11 22:08:17 [main] INFO  org.regminer.miner.BFCEvaluator - bfc~1 test fal
+2023-12-11 22:08:17 [main] INFO  org.regminer.miner.BFCEvaluator - pRFC total:1
+2023-12-11 22:08:17 [main] INFO  org.regminer.miner.start.Miner - find 1 BFCs
+2023-12-11 22:10:36 [main] INFO  org.regminer.miner.start.Miner - Start bfc task on jsoup...
+2023-12-11 22:10:37 [main] INFO  org.regminer.miner.PotentialBFCDetector - total 2388commit in this project
+2023-12-11 22:10:37 [main] INFO  org.regminer.miner.PotentialBFCDetector - pRFC in total :1
+2023-12-11 22:10:37 [main] INFO  org.regminer.miner.BFCEvaluator - 9031164b7f2acfd99391a7149d4f865b6b79e9d7 checkout 
+2023-12-11 22:10:37 [main] INFO  org.regminer.miner.BFCEvaluator - commit message:Make sure null elements aren't added to the stack
+2023-12-11 22:10:51 [main] INFO  org.regminer.miner.BFCEvaluator - {TestCase{className='org.jsoup.integration.FuzzFixesTest', methodName='scope1579'}=TestCaseResult{TestState='FAL', usageTime='2373'}}
+2023-12-11 22:10:51 [main] INFO  org.regminer.miner.BFCEvaluator - bfc~1 test fal
+2023-12-11 22:10:51 [main] INFO  org.regminer.miner.BFCEvaluator - pRFC total:1
+2023-12-11 22:10:51 [main] INFO  org.regminer.miner.start.Miner - find 1 BFCs

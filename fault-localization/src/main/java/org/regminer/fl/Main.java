@@ -1,0 +1,140 @@
+package org.regminer.fl;
+
+/**
+ * @Author: sxz
+ * @Date: 2023/12/27/14:58
+ * @Description:
+ */
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Set;
+
+import com.gzoltar.core.GZoltar;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class Main {
+
+    final static Logger logger = LogManager.getLogger(Main.class);
+
+    public static void main(String[] args) {
+        long mainStartTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
+        setGlobals();
+        ClassFinder cf = new ClassFinder();
+        Set<String> testClasses = cf.getTestClasses(Globals.binTestDir, Globals.binJavaDir, Globals.depList);
+        Set<String> srcClasses = cf.getJavaClasses(Globals.binJavaDir, Globals.depList);
+        String testClassesPath = new File(Globals.outputDir).getAbsolutePath() + "/test_classes.txt";
+        String srcClassesPath = new File(Globals.outputDir).getAbsolutePath() + "/src_classes.txt";
+        FileUtil.writeLinesToFile(srcClassesPath, srcClasses);
+        FileUtil.writeLinesToFile(testClassesPath, testClasses);
+        Globals.outputData.put("time_cost_classes_collection_1", FileUtil.countTime(startTime));
+        faultLocalize(testClasses, srcClasses);
+        startTime = System.currentTimeMillis();
+        Replicate.replicateTests(Globals.testListPath);
+        Globals.outputData.put("time_cost_in_replication", FileUtil.countTime(startTime));
+        Globals.outputData.put("time_cost_in_total", FileUtil.countTime(mainStartTime));
+        YamlUtil.writeYaml(Globals.outputData, Globals.outputDataPath);
+    }
+
+    private static void faultLocalize(Set<String> testClasses, Set<String> srcClasses) {
+        long startTime = System.currentTimeMillis();
+        FaultLocalizer fl = new FaultLocalizer(Globals.rankListPath, testClasses, srcClasses);
+        GZoltar gz = fl.runGzoltar();
+        Globals.outputData.put("time_cost_run_fl_2", FileUtil.countTime(startTime));
+        startTime = System.currentTimeMillis();
+        fl.calculateSusp(gz);
+        Globals.outputData.put("time_cost_calculate_susp_3", FileUtil.countTime(startTime));
+    }
+
+    private static void setGlobals(){
+        Globals.srcJavaDir = "/Users/sxz/reg4j/cache_code/1_ric/src";
+        Globals.binJavaDir ="/Users/sxz/reg4j/cache_code/1_ric/target/classes";
+        Globals.binTestDir ="/Users/sxz/reg4j/cache_code/1_ric/target/test-classes";
+
+        Globals.dependencies = "/Users/sxz/.m2/repository/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar:/Users/sxz/.m2/repository/javax/ws/rs/javax.ws.rs-api/2.0.1/javax.ws.rs-api-2.0.1.jar:/Users/sxz/.m2/repository/org/apache/cxf/cxf-rt-transports-http/3.1.2/cxf-rt-transports-http-3.1.2.jar:/Users/sxz/.m2/repository/org/apache/cxf/cxf-core/3.1.2/cxf-core-3.1.2.jar:/Users/sxz/.m2/repository/org/codehaus/woodstox/woodstox-core-asl/4.4.1/woodstox-core-asl-4.4.1.jar:/Users/sxz/.m2/repository/org/codehaus/woodstox/stax2-api/3.1.4/stax2-api-3.1.4.jar:/Users/sxz/.m2/repository/org/apache/ws/xmlschema/xmlschema-core/2.2.1/xmlschema-core-2.2.1.jar:/Users/sxz/.m2/repository/org/apache/cxf/cxf-rt-frontend-jaxrs/3.1.2/cxf-rt-frontend-jaxrs-3.1.2.jar:/Users/sxz/.m2/repository/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar:/Users/sxz/.m2/repository/org/springframework/spring-websocket/4.3.7.RELEASE/spring-websocket-4.3.7.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/spring-context/4.3.7.RELEASE/spring-context-4.3.7.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/spring-core/4.3.7.RELEASE/spring-core-4.3.7.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/spring-web/4.3.7.RELEASE/spring-web-4.3.7.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/spring-webmvc/4.3.7.RELEASE/spring-webmvc-4.3.7.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/spring-aop/4.3.7.RELEASE/spring-aop-4.3.7.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/spring-beans/4.3.7.RELEASE/spring-beans-4.3.7.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/spring-expression/4.3.7.RELEASE/spring-expression-4.3.7.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/spring-messaging/4.3.7.RELEASE/spring-messaging-4.3.7.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/data/spring-data-redis/1.8.6.RELEASE/spring-data-redis-1.8.6.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/data/spring-data-keyvalue/1.2.6.RELEASE/spring-data-keyvalue-1.2.6.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/spring-tx/4.3.10.RELEASE/spring-tx-4.3.10.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/spring-oxm/4.3.10.RELEASE/spring-oxm-4.3.10.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/spring-context-support/4.3.10.RELEASE/spring-context-support-4.3.10.RELEASE.jar:/Users/sxz/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar:/Users/sxz/.m2/repository/org/slf4j/jcl-over-slf4j/1.7.25/jcl-over-slf4j-1.7.25.jar:/Users/sxz/.m2/repository/com/squareup/retrofit2/retrofit/2.5.0/retrofit-2.5.0.jar:/Users/sxz/.m2/repository/com/squareup/okhttp3/okhttp/3.6.0/okhttp-3.6.0.jar:/Users/sxz/.m2/repository/com/squareup/okio/okio/1.11.0/okio-1.11.0.jar:/Users/sxz/.m2/repository/io/springfox/springfox-spring-web/2.6.1/springfox-spring-web-2.6.1.jar:/Users/sxz/.m2/repository/com/google/guava/guava/18.0/guava-18.0.jar:/Users/sxz/.m2/repository/com/fasterxml/classmate/1.3.1/classmate-1.3.1.jar:/Users/sxz/.m2/repository/org/springframework/plugin/spring-plugin-core/1.2.0.RELEASE/spring-plugin-core-1.2.0.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/plugin/spring-plugin-metadata/1.2.0.RELEASE/spring-plugin-metadata-1.2.0.RELEASE.jar:/Users/sxz/.m2/repository/io/springfox/springfox-spi/2.6.1/springfox-spi-2.6.1.jar:/Users/sxz/.m2/repository/io/springfox/springfox-core/2.6.1/springfox-core-2.6.1.jar:/Users/sxz/.m2/repository/io/javaslang/javaslang/2.0.6/javaslang-2.0.6.jar:/Users/sxz/.m2/repository/io/javaslang/javaslang-match/2.0.6/javaslang-match-2.0.6.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/core/jersey-common/2.23.2/jersey-common-2.23.2.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/bundles/repackaged/jersey-guava/2.23.2/jersey-guava-2.23.2.jar:/Users/sxz/.m2/repository/org/glassfish/hk2/hk2-api/2.5.0-b05/hk2-api-2.5.0-b05.jar:/Users/sxz/.m2/repository/org/glassfish/hk2/hk2-utils/2.5.0-b05/hk2-utils-2.5.0-b05.jar:/Users/sxz/.m2/repository/org/glassfish/hk2/external/aopalliance-repackaged/2.5.0-b05/aopalliance-repackaged-2.5.0-b05.jar:/Users/sxz/.m2/repository/org/glassfish/hk2/external/javax.inject/2.5.0-b05/javax.inject-2.5.0-b05.jar:/Users/sxz/.m2/repository/org/glassfish/hk2/hk2-locator/2.5.0-b05/hk2-locator-2.5.0-b05.jar:/Users/sxz/.m2/repository/org/glassfish/hk2/osgi-resource-locator/1.0.1/osgi-resource-locator-1.0.1.jar:/Users/sxz/.m2/repository/joda-time/joda-time/2.10/joda-time-2.10.jar:/Users/sxz/.m2/repository/net/sf/trove4j/core/3.1.0/core-3.1.0.jar:/Users/sxz/.m2/repository/org/javamoney/moneta/moneta-core/1.3/moneta-core-1.3.jar:/Users/sxz/.m2/repository/javax/money/money-api/1.0.3/money-api-1.0.3.jar:/Users/sxz/.m2/repository/io/airlift/slice/0.36/slice-0.36.jar:/Users/sxz/.m2/repository/org/openjdk/jol/jol-core/0.2/jol-core-0.2.jar:/Users/sxz/.m2/repository/com/google/protobuf/protobuf-java/3.11.0/protobuf-java-3.11.0.jar:/Users/sxz/.m2/repository/com/google/protobuf/protobuf-java-util/3.11.0/protobuf-java-util-3.11.0.jar:/Users/sxz/.m2/repository/com/google/errorprone/error_prone_annotations/2.3.3/error_prone_annotations-2.3.3.jar:/Users/sxz/.m2/repository/org/jacoco/jacoco-maven-plugin/0.7.6.201602180812/jacoco-maven-plugin-0.7.6.201602180812.jar:/Users/sxz/.m2/repository/org/apache/maven/maven-plugin-api/2.2.1/maven-plugin-api-2.2.1.jar:/Users/sxz/.m2/repository/org/apache/maven/maven-project/2.2.1/maven-project-2.2.1.jar:/Users/sxz/.m2/repository/org/apache/maven/maven-settings/2.2.1/maven-settings-2.2.1.jar:/Users/sxz/.m2/repository/org/apache/maven/maven-profile/2.2.1/maven-profile-2.2.1.jar:/Users/sxz/.m2/repository/org/apache/maven/maven-model/2.2.1/maven-model-2.2.1.jar:/Users/sxz/.m2/repository/org/apache/maven/maven-artifact-manager/2.2.1/maven-artifact-manager-2.2.1.jar:/Users/sxz/.m2/repository/org/apache/maven/maven-repository-metadata/2.2.1/maven-repository-metadata-2.2.1.jar:/Users/sxz/.m2/repository/org/apache/maven/wagon/wagon-provider-api/1.0-beta-6/wagon-provider-api-1.0-beta-6.jar:/Users/sxz/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1.jar:/Users/sxz/.m2/repository/org/apache/maven/maven-plugin-registry/2.2.1/maven-plugin-registry-2.2.1.jar:/Users/sxz/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.jar:/Users/sxz/.m2/repository/org/apache/maven/maven-artifact/2.2.1/maven-artifact-2.2.1.jar:/Users/sxz/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-9-stable-1/plexus-container-default-1.0-alpha-9-stable-1.jar:/Users/sxz/.m2/repository/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.jar:/Users/sxz/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.6/plexus-utils-1.5.6.jar:/Users/sxz/.m2/repository/org/apache/maven/shared/file-management/1.2.1/file-management-1.2.1.jar:/Users/sxz/.m2/repository/org/apache/maven/shared/maven-shared-io/1.1/maven-shared-io-1.1.jar:/Users/sxz/.m2/repository/org/apache/maven/reporting/maven-reporting-api/2.2.1/maven-reporting-api-2.2.1.jar:/Users/sxz/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.1/doxia-sink-api-1.1.jar:/Users/sxz/.m2/repository/org/apache/maven/doxia/doxia-logging-api/1.1/doxia-logging-api-1.1.jar:/Users/sxz/.m2/repository/org/apache/maven/reporting/maven-reporting-impl/2.1/maven-reporting-impl-2.1.jar:/Users/sxz/.m2/repository/org/apache/maven/doxia/doxia-core/1.1.2/doxia-core-1.1.2.jar:/Users/sxz/.m2/repository/xerces/xercesImpl/2.8.1/xercesImpl-2.8.1.jar:/Users/sxz/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar:/Users/sxz/.m2/repository/org/apache/maven/doxia/doxia-site-renderer/1.1.2/doxia-site-renderer-1.1.2.jar:/Users/sxz/.m2/repository/org/apache/maven/doxia/doxia-decoration-model/1.1.2/doxia-decoration-model-1.1.2.jar:/Users/sxz/.m2/repository/org/apache/maven/doxia/doxia-module-xhtml/1.1.2/doxia-module-xhtml-1.1.2.jar:/Users/sxz/.m2/repository/org/apache/maven/doxia/doxia-module-fml/1.1.2/doxia-module-fml-1.1.2.jar:/Users/sxz/.m2/repository/org/codehaus/plexus/plexus-i18n/1.0-beta-7/plexus-i18n-1.0-beta-7.jar:/Users/sxz/.m2/repository/org/codehaus/plexus/plexus-velocity/1.1.7/plexus-velocity-1.1.7.jar:/Users/sxz/.m2/repository/org/apache/velocity/velocity/1.5/velocity-1.5.jar:/Users/sxz/.m2/repository/commons-validator/commons-validator/1.2.0/commons-validator-1.2.0.jar:/Users/sxz/.m2/repository/commons-digester/commons-digester/1.6/commons-digester-1.6.jar:/Users/sxz/.m2/repository/oro/oro/2.0.8/oro-2.0.8.jar:/Users/sxz/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar:/Users/sxz/.m2/repository/org/jacoco/org.jacoco.agent/0.7.6.201602180812/org.jacoco.agent-0.7.6.201602180812-runtime.jar:/Users/sxz/.m2/repository/org/jacoco/org.jacoco.core/0.7.6.201602180812/org.jacoco.core-0.7.6.201602180812.jar:/Users/sxz/.m2/repository/org/jacoco/org.jacoco.report/0.7.6.201602180812/org.jacoco.report-0.7.6.201602180812.jar:/Users/sxz/.m2/repository/org/eclipse/jetty/jetty-server/9.4.17.v20190418/jetty-server-9.4.17.v20190418.jar:/Users/sxz/.m2/repository/org/eclipse/jetty/jetty-http/9.4.17.v20190418/jetty-http-9.4.17.v20190418.jar:/Users/sxz/.m2/repository/org/eclipse/jetty/jetty-util/9.4.17.v20190418/jetty-util-9.4.17.v20190418.jar:/Users/sxz/.m2/repository/org/eclipse/jetty/jetty-io/9.4.17.v20190418/jetty-io-9.4.17.v20190418.jar:/Users/sxz/.m2/repository/org/eclipse/jetty/jetty-webapp/9.4.17.v20190418/jetty-webapp-9.4.17.v20190418.jar:/Users/sxz/.m2/repository/org/eclipse/jetty/jetty-xml/9.4.17.v20190418/jetty-xml-9.4.17.v20190418.jar:/Users/sxz/.m2/repository/org/eclipse/jetty/jetty-servlet/9.4.17.v20190418/jetty-servlet-9.4.17.v20190418.jar:/Users/sxz/.m2/repository/org/eclipse/jetty/jetty-security/9.4.17.v20190418/jetty-security-9.4.17.v20190418.jar:/Users/sxz/.m2/repository/junit/junit/4.12/junit-4.12.jar:/Users/sxz/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/sxz/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.10.0/jackson-databind-2.10.0.jar:/Users/sxz/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.10.0/jackson-annotations-2.10.0.jar:/Users/sxz/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.10.0/jackson-core-2.10.0.jar:/Users/sxz/.m2/repository/com/fasterxml/jackson/module/jackson-module-afterburner/2.10.0/jackson-module-afterburner-2.10.0.jar:/Users/sxz/.m2/repository/com/fasterxml/jackson/module/jackson-module-kotlin/2.9.10/jackson-module-kotlin-2.9.10.jar:/Users/sxz/.m2/repository/cglib/cglib-nodep/2.2.2/cglib-nodep-2.2.2.jar:/Users/sxz/.m2/repository/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.9.10/jackson-jaxrs-json-provider-2.9.10.jar:/Users/sxz/.m2/repository/com/fasterxml/jackson/jaxrs/jackson-jaxrs-base/2.9.10/jackson-jaxrs-base-2.9.10.jar:/Users/sxz/.m2/repository/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.9.10/jackson-module-jaxb-annotations-2.9.10.jar:/Users/sxz/.m2/repository/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar:/Users/sxz/.m2/repository/commons-io/commons-io/1.4/commons-io-1.4.jar:/Users/sxz/.m2/repository/net/sf/json-lib/json-lib/2.4/json-lib-2.4-jdk15.jar:/Users/sxz/.m2/repository/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0.jar:/Users/sxz/.m2/repository/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar:/Users/sxz/.m2/repository/commons-lang/commons-lang/2.5/commons-lang-2.5.jar:/Users/sxz/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar:/Users/sxz/.m2/repository/net/sf/ezmorph/ezmorph/1.0.6/ezmorph-1.0.6.jar:/Users/sxz/.m2/repository/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar:/Users/sxz/.m2/repository/net/minidev/json-smart/2.2.1/json-smart-2.2.1.jar:/Users/sxz/.m2/repository/net/minidev/accessors-smart/1.1/accessors-smart-1.1.jar:/Users/sxz/.m2/repository/org/clojure/clojure/1.5.1/clojure-1.5.1.jar:/Users/sxz/.m2/repository/org/codehaus/groovy/groovy/2.1.5/groovy-2.1.5.jar:/Users/sxz/.m2/repository/antlr/antlr/2.7.7/antlr-2.7.7.jar:/Users/sxz/.m2/repository/org/ow2/asm/asm-tree/4.0/asm-tree-4.0.jar:/Users/sxz/.m2/repository/org/ow2/asm/asm-commons/4.0/asm-commons-4.0.jar:/Users/sxz/.m2/repository/org/ow2/asm/asm/4.0/asm-4.0.jar:/Users/sxz/.m2/repository/org/ow2/asm/asm-util/4.0/asm-util-4.0.jar:/Users/sxz/.m2/repository/org/ow2/asm/asm-analysis/4.0/asm-analysis-4.0.jar:/Users/sxz/.m2/repository/org/springframework/spring-test/4.3.7.RELEASE/spring-test-4.3.7.RELEASE.jar:/Users/sxz/.m2/repository/org/javassist/javassist/3.18.0-GA/javassist-3.18.0-GA.jar:/Users/sxz/.m2/repository/org/apache/cxf/cxf-rt-rs-client/3.1.2/cxf-rt-rs-client-3.1.2.jar:/Users/sxz/.m2/repository/org/springframework/data/spring-data-commons/2.1.2.RELEASE/spring-data-commons-2.1.2.RELEASE.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/containers/jersey-container-servlet/2.23.2/jersey-container-servlet-2.23.2.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/containers/jersey-container-servlet-core/2.23.2/jersey-container-servlet-core-2.23.2.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/core/jersey-server/2.23.2/jersey-server-2.23.2.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/media/jersey-media-jaxb/2.23.2/jersey-media-jaxb-2.23.2.jar:/Users/sxz/.m2/repository/javax/validation/validation-api/1.1.0.Final/validation-api-1.1.0.Final.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/core/jersey-client/2.23.2/jersey-client-2.23.2.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/test-framework/providers/jersey-test-framework-provider-jdk-http/2.23.2/jersey-test-framework-provider-jdk-http-2.23.2.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/test-framework/jersey-test-framework-core/2.23.2/jersey-test-framework-core-2.23.2.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/containers/jersey-container-jdk-http/2.23.2/jersey-container-jdk-http-2.23.2.jar:/Users/sxz/.m2/repository/org/ow2/asm/asm-debug-all/5.0.4/asm-debug-all-5.0.4.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/media/jersey-media-json-jackson/2.23.2/jersey-media-json-jackson-2.23.2.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/ext/jersey-entity-filtering/2.23.2/jersey-entity-filtering-2.23.2.jar:/Users/sxz/.m2/repository/com/jsoniter/jsoniter/0.9.8/jsoniter-0.9.8.jar:/Users/sxz/.m2/repository/org/apache/commons/commons-lang3/3.5/commons-lang3-3.5.jar:/Users/sxz/.m2/repository/org/hibernate/hibernate-core/5.2.10.Final/hibernate-core-5.2.10.Final.jar:/Users/sxz/.m2/repository/org/jboss/logging/jboss-logging/3.3.0.Final/jboss-logging-3.3.0.Final.jar:/Users/sxz/.m2/repository/org/hibernate/javax/persistence/hibernate-jpa-2.1-api/1.0.0.Final/hibernate-jpa-2.1-api-1.0.0.Final.jar:/Users/sxz/.m2/repository/org/jboss/spec/javax/transaction/jboss-transaction-api_1.2_spec/1.0.1.Final/jboss-transaction-api_1.2_spec-1.0.1.Final.jar:/Users/sxz/.m2/repository/org/jboss/jandex/2.0.3.Final/jandex-2.0.3.Final.jar:/Users/sxz/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar:/Users/sxz/.m2/repository/org/hibernate/common/hibernate-commons-annotations/5.0.1.Final/hibernate-commons-annotations-5.0.1.Final.jar:/Users/sxz/.m2/repository/com/jayway/jsonpath/json-path/2.3.0/json-path-2.3.0.jar:/Users/sxz/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/1.1.51/kotlin-stdlib-1.1.51.jar:/Users/sxz/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar:/Users/sxz/.m2/repository/org/jetbrains/kotlin/kotlin-reflect/1.1.51/kotlin-reflect-1.1.51.jar:/Users/sxz/.m2/repository/org/springframework/security/spring-security-web/4.2.3.RELEASE/spring-security-web-4.2.3.RELEASE.jar:/Users/sxz/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar:/Users/sxz/.m2/repository/org/springframework/security/spring-security-core/4.2.3.RELEASE/spring-security-core-4.2.3.RELEASE.jar:/Users/sxz/.m2/repository/org/apache/commons/commons-collections4/4.1/commons-collections4-4.1.jar:/Users/sxz/.m2/repository/org/mockito/mockito-all/1.10.19/mockito-all-1.10.19.jar:/Users/sxz/.m2/repository/org/powermock/powermock-module-junit4/1.6.6/powermock-module-junit4-1.6.6.jar:/Users/sxz/.m2/repository/org/powermock/powermock-module-junit4-common/1.6.6/powermock-module-junit4-common-1.6.6.jar:/Users/sxz/.m2/repository/org/powermock/powermock-core/1.6.6/powermock-core-1.6.6.jar:/Users/sxz/.m2/repository/org/powermock/powermock-reflect/1.6.6/powermock-reflect-1.6.6.jar:/Users/sxz/.m2/repository/com/diffblue/deeptestutils/1.1.0/deeptestutils-1.1.0.jar:/Users/sxz/.m2/repository/org/objenesis/objenesis/2.5.1/objenesis-2.5.1.jar:/Users/sxz/.m2/repository/org/powermock/powermock-api-mockito/1.6.6/powermock-api-mockito-1.6.6.jar:/Users/sxz/.m2/repository/org/mockito/mockito-core/1.10.19/mockito-core-1.10.19.jar:/Users/sxz/.m2/repository/org/powermock/powermock-api-mockito-common/1.6.6/powermock-api-mockito-common-1.6.6.jar:/Users/sxz/.m2/repository/org/powermock/powermock-api-support/1.6.6/powermock-api-support-1.6.6.jar:/Users/sxz/.m2/repository/org/projectlombok/lombok/1.18.4/lombok-1.18.4.jar:/Users/sxz/.m2/repository/org/openjdk/jmh/jmh-core/1.21/jmh-core-1.21.jar:/Users/sxz/.m2/repository/net/sf/jopt-simple/jopt-simple/4.6/jopt-simple-4.6.jar:/Users/sxz/.m2/repository/org/apache/commons/commons-math3/3.2/commons-math3-3.2.jar:/Users/sxz/.m2/repository/org/openjdk/jmh/jmh-generator-annprocess/1.21/jmh-generator-annprocess-1.21.jar:/Users/sxz/.m2/repository/org/springframework/security/oauth/spring-security-oauth2/2.3.5.RELEASE/spring-security-oauth2-2.3.5.RELEASE.jar:/Users/sxz/.m2/repository/org/springframework/security/spring-security-config/3.2.10.RELEASE/spring-security-config-3.2.10.RELEASE.jar:/Users/sxz/.m2/repository/org/codehaus/jackson/jackson-mapper-asl/1.9.13/jackson-mapper-asl-1.9.13.jar:/Users/sxz/.m2/repository/org/codehaus/jackson/jackson-core-asl/1.9.13/jackson-core-asl-1.9.13.jar:/Users/sxz/.m2/repository/org/gitlab4j/gitlab4j-api/4.8.42/gitlab4j-api-4.8.42.jar:/Users/sxz/.m2/repository/javax/xml/bind/jaxb-api/2.3.0/jaxb-api-2.3.0.jar:/Users/sxz/.m2/repository/com/sun/activation/javax.activation/1.2.0/javax.activation-1.2.0.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/inject/jersey-hk2/2.27/jersey-hk2-2.27.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/connectors/jersey-apache-connector/2.27/jersey-apache-connector-2.27.jar:/Users/sxz/.m2/repository/org/apache/httpcomponents/httpclient/4.5/httpclient-4.5.jar:/Users/sxz/.m2/repository/org/apache/httpcomponents/httpcore/4.4.1/httpcore-4.4.1.jar:/Users/sxz/.m2/repository/org/glassfish/jersey/media/jersey-media-multipart/2.27/jersey-media-multipart-2.27.jar:/Users/sxz/.m2/repository/org/jvnet/mimepull/mimepull/1.9.6/mimepull-1.9.6.jar:/Users/sxz/.m2/repository/org/json/json/20180130/json-20180130.jar:/Users/sxz/.m2/repository/com/chinamobile/cmos/sms-core/2.1.9/sms-core-2.1.9.jar:/Users/sxz/.m2/repository/de/ruedigermoeller/fst/2.48-jdk-6/fst-2.48-jdk-6.jar:/Users/sxz/.m2/repository/com/cedarsoftware/java-util/1.9.0/java-util-1.9.0.jar:/Users/sxz/.m2/repository/commons-codec/commons-codec/1.11/commons-codec-1.11.jar:/Users/sxz/.m2/repository/io/netty/netty-transport/4.1.33.Final/netty-transport-4.1.33.Final.jar:/Users/sxz/.m2/repository/io/netty/netty-common/4.1.33.Final/netty-common-4.1.33.Final.jar:/Users/sxz/.m2/repository/io/netty/netty-buffer/4.1.33.Final/netty-buffer-4.1.33.Final.jar:/Users/sxz/.m2/repository/io/netty/netty-resolver/4.1.33.Final/netty-resolver-4.1.33.Final.jar:/Users/sxz/.m2/repository/io/netty/netty-codec/4.1.33.Final/netty-codec-4.1.33.Final.jar:/Users/sxz/.m2/repository/io/netty/netty-handler-proxy/4.1.33.Final/netty-handler-proxy-4.1.33.Final.jar:/Users/sxz/.m2/repository/io/netty/netty-codec-socks/4.1.33.Final/netty-codec-socks-4.1.33.Final.jar:/Users/sxz/.m2/repository/io/netty/netty-codec-http/4.1.33.Final/netty-codec-http-4.1.33.Final.jar:/Users/sxz/.m2/repository/io/netty/netty-handler/4.1.33.Final/netty-handler-4.1.33.Final.jar:/Users/sxz/.m2/repository/com/sleepycat/je/5.0.73/je-5.0.73.jar";
+
+        Globals.jvmPath = "/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home/jre/bin/java";
+
+        Globals.failedTests = "com.alibaba.json.bvt.parser.deser.list.ListFieldTest";
+
+        Globals.workingDir = "/Users/sxz/reg4j/cache_code/1_ric";
+        Globals.outputDir = "/Users/sxz/reg4j/cache_code/1_ric";
+        Globals.externalProjPath ="/Users/sxz/Downloads/gzoltar-1.7.3/com.gzoltar.cli.examples/lib";
+
+        Globals.depList.addAll(Arrays.asList(Globals.dependencies.split(":")));
+
+        Globals.oriFailedTestList = Arrays.asList(Globals.failedTests.split(":"));
+        String toolOutputDir = new File(Globals.outputDir).getAbsolutePath();
+        Globals.flLogPath = Paths.get(toolOutputDir, "fl.log").toString();
+        Globals.rankListPath = Paths.get(toolOutputDir, "ranking_list.txt").toString();
+        FileUtil.writeToFile(Globals.flLogPath, "", false);
+        Globals.coveragePath = Paths.get(toolOutputDir, "coverage.txt").toString();
+        Globals.testListPath = Paths.get(toolOutputDir, "test_method_list.txt").toString();
+        Globals.stmtListPath = Paths.get(toolOutputDir, "stmt_list.txt").toString();
+        Globals.matrixPathAgain = Paths.get(toolOutputDir, "matrix_again.txt").toString();
+        Globals.testListPathAgain = Paths.get(toolOutputDir, "test_method_list_again.txt").toString();
+        Globals.rankListPathAgain = Paths.get(toolOutputDir, "rank_list_again.txt").toString();
+        Globals.outputDataPath = Paths.get(toolOutputDir, "output_data.yaml").toString();
+    }
+    private static void parseCommandLine(String[] args) {
+        Options options = new Options();
+        options.addRequiredOption("sjd", "srcJavaDir", true, "src folder of the buggy program (e.g., /mnt/benchmarks/repairDir/Defects4J_Mockito_10/src)");
+        options.addRequiredOption("bjd", "binJavaDir", true, "bin folder of the buggy program (e.g., /mnt/benchmarks/repairDir/Defects4J_Mockito_10/build/classes/main/)");
+        options.addRequiredOption("btd", "binTestDir", true, "bin test folder of the buggy program (e.g., /mnt/benchmarks/repairDir/Defects4J_Mockito_10/build/classes/test/ )");
+        options.addRequiredOption("dep", "dependencies", true, "all dependencies (i.e., classpath)");
+        options.addRequiredOption("wd", "workingDir", true, "path of the buggy program (e.g., /mnt/benchmarks/repairDir/Defects4J_Mockito_10/)");
+        options.addRequiredOption("od", "outputDir", true, "directory to save the fl results.");
+        options.addRequiredOption("jp", "jvmPath", true, "java path to run junit tests (e.g.,  /home/apr/env/jdk1.7.0_80/jre/bin/java)");
+        options.addRequiredOption("ft", "failedTests", true, "expected bug triggering test(s) of the buggy program (e.g., com.google.javascript.jscomp.CollapseVariableDeclarationsTest)");
+        options.addRequiredOption("epp", "externalProjPath", true, "test case executor.");
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd = null;
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage() + "\n");
+            formatter.printHelp(">>>>>>>>>> fault localization: \n\n", options);
+            System.exit(1);
+        }
+        Globals.srcJavaDir = cmd.getOptionValue("srcJavaDir");
+        Globals.binJavaDir = cmd.getOptionValue("binJavaDir");
+        Globals.binTestDir = cmd.getOptionValue("binTestDir");
+        Globals.dependencies = cmd.getOptionValue("dependencies");
+        Globals.jvmPath = cmd.getOptionValue("jvmPath");
+        Globals.failedTests = cmd.getOptionValue("failedTests");
+        Globals.workingDir = cmd.getOptionValue("workingDir");
+        Globals.outputDir = cmd.getOptionValue("outputDir");
+        Globals.externalProjPath = cmd.getOptionValue("externalProjPath");
+        Globals.depList.addAll(Arrays.asList(Globals.dependencies.split(":")));
+        Globals.oriFailedTestList = Arrays.asList(Globals.failedTests.split(":"));
+        String toolOutputDir = new File(Globals.outputDir).getAbsolutePath();
+        Globals.flLogPath = Paths.get(toolOutputDir, "fl.log").toString();
+        Globals.rankListPath = Paths.get(toolOutputDir, "ranking_list.txt").toString();
+        FileUtil.writeToFile(Globals.flLogPath, "", false);
+        Globals.coveragePath = Paths.get(toolOutputDir, "coverage.txt").toString();
+        Globals.testListPath = Paths.get(toolOutputDir, "test_method_list.txt").toString();
+        Globals.stmtListPath = Paths.get(toolOutputDir, "stmt_list.txt").toString();
+        Globals.matrixPathAgain = Paths.get(toolOutputDir, "matrix_again.txt").toString();
+        Globals.testListPathAgain = Paths.get(toolOutputDir, "test_method_list_again.txt").toString();
+        Globals.rankListPathAgain = Paths.get(toolOutputDir, "rank_list_again.txt").toString();
+        Globals.outputDataPath = Paths.get(toolOutputDir, "output_data.yaml").toString();
+        logger.info("clear outputdir: {}", Globals.outputDir);
+        try {
+            FileUtils.cleanDirectory(new File(Globals.outputDir));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
