@@ -17,7 +17,9 @@
         select *
         from bug_to_type
         <where>
-            regression_uuid = #{regressionUuid}
+            <if test="regressionUuid != null">
+                regression_uuid = #{regressionUuid}
+            </if>
         </where>
     </select>
 

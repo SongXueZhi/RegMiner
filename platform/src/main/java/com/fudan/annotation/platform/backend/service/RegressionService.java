@@ -14,7 +14,7 @@ public interface RegressionService {
      * @param regressionUuid   regressionID
      * @param regressionStatus regression状态
      */
-    List<Regression> getRegressions(int id, String regressionUuid, Integer regressionStatus, String projectName,
+    List<Regression> getRegressions(Integer id, String regressionUuid, Integer regressionStatus, String projectName,
                                     String bfc, String buggy, String bic, String work,
                                     String keyWord, List<String> bugTypeName);
 

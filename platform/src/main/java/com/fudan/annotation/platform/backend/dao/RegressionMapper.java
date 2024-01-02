@@ -16,7 +16,7 @@ public interface RegressionMapper {
 
     int insertSelective(Regression regressionInfo);
 
-    List<Regression> selectRegression(int id, String regressionUuid, Integer regressionStatus, String projectName,
+    List<Regression> selectRegression(Integer id, String regressionUuid, Integer regressionStatus, String projectName,
                                       String bfc, String buggy, String bic, String work,
                                       String keyWord);
 

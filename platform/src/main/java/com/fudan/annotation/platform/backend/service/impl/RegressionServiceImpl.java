@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -50,26 +51,32 @@ public class RegressionServiceImpl implements RegressionService {
     private CodeCoverage codeCoverage;
 
     @Override
-    public List<Regression> getRegressions(int id, String regressionUuid, Integer regressionStatus, String projectName,
+    public List<Regression> getRegressions(Integer id, String regressionUuid, Integer regressionStatus, String projectName,
                                            String bfc, String buggy, String bic, String work,
                                            String keyWord, List<String> bugTypeName) {
         List<Regression> regressionList = regressionMapper.selectRegression(id, regressionUuid, regressionStatus,
                 projectName, bfc, buggy, bic, work, keyWord);
+        List<BugToTypeItems> bugToTypeItemsList = bugToTypeMapper.getBugToTypeByRegressionUuid(null);
+        Map<String, List<String>> map = bugToTypeItemsList.stream()
+                .collect(Collectors.groupingBy(
+                        BugToTypeItems::getRegressionUuid,
+                        Collectors.mapping(
+                                BugToTypeItems::getBugTypeName,
+                                Collectors.toList()
+                        )
+                ));
         regressionList.forEach(data -> {
-            List<String> bugTypeNames = bugToTypeMapper.getBugTypeNamesByRegression(data.getRegressionUuid());
-            data.setBugTypeNames(bugTypeNames);
+            data.setBugTypeNames(map.get(data.getRegressionUuid()));
         });
-        if (bugTypeName != null) {
-            List<Regression> targetRegressionList = new ArrayList<>();
-            bugTypeName.forEach(BTName -> {
-                for (Regression r : regressionList) {
-                    if (r.getBugTypeNames().contains(BTName)) {
-                        targetRegressionList.add(r);
-                    }
-                }
-            });
-            return targetRegressionList;
+        if (bugTypeName != null && !bugTypeName.isEmpty()) {
+            regressionList = regressionList.stream()
+                    .filter(data -> {
+                        List<String> bugTypeNames = data.getBugTypeNames();
+                        return bugTypeNames != null && bugTypeName.stream().allMatch(bugTypeNames::contains);
+                    })
+                    .collect(Collectors.toList());
         }
+
         return regressionList;
     }
 

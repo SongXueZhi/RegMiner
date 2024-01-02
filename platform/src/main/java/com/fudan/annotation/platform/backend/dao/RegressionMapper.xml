@@ -20,7 +20,7 @@
     <select id="selectRegression" resultMap="regression">
         select * from regression
         <trim prefix="where" prefixOverrides="and">
-            <if test="id != -1">
+            <if test="id != null">
                 id = #{id}
             </if>
             <if test="regressionUuid != null">
@@ -48,7 +48,7 @@
                 key_word like concat("%",#{keyWord},"%")
             </if>
         </trim>
-        ORDER BY order_value
+        ORDER BY id ASC
     </select>
 
     <select id="getRegression" resultMap="regression">

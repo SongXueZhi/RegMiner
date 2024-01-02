@@ -30,7 +30,7 @@ public class RegressionController {
 
     @GetMapping(value = "/all")
     public ResponseBean<List<Regression>> getAllRegressions(
-            @RequestParam(name = "id", required = false) int id,
+            @RequestParam(name = "id", required = false) Integer id,
             @RequestParam(name = "regression_uuid", required = false) String regressionUuid,
             @RequestParam(name = "regression_status", required = false) Integer regressionStatus,
             @RequestParam(name = "project_name", required = false) String projectName,

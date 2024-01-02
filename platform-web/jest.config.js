@@ -1,5 +1,5 @@
 module.exports = {
-  testURL: 'http://localhost:8000',
+  testURL: 'http://localhost:8080',
   testEnvironment: './tests/PuppeteerEnvironment',
   verbose: false,
   extraSetupFiles: ['./tests/setupTests.js'],

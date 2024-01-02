@@ -23,7 +23,7 @@ startServer.stderr.on('data', (data) => {
 });
 
 startServer.on('exit', () => {
-  kill(process.env.PORT || 8000);
+  kill(process.env.PORT || 8080);
 });
 
 console.log('Starting development server for e2e tests...');
