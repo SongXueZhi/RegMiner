@@ -30,14 +30,19 @@ public class RegressionController {
 
     @GetMapping(value = "/all")
     public ResponseBean<List<Regression>> getAllRegressions(
+            @RequestParam(name = "id", required = false) int id,
             @RequestParam(name = "regression_uuid", required = false) String regressionUuid,
             @RequestParam(name = "regression_status", required = false) Integer regressionStatus,
             @RequestParam(name = "project_name", required = false) String projectName,
+            @RequestParam(name = "bfc",required = false) String bfc,
+            @RequestParam(name = "buggy", required = false) String buggy,
+            @RequestParam(name = "bic", required = false) String bic,
+            @RequestParam(name = "work", required = false) String work,
             @RequestParam(name = "keyword", required = false) String keyWord,
             @RequestParam(name = "bug_type_name", required = false) List<String> bugTypeName) {
         try {
-            List<Regression> regressionList = regressionService.getRegressions(regressionUuid, regressionStatus,
-                    projectName, keyWord, bugTypeName);
+            List<Regression> regressionList = regressionService.getRegressions(id,regressionUuid, regressionStatus,
+                    projectName, bfc, buggy, bic, work, keyWord, bugTypeName);
             return new ResponseBean<>(200, "get regression info success", regressionList);
         } catch (Exception e) {
             return new ResponseBean<>(401, "get failed :" + e.getMessage(), null);

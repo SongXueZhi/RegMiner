@@ -5,9 +5,9 @@ spring:
   datasource:
     name: mysql_druid
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://10.176.34.99:3306/code_annotation2?&useSSL=false&allowMultiQueries=true&autoReconnect=true&serverTimezone=GMT%2b8
+    url: jdbc:mysql://10.176.34.95:3306/code_annotation2?&useSSL=false&allowMultiQueries=true&autoReconnect=true&serverTimezone=GMT%2b8
     username: root
-    password: 110120
+    password: 1235
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 logging:

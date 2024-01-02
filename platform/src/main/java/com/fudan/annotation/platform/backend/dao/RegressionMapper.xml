@@ -20,6 +20,9 @@
     <select id="selectRegression" resultMap="regression">
         select * from regression
         <trim prefix="where" prefixOverrides="and">
+            <if test="id != -1">
+                id = #{id}
+            </if>
             <if test="regressionUuid != null">
                 regression_uuid = #{regressionUuid}
             </if>
@@ -28,6 +31,18 @@
             </if>
             <if test="projectName != null">
                 project_full_name like concat("%",#{projectName},"%")
+            </if>
+            <if test="bfc != null">
+                bfc = #{bfc}
+            </if>
+            <if test="buggy != null">
+                bfc = #{buggy}
+            </if>
+            <if test="bic != null">
+                bfc = #{bic}
+            </if>
+            <if test="work != null">
+                bfc = #{work}
             </if>
             <if test="keyWord != null">
                 key_word like concat("%",#{keyWord},"%")

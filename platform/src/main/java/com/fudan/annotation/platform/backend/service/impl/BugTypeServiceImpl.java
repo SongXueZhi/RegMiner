@@ -84,8 +84,8 @@ public class BugTypeServiceImpl implements BugTypeService {
     @Override
     public void createBugTypeToRegression(CreateBugToType newBugToType) {
         List<BugTypes> bugTypeList = bugTypeMapper.getAllBugTypes(newBugToType.getBugTypeName());
-        List<Regression> regressionList = regressionMapper.selectRegression(newBugToType.getRegressionUuid(), null,
-                null, null);
+        List<Regression> regressionList = regressionMapper.selectRegression(-1, newBugToType.getRegressionUuid(), null,
+                null, null,null,null,null,null);
         if (newBugToType.getRegressionUuid() == null || newBugToType.getRegressionUuid().equals("") ||
                 newBugToType.getBugTypeName() == null || newBugToType.getBugTypeName().equals("") ||
                 newBugToType.getAccountName() == null || newBugToType.getAccountName().equals("") ||

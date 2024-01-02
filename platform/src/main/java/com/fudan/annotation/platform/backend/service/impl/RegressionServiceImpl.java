@@ -50,10 +50,11 @@ public class RegressionServiceImpl implements RegressionService {
     private CodeCoverage codeCoverage;
 
     @Override
-    public List<Regression> getRegressions(String regressionUuid, Integer regressionStatus, String projectName,
+    public List<Regression> getRegressions(int id, String regressionUuid, Integer regressionStatus, String projectName,
+                                           String bfc, String buggy, String bic, String work,
                                            String keyWord, List<String> bugTypeName) {
-        List<Regression> regressionList = regressionMapper.selectRegression(regressionUuid, regressionStatus,
-                projectName, keyWord);
+        List<Regression> regressionList = regressionMapper.selectRegression(id, regressionUuid, regressionStatus,
+                projectName, bfc, buggy, bic, work, keyWord);
         regressionList.forEach(data -> {
             List<String> bugTypeNames = bugToTypeMapper.getBugTypeNamesByRegression(data.getRegressionUuid());
             data.setBugTypeNames(bugTypeNames);
