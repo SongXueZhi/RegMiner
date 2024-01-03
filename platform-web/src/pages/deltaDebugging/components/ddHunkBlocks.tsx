@@ -1,12 +1,16 @@
-import type {RegressionCode} from '@/pages/editor/data';
-import {getRegressionConsole, getRegressionPath, queryRegressionCode,} from '@/pages/editor/service';
-import {Checkbox, Divider} from 'antd';
-import type {CheckboxValueType} from 'antd/lib/checkbox/Group';
-import React, {createRef, useCallback, useEffect, useState} from 'react';
-import {monaco, MonacoDiffEditor} from 'react-monaco-editor';
-import type {HunkEntityItems} from '../data';
-import {v4 as uuidv4} from 'uuid';
-import {Button} from '@blueprintjs/core';
+import type { RegressionCode } from '@/pages/editor/data';
+import {
+  getRegressionConsole,
+  getRegressionPath,
+  queryRegressionCode,
+} from '@/pages/editor/service';
+import { Checkbox, Divider } from 'antd';
+import type { CheckboxValueType } from 'antd/lib/checkbox/Group';
+import React, { createRef, useCallback, useEffect, useState } from 'react';
+import { monaco, MonacoDiffEditor } from 'react-monaco-editor';
+import type { HunkEntityItems } from '../data';
+import { v4 as uuidv4 } from 'uuid';
+import { Button } from '@blueprintjs/core';
 
 // import '@Codeeditor/style.css';
 
@@ -26,12 +30,12 @@ interface IProps {
 const REVEAL_CONSOLE_HEIHGT = 31;
 
 const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({
-                                                      regressionUuid,
-                                                      revision,
-                                                      allHunkInfo,
-                                                      // selectedHunkIdx,
-                                                      onSelectedHunks,
-                                                    }) => {
+  regressionUuid,
+  revision,
+  allHunkInfo,
+  // selectedHunkIdx,
+  onSelectedHunks,
+}) => {
   const [hunkCodeList, setHunkCodeList] = useState<HunkCodeItems[]>([]);
   const [showConsole, setShowConsole] = useState<boolean>(false);
   const [consoleResult, setConsoleResult] = useState<string>();
@@ -39,12 +43,12 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({
   const [monacoSize, setMonacoSize] = useState<{
     width: string | number;
     height: string | number;
-  }>({width: 1180, height: 300});
+  }>({ width: 1180, height: 300 });
   const editorRef = createRef<MonacoDiffEditor>();
   const uuid = 'editor' + uuidv4();
   const options = {
     renderSideBySide: false,
-    minimap: {enabled: false},
+    minimap: { enabled: false },
     scrollbar: {
       verticalScrollbarSize: 0,
       verticalSliderSize: 14,
@@ -90,19 +94,21 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({
     // true => false
     else nextH = height - consoleHeight + REVEAL_CONSOLE_HEIHGT; // false => true
     setShowConsole(!showConsole);
-    setMonacoSize({width, height: nextH});
+    setMonacoSize({ width, height: nextH });
   };
 
   const getConsoleResult = async (params: {
     regression_uuid: string;
     revisionFlag: string; // work | bic | buggy | bfc
     userToken: string;
+    command?: string;
   }) => {
     if (params.revisionFlag === 'work') {
       const path = await getRegressionPath({
         regression_uuid: params.regression_uuid,
         revisionFlag: params.revisionFlag,
         userToken: '123',
+        command: params.command,
       }).then((resp) => {
         if (resp !== null && resp !== undefined) {
           return resp;
@@ -113,7 +119,7 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({
       if (path !== null && path !== undefined) {
         setIsRunning(true);
         while (true) {
-          const data = await getRegressionConsole({path: path});
+          const data = await getRegressionConsole({ path: path });
           await wait(500);
           setConsoleResult(data ?? '');
           if (data && data.includes('REGMINER-TEST-END')) {
@@ -260,75 +266,75 @@ const DeltaDebuggingHunkBlocks: React.FC<IProps> = ({
     <Checkbox.Group onChange={onChange}>
       {hunkCodeList
         ? hunkCodeList.map((data) => {
-          return (
-            <>
-              <Checkbox value={data.key}>
-                {'hunk ' + data.key}
-                <br/>
-                <div className="EditorView">
-                  <MonacoDiffEditor
-                    key={data.key}
-                    ref={editorRef}
-                    width={monacoSize.width}
-                    height={monacoSize.height}
-                    language={'java'}
-                    theme={'vs-light'}
-                    options={options}
-                    original={data.oldCode}
-                    value={data.newCode}
-                    editorDidMount={(diffEditor) => {
-                      const codeEditor = diffEditor.getModifiedEditor();
-                      diffEditor.revealLineInCenter(data.beginB);
-                      codeEditor.deltaDecorations(
-                        [],
-                        [
-                          {
-                            range: new monaco.Range(data.beginB, 0, data.endB, 0),
-                            options: {
-                              isWholeLine: true,
-                              className: 'criticalChangeHintClass',
+            return (
+              <>
+                <Checkbox value={data.key}>
+                  {'hunk ' + data.key}
+                  <br />
+                  <div className="EditorView">
+                    <MonacoDiffEditor
+                      key={data.key}
+                      ref={editorRef}
+                      width={monacoSize.width}
+                      height={monacoSize.height}
+                      language={'java'}
+                      theme={'vs-light'}
+                      options={options}
+                      original={data.oldCode}
+                      value={data.newCode}
+                      editorDidMount={(diffEditor) => {
+                        const codeEditor = diffEditor.getModifiedEditor();
+                        diffEditor.revealLineInCenter(data.beginB);
+                        codeEditor.deltaDecorations(
+                          [],
+                          [
+                            {
+                              range: new monaco.Range(data.beginB, 0, data.endB, 0),
+                              options: {
+                                isWholeLine: true,
+                                className: 'criticalChangeHintClass',
+                              },
                             },
-                          },
-                        ],
-                      );
-                    }}
-                  />
-                </div>
-                <div
-                  className={showConsole ? 'ConsoleView open' : 'ConsoleView'}
-                  style={{backgroundColor: 'var(--light-console-color)'}}
-                >
-                  <Divider className={'divider'}/>
-                  {/* <Button onClick={() => handleHunkRunClick} /> */}
-                  <section className="flex vertical" style={{width: '100%', height: '97%'}}>
-                    <div className="header flex between none" onClick={handleShowConsole}>
-                      <div className="title" style={{fontSize: '16px', fontWeight: 'bolder'}}>
-                        Console
+                          ],
+                        );
+                      }}
+                    />
+                  </div>
+                  <div
+                    className={showConsole ? 'ConsoleView open' : 'ConsoleView'}
+                    style={{ backgroundColor: 'var(--light-console-color)' }}
+                  >
+                    <Divider className={'divider'} />
+                    {/* <Button onClick={() => handleHunkRunClick} /> */}
+                    <section className="flex vertical" style={{ width: '100%', height: '97%' }}>
+                      <div className="header flex between none" onClick={handleShowConsole}>
+                        <div className="title" style={{ fontSize: '16px', fontWeight: 'bolder' }}>
+                          Console
+                        </div>
+                        <Button
+                          intent="success"
+                          icon="play"
+                          loading={isRunning}
+                          onClick={() => handleHunkRunClick}
+                        >
+                          Run Code
+                        </Button>
+                        <div className="tools">
+                          <Button minimal icon={showConsole ? 'chevron-down' : 'chevron-up'} />
+                        </div>
                       </div>
-                      <Button
-                        intent="success"
-                        icon="play"
-                        loading={isRunning}
-                        onClick={() => handleHunkRunClick}
-                      >
-                        Run Code
-                      </Button>
-                      <div className="tools">
-                        <Button minimal icon={showConsole ? 'chevron-down' : 'chevron-up'}/>
-                      </div>
-                    </div>
-                    <div id="logsFlow" className="Logs">
-                        <pre className="log output" style={{overflow: 'unset'}}>
+                      <div id="logsFlow" className="Logs">
+                        <pre className="log output" style={{ overflow: 'unset' }}>
                           {consoleResult}
                         </pre>
-                    </div>
-                  </section>
-                </div>
-              </Checkbox>
-              <Divider/>
-            </>
-          );
-        })
+                      </div>
+                    </section>
+                  </div>
+                </Checkbox>
+                <Divider />
+              </>
+            );
+          })
         : null}
     </Checkbox.Group>
     // </ResizeSensor>
