@@ -14,7 +14,7 @@
     <name>RegMiner-Backend</name>
     <description>RegMiner data mark platform</description>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>1,8</java.version>
         <druidVersion>1.1.10</druidVersion>
     </properties>
     <dependencies>

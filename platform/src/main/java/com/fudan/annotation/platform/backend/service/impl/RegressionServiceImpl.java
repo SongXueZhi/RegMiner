@@ -376,7 +376,7 @@ public class RegressionServiceImpl implements RegressionService {
     }
 
     @Override
-    public String runTest(String regressionUuid, String userToken, String revisionFlag) {
+    public String runTest(String regressionUuid, String userToken, String revisionFlag,String command) {
         Regression regression = regressionMapper.getRegressionInfo(regressionUuid);
         String testCase = regression.getTestcase().split(";")[0];
         File codeDir = sourceCodeManager.getCodeDir(regressionUuid, userToken, revisionFlag);
@@ -385,16 +385,21 @@ public class RegressionServiceImpl implements RegressionService {
         File logFile = new File(logPath);
         logFile.deleteOnExit();
 
-        try {
-            jacocoMavenManager.addJacocoFeatureToMaven(codeDir);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+//        try {
+//            jacocoMavenManager.addJacocoFeatureToMaven(codeDir);
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+        if (command == null){
+            command = "mvn test -Dtest=" + testCase + " >> " + logFileName;
+        }else {
+            command = command + " >> " + logFileName;
         }
-
+        String finalCommand = command;
         new Thread(() -> {
             int state =
-                    new Executor().setDirectory(codeDir).exec("mvn test -Dtest=" + testCase + " >> " + logFileName, 1);
-            new Executor().setDirectory(codeDir).exec("mvn jacoco:report", 1);
+                    new Executor().setDirectory(codeDir).exec(finalCommand, 1);
+//            new Executor().setDirectory(codeDir).exec("mvn jacoco:report", 1);
             try {
                 String endFlag = "REGMINER-TEST-END";
                 if (state < 0) {

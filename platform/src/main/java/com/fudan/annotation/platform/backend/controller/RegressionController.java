@@ -171,9 +171,11 @@ public class RegressionController {
     public ResponseBean<String> test(
             @RequestParam(name = "regression_uuid") String regressionUuid,
             @RequestParam String userToken,
-            @RequestParam String revisionFlag) {
+            @RequestParam String revisionFlag,
+            @RequestParam(required = false) String command) {
         try {
-            String logPath = regressionService.runTest(regressionUuid, userToken, revisionFlag);
+            System.out.println("command: " + command);
+            String logPath = regressionService.runTest(regressionUuid, userToken, revisionFlag, command);
             logPath = URLEncoder.encode(logPath, "UTF-8");
             return new ResponseBean<>(200, "test success", logPath);
         } catch (Exception e) {

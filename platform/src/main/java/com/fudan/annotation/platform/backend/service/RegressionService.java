@@ -80,7 +80,7 @@ public interface RegressionService {
     CodeDetails getFilesCode(String regressionUuid, String userToken, String filename, String oldPath, String newPath
             , String revisionFlag);
 
-    String runTest(String regressionUuid, String userToken, String revisionFlag) throws Exception;
+    String runTest(String regressionUuid, String userToken, String revisionFlag,String command) throws Exception;
 
     Map<String, List<Integer>> codeCoverageMap(String regressionUuid, String userToken, String revisionFlag) throws Exception;
 
