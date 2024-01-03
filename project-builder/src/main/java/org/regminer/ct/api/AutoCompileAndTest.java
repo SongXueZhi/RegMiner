@@ -3,6 +3,7 @@ package org.regminer.ct.api;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.tools.ant.DirectoryScanner;
 import org.regminer.common.constant.Configurations;
+import org.regminer.common.constant.Constant;
 import org.regminer.common.exec.ExecResult;
 import org.regminer.common.exec.Executor;
 import org.regminer.common.model.RelatedTestCase;
@@ -13,9 +14,8 @@ import org.regminer.ct.model.*;
 import org.regminer.ct.utils.CtUtils;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AutoCompileAndTest extends Strategy {
 
@@ -23,6 +23,7 @@ public class AutoCompileAndTest extends Strategy {
         super();
 
     }
+
     @Override
     public CompileResult compile() {
         CompileResult compileResult = new CompileResult();
@@ -112,23 +113,83 @@ public class AutoCompileAndTest extends Strategy {
     @Override
     public TestResult test(List<RelatedTestCase> testCaseXES, CompileTestEnv compileTestEnv) {
         TestResult testResult = new TestResult();
-        String osName = compileTestEnv.getOsName();
-        Compiler compiler = compileTestEnv.getCompiler();
-        CtCommands envCommands = SerializationUtils.clone(compileTestEnv.getCtCommand());
+        Map<String, Integer> methodCountPerClass = countMethodsPerClass(testCaseXES);
+        Set<String> classesToTestWhole = determineClassesForWholeTest(methodCountPerClass);
 
+        testIndividually(testCaseXES, compileTestEnv, classesToTestWhole, testResult);
+        testAsClass(testCaseXES, compileTestEnv, classesToTestWhole, testResult);
+
+        return testResult;
+    }
+
+    private Map<String, Integer> countMethodsPerClass(List<RelatedTestCase> testCaseXES) {
+        Map<String, Integer> methodCount = new HashMap<>();
+        for (RelatedTestCase testCase : testCaseXES) {
+            String className = testCase.getEnclosingClassName();
+            methodCount.put(className, methodCount.getOrDefault(className, 0) + 1);
+        }
+        return methodCount;
+    }
+
+    private Set<String> determineClassesForWholeTest(Map<String, Integer> methodCountPerClass) {
+        return methodCountPerClass.entrySet().stream()
+                .filter(entry -> entry.getValue() >= Constant.TEST_CASE_THRESHOLD)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
+
+    private void testIndividually(List<RelatedTestCase> testCaseXES, CompileTestEnv compileTestEnv,
+                                  Set<String> classesToTestWhole, TestResult testResult) {
+        CtCommands envCommands = SerializationUtils.clone(compileTestEnv.getCtCommand());
         envCommands.remove(CtCommands.CommandKey.COMPILE);
 
-        for (RelatedTestCase relatedTestCase: testCaseXES) {
-            String testCommand = CtUtils.combineTestCommand(relatedTestCase, compiler, osName);
-            envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
-            //Test need have a timeout limit
-            ExecResult execResult = new Executor().setDirectory(projectDir).exec(envCommands.compute(),2);
-            TestCaseResult testCaseResult = CtReferees.judgeTestCaseResult(execResult);
-            testCaseResult.setTestCommands(testCommand);
-            testResult.takeTestCaseResult(relatedTestCase.toString(), testCaseResult);
+        String osName = compileTestEnv.getOsName();
+        Compiler compiler = compileTestEnv.getCompiler();
 
+        for (RelatedTestCase testCase : testCaseXES) {
+            String className = testCase.getEnclosingClassName();
+            if (!classesToTestWhole.contains(className)) {
+                String testCommand = CtUtils.combineTestCommand(testCase, compiler, osName);
+                envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
+                ExecResult execResult = new Executor().setDirectory(compileTestEnv.getProjectDir()).exec(envCommands.compute(), 2);
+                TestCaseResult testCaseResult = CtReferees.judgeTestCaseResult(execResult);
+                testCaseResult.setTestCommands(testCommand);
+
+                if (testCaseResult.getState() == TestCaseResult.TestState.NOTEST) {
+                    // 如果测试结果为 NOTEST，将其类添加到整体测试列表中
+                    classesToTestWhole.add(className);
+                } else {
+                    // 否则，添加测试结果到测试结果集
+                    testResult.takeTestCaseResult(testCase.toString(), testCaseResult);
+                }
+            }
         }
-        return testResult;
+    }
+
+    private void testAsClass(List<RelatedTestCase> testCaseXES, CompileTestEnv compileTestEnv,
+                             Set<String> classesToTestWhole, TestResult testResult) {
+        CtCommands envCommands = SerializationUtils.clone(compileTestEnv.getCtCommand());
+        envCommands.remove(CtCommands.CommandKey.COMPILE);
+
+        String osName = compileTestEnv.getOsName();
+        Compiler compiler = compileTestEnv.getCompiler();
+        Map<String, List<RelatedTestCase>> classToTestWholeMap = testCaseXES.stream()
+                .filter(relatedTestCase -> classesToTestWhole.contains(relatedTestCase.getEnclosingClassName()))
+                .collect(Collectors.groupingBy(RelatedTestCase::getEnclosingClassName));
+
+        for (Map.Entry<String, List<RelatedTestCase>> testWholeEntry : classToTestWholeMap.entrySet()) {
+            // 测试整个类
+            String testCommand = CtUtils.combineTestClassCommand(testWholeEntry.getKey(), compiler, osName);
+            envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
+            ExecResult execResult = new Executor().setDirectory(compileTestEnv.getProjectDir()).exec(envCommands.compute(), 2);
+            TestCaseResult classTestCaseResult = CtReferees.judgeTestCaseResult(execResult);
+            classTestCaseResult.setTestCommands(testCommand);
+
+            // 将类的测试结果应用于该类的所有测试案例
+            for (RelatedTestCase testCase : testWholeEntry.getValue()) {
+                testResult.takeTestCaseResult(testCase.toString(), classTestCaseResult);
+            }
+        }
     }
 
 
