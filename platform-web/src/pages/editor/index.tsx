@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {PageContainer} from '@ant-design/pro-layout';
+import React, { useCallback, useEffect, useState } from 'react';
+import { PageContainer } from '@ant-design/pro-layout';
 import {
   Button,
   Card,
@@ -17,10 +17,10 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import {AppstoreOutlined, DeleteOutlined, PlusOutlined, UploadOutlined} from '@ant-design/icons';
+import { AppstoreOutlined, DeleteOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import DiffEditorTabs from './components/DiffEditorTabs';
-import type {IRouteComponentProps} from 'umi';
-import {useAccess, useModel} from 'umi';
+import type { IRouteComponentProps } from 'umi';
+import { useAccess, useModel } from 'umi';
 import {
   addComment,
   deleteComment,
@@ -47,12 +47,12 @@ import type {
   FilePaneItem,
   HunkEntityItems,
 } from './data';
-import {parse} from 'query-string';
+import { parse } from 'query-string';
 import TextArea from 'antd/lib/input/TextArea';
 import BugType from './components/BugType';
 import TagBugTypes from './components/TagBugType';
 
-const {SubMenu} = Menu;
+const { SubMenu } = Menu;
 
 const testMethodList = [
   {
@@ -98,9 +98,9 @@ interface IHistorySearch {
 //   // }, [delay]);
 // }
 
-const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
+const EditorPage: React.FC<IRouteComponentProps> = ({ location }) => {
   const access = useAccess();
-  const {initialState} = useModel('@@initialState');
+  const { initialState } = useModel('@@initialState');
   const HISTORY_SEARCH = parse(location.search) as unknown as IHistorySearch;
   // const savedCallback = useRef<any>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -173,12 +173,14 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
     regression_uuid: string;
     revisionFlag: string; // work | bic | buggy | bfc
     userToken: string;
+    command?: string;
   }) => {
     if (params.revisionFlag === 'work') {
       const path = await getRegressionPath({
         regression_uuid: params.regression_uuid,
         revisionFlag: params.revisionFlag,
         userToken: '123',
+        command: params.command,
       }).then((resp) => {
         if (resp !== null && resp !== undefined) {
           return resp;
@@ -189,7 +191,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
       if (path !== null && path !== undefined) {
         setBICIsRunning(true);
         while (true) {
-          const data = await getRegressionConsole({path: path});
+          const data = await getRegressionConsole({ path: path });
           await wait(500);
           setBICConsoleResult(data ?? '');
           if (data && data.includes('REGMINER-TEST-END')) {
@@ -204,6 +206,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
         regression_uuid: params.regression_uuid,
         revisionFlag: 'bic',
         userToken: '123',
+        command: params.command,
       }).then((resp) => {
         if (resp !== null && resp !== undefined) {
           return resp;
@@ -214,7 +217,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
       if (path !== null && path !== undefined) {
         setBICIsRunning(true);
         while (true) {
-          const data = await getRegressionConsole({path: path});
+          const data = await getRegressionConsole({ path: path });
           await wait(500);
           setBICConsoleResult(data ?? '');
           if (data && data.includes('REGMINER-TEST-END')) {
@@ -231,6 +234,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
         regression_uuid: params.regression_uuid,
         revisionFlag: params.revisionFlag,
         userToken: '123',
+        command: params.command,
       }).then((resp) => {
         if (resp !== null && resp !== undefined) {
           return resp;
@@ -242,7 +246,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
         setBFCIsRunning(true);
         while (true) {
           await wait(1000);
-          const data = await getRegressionConsole({path: path});
+          const data = await getRegressionConsole({ path: path });
           setBFCConsoleResult(data ?? '');
           if (data && data.includes('REGMINER-TEST-END')) {
             break;
@@ -257,6 +261,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
         regression_uuid: params.regression_uuid,
         revisionFlag: 'bfc',
         userToken: '123',
+        command: params.command,
       }).then((resp) => {
         if (resp !== null && resp !== undefined) {
           return resp;
@@ -268,7 +273,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
         setBFCIsRunning(true);
         while (true) {
           await wait(1000);
-          const data = await getRegressionConsole({path: path});
+          const data = await getRegressionConsole({ path: path });
           setBFCConsoleResult(data ?? '');
           if (data && data.includes('REGMINER-TEST-END')) {
             break;
@@ -391,12 +396,13 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
   );
 
   const handleBICRunClick = useCallback(
-    async (content, version) => {
+    async (content, version, command) => {
       setBICConsoleResult('');
       const consoleResult = getConsoleResult({
         regression_uuid: HISTORY_SEARCH.regressionUuid,
         revisionFlag: version,
         userToken: '123',
+        command: command,
       }).then((resp) => resp);
       return consoleResult;
     },
@@ -628,7 +634,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
           account_name: items.accountName,
           comment_id: items.commentId,
         }).then(() => {
-          getCommentList({regression_uuid: HISTORY_SEARCH.regressionUuid}).then((resp) => {
+          getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
             if (resp !== null && resp !== undefined) {
               let currComments: CommentAPI[] = [];
               currComments = resp.map((data) => {
@@ -636,7 +642,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
                   actions: [
                     <Tooltip key="comment-delete-btn" title="Delete">
                       <span onClick={() => handleDeleteComment(data)}>
-                        <DeleteOutlined/>
+                        <DeleteOutlined />
                       </span>
                     </Tooltip>,
                   ],
@@ -678,7 +684,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
         context: newCommentText,
       }).then(() => {
         setNewCommentText('');
-        getCommentList({regression_uuid: HISTORY_SEARCH.regressionUuid}).then((resp) => {
+        getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
           if (resp !== null && resp !== undefined) {
             let currComments: CommentAPI[] = [];
             currComments = resp.map((data) => {
@@ -686,7 +692,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
                 actions: [
                   <Tooltip key="comment-delete-btn" title="Delete">
                     <span onClick={() => handleDeleteComment(data)}>
-                      <DeleteOutlined/>
+                      <DeleteOutlined />
                     </span>
                   </Tooltip>,
                 ],
@@ -724,7 +730,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
       HISTORY_SEARCH.bic !== '' &&
       HISTORY_SEARCH.bic !== null
     ) {
-      regressionCheckout({regression_uuid: HISTORY_SEARCH.regressionUuid, userToken: '123'}).then(
+      regressionCheckout({ regression_uuid: HISTORY_SEARCH.regressionUuid, userToken: '123' }).then(
         () => {
           queryRegressionMigrate({
             regression_uuid: HISTORY_SEARCH.regressionUuid,
@@ -748,7 +754,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
         },
       );
     } else {
-      regressionCheckout({regression_uuid: HISTORY_SEARCH.regressionUuid, userToken: '123'}).then(
+      regressionCheckout({ regression_uuid: HISTORY_SEARCH.regressionUuid, userToken: '123' }).then(
         () => {
           queryRegressionDetail({
             regression_uuid: HISTORY_SEARCH.regressionUuid,
@@ -779,7 +785,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
         setBICCriticalChanges(resp.hunkEntityPlusList);
       }
     });
-    getRegressionBugTypes({regression_uuid: HISTORY_SEARCH.regressionUuid}).then((data) => {
+    getRegressionBugTypes({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((data) => {
       if (data !== null && data !== undefined) {
         setRegressionBugTypes(data);
       }
@@ -792,7 +798,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
         setBFCCriticalChanges(resp.hunkEntityPlusList);
       }
     });
-    getCommentList({regression_uuid: HISTORY_SEARCH.regressionUuid}).then((resp) => {
+    getCommentList({ regression_uuid: HISTORY_SEARCH.regressionUuid }).then((resp) => {
       if (resp !== null && resp !== undefined) {
         let currComments: CommentAPI[] = [];
         currComments = resp.map((data) => {
@@ -800,7 +806,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
             actions: [
               <Tooltip key="comment-delete-btn" title="Delete">
                 <span onClick={() => handleDeleteComment(data)}>
-                  <DeleteOutlined/>
+                  <DeleteOutlined />
                 </span>
               </Tooltip>,
             ],
@@ -834,51 +840,51 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
             title: 'Regression verfication',
             subTitle: (
               <div>
-                <span style={{marginRight: 20}}>
+                <span style={{ marginRight: 20 }}>
                   <Typography.Text>
                     Regression UUID: {HISTORY_SEARCH.regressionUuid}
                   </Typography.Text>
                 </span>
                 {HISTORY_SEARCH.bic ? (
-                  <span style={{marginRight: 20}}>
+                  <span style={{ marginRight: 20 }}>
                     <Typography.Text>bic ID: {HISTORY_SEARCH.bic}</Typography.Text>
                   </span>
                 ) : null}
               </div>
             ),
             footer: (
-              <div style={{display: 'inline-flex', alignItems: 'center'}}>
-                <Descriptions column={3} style={{flex: 1}}>
-                  <Descriptions.Item label={'Project'} labelStyle={{fontWeight: 'bold'}}>
+              <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <Descriptions column={3} style={{ flex: 1 }}>
+                  <Descriptions.Item label={'Project'} labelStyle={{ fontWeight: 'bold' }}>
                     <Typography.Text keyboard strong>
                       {projectFullName}
                     </Typography.Text>
                   </Descriptions.Item>
                   <Descriptions.Item
                     label={'Bug Inducing Commit'}
-                    labelStyle={{fontWeight: 'bold'}}
+                    labelStyle={{ fontWeight: 'bold' }}
                   >
                     <Typography.Link keyboard href={BICURL} target="_blank">
                       {BIC?.slice(0, 8)}...
                     </Typography.Link>
-                    <br/>
+                    <br />
                   </Descriptions.Item>
                   <Descriptions.Item
                     label={'Bug Fixing Commit'}
-                    labelStyle={{fontWeight: 'bold'}}
+                    labelStyle={{ fontWeight: 'bold' }}
                   >
                     <Typography.Link keyboard href={BFCURL} target="_blank">
                       {BFC?.slice(0, 8)}...
                     </Typography.Link>
-                    <br/>
+                    <br />
                   </Descriptions.Item>
                   <Descriptions.Item
                     label={'Regression description'}
-                    labelStyle={{fontWeight: 'bold'}}
+                    labelStyle={{ fontWeight: 'bold' }}
                   >
                     <Typography.Text>{regressionDescription}</Typography.Text>
                   </Descriptions.Item>
-                  <Descriptions.Item label={'Bug Types'} labelStyle={{fontWeight: 'bold'}}>
+                  <Descriptions.Item label={'Bug Types'} labelStyle={{ fontWeight: 'bold' }}>
                     {regressionBugTypes.map((resp) => {
                       return (
                         <BugType
@@ -900,7 +906,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
                       );
                     })}
                     <Tag
-                      style={{background: '#fff', borderStyle: 'dashed'}}
+                      style={{ background: '#fff', borderStyle: 'dashed' }}
                       onClick={() => {
                         if (access.allUsersFoo) {
                           setOpenTagBugType(true);
@@ -911,7 +917,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
                         }
                       }}
                     >
-                      <PlusOutlined/> New Tag
+                      <PlusOutlined /> New Tag
                     </Tag>
                   </Descriptions.Item>
                 </Descriptions>
@@ -922,11 +928,11 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
             ),
           }}
         >
-          <div style={{display: 'flex'}}>
+          <div style={{ display: 'flex' }}>
             <div>
               <Card
                 // bordered={false}
-                style={{marginBottom: 10, width: 286, overflow: 'auto'}}
+                style={{ marginBottom: 10, width: 286, overflow: 'auto' }}
                 tabList={testMethodList}
                 activeTabKey={testTabKey}
                 onTabChange={(key) => {
@@ -937,20 +943,20 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
               </Card>
               <Card
                 title="Changed files"
-                style={{marginBottom: 10}}
+                style={{ marginBottom: 10 }}
                 bordered={false}
-                bodyStyle={{padding: 0}}
+                bodyStyle={{ padding: 0 }}
               >
                 <Menu
                   title="Changed Files"
-                  style={{width: 286, maxHeight: '70vh', overflow: 'auto'}}
+                  style={{ width: 286, maxHeight: '70vh', overflow: 'auto' }}
                   defaultOpenKeys={['BIC', 'BFC']}
                   mode="inline"
                 >
                   {/* 优先显示test，在有match时显示check然后tooltip上加‘recomend to check’。
                 （migrate迁移）*/}
-                  <SubMenu key="BIC" icon={<AppstoreOutlined/>} title="Bug Inducing Commit">
-                    {listBIC.map(({filename, match, oldPath, newPath, type, editList}) => {
+                  <SubMenu key="BIC" icon={<AppstoreOutlined />} title="Bug Inducing Commit">
+                    {listBIC.map(({ filename, match, oldPath, newPath, type, editList }) => {
                       let mark: any;
                       if (match === 1 && type !== null && type !== undefined) {
                         mark = <Tag color="success">Migrate</Tag>;
@@ -983,8 +989,8 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
                       );
                     })}
                   </SubMenu>
-                  <SubMenu key="BFC" icon={<AppstoreOutlined/>} title="Bug Fixing Commit">
-                    {listBFC.map(({filename, match, oldPath, newPath, type, editList}) => {
+                  <SubMenu key="BFC" icon={<AppstoreOutlined />} title="Bug Fixing Commit">
+                    {listBFC.map(({ filename, match, oldPath, newPath, type, editList }) => {
                       let mark: any;
                       if (match === 1 && type !== null && type !== undefined) {
                         mark = null;
@@ -1022,17 +1028,17 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
               <Card
                 title="Critical changes review"
                 bordered={false}
-                bodyStyle={{padding: 0}}
-                style={{marginBottom: 10}}
+                bodyStyle={{ padding: 0 }}
+                style={{ marginBottom: 10 }}
               >
                 <Menu
-                  style={{width: 286, maxHeight: '70vh', overflow: 'auto'}}
+                  style={{ width: 286, maxHeight: '70vh', overflow: 'auto' }}
                   defaultOpenKeys={['BIC-Critical-Changes', 'BFC-Critical-Changes']}
                   mode="inline"
                 >
                   <SubMenu
                     key="BIC-Critical-Changes"
-                    icon={<AppstoreOutlined/>}
+                    icon={<AppstoreOutlined />}
                     title="Bug Inducing Commit"
                   >
                     {BICCriticalChanges.map((CCData) => {
@@ -1067,7 +1073,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
                   </SubMenu>
                   <SubMenu
                     key="BFC-Critical-Changes"
-                    icon={<AppstoreOutlined/>}
+                    icon={<AppstoreOutlined />}
                     title="Bug Fixing Commit"
                   >
                     {BFCCriticalChanges.map((CCData) => {
@@ -1105,12 +1111,12 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
               <Card
                 title="Feedbacks"
                 bordered={false}
-                bodyStyle={{padding: 0}}
+                bodyStyle={{ padding: 0 }}
                 extra={
                   <Button
                     type="primary"
                     shape="round"
-                    icon={<UploadOutlined/>}
+                    icon={<UploadOutlined />}
                     onClick={handleSubmitFeedbacks}
                     disabled={
                       BICFeedbackList.length === 0 && BFCFeedbackList.length === 0 ? true : false
@@ -1121,17 +1127,17 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
                 }
               >
                 <Menu
-                  style={{width: 286, maxHeight: '70vh', overflow: 'auto'}}
+                  style={{ width: 286, maxHeight: '70vh', overflow: 'auto' }}
                   defaultOpenKeys={['BIC-feedback', 'BFC-feedback']}
                   mode="inline"
                 >
                   <SubMenu
                     key="BIC-feedback"
-                    icon={<AppstoreOutlined/>}
+                    icon={<AppstoreOutlined />}
                     title="Bug Inducing Commit"
                   >
                     {BICFeedbackList?.map(
-                      ({decorationKey, fileName, feedback, hunkData, revision}, index) => {
+                      ({ decorationKey, fileName, feedback, hunkData, revision }, index) => {
                         return (
                           <Popconfirm
                             key={`BIC-popconfirm-${index}`}
@@ -1159,9 +1165,9 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
                       },
                     )}
                   </SubMenu>
-                  <SubMenu key="BFC-feedback" icon={<AppstoreOutlined/>} title="Bug Fixing Commit">
+                  <SubMenu key="BFC-feedback" icon={<AppstoreOutlined />} title="Bug Fixing Commit">
                     {BFCFeedbackList?.map(
-                      ({decorationKey, fileName, feedback, hunkData, revision}, index) => {
+                      ({ decorationKey, fileName, feedback, hunkData, revision }, index) => {
                         return (
                           <Popconfirm
                             key={`BIC-popconfirm-${index}`}
@@ -1227,7 +1233,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
               />
             ) : null}
           </div>
-          <Card style={{marginTop: '10px'}} title={` Comments`}>
+          <Card style={{ marginTop: '10px' }} title={` Comments`}>
             <List
               className="comment-list"
               itemLayout="horizontal"
@@ -1241,7 +1247,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
                     content={item.content}
                     datetime={item.datetime}
                   />
-                  <Divider/>
+                  <Divider />
                 </li>
               )}
             />
@@ -1278,7 +1284,7 @@ const EditorPage: React.FC<IRouteComponentProps> = ({location}) => {
           }}
           footer={null}
         >
-          <TagBugTypes regressionUuid={HISTORY_SEARCH.regressionUuid}/>
+          <TagBugTypes regressionUuid={HISTORY_SEARCH.regressionUuid} />
         </Modal>
       </Spin>
     </>
