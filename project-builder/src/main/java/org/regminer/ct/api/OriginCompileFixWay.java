@@ -17,8 +17,6 @@ import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.CompileTestEnv;
 import org.regminer.ct.model.CtCommands;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -74,10 +72,16 @@ public enum OriginCompileFixWay {
         CompileResult fix(CompileTestEnv compileEnv, String errorMessage) {
             CompileResult compileResult = new CompileResult(CompileResult.CompileState.CE);
             compileResult.setExceptionMessage(errorMessage);
+
+            File pomFile = new File(compileEnv.getProjectDir(), "pom.xml");
+            // 非 pom 配置暂时不管
+            if (!pomFile.exists()) {
+                logger.warn("pom.xml doesn't exist");
+                return compileResult;
+            }
             // 分析编译日志，找到有问题的依赖
             List<String> problematicDependencies = CtReferees.detectProblematicDependencies(errorMessage);
 
-            File pomFile = new File(compileEnv.getProjectDir(), "pom.xml");
             MavenManager mavenManager = new MavenManager();
 
             // 只修复 SNAPSHOT 问题
@@ -167,6 +171,12 @@ public enum OriginCompileFixWay {
         CompileResult fix(CompileTestEnv compileEnv, String errorMessage) {
             CompileResult compileResult = new CompileResult(CompileResult.CompileState.CE);
             compileResult.setExceptionMessage(errorMessage);
+            File pomFile = new File(compileEnv.getProjectDir(), "pom.xml");
+            // 非 pom 配置暂时不管
+            if (!pomFile.exists()) {
+                logger.warn("pom.xml doesn't exist");
+                return compileResult;
+            }
             // Implement logic for DEPENDENCY_FIX
             // Example: Resolve dependency issues, handle exceptions, and recompile
             Set<String> missingDependencies = CtReferees.findMissingDependencies(errorMessage);
@@ -174,7 +184,7 @@ public enum OriginCompileFixWay {
             for (String missingDependency : missingDependencies) {
                 dependencies.addAll(MavenDependencyProvider.getAllMavenDependencies(missingDependency));
             }
-            File pomFile = new File(compileEnv.getProjectDir(), "pom.xml");
+
             MavenManager mavenManager = new MavenManager();
             try {
                 logger.info("Trying to add missing dependencies");
@@ -256,7 +266,6 @@ public enum OriginCompileFixWay {
     }
 
 
-//    protected Logger logger = LogManager.getLogManager().getLogger(this.name());
     protected Logger logger = LogManager.getLogger(this.name());
 
 
