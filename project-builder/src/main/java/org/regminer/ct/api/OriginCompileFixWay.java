@@ -76,7 +76,7 @@ public enum OriginCompileFixWay {
             File pomFile = new File(compileEnv.getProjectDir(), "pom.xml");
             // 非 pom 配置暂时不管
             if (!pomFile.exists()) {
-                logger.warn("pom.xml doesn't exist");
+                logger.warn("{} doesn't exist", pomFile.getAbsolutePath());
                 return compileResult;
             }
             // 分析编译日志，找到有问题的依赖
@@ -174,7 +174,7 @@ public enum OriginCompileFixWay {
             File pomFile = new File(compileEnv.getProjectDir(), "pom.xml");
             // 非 pom 配置暂时不管
             if (!pomFile.exists()) {
-                logger.warn("pom.xml doesn't exist");
+                logger.warn("{} doesn't exist", pomFile.getAbsolutePath());
                 return compileResult;
             }
             // Implement logic for DEPENDENCY_FIX
