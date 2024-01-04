@@ -60,7 +60,7 @@ public class BugTypeServiceImpl implements BugTypeService {
     @Override
     public void postAgreeBugType(String regressionUuid, int bugTypeId) {
         List<BugToTypeItems> bugToTypeList = bugToTypeMapper.getBugToTypeByRegressionUuid(regressionUuid);
-        if (regressionUuid == null || regressionUuid == "") {
+        if (regressionUuid == null || regressionUuid.equals("")) {
             throw new RuntimeException("param loss");
         }
         if (bugToTypeList.equals(null) || bugToTypeList.isEmpty()) {
@@ -72,7 +72,7 @@ public class BugTypeServiceImpl implements BugTypeService {
     @Override
     public void postDisagreeBugType(String regressionUuid, int bugTypeId) {
         List<BugToTypeItems> bugToTypeList = bugToTypeMapper.getBugToTypeByRegressionUuid(regressionUuid);
-        if (regressionUuid == null || regressionUuid == "") {
+        if (regressionUuid == null || regressionUuid.equals("")) {
             throw new RuntimeException("param loss");
         }
         if (bugToTypeList.isEmpty()) {
