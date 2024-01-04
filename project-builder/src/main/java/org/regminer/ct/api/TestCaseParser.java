@@ -78,13 +78,13 @@ public class TestCaseParser {
         // Prepare for no testcase in bfc but in range of (c~2,c^2)
         // 可能在这里找不到测试，需要尝试在本次 commit 四周寻找是否有单独的新增测试
         if (pRFC.getTestcaseFrom() == PotentialBFC.TESTCASE_FROM_SEARCH) {
+            logger.info("BFC doesn't contains TestCases, try to search");
 //            handlePotentialTestFile(pRFC.getPotentialTestCaseList(), bfcDir, pRFC);
             handlePotentialTestFile(pRFC);
         }
 
         if (pRFC.getTestCaseFiles().stream()
                 .noneMatch(testFile -> pRFC.getCommit().getName().equals(testFile.getNewCommitId()))) {
-            logger.info("BFC doesn't contains TestCases, try to migrate");
             // 不包含当前 commit 中的测试文件时，测试前也需要迁移测试文件
             // 先迁移，再解析 4. 否则解析结果可能和 git 提供的文件修改记录对应不上
             MigratorUtil.mergeTwoVersion_BaseLine(pRFC, pRFC.fileMap.get(pRFC.getCommit().getName()));

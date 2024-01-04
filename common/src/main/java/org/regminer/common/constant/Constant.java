@@ -3,6 +3,10 @@ package org.regminer.common.constant;
 import java.util.List;
 
 public class Constant {
+    private Constant() {
+        // utility class
+    }
+
     public static final String NONE_PATH = "/dev/null";
     public static final String BFC_TASK = "bfc";
     public static final String BFC_BIC_TASK = "bfc&bic";

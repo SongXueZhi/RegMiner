@@ -150,6 +150,7 @@ public class AutoCompileAndTest extends Strategy {
             String className = testCase.getEnclosingClassName();
             if (!classesToTestWhole.contains(className)) {
                 String testCommand = CtUtils.combineTestCommand(testCase, compiler, osName);
+                logger.info(testCommand);
                 envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
                 ExecResult execResult = new Executor().setDirectory(compileTestEnv.getProjectDir()).exec(envCommands.compute(), 2);
                 TestCaseResult testCaseResult = CtReferees.judgeTestCaseResult(execResult);
@@ -180,6 +181,7 @@ public class AutoCompileAndTest extends Strategy {
         for (Map.Entry<String, List<RelatedTestCase>> testWholeEntry : classToTestWholeMap.entrySet()) {
             // 测试整个类
             String testCommand = CtUtils.combineTestClassCommand(testWholeEntry.getKey(), compiler, osName);
+            logger.info(testCommand);
             envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
             ExecResult execResult = new Executor().setDirectory(compileTestEnv.getProjectDir()).exec(envCommands.compute(), 2);
             TestCaseResult classTestCaseResult = CtReferees.judgeTestCaseResult(execResult);

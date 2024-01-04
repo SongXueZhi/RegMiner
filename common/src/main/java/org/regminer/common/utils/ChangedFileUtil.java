@@ -28,7 +28,7 @@ import static org.regminer.common.constant.Constant.SEARCH_DEPTH;
  */
 
 public class ChangedFileUtil {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(ChangedFileUtil.class);
 
     public static boolean searchPotentialTestFiles(RevCommit curCommit, Git git, List<TestFile> testFiles,
                                              List<SourceFile> sourceFiles) throws Exception {
