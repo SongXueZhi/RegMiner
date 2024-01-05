@@ -1,13 +1,21 @@
 package org.regminer.ct.api;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.Edit;
+import org.eclipse.jgit.lib.Repository;
 import org.jetbrains.annotations.NotNull;
+import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.model.*;
 import org.regminer.common.model.ChangedFile.Type;
+import org.regminer.common.tool.RepositoryProvider;
+import org.regminer.common.utils.ChangedFileUtil;
 import org.regminer.common.utils.CompilationUtil;
 import org.regminer.common.utils.FileUtilx;
+import org.regminer.common.utils.MigratorUtil;
 
 import java.io.File;
 import java.util.HashMap;
@@ -20,6 +28,7 @@ import java.util.regex.Pattern;
 //如果不包含junit或者@test则移除
 //过滤完成后，如果若有测试文件都被移除，则pRFC移除
 public class TestCaseParser {
+    protected Logger logger = LogManager.getLogger(this);
 
     public void handlePotentialTestFile(@NotNull List<PotentialTestCase> potentialTestCaseList, File bfcDir,
                                         PotentialBFC pRFC) {
@@ -35,7 +44,18 @@ public class TestCaseParser {
                 pRFC.setSourceFiles(sourceFiles);
             }
         }
+    }
 
+    private void handlePotentialTestFile(PotentialBFC pRFC) {
+        try (Repository repo = RepositoryProvider.getRepoFromLocal(new File(Configurations.projectPath));
+             Git git = new Git(repo)) {
+            if (!ChangedFileUtil.searchPotentialTestFiles(pRFC.getCommit(), git, pRFC.getTestCaseFiles(), pRFC.getSourceFiles())) {
+                logger.warn("no commits that only involve modifications to test files in the {} commits before and after commit '{}'.",
+                        Constant.SEARCH_DEPTH * 2, pRFC.getCommit());
+            }
+        } catch (Exception e) {
+            logger.error("search test files failed, error message is: {}", e.getMessage());
+        }
     }
 
     private void copyPotentialTestFileToBFC(List<? extends ChangedFile> files, File bfcDir,
@@ -56,11 +76,20 @@ public class TestCaseParser {
     public void parseTestCases(PotentialBFC pRFC) {
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
         // Prepare for no testcase in bfc but in range of (c~2,c^2)
-//        if (pRFC.getTestcaseFrom() == PotentialBFC.TESTCASE_FROM_SEARCH) {
+        // 可能在这里找不到测试，需要尝试在本次 commit 四周寻找是否有单独的新增测试
+        if (pRFC.getTestcaseFrom() == PotentialBFC.TESTCASE_FROM_SEARCH) {
+            logger.info("BFC doesn't contains TestCases, try to search");
 //            handlePotentialTestFile(pRFC.getPotentialTestCaseList(), bfcDir, pRFC);
-//        }
+            handlePotentialTestFile(pRFC);
+        }
 
-//        System.out.println("prfc testcase file size: " + pRFC.getTestCaseFiles().size());
+        if (pRFC.getTestCaseFiles().stream()
+                .noneMatch(testFile -> pRFC.getCommit().getName().equals(testFile.getNewCommitId()))) {
+            // 不包含当前 commit 中的测试文件时，测试前也需要迁移测试文件
+            // 先迁移，再解析 4. 否则解析结果可能和 git 提供的文件修改记录对应不上
+            MigratorUtil.mergeTwoVersion_BaseLine(pRFC, pRFC.fileMap.get(pRFC.getCommit().getName()));
+        }
+
         Iterator<TestFile> iterator = pRFC.getTestCaseFiles().iterator();
         while (iterator.hasNext()) {
             TestFile file = iterator.next();
@@ -84,6 +113,7 @@ public class TestCaseParser {
         }
 //        System.out.println("prfc testcase file size(after parsing): " + pRFC.getTestCaseFiles().size());
     }
+
 
     private Map<String, RelatedTestCase> parse(TestFile file, String code) {
         List<Edit> editList = file.getEditList();

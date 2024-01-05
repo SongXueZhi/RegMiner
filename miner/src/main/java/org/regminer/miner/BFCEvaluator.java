@@ -6,6 +6,7 @@ import org.regminer.common.constant.Constant;
 import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.sql.BugStorage;
 import org.regminer.common.tool.SycFileCleanup;
+import org.regminer.common.utils.MigratorUtil;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
 import org.regminer.ct.api.OriginCompileFixWay;
@@ -15,7 +16,6 @@ import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 import org.regminer.ct.utils.TestUtils;
-import org.regminer.migrate.api.Migrator;
 import org.regminer.migrate.api.TestCaseMigrator;
 import org.regminer.miner.core.BFCSearchStrategy;
 import org.regminer.miner.monitor.ProgressMonitor;
@@ -69,7 +69,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
             if (!prepareBFC(pRFC, bfcID)) return;
 
             Triple<Boolean, CompileResult, CtContext> compileResultTriple = compileBFC(pRFC, bfcID);
-            if (!compileResultTriple.getLeft()) return;
+            if (!Boolean.TRUE.equals(compileResultTriple.getLeft())) return;
 
             if (!testBFC(pRFC, bfcID, compileResultTriple.getMiddle(), compileResultTriple.getRight())) return;
 
@@ -87,8 +87,8 @@ public class BFCEvaluator extends BFCSearchStrategy {
         try {
             logger.info("{} checkout ", bfcID);
             logger.info("commit message:{}", pRFC.getCommit().getShortMessage());
-            logger.info("before analysis, test case size: {}", pRFC.getTestCaseFiles().size());
-            File bfcDirectory = testCaseMigrator.checkoutCiForBFC(bfcID, bfcID);
+            logger.info("before analysis, test case size: {}", pRFC.getTestCaseFiles() == null ? 0 : pRFC.getTestCaseFiles().size());
+            File bfcDirectory = MigratorUtil.checkoutCiForBFC(bfcID, bfcID);
             pRFC.fileMap.put(bfcID, bfcDirectory);
             return true;
         } catch (Exception exception) {
@@ -119,14 +119,6 @@ public class BFCEvaluator extends BFCSearchStrategy {
     }
 
     private boolean testBFC(PotentialBFC pRFC, String bfcID, CompileResult compileResult, CtContext ctContext) {
-        if (pRFC.getTestCaseFiles().stream()
-                .noneMatch(testFile -> pRFC.getCommit().getName().equals(testFile.getNewCommitId()))) {
-            logger.info("BFC doesn't contains TestCases, try to migrate");
-            // 不包含当前 commit 中的测试文件时，测试前也需要迁移测试文件
-            // 先迁移，再解析 4. 否则解析结果可能和 git 提供的文件修改记录对应不上
-            Migrator.mergeTwoVersion_BaseLine(pRFC, pRFC.fileMap.get(pRFC.getCommit().getName()));
-        }
-
         //4. parser Testcase
         testCaseParser.parseTestCases(pRFC);
         //5. 测试BFC
@@ -152,7 +144,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
         for (int i = 0; i < count; i++) {
             String bfcpID = pRFC.getCommit().getParent(i).getName();
             logger.info("bfc~1 {} of {}", bfcpID, bfcID);
-            TestResult bfcpTestResult = testCaseMigrator.migrate(pRFC, bfcpID);
+            TestResult bfcpTestResult = testCaseMigrator.migrateAndTest(pRFC, bfcpID);
             if (bfcpTestResult == null) { //这说明编译失败
                 continue;
             }
@@ -168,7 +160,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
             TestUtils.retainTestFilesMatchingFilter(pRFC, matchTestCase);
             logger.info(bfcpTestResult.getCaseResultMap());
             logger.info("bfc~1 test fal");
-            testCaseMigrator.purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
+            MigratorUtil.purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
             // REDUCE
             findBFCPFlag = true;
             pRFC.setBuggyCommitId(bfcpID);

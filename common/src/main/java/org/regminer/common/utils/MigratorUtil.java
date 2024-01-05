@@ -1,4 +1,4 @@
-package org.regminer.migrate.api;
+package org.regminer.common.utils;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -6,19 +6,11 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.dom.*;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
-import org.regminer.common.model.ChangedFile;
-import org.regminer.common.model.PotentialBFC;
-import org.regminer.common.model.SourceFile;
-import org.regminer.common.model.TestFile;
-import org.regminer.common.utils.CompilationUtil;
-import org.regminer.common.utils.FileUtilx;
-import org.regminer.common.utils.GitUtils;
-import org.regminer.migrate.model.MergeTask;
+import org.regminer.common.model.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,10 +19,11 @@ import java.util.stream.Collectors;
  * @Date: 2023/11/29/13:46
  * @Description:
  */
-public class Migrator {
+public class MigratorUtil {
 
-    private static final Logger LOGGER = LogManager.getLogger(Migrator.class);
-    public File checkoutCiForBFC(String bfcId, String commitId) throws IOException {
+    private static final Logger LOGGER = LogManager.getLogger(MigratorUtil.class);
+
+    public static File checkoutCiForBFC(String bfcId, String commitId) throws IOException {
         File codeDir = FileUtilx.getDirFromBfcAndBic(bfcId, commitId);
         FileUtils.copyDirectory(new File(Configurations.metaPath), codeDir);
         GitUtils.checkout(commitId, codeDir);
@@ -43,29 +36,26 @@ public class Migrator {
          * 注意！bfc的patch中可能存在 普通java文件，测试文件（相关测试用例，非测试用例但测试目录下的java文件），配置文件(测试目录下的，其他)
          * 在base_line中我们只迁移 测试文件，和之前不存在的配置文件（暂时不做文本的merge）
          */
-        // 根据需要迁移的测试文件所在的 commit 进行分组
-        // 相关测试用例
-        Map<String, List<TestFile>> testSuiteMap = pRFC.getTestCaseFiles()
-                .stream().collect(Collectors.groupingBy(TestFile::getNewCommitId));
+        List<TestFile> testSuite = pRFC.getTestCaseFiles();
         // 非测试用例的在测试目录下的其他文件
 
         //###XXX:TestDenpendency BlocK
-        Map<String, List<TestFile>> underTestDirJavaFilesMap = pRFC.getTestRelates()
-                .stream().collect(Collectors.groupingBy(TestFile::getNewCommitId));
-        Map<String, List<SourceFile>> sourceFilesMap = pRFC.getSourceFiles()
-                .stream().collect(Collectors.groupingBy(SourceFile::getNewCommitId));
+        List<TestFile> underTestDirJavaFiles = pRFC.getTestRelates();
+        List<SourceFile> sourceFiles = pRFC.getSourceFiles();
         //##block end
-        File bfcDir = pRFC.fileMap.get("BASE");
-        String head = GitUtils.getHead(bfcDir);
-        testSuiteMap.forEach((s, testFiles) -> {
-            LOGGER.info("migrate testFiles from {} to {}", s, pRFC.getCommit().getName());
-            GitUtils.checkout(s, bfcDir);
-            mergeTestFiles(bfcDir, tDir, testFiles,
-                    underTestDirJavaFilesMap.getOrDefault(s, new ArrayList<>()),
-                    sourceFilesMap.getOrDefault(s, new ArrayList<>()));
-        });
-        // checkout 回去
-        GitUtils.checkout(head, bfcDir);
+
+        // merge测试文件
+        // 整合任务
+        MergeTask mergeJavaFileTask = new MergeTask();
+        mergeJavaFileTask.addAll(testSuite).addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();//XXX
+
+        Set<String> commits = mergeJavaFileTask.getElementList().stream().map(ChangedFile::getNewCommitId).collect(Collectors.toSet());
+        LOGGER.info("migrate testFiles from {} to {}", commits, tDir);
+
+        // :TestDenpendency BlocK
+        File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
+
+        mergeTestFiles(bfcDir, tDir, testSuite, underTestDirJavaFiles, sourceFiles);
     }
 
     private static void mergeTestFiles(File bfcDir, File tDir, List<TestFile> testSuite, List<TestFile> underTestDirJavaFiles, List<SourceFile> sourceFiles) {
@@ -79,7 +69,11 @@ public class Migrator {
             if (newPathInBfc.contains(Constant.NONE_PATH)) {
                 continue;
             }
-            File bfcFile = new File(bfcDir, newPathInBfc);
+            String fileContent = GitUtils.getFileContentAtCommit(bfcDir, entry.getValue().getNewCommitId(), newPathInBfc);
+            if (fileContent == null) {
+                continue; // 文件在指定 commit 中不存在
+            }
+
             File tFile = new File(tDir, newPathInBfc);
             try {
                 if (tFile.exists()) {
@@ -89,7 +83,7 @@ public class Migrator {
                 if (!tFile.getParentFile().exists()) {
                     tFile.getParentFile().mkdirs();
                 }
-                Files.copy(bfcFile.toPath(), tFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                FileUtils.writeStringToFile(tFile, fileContent, StandardCharsets.UTF_8, false);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -132,7 +126,7 @@ public class Migrator {
         }
     }
 
-    public void purgeUnlessTestcase(List<TestFile> testSuiteList, PotentialBFC pRFC) {
+    public static void purgeUnlessTestcase(List<TestFile> testSuiteList, PotentialBFC pRFC) {
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
         for (TestFile testFile : testSuiteList) {
             String path = testFile.getNewPath();

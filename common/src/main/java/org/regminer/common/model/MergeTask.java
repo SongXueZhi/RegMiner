@@ -1,6 +1,4 @@
-package org.regminer.migrate.model;
-
-import org.regminer.common.model.ChangedFile;
+package org.regminer.common.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +23,10 @@ public class MergeTask {
             }
             map.put(file.getNewPath(), file);
         }
+    }
+
+    public List<ChangedFile> getElementList() {
+        return elementList;
     }
 
     public HashMap<String, ChangedFile> getMap() {

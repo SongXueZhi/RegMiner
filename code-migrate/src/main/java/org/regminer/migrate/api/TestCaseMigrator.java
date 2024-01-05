@@ -3,29 +3,29 @@ package org.regminer.migrate.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.regminer.common.model.PotentialBFC;
-import org.regminer.common.model.RelatedTestCase;
 import org.regminer.common.model.TestFile;
+import org.regminer.common.utils.ChangedFileUtil;
+import org.regminer.common.utils.MigratorUtil;
 import org.regminer.ct.api.AutoCompileAndTest;
-import org.regminer.ct.api.OriginCompileFixWay;
 import org.regminer.ct.api.CtContext;
+import org.regminer.ct.api.OriginCompileFixWay;
 import org.regminer.ct.model.CommitBuildResult;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.CompileTestEnv;
 import org.regminer.ct.model.TestResult;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author sxz
  */
-public class TestCaseMigrator extends Migrator {
-    protected Logger logger = LogManager.getLogger(Migrator.class);
+public class TestCaseMigrator{
+    protected Logger logger = LogManager.getLogger(TestCaseMigrator.class);
 
-    public TestResult migrate(PotentialBFC pRFC, String bic) throws Exception {
+    public TestResult migrateAndTest(PotentialBFC pRFC, String bic) throws Exception {
         logger.info("start to migrate in {}", pRFC.getCommit().getName());
-        File bicDirectory = checkoutCiForBFC(pRFC.getCommit().getName(), bic);
+        File bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
         pRFC.fileMap.put(bic, bicDirectory);
         CtContext ctContext = new CtContext(new AutoCompileAndTest());
         ctContext.setProjectDir(bicDirectory);
@@ -40,7 +40,7 @@ public class TestCaseMigrator extends Migrator {
             logger.debug("compile error before migrate");
             return null;
         }
-        mergeTwoVersion_BaseLine(pRFC, bicDirectory);
+        MigratorUtil.mergeTwoVersion_BaseLine(pRFC, bicDirectory);
         // 编译
         compileResult = ctContext.compile(compileResult.getCompileWay());
         //编译成功后执行测试
@@ -52,23 +52,11 @@ public class TestCaseMigrator extends Migrator {
         }
     }
 
-
-    public List<RelatedTestCase> convertTestFilesToTestCaseXList(List<TestFile> testFiles) {
-        List<RelatedTestCase> allTestCaseXs = new ArrayList<>();
-
-        for (TestFile testFile : testFiles) {
-            List<RelatedTestCase> testCaseXs = testFile.getTestCaseList();
-            allTestCaseXs.addAll(testCaseXs);
-        }
-
-        return allTestCaseXs;
-    }
-
     //TODO Song Xuezhi 现在这样的重构必然会造成损失，有些项目（maven低版本）没有办法只测试一个具体的方法，可能只能测试一个类。
     // 但这个问题，我觉的大概可能在未来项目构建模块解决。
     // 我认为这件事情的优先级和compile同等。
     public TestResult test(List<TestFile> testFiles, CtContext ctContext, CompileTestEnv compileTestEnv) {
-        TestResult testResult = ctContext.test(convertTestFilesToTestCaseXList(testFiles), compileTestEnv);
+        TestResult testResult = ctContext.test(ChangedFileUtil.convertTestFilesToTestCaseXList(testFiles), compileTestEnv);
         return testResult;
     }
 

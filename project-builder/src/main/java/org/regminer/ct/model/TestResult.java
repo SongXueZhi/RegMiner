@@ -1,7 +1,5 @@
 package org.regminer.ct.model;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TestResult {
@@ -9,6 +7,10 @@ public class TestResult {
 
     public void takeTestCaseResult(String key, TestCaseResult testCaseResult) {
         caseResultMap.put(key, testCaseResult);
+    }
+
+    public boolean exists(String key) {
+        return caseResultMap.containsKey(key);
     }
 
     public ConcurrentHashMap<String, TestCaseResult> getCaseResultMap() {

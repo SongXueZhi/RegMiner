@@ -1,9 +1,13 @@
 package org.regminer.common.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -11,15 +15,26 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.regminer.common.tool.RepositoryProvider;
 import org.regminer.common.tool.SimpleProgressMonitor;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class GitUtils {
+    private static final Logger logger = LogManager.getLogger(GitUtils.class);
+
+    private GitUtils() {
+        // utility class
+    }
 
     public static boolean clone(File localFile, String cloneUrl) {
         localFile.mkdir();
@@ -31,7 +46,7 @@ public class GitUtils {
                 .call()) {
             return true;
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+            logger.error(exception.getMessage());
             return false;
         }
     }
@@ -48,7 +63,8 @@ public class GitUtils {
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("checkout failed! repo is {}, commit is {}", codeDir.getAbsolutePath(), commitID);
+            logger.error(e.getMessage());
             return false;
         }
     }
@@ -59,7 +75,7 @@ public class GitUtils {
         File lock = new File(lockPath);
 
         if (lock.exists() && lock.delete()) {
-            System.out.println("index.lock exists, deleted!");
+            logger.info("index.lock exists, deleted!");
         }
         // 删除工作树中未跟踪的所有文件和目录，但会保留已跟踪的文件和 Git 子模块
         git.clean().setCleanDirectories(true).setForce(true).call();
@@ -77,9 +93,12 @@ public class GitUtils {
              RevWalk revWalk = new RevWalk(repository);){
              return revWalk.parseCommit(repository.resolve("HEAD")).getName();
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return null;
         }
     }
+
+
 
     // TODO Given projectDir,get ALL commits in project
     // all commits  format in
@@ -135,4 +154,55 @@ public class GitUtils {
     }
 
 
+    public static Map<ObjectId, List<RevCommit>> buildChildrenMap(Git git, RevCommit endCommit) throws IOException {
+        Map<ObjectId, List<RevCommit>> map = new HashMap<>();
+        try (RevWalk walk = new RevWalk(git.getRepository())) {
+            // 获取当前分支的最新提交
+            ObjectId branchHead = git.getRepository().resolve(git.getRepository().getBranch());
+            walk.markStart(walk.parseCommit(branchHead));
+            for (RevCommit commit : walk) {
+                for (RevCommit parent : commit.getParents()) {
+                    map.computeIfAbsent(parent.getId(), k -> new ArrayList<>()).add(commit);
+                }
+                // 只获取 child，对于更早的就没必要构建了
+                if (commit.equals(endCommit)) break;
+            }
+        }
+        return map;
+    }
+
+    /**
+     * 获取指定代码仓指定 commit 下指定文件路径的文件内容。
+     * @param codeDir 代码仓的本地目录
+     * @param commitId commit ID
+     * @param filePath 文件路径
+     * @return 指定文件的内容
+     */
+    public static String getFileContentAtCommit(File codeDir, String commitId, String filePath) {
+        try (Repository repository = RepositoryProvider.getRepoFromLocal(codeDir);
+             RevWalk revWalk = new RevWalk(repository)) {
+
+            // 定位到指定的 commit
+            RevCommit commit = revWalk.parseCommit(repository.resolve(commitId));
+
+            // 使用 TreeWalk 来查找特定的文件
+            try (TreeWalk treeWalk = new TreeWalk(repository)) {
+                treeWalk.addTree(commit.getTree());
+                treeWalk.setRecursive(true);
+                treeWalk.setFilter(PathFilter.create(filePath));
+
+                if (!treeWalk.next()) {
+                    throw new IllegalStateException("File not found in the specified commit");
+                }
+
+                // 读取并返回文件内容
+                ObjectLoader loader = repository.open(treeWalk.getObjectId(0));
+                byte[] bytes = loader.getBytes();
+                return new String(bytes, StandardCharsets.UTF_8);
+            }
+        } catch (Exception e) {
+            logger.error("Error reading file at commit. path: {}, commit: {}", filePath, commitId, e);
+            return null;
+        }
+    }
 }
