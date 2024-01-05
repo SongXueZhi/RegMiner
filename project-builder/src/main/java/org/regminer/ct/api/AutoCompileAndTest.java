@@ -189,7 +189,9 @@ public class AutoCompileAndTest extends Strategy {
 
             // 将类的测试结果应用于该类的所有测试案例
             for (RelatedTestCase testCase : testWholeEntry.getValue()) {
-                testResult.takeTestCaseResult(testCase.toString(), classTestCaseResult);
+                if (!testResult.exists(testCase.toString())) {
+                    testResult.takeTestCaseResult(testCase.toString(), classTestCaseResult);
+                }
             }
         }
     }
