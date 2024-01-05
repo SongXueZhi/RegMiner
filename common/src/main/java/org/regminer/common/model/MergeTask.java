@@ -25,6 +25,10 @@ public class MergeTask {
         }
     }
 
+    public List<ChangedFile> getElementList() {
+        return elementList;
+    }
+
     public HashMap<String, ChangedFile> getMap() {
         return map;
     }
