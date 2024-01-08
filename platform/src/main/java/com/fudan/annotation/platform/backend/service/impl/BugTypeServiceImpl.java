@@ -63,7 +63,7 @@ public class BugTypeServiceImpl implements BugTypeService {
         if (regressionUuid == null || regressionUuid.equals("")) {
             throw new RuntimeException("param loss");
         }
-        if (bugToTypeList.equals(null) || bugToTypeList.isEmpty()) {
+        if (bugToTypeList == null || bugToTypeList.isEmpty()) {
             throw new RuntimeException("record does not exist");
         }
         bugToTypeMapper.postAgreeBugType(regressionUuid, bugTypeId);

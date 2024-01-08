@@ -28,7 +28,7 @@ public class MinerStateManager {
 
     public String readState() {
         try {
-            if (!Files.exists(Paths.get(filePath))) {
+            if (Files.exists(Paths.get(filePath))) {
                 return Files.readString(Paths.get(filePath));
             }
         } catch (IOException e) {

@@ -23,8 +23,13 @@ import org.regminer.common.model.PotentialBFC;
 import org.regminer.common.model.ProjectEntity;
 import org.regminer.common.model.Regression;
 
+import java.util.HashSet;
+
 public class BugStorage {
     public void saveRegression(Regression regression) {
+        if (!Configurations.sqlEnable) {
+            return;
+        }
         ProjectEntity projectEntity = regression.getProjectEntity();
         String sql = "INSERT IGNORE INTO regression (regression_uuid,project_uuid,project_full_name," +
                 "bug_id,bfc,buggy,bic," +
@@ -43,6 +48,9 @@ public class BugStorage {
     }
 
     public void saveBFC(PotentialBFC potentialBFC, String tableName) {//save general bugs
+        if (!Configurations.sqlEnable) {
+            return;
+        }
         String projectName = Configurations.projectName;
         String sql = "INSERT IGNORE INTO " + tableName + " (project_name,bic,bfc,testcase) VALUES " +
                 "('" + projectName + "','" + potentialBFC.getBuggyCommitId() + "','" +
