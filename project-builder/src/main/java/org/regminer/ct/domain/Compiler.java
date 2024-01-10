@@ -1,33 +1,35 @@
 package org.regminer.ct.domain;
 
+import org.apache.commons.lang3.StringUtils;
 import org.regminer.common.model.OS;
 
 public enum Compiler {
+    //TODO handle multi-modules project
     MVN {
         @Override
-        public String getCompileCommand(String osVersion) {
+        public String getCompileCommand(String osVersion, String modulePath) {
             return "mvn clean compile test-compile";
         }
 
         @Override
-        public String getTestCommand(String osVersion) {
-            return "mvn test -Dtest=";
+        public String getTestCommand(String osVersion, String modulePath) {
+            return "mvn " + (StringUtils.isEmpty(modulePath) ? "" : "-pl " + modulePath + " ") + "test -Dtest=";
         }
     },
     GRADLE {
         @Override
-        public String getCompileCommand(String osVersion) {
+        public String getCompileCommand(String osVersion, String modulePath) {
             return "gradle compileJava compileTestJava";
         }
 
         @Override
-        public String getTestCommand(String osVersion) {
+        public String getTestCommand(String osVersion, String modulePath) {
             return "gradle test --tests ";
         }
     },
     MVNW {
         @Override
-        public String getCompileCommand(String osVersion) {
+        public String getCompileCommand(String osVersion, String modulePath) {
             if (osVersion.equals(OS.WINDOWS)) {
                 return "mvnw.exe compile test-compile";
             } else {
@@ -36,17 +38,17 @@ public enum Compiler {
         }
 
         @Override
-        public String getTestCommand(String osVersion) {
+        public String getTestCommand(String osVersion, String modulePath) {
             if (osVersion.equals(OS.WINDOWS)) {
                 return "mvnw.exe test -Dtest=";
             } else {
-                return "./mvnw test -Dtest=";
+                return "./mvnw " + (StringUtils.isEmpty(modulePath) ? "" : "-pl " + modulePath + " ") + "test -Dtest=";
             }
         }
     },
     GRADLEW {
         @Override
-        public String getCompileCommand(String osVersion) {
+        public String getCompileCommand(String osVersion, String modulePath) {
             if (osVersion.equals(OS.WINDOWS)) {
                 return "gradlew.exe compileJava compileTestJava";
             } else {
@@ -55,7 +57,7 @@ public enum Compiler {
         }
 
         @Override
-        public String getTestCommand(String osVersion) {
+        public String getTestCommand(String osVersion, String modulePath) {
             if (osVersion.equals(OS.WINDOWS)) {
                 return "gradlew.exe test --tests";
             } else {
@@ -64,7 +66,7 @@ public enum Compiler {
         }
     };
 
-    public abstract String getCompileCommand(String osVersion);
+    public abstract String getCompileCommand(String osVersion, String modulePath);
 
-    public abstract String getTestCommand(String osVersion);
+    public abstract String getTestCommand(String osVersion, String modulePath);
 }

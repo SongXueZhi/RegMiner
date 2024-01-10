@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MavenManager {
-    public final static String M2AFFIX = ".m2" + File.separator + "repository";
+    public static final String M2AFFIX = ".m2" + File.separator + "repository";
     private MavenXpp3Reader mavenReader = new MavenXpp3Reader();
     private MavenXpp3Writer mavenXpp3Writer = new MavenXpp3Writer();
 
