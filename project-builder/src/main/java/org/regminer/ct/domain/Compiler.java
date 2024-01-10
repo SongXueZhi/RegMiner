@@ -4,11 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.regminer.common.model.OS;
 
 public enum Compiler {
-    //TODO handle multi-modules project
+    //TODO handle gradle project
     MVN {
         @Override
-        public String getCompileCommand(String osVersion, String modulePath) {
-            return "mvn clean compile test-compile";
+        public String getCompileCommand(String osVersion, boolean isMultipleModules, String modulePath) {
+            return isMultipleModules ? "mvn clean install -Dmaven.test.skip=true" : "mvn clean compile test-compile";
         }
 
         @Override
@@ -18,8 +18,8 @@ public enum Compiler {
     },
     GRADLE {
         @Override
-        public String getCompileCommand(String osVersion, String modulePath) {
-            return "gradle compileJava compileTestJava";
+        public String getCompileCommand(String osVersion, boolean isMultipleModules, String modulePath) {
+            return isMultipleModules ? "gradle build -x checkstyleMain -x checkstyleTest" : "gradle compileJava compileTestJava";
         }
 
         @Override
@@ -29,11 +29,11 @@ public enum Compiler {
     },
     MVNW {
         @Override
-        public String getCompileCommand(String osVersion, String modulePath) {
+        public String getCompileCommand(String osVersion, boolean isMultipleModules, String modulePath) {
             if (osVersion.equals(OS.WINDOWS)) {
-                return "mvnw.exe compile test-compile";
+                return isMultipleModules ? "mvnw.exe clean install -Dmaven.test.skip=true" : "mvnw.exe compile test-compile";
             } else {
-                return "./mvn compile test-compile";
+                return isMultipleModules ? "./mvn clean install -Dmaven.test.skip=true" : "./mvn compile test-compile";
             }
         }
 
@@ -48,11 +48,11 @@ public enum Compiler {
     },
     GRADLEW {
         @Override
-        public String getCompileCommand(String osVersion, String modulePath) {
+        public String getCompileCommand(String osVersion, boolean isMultipleModules, String modulePath) {
             if (osVersion.equals(OS.WINDOWS)) {
-                return "gradlew.exe compileJava compileTestJava";
+                return isMultipleModules ? "gradlew.exe build -x checkstyleMain -x checkstyleTest" : "gradlew.exe compileJava compileTestJava";
             } else {
-                return "./gradlew compileJava compileTestJava";
+                return isMultipleModules ? "./gradlew build -x checkstyleMain -x checkstyleTest" : "./gradlew compileJava compileTestJava";
             }
         }
 
@@ -66,7 +66,7 @@ public enum Compiler {
         }
     };
 
-    public abstract String getCompileCommand(String osVersion, String modulePath);
+    public abstract String getCompileCommand(String osVersion, boolean isMultipleModules, String modulePath);
 
     public abstract String getTestCommand(String osVersion, String modulePath);
 }

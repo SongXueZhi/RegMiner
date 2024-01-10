@@ -26,7 +26,7 @@ public class BaseCompileAndTest extends Strategy {
         compileTestEnv.setOsName(osType);
         compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.JDK, JDK.J8.getCommand());
 
-        String compileCommand = Compiler.MVN.getCompileCommand(osType, null);
+        String compileCommand = Compiler.MVN.getCompileCommand(osType, false, null);
 
         compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.COMPILE, compileCommand);
 

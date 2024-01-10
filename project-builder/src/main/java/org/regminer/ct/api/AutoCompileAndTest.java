@@ -100,7 +100,7 @@ public class AutoCompileAndTest extends Strategy {
         compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.JDK,
                 JDKs.jdkSearchRange[JDKs.getCurIndex()].getCommand());
         compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.COMPILE,
-                compileTestEnv.getCompiler().getCompileCommand(compileTestEnv.getOsName(), ""));
+                compileTestEnv.getCompiler().getCompileCommand(compileTestEnv.getOsName(), compileTestEnv.isMultipleModules(), ""));
     }
 
     private CompileTestEnv initializeCompileTestEnv() {
