@@ -6,6 +6,7 @@ public class RelatedTestCase {
     private String enclosingClassName;
     private String methodName;
     private Methodx method;
+    private String relativeFilePath;
 
     public Methodx getMethod() {
         return method;
@@ -55,5 +56,13 @@ public class RelatedTestCase {
 
     public void setMethodName(String methodName) {
         this.methodName = methodName;
+    }
+
+    public void setRelativeFilePath(String relativeFilePath) {
+        this.relativeFilePath = relativeFilePath;
+    }
+
+    public String getRelativeFilePath() {
+        return relativeFilePath;
     }
 }

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.exec.ExecResult;
 import org.regminer.common.exec.Executor;
+import org.regminer.common.model.ModuleNode;
 import org.regminer.common.model.RelatedTestCase;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.Compiler;
@@ -25,7 +26,7 @@ public class BaseCompileAndTest extends Strategy {
         compileTestEnv.setOsName(osType);
         compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.JDK, JDK.J8.getCommand());
 
-        String compileCommand = Compiler.MVN.getCompileCommand(osType);
+        String compileCommand = Compiler.MVN.getCompileCommand(osType, false, null);
 
         compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.COMPILE, compileCommand);
 
@@ -51,13 +52,14 @@ public class BaseCompileAndTest extends Strategy {
         TestResult testResult = new TestResult();
         String osName = compileTestEnv.getOsName();
         Compiler compiler = compileTestEnv.getCompiler();
+        ModuleNode moduleNode = compileTestEnv.getModuleNode();
         CtCommands envCommands = SerializationUtils.clone(compileTestEnv.getCtCommand());
 
         envCommands.remove(CtCommands.CommandKey.COMPILE);
 
         Stream<RelatedTestCase> stream = testCaseXES.stream();
         stream.forEach(testCaseX -> {
-            String testCommand = CtUtils.combineTestCommand(testCaseX, compiler, osName);
+            String testCommand = CtUtils.combineTestCommand(testCaseX, compiler, osName, moduleNode);
             envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
 
             ExecResult execResult = new Executor().setDirectory(projectDir).exec(envCommands.compute());

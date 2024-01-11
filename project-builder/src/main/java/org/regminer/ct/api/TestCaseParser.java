@@ -122,6 +122,7 @@ public class TestCaseParser {
         List<Methodx> methodList = CompilationUtil.getAllMethod(code);
         Map<String, RelatedTestCase> testCaseMap = new HashMap<>();
         getTestMethod(editList, methodList, testCaseMap);
+        testCaseMap.forEach((s, testCase) -> testCase.setRelativeFilePath(file.getNewPath()));
         return testCaseMap;
     }
 

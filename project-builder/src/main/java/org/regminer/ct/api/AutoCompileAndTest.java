@@ -6,7 +6,9 @@ import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.exec.ExecResult;
 import org.regminer.common.exec.Executor;
+import org.regminer.common.model.ModuleNode;
 import org.regminer.common.model.RelatedTestCase;
+import org.regminer.common.tool.parser.ModuleParser;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.Compiler;
 import org.regminer.ct.domain.JDKs;
@@ -98,7 +100,7 @@ public class AutoCompileAndTest extends Strategy {
         compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.JDK,
                 JDKs.jdkSearchRange[JDKs.getCurIndex()].getCommand());
         compileTestEnv.getCtCommand().takeCommand(CtCommands.CommandKey.COMPILE,
-                compileTestEnv.getCompiler().getCompileCommand(compileTestEnv.getOsName()));
+                compileTestEnv.getCompiler().getCompileCommand(compileTestEnv.getOsName(), compileTestEnv.isMultipleModules(), ""));
     }
 
     private CompileTestEnv initializeCompileTestEnv() {
@@ -107,6 +109,10 @@ public class AutoCompileAndTest extends Strategy {
         compileTestEnv.setOsName(Configurations.osName);
         compileTestEnv.setProjectDir(projectDir);
         compileTestEnv.setCompiler(detectBuildTool(projectDir));//配置编译器，例如mvn、gradle
+        // 解析模块
+        compileTestEnv.setModuleNode(parseModuleNode(projectDir));
+        compileTestEnv.setMultipleModules(compileTestEnv.getModuleNode() != null &&
+                !compileTestEnv.getModuleNode().getSubModules().isEmpty());
         return compileTestEnv;
     }
 
@@ -145,17 +151,17 @@ public class AutoCompileAndTest extends Strategy {
 
         String osName = compileTestEnv.getOsName();
         Compiler compiler = compileTestEnv.getCompiler();
+        ModuleNode moduleNode = compileTestEnv.getModuleNode();
 
         for (RelatedTestCase testCase : testCaseXES) {
             String className = testCase.getEnclosingClassName();
             if (!classesToTestWhole.contains(className)) {
-                String testCommand = CtUtils.combineTestCommand(testCase, compiler, osName);
-                logger.info(testCommand);
+                String testCommand = CtUtils.combineTestCommand(testCase, compiler, osName, moduleNode);
                 envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
                 ExecResult execResult = new Executor().setDirectory(compileTestEnv.getProjectDir()).exec(envCommands.compute(), 2);
                 TestCaseResult testCaseResult = CtReferees.judgeTestCaseResult(execResult);
                 testCaseResult.setTestCommands(testCommand);
-
+                logger.info("command: {}, result: {}", testCommand, testCaseResult.getState());
                 if (testCaseResult.getState() == TestCaseResult.TestState.NOTEST) {
                     // 如果测试结果为 NOTEST，将其类添加到整体测试列表中
                     classesToTestWhole.add(className);
@@ -180,13 +186,13 @@ public class AutoCompileAndTest extends Strategy {
 
         for (Map.Entry<String, List<RelatedTestCase>> testWholeEntry : classToTestWholeMap.entrySet()) {
             // 测试整个类
-            String testCommand = CtUtils.combineTestClassCommand(testWholeEntry.getKey(), compiler, osName);
-            logger.info(testCommand);
+            String testCommand = CtUtils.combineTestClassCommand(testWholeEntry.getValue().get(0), compiler,
+                    osName, compileTestEnv.getModuleNode());
             envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
             ExecResult execResult = new Executor().setDirectory(compileTestEnv.getProjectDir()).exec(envCommands.compute(), 2);
             TestCaseResult classTestCaseResult = CtReferees.judgeTestCaseResult(execResult);
             classTestCaseResult.setTestCommands(testCommand);
-
+            logger.info("command: {}, result: {}", testCommand, classTestCaseResult.getState());
             // 将类的测试结果应用于该类的所有测试案例
             for (RelatedTestCase testCase : testWholeEntry.getValue()) {
                 if (!testResult.exists(testCase.toString())) {
@@ -223,6 +229,18 @@ public class AutoCompileAndTest extends Strategy {
             }
         }
         return buildTool;
+    }
+
+    public ModuleNode parseModuleNode(File projectDir) {
+        for (ModuleParser parser : ModuleParser.values()) {
+            try {
+                return parser.parser(projectDir);
+            } catch (Exception e) {
+                e.printStackTrace();
+                // 解析不存在则换下一个解析器
+            }
+        }
+        return null;
     }
 
 }
