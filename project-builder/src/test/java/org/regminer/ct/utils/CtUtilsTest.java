@@ -28,7 +28,7 @@ public class CtUtilsTest extends TestCase {
         testCase.setRelativeFilePath("moduleLevel2" + File.separator + "SomeTest.java");
 
         // 测试 getModulePath 方法
-        String modulePath = CtUtils.getModulePath(root, testCase);
+        String modulePath = CtUtils.getModulePath(null, root, testCase);
         assertEquals("moduleLevel1" + File.separator + "moduleLevel2", modulePath);
     }
 

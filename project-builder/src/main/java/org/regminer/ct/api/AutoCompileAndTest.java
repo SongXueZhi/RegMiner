@@ -236,7 +236,6 @@ public class AutoCompileAndTest extends Strategy {
             try {
                 return parser.parser(projectDir);
             } catch (Exception e) {
-                e.printStackTrace();
                 // 解析不存在则换下一个解析器
             }
         }

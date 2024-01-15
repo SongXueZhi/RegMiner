@@ -14,7 +14,7 @@ public class CtUtils {
     public static String combineTestCommand(RelatedTestCase testCaseX, Compiler compiler,
                                             String osName, ModuleNode moduleNode) {
         String result = testCaseX.getEnclosingClassName();
-        String modulePath = getModulePath(moduleNode, testCaseX);
+        String modulePath = getModulePath(compiler, moduleNode, testCaseX);
         switch (compiler) {
             case GRADLE:
                 return Compiler.GRADLE.getTestCommand(osName, modulePath) + result + "." + testCaseX.getMethodName();
@@ -31,7 +31,7 @@ public class CtUtils {
     public static String combineTestClassCommand(RelatedTestCase relatedTestCase, Compiler compiler,
                                                  String osName, ModuleNode moduleNode) {
         String className = relatedTestCase.getEnclosingClassName();
-        String modulePath = getModulePath(moduleNode, relatedTestCase);
+        String modulePath = getModulePath(compiler, moduleNode, relatedTestCase);
         switch (compiler) {
             case GRADLE:
                 return Compiler.GRADLE.getTestCommand(osName, modulePath) + className;
@@ -46,14 +46,18 @@ public class CtUtils {
     }
 
 
-    public static String getModulePath(ModuleNode rootModule, RelatedTestCase testCase) {
+    public static String getModulePath(Compiler compiler, ModuleNode rootModule, RelatedTestCase testCase) {
         List<String> path = new ArrayList<>();
         Path testFilePath = Paths.get(testCase.getRelativeFilePath());
         String targetModuleName = testFilePath.getName(0).toString().toLowerCase();
+        String sep = File.separator;
+        if (compiler == Compiler.GRADLE || compiler == Compiler.GRADLEW) {
+            sep = ":";
+        }
         if (findModulePath(rootModule, targetModuleName, path)) {
             // 移除根模块并返回路径
             path.remove(0);
-            return String.join(File.separator, path);
+            return String.join(sep, path);
         }
         return "";
     }
