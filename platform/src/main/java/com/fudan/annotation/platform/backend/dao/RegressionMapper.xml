@@ -36,13 +36,13 @@
                 bfc = #{bfc}
             </if>
             <if test="buggy != null">
-                bfc = #{buggy}
+                buggy = #{buggy}
             </if>
             <if test="bic != null">
-                bfc = #{bic}
+                bic = #{bic}
             </if>
             <if test="work != null">
-                bfc = #{work}
+                work = #{work}
             </if>
             <if test="keyWord != null">
                 key_word like concat("%",#{keyWord},"%")

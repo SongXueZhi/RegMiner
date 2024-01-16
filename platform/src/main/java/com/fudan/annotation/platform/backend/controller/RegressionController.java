@@ -41,6 +41,14 @@ public class RegressionController {
             @RequestParam(name = "keyword", required = false) String keyWord,
             @RequestParam(name = "bug_type_name", required = false) List<String> bugTypeName) {
         try {
+            regressionUuid = trimToNull(regressionUuid);
+            projectName = trimToNull(projectName);
+            bfc = trimToNull(bfc);
+            buggy = trimToNull(buggy);
+            bic = trimToNull(bic);
+            work = trimToNull(work);
+            keyWord = trimToNull(keyWord);
+
             List<Regression> regressionList = regressionService.getRegressions(id,regressionUuid, regressionStatus,
                     projectName, bfc, buggy, bic, work, keyWord, bugTypeName);
             return new ResponseBean<>(200, "get regression info success", regressionList);
@@ -343,5 +351,12 @@ public class RegressionController {
         } catch (Exception e) {
             return new ResponseBean<>(401, "delete critical change failed :" + e.getMessage(), null);
         }
+    }
+
+    private String trimToNull(String str) {
+        if (str == null || str.trim().isEmpty()) {
+            return null;
+        }
+        return str.trim();
     }
 }
