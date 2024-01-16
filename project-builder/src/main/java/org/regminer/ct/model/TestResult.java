@@ -1,9 +1,10 @@
 package org.regminer.ct.model;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class TestResult {
-    private ConcurrentHashMap<String, TestCaseResult> caseResultMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, TestCaseResult> caseResultMap = new ConcurrentHashMap<>();
 
     public void takeTestCaseResult(String key, TestCaseResult testCaseResult) {
         caseResultMap.put(key, testCaseResult);
@@ -13,7 +14,7 @@ public class TestResult {
         return caseResultMap.containsKey(key);
     }
 
-    public ConcurrentHashMap<String, TestCaseResult> getCaseResultMap() {
+    public ConcurrentMap<String, TestCaseResult> getCaseResultMap() {
         return caseResultMap;
     }
 
