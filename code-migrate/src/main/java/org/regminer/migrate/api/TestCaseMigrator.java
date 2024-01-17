@@ -15,12 +15,13 @@ import org.regminer.ct.model.CompileTestEnv;
 import org.regminer.ct.model.TestResult;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author sxz
  */
-public class TestCaseMigrator{
+public class TestCaseMigrator {
     protected Logger logger = LogManager.getLogger(TestCaseMigrator.class);
 
     public TestResult migrateAndTest(PotentialBFC pRFC, String bic) throws Exception {
@@ -31,25 +32,36 @@ public class TestCaseMigrator{
         ctContext.setProjectDir(bicDirectory);
 
         CompileResult compileResult =
-                CommitBuildResult.originalCompileResult.containsKey(bic)?
+                CommitBuildResult.originalCompileResult.containsKey(bic) ?
                         CommitBuildResult.originalCompileResult.get(bic) :
                         ctContext.compile(OriginCompileFixWay.values());
-        CommitBuildResult.originalCompileResult.putIfAbsent(bic,compileResult);
+        CommitBuildResult.originalCompileResult.putIfAbsent(bic, compileResult);
 
         if (compileResult.getState() == CompileResult.CompileState.CE) {
             logger.debug("compile error before migrate");
             return null;
         }
-        MigratorUtil.mergeTwoVersion_BaseLine(pRFC, bicDirectory);
-        // 编译
-        compileResult = ctContext.compile(compileResult.getCompileWay());
-        //编译成功后执行测试
-        if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
-            return test(pRFC.getTestCaseFiles(), ctContext, compileResult.getCompileWay());
-        } else {
-            logger.debug("compile error after migrate");
-            return null; //或许返回NULL可能会引发空指针，但在当前阶段是合理的，如果编译失败，就没有测试结果。
+        List<TestFile> testFiles = new ArrayList<>(pRFC.getTestCaseFiles());
+        TestResult finalResult = new TestResult();
+        // 多个测试文件同时迁移容易导致编译失败，逐个尝试
+        for (TestFile testFile : testFiles) {
+            pRFC.setTestCaseFiles(List.of(testFile));
+            MigratorUtil.mergeTwoVersion_BaseLine(pRFC, bicDirectory);
+            // 编译
+            compileResult = ctContext.compile(compileResult.getCompileWay());
+            // 编译成功后执行测试
+            if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
+                finalResult.getCaseResultMap().putAll(test(pRFC.getTestCaseFiles(), ctContext, compileResult.getCompileWay()).getCaseResultMap());
+            } else {
+                // 恢复原始情况
+                bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
+            }
         }
+        if (!finalResult.isEmpty()) {
+            return finalResult;
+        }
+        logger.debug("compile error after migrate: {}", compileResult.getState());
+        return null; //或许返回NULL可能会引发空指针，但在当前阶段是合理的，如果编译失败，就没有测试结果。
     }
 
     //TODO Song Xuezhi 现在这样的重构必然会造成损失，有些项目（maven低版本）没有办法只测试一个具体的方法，可能只能测试一个类。

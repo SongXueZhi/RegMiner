@@ -64,11 +64,11 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         String bfcId = pRFC.getCommit().getName();
         File bfcFile = new File(Configurations.cachePath + File.separator + bfcId);
         try {
-            logger.info("Start search {}", pRFC.getCommit().getName());
             passPoint = Integer.MIN_VALUE;
             // 方法主要逻辑
             String[] arr = getSearchSpace(pRFC.getCommit().getParent(0).getName(), pRFC.fileMap.get(bfcId));
             falPoint = arr.length - 1;
+            logger.info("Start search {}, search space is {}", pRFC.getCommit().getName(), arr.length);
             // 针对每一个BFC使用一个status数组记录状态，测试过的不再测试
             status = new TestCaseResult.TestState[arr.length];
             Arrays.fill(status, TestCaseResult.TestState.NOMARK);

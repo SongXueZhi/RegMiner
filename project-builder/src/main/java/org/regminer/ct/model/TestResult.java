@@ -13,6 +13,9 @@ public class TestResult {
     public boolean exists(String key) {
         return caseResultMap.containsKey(key);
     }
+    public boolean isEmpty() {
+        return caseResultMap.isEmpty();
+    }
 
     public ConcurrentMap<String, TestCaseResult> getCaseResultMap() {
         return caseResultMap;
