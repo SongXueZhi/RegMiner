@@ -100,7 +100,7 @@ public class MinerCli {
     private static void startMining(List<String> filterList) {
         miner = new Miner(new SearchBFCContext(new BFCEvaluator(new TestCaseParser(), new TestCaseMigrator()),
                 new PotentialBFCDetector(filterList)),
-                new SearchBICContext(new EnhancedBinarySearch()));
+                new SearchBICContext(new EnhancedBinarySearch(new TestCaseMigrator())));
         miner.start();
     }
     private static void processTaskOption() {

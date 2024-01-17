@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.regminer.common.model.OS;
 
 public enum Compiler {
-    //TODO handle gradle project
     MVN {
         @Override
         public String getCompileCommand(String osVersion, boolean isMultipleModules, String modulePath) {
@@ -19,12 +18,12 @@ public enum Compiler {
     GRADLE {
         @Override
         public String getCompileCommand(String osVersion, boolean isMultipleModules, String modulePath) {
-            return isMultipleModules ? "gradle build -x checkstyleMain -x checkstyleTest" : "gradle compileJava compileTestJava";
+            return isMultipleModules ? "gradle build -x test -x checkstyleMain -x checkstyleTest" : "gradle compileJava compileTestJava";
         }
 
         @Override
         public String getTestCommand(String osVersion, String modulePath) {
-            return "gradle test --tests ";
+            return "gradle " + (StringUtils.isEmpty(modulePath) ? "" : modulePath + ":") + "test --tests ";
         }
     },
     MVNW {
@@ -50,18 +49,18 @@ public enum Compiler {
         @Override
         public String getCompileCommand(String osVersion, boolean isMultipleModules, String modulePath) {
             if (osVersion.equals(OS.WINDOWS)) {
-                return isMultipleModules ? "gradlew.exe build -x checkstyleMain -x checkstyleTest" : "gradlew.exe compileJava compileTestJava";
+                return isMultipleModules ? "gradlew.exe build -x test -x checkstyleMain -x checkstyleTest" : "gradlew.exe compileJava compileTestJava";
             } else {
-                return isMultipleModules ? "./gradlew build -x checkstyleMain -x checkstyleTest" : "./gradlew compileJava compileTestJava";
+                return isMultipleModules ? "./gradlew build -x test -x checkstyleMain -x checkstyleTest" : "./gradlew compileJava compileTestJava";
             }
         }
 
         @Override
         public String getTestCommand(String osVersion, String modulePath) {
             if (osVersion.equals(OS.WINDOWS)) {
-                return "gradlew.exe test --tests";
+                return "gradlew.exe " + (StringUtils.isEmpty(modulePath) ? "" : modulePath + ":") + "test --tests";
             } else {
-                return "./gradlew test --tests ";
+                return "./gradlew " + (StringUtils.isEmpty(modulePath) ? "" : modulePath + ":") + "test --tests ";
             }
         }
     };

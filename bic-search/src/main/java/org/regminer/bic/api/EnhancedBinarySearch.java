@@ -14,6 +14,7 @@ import org.regminer.ct.model.TestResult;
 import org.regminer.migrate.api.TestCaseMigrator;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,6 +35,10 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
     private CtContext ctContext;
     private PotentialBFC pRFC;
 
+    public EnhancedBinarySearch(TestCaseMigrator testCaseMigrator) {
+        this.testMigrator = testCaseMigrator;
+    }
+
     public void setTestMigrator(TestCaseMigrator testCaseMigrator) {
         this.testMigrator = testCaseMigrator;
     }
@@ -46,8 +51,9 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
     public String[] getSearchSpace(String startPoint, File coeDir) {
         // 得到反转数组,即从Origin到Commit
         List<String> candidateList = GitUtils.revListCommand(startPoint, coeDir);
-        Collections.reverse(candidateList);//TODO Song Xuezhi 测试确定是不是从历史到现在
-        return new String[0];
+        //TODO Song Xuezhi 测试确定是不是从历史到现在
+        Collections.reverse(candidateList);
+        return candidateList.toArray(candidateList.toArray(new String[0]));
     }
 
     //该算法实际上是将git bisect的功能阉割实现了一遍，gitbisect实际上会考虑图的拓扑结构
@@ -58,16 +64,14 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         String bfcId = pRFC.getCommit().getName();
         File bfcFile = new File(Configurations.cachePath + File.separator + bfcId);
         try {
-            logger.info(pRFC.getCommit().getName() + " Start search");
+            logger.info("Start search {}", pRFC.getCommit().getName());
             passPoint = Integer.MIN_VALUE;
             // 方法主要逻辑
             String[] arr = getSearchSpace(pRFC.getCommit().getParent(0).getName(), pRFC.fileMap.get(bfcId));
             falPoint = arr.length - 1;
             // 针对每一个BFC使用一个status数组记录状态，测试过的不再测试
             status = new TestCaseResult.TestState[arr.length];
-            for (int i = 0; i < status.length; i++) {
-                status[i] = TestCaseResult.TestState.NOMARK;
-            }
+            Arrays.fill(status, TestCaseResult.TestState.NOMARK);
             // recursionBinarySearch(arr, 1, arr.length - 1);//乐观二分查找，只要不能编译，就往最新的时间走
             int a = search(arr, 1, arr.length - 1); // 指数跳跃二分查找 XXX:CompileErrorSearch
 
@@ -110,7 +114,6 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
             }
             return null;
         } finally {
-
             new SycFileCleanup().cleanDirectory(bfcFile);// 删除在regression定义以外的项目文件
         }
     }
@@ -121,7 +124,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
     public void searchStepByStep(String[] arr) {
         int now = passPoint + 1;
         int i = 0;
-        TestCaseResult.TestState result = TestCaseResult.TestState.UNKNOWN;
+        TestCaseResult.TestState result;
         while (now <= falPoint && i < 2) {
             ++i;
             result = getTestResult(arr[now], now);
@@ -150,7 +153,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
 
 
     public TestCaseResult.TestState getTestResult(String bic, int index) {
-        logger.info("index:" + index + ":" + bic);
+        logger.info("index: {}, test commit : {}", index, bic);
         TestCaseResult.TestState result;
         if (status[index] != TestCaseResult.TestState.NOMARK) {
             result = status[index];
@@ -163,7 +166,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         if (result == TestCaseResult.TestState.PASS && index > passPoint) {
             passPoint = index;
         }
-        logger.info(result.name().toString());
+        logger.info("result: {}", result.name());
         return result;
     }
 
@@ -171,7 +174,8 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
     public TestCaseResult.TestState test(String bic, int index) {
         try {
             TestResult testResult = testMigrator.migrateAndTest(pRFC, bic);
-            status[index] = testResult.getCaseResultMap().values().contains(TestCaseResult.TestState.PASS) ?
+            status[index] = testResult.getCaseResultMap().values()
+                    .stream().anyMatch(testCaseResult -> testCaseResult.getState() == TestCaseResult.TestState.PASS) ?
                     TestCaseResult.TestState.PASS :
                     TestCaseResult.TestState.FAL;
             return status[index];
@@ -322,7 +326,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
 
     public int expLeftBoundary(String[] arr, int low, int high, int index) {
         int left = high;
-        TestCaseResult.TestState status = null;
+        TestCaseResult.TestState status;
         int pos = -1;
         for (int i = 0; i < 18; i++) {
             if (left < low) {
@@ -349,7 +353,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
 
     public int rightTry(String[] arr, int low, int high) {
         int right = low;
-        TestCaseResult.TestState status = null;
+        TestCaseResult.TestState status;
         int pos = -1;
         for (int i = 0; i < 18; i++) {
             if (right > high) {
@@ -372,7 +376,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
 
     public int leftTry(String[] arr, int low, int high) {
         int left = high;
-        TestCaseResult.TestState status = null;
+        TestCaseResult.TestState status;
         int pos = -1;
         for (int i = 0; i < 18; i++) {
             if (left < low) {
@@ -395,7 +399,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
 
     public int expRightBoundary(String[] arr, int low, int high, int index) {
         int right = low;
-        TestCaseResult.TestState status = null;
+        TestCaseResult.TestState status;
         int pos = -1;
         for (int i = 0; i < 18; i++) {
             if (right > high) {
