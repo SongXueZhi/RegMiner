@@ -13,7 +13,7 @@ import org.regminer.common.model.*;
 import org.regminer.common.model.ChangedFile.Type;
 import org.regminer.common.tool.RepositoryProvider;
 import org.regminer.common.utils.ChangedFileUtil;
-import org.regminer.common.utils.CompilationUtil;
+import org.regminer.common.code.analysis.CompilationUtil;
 import org.regminer.common.utils.FileUtilx;
 import org.regminer.common.utils.MigratorUtil;
 

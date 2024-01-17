@@ -1,8 +1,8 @@
-package org.regminer.common.utils;
+package org.regminer.common.code.analysis;
 
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
-import org.regminer.common.ast.JdtClassRetriever;
+import org.regminer.common.code.analysis.ast.JdtClassRetriever;
 import org.regminer.common.model.Methodx;
 
 import java.util.ArrayList;
