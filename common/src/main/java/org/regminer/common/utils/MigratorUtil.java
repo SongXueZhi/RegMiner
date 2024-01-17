@@ -54,7 +54,6 @@ public class MigratorUtil {
 
         // :TestDenpendency BlocK
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
-
         mergeTestFiles(bfcDir, tDir, testSuite, underTestDirJavaFiles, sourceFiles);
     }
 
@@ -69,7 +68,7 @@ public class MigratorUtil {
             if (newPathInBfc.contains(Constant.NONE_PATH)) {
                 continue;
             }
-            String fileContent = GitUtils.getFileContentAtCommit(bfcDir, entry.getValue().getNewCommitId(), newPathInBfc);
+            String fileContent = GitUtils.getFileContentAtCommit(tDir, entry.getValue().getNewCommitId(), newPathInBfc);
             if (fileContent == null) {
                 continue; // 文件在指定 commit 中不存在
             }
