@@ -36,7 +36,7 @@ public class Miner {
                 logger.info("start to search bic");
                 for (PotentialBFC pBFC : pBFCs) {
                     Triple<String, String, Integer> bic = bicContext.search(pBFC);
-                    logger.info("find bic: {} {} {}", bic.getLeft(), bic.getMiddle(), bic.getRight());
+                    logger.info("find bic: working {}, bic {} {}", bic.getLeft(), bic.getMiddle(), bic.getRight());
                 }
             }
         } catch (Exception exception) {

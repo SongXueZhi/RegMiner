@@ -26,7 +26,7 @@ import java.util.List;
 public class EnhancedBinarySearch extends BICSearchStrategy {
     final int level = 0;
     protected Logger logger = LogManager.getLogger(EnhancedBinarySearch.class);
-    TestCaseResult.TestState[] status; // 切勿直接访问该数组
+    TestCaseResult.TestState[] testStates; // 切勿直接访问该数组
     //XXX:CompileErrorSearch block
     //all related code need involve
     int passPoint = Integer.MIN_VALUE;
@@ -70,8 +70,8 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
             falPoint = arr.length - 1;
             logger.info("Start search {}, search space is {}", pRFC.getCommit().getName(), arr.length);
             // 针对每一个BFC使用一个status数组记录状态，测试过的不再测试
-            status = new TestCaseResult.TestState[arr.length];
-            Arrays.fill(status, TestCaseResult.TestState.NOMARK);
+            testStates = new TestCaseResult.TestState[arr.length];
+            Arrays.fill(testStates, TestCaseResult.TestState.NOMARK);
             // recursionBinarySearch(arr, 1, arr.length - 1);//乐观二分查找，只要不能编译，就往最新的时间走
             int a = search(arr, 1, arr.length - 1); // 指数跳跃二分查找 XXX:CompileErrorSearch
 
@@ -155,8 +155,8 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
     public TestCaseResult.TestState getTestResult(String bic, int index) {
         logger.info("index: {}, test commit : {}", index, bic);
         TestCaseResult.TestState result;
-        if (status[index] != TestCaseResult.TestState.NOMARK) {
-            result = status[index];
+        if (testStates[index] != TestCaseResult.TestState.NOMARK) {
+            result = testStates[index];
         } else {
             result = test(bic, index);
         }
@@ -174,11 +174,11 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
     public TestCaseResult.TestState test(String bic, int index) {
         try {
             TestResult testResult = testMigrator.migrateAndTest(pRFC, bic);
-            status[index] = testResult.getCaseResultMap().values()
+            testStates[index] = testResult.getCaseResultMap().values()
                     .stream().anyMatch(testCaseResult -> testCaseResult.getState() == TestCaseResult.TestState.PASS) ?
                     TestCaseResult.TestState.PASS :
                     TestCaseResult.TestState.FAL;
-            return status[index];
+            return testStates[index];
         } catch (Exception e) {
             e.printStackTrace();
         }

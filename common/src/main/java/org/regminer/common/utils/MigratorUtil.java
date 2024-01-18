@@ -89,6 +89,29 @@ public class MigratorUtil {
         }
     }
 
+    public static void mergeFiles(Map<String, String> path2ContentMap, File tDir) {
+        for (Map.Entry<String, String> entry : path2ContentMap.entrySet()) {
+            String newPathInBfc = entry.getKey();
+            if (newPathInBfc.contains(Constant.NONE_PATH)) {
+                continue;
+            }
+            String fileContent = entry.getValue();
+            File tFile = new File(tDir, newPathInBfc);
+            try {
+                if (tFile.exists()) {
+                    FileUtils.deleteQuietly(tFile);
+                }
+                // 直接copy过去
+                if (!tFile.getParentFile().exists()) {
+                    tFile.getParentFile().mkdirs();
+                }
+                FileUtils.writeStringToFile(tFile, fileContent, StandardCharsets.UTF_8, false);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
     /**
      * @param pRFC
      * @param targetProjectDirectory
