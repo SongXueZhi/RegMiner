@@ -1,4 +1,4 @@
-package org.regminer.common.tool;
+package org.regminer.common.code.analysis;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

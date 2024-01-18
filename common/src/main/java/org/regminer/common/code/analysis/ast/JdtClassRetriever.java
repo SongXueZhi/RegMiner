@@ -1,4 +1,4 @@
-package org.regminer.common.ast;
+package org.regminer.common.code.analysis.ast;
 
 
 import org.eclipse.jdt.core.dom.*;
