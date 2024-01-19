@@ -84,8 +84,8 @@ public class CompilationUtil {
             for (Methodx existingMethod : existingMethods) {
                 if (existingMethod.getSignature().equals(newMethod.getSignature())) {
                     // 替换方法
-                    affectedLines[0] = existingMethod.getStartLine();
-                    affectedLines[1] = existingMethod.getStopLine();
+                    affectedLines[0] = existingMethod.getStartLine() + 1;
+                    affectedLines[1] = existingMethod.getStopLine() + 1;
                     methodExists = true;
                     break;
                 }
