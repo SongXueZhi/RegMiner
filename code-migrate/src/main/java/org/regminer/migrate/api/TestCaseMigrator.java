@@ -48,7 +48,9 @@ public class TestCaseMigrator {
         List<TestFile> ceTestFiles = new ArrayList<>();
         // 多个测试文件同时迁移容易导致编译失败，逐个尝试
         for (TestFile testFile : testFiles) {
-            pRFC.setTestCaseFiles(List.of(testFile));
+            List<TestFile> curTestFiles = new ArrayList<>();
+            curTestFiles.add(testFile);
+            pRFC.setTestCaseFiles(curTestFiles);
             MigratorUtil.mergeTwoVersion_BaseLine(pRFC, bicDirectory);
             // 编译
             CompileTestEnv env = CommitBuildResult.originalCompileResult.containsKey(bic) ?
