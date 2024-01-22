@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author sxz
@@ -54,7 +55,7 @@ public class TestCaseMigrator {
             MigratorUtil.mergeTwoVersion_BaseLine(pRFC, bicDirectory);
             // 编译
             CompileTestEnv env = CommitBuildResult.originalCompileResult.containsKey(bic) ?
-                    CommitBuildResult.originalCompileResult.get(bic).getCompileWay() :compileResult.getCompileWay();
+                    CommitBuildResult.originalCompileResult.get(bic).getCompileWay() : compileResult.getCompileWay();
             compileResult = env == null ? ctContext.compile(OriginCompileFixWay.values()) : ctContext.compile(env);
             // 编译成功后执行测试
             if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
@@ -65,12 +66,14 @@ public class TestCaseMigrator {
                 ceTestFiles.add(testFile);
             }
         }
-        migrateTestMethodAndTest(pRFC, bic, ceTestFiles, ctContext, compileResult, finalResult);
+        if (finalResult.isEmpty()) {
+            migrateTestMethodAndTest(pRFC, bic, ceTestFiles, ctContext, compileResult, finalResult);
+        }
+        // 恢复测试文件，接下来的流程还会用到
+        pRFC.setTestCaseFiles(testFiles);
         if (!finalResult.isEmpty()) {
             return finalResult;
         }
-        // 如果都编译失败，应该恢复测试文件。
-        pRFC.setTestCaseFiles(testFiles);
         logger.debug("compile error after migrate: {}", compileResult.getState());
         return null; //或许返回NULL可能会引发空指针，但在当前阶段是合理的，如果编译失败，就没有测试结果。
     }
@@ -78,26 +81,39 @@ public class TestCaseMigrator {
     private void migrateTestMethodAndTest(PotentialBFC pRFC, String bic, List<TestFile> ceTestFiles,
                                           CtContext ctContext, CompileResult compileResult, TestResult finalResult) throws IOException {
         File bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
+
         Map<String, String> path2ContentMap = new HashMap<>();
         List<TestFile> underTestDirJavaFiles = pRFC.getTestRelates();
         List<SourceFile> sourceFiles = pRFC.getSourceFiles();
         MergeTask mergeJavaFileTask = new MergeTask();
-        mergeJavaFileTask.addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();//XXX
+        mergeJavaFileTask.addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();
+
+        List<String> relatedFiles = new ArrayList<>();
+        relatedFiles.addAll(mergeJavaFileTask.getMap().keySet());
+        relatedFiles.addAll(ceTestFiles.stream().map(TestFile::getNewPath).collect(Collectors.toList()));
+        MigratorUtil.purgeUnlessTestFile(bicDirectory, relatedFiles);
+
         for (Map.Entry<String, ChangedFile> entry : mergeJavaFileTask.getMap().entrySet()) {
             String code = GitUtils.getFileContentAtCommit(bicDirectory, entry.getValue().getNewCommitId(), entry.getKey());
             path2ContentMap.put(entry.getKey(), code);
         }
         for (TestFile testFile : ceTestFiles) {
-            for (Map.Entry<String, RelatedTestCase> entry : testFile.getTestMethodMap().entrySet()) {
-                // 迁移方法体
-                String code = FileUtilx.readContentFromFile(new File(bicDirectory, entry.getValue().getRelativeFilePath()));
-                String newCode = CompilationUtil.addOrReplaceMethod(code, entry.getValue().getMethod());
-                path2ContentMap.put(entry.getValue().getRelativeFilePath(), newCode);
-                logger.info("migrate test methods from {} to {}", testFile.getNewCommitId(), entry.getValue().getRelativeFilePath());
+            List<TestFile> curTestFiles = new ArrayList<>();
+            curTestFiles.add(testFile);
+            pRFC.setTestCaseFiles(curTestFiles);
+            if (testFile.getTestMethodMap().values().stream().findFirst().isPresent()) {
+                String filePath = testFile.getTestMethodMap().values().stream().findFirst().get().getRelativeFilePath();
+                String code = FileUtilx.readContentFromFile(new File(bicDirectory, filePath));
+                for (Map.Entry<String, RelatedTestCase> entry : testFile.getTestMethodMap().entrySet()) {
+                    // 迁移方法体
+                    code = CompilationUtil.addOrReplaceMethod(code, entry.getValue().getMethod());
+                }
+                path2ContentMap.put(filePath, code);
+                logger.info("migrate test methods from {} to {}", testFile.getNewCommitId(), filePath);
                 MigratorUtil.mergeFiles(path2ContentMap, bicDirectory);
                 // 编译
                 CompileTestEnv env = CommitBuildResult.originalCompileResult.containsKey(bic) ?
-                        CommitBuildResult.originalCompileResult.get(bic).getCompileWay() :compileResult.getCompileWay();
+                        CommitBuildResult.originalCompileResult.get(bic).getCompileWay() : compileResult.getCompileWay();
                 compileResult = env == null ? ctContext.compile(OriginCompileFixWay.values()) : ctContext.compile(env);
                 // 编译成功后执行测试
                 if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
@@ -105,7 +121,7 @@ public class TestCaseMigrator {
                 } else {
                     // 恢复原始情况
                     bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
-                    path2ContentMap.remove(entry.getValue().getRelativeFilePath());
+                    path2ContentMap.remove(filePath);
                 }
             }
         }

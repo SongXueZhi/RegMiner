@@ -149,6 +149,42 @@ public class MigratorUtil {
         }
     }
 
+    public static void purgeUnlessTestFile(File tDir, List<String> relatedFileList) {
+        // 从 tDir 中，删除所有不在 relatedFileList 中的 test 文件
+        List<String> fileNameList = relatedFileList.stream().map(s -> getFileName(s)).collect(Collectors.toList());
+        // 递归处理目录及其子目录
+        processDirectory(tDir, fileNameList);
+    }
+
+    private static void processDirectory(File directory, List<String> fileNameList) {
+        File[] files = directory.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && testFilter(file.getPath()) && file.getName().endsWith(".java")
+                        && !fileNameList.contains(file.getName().toLowerCase())) {
+                    // 如果文件是测试文件并且不在相关文件列表中，则删除
+                    file.delete();
+                } else if (file.isDirectory()) {
+                    // 如果是子目录，递归处理
+                    processDirectory(file, fileNameList);
+                }
+            }
+        }
+    }
+
+    private static String getFileName(String path) {
+        String[] strs = path.split("/");
+        return strs[strs.length - 1].toLowerCase();
+    }
+
+    public static boolean testFilter(String path) {
+        String fileName = getFileName(path);
+        // test 目录下的 test 文件
+        return (path.toLowerCase().contains("/test/") || path.toLowerCase().contains("/tests/")) &&
+                (fileName.toLowerCase().startsWith("test") || fileName.toLowerCase().endsWith("test.java") || fileName.toLowerCase().endsWith("tests.java"));
+    }
+
     public static void purgeUnlessTestcase(List<TestFile> testSuiteList, PotentialBFC pRFC) {
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
         for (TestFile testFile : testSuiteList) {
