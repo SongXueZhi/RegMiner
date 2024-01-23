@@ -13,6 +13,8 @@
 # Then this script will generate log files in each folder.
 import subprocess
 import os
+import shutil
+from datetime import datetime
 from multiprocessing import Pool
 import argparse
 
@@ -28,6 +30,19 @@ parser.add_argument('-maxp', '--max_processes', help='max process count', defaul
 
 args = parser.parse_args()
 
+def rename_log_file(project_dir):
+    logs_dir = os.path.join(project_dir, "logs")
+
+    if os.path.exists(logs_dir):
+        # Get current date and time as a timestamp
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+
+        # Rename app.log to app-当前日期时间戳.log
+        original_log_path = os.path.join(logs_dir, "app.log")
+        new_log_path = os.path.join(logs_dir, f"app-{timestamp}.log")
+
+        if os.path.exists(original_log_path):
+            shutil.move(original_log_path, new_log_path)
 
 def process_line(line):
     if line.startswith("#"):
@@ -42,6 +57,7 @@ def process_line(line):
     project_dir = f".{os.sep}output_bic{os.sep}{project_name}"
     if not os.path.exists(project_dir):
         os.mkdir(project_dir)
+    rename_log_file(project_dir)
     # if project_dir already exists, do not remove the dir,
     # but also copy the jar files (update the jar files and reserve the log files)
     subprocess.run(f"cp *.jar {args.config} {project_dir}", shell=True)
