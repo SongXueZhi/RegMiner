@@ -50,9 +50,7 @@ public class TestCaseMigrator {
             pRFC.setTestCaseFiles(curTestFiles);
             MigratorUtil.mergeTwoVersion_BaseLine(pRFC, bicDirectory);
             // 编译
-            CompileTestEnv env = CommitBuildResult.originalCompileResult.containsKey(bic) ?
-                    CommitBuildResult.originalCompileResult.get(bic).getCompileWay() : compileResult.getCompileWay();
-            compileResult = env == null ? ctContext.compile(OriginCompileFixWay.values()) : ctContext.compile(env);
+            compileResult = compile(bic, ctContext, compileResult);
             // 编译成功后执行测试
             if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
                 TestResult result = test(pRFC.getTestCaseFiles(), ctContext, compileResult.getCompileWay());
@@ -86,10 +84,6 @@ public class TestCaseMigrator {
         List<SourceFile> sourceFiles = pRFC.getSourceFiles();
         MergeTask mergeJavaFileTask = new MergeTask();
         mergeJavaFileTask.addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();
-//        List<String> relatedFiles = new ArrayList<>();
-//        relatedFiles.addAll(mergeJavaFileTask.getMap().keySet());
-//        relatedFiles.addAll(ceTestFiles.stream().map(TestFile::getNewPath).collect(Collectors.toList()));
-//        MigratorUtil.purgeUnlessTestFile(bicDirectory, relatedFiles);
 
         for (Map.Entry<String, ChangedFile> entry : mergeJavaFileTask.getMap().entrySet()) {
             String code = GitUtils.getFileContentAtCommit(bicDirectory, entry.getValue().getNewCommitId(), entry.getKey());
@@ -110,9 +104,7 @@ public class TestCaseMigrator {
                 logger.info("migrate test methods from {} to {}", testFile.getNewCommitId(), filePath);
                 MigratorUtil.mergeFiles(path2ContentMap, bicDirectory);
                 // 编译
-                CompileTestEnv env = CommitBuildResult.originalCompileResult.containsKey(bic) ?
-                        CommitBuildResult.originalCompileResult.get(bic).getCompileWay() : compileResult.getCompileWay();
-                compileResult = env == null ? ctContext.compile(OriginCompileFixWay.values()) : ctContext.compile(env);
+                compileResult = compile(bic, ctContext, compileResult);
                 // 编译成功后执行测试
                 if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
                     finalResult.getCaseResultMap().putAll(test(pRFC.getTestCaseFiles(), ctContext, compileResult.getCompileWay()).getCaseResultMap());
@@ -123,6 +115,12 @@ public class TestCaseMigrator {
                 }
             }
         }
+    }
+
+    private CompileResult compile(String bic, CtContext ctContext, CompileResult compileResult) {
+        CompileTestEnv env = CommitBuildResult.originalCompileResult.containsKey(bic) ?
+                CommitBuildResult.originalCompileResult.get(bic).getCompileWay() : compileResult.getCompileWay();
+        return env == null ? ctContext.compile(OriginCompileFixWay.values()) : ctContext.compile(env);
     }
 
     //TODO Song Xuezhi 现在这样的重构必然会造成损失，有些项目（maven低版本）没有办法只测试一个具体的方法，可能只能测试一个类。

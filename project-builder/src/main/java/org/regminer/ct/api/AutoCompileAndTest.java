@@ -80,7 +80,7 @@ public class AutoCompileAndTest extends Strategy {
             compileResult.setCompileWay(compileTestEnv);
             return compileResult;
         }
-        //TODO 根据编译失败的原因，选择不同的修复方式
+        //根据编译失败的原因，选择不同的修复方式
         //装填编译命令，包括环境配置和编译指令
         //获取最高分的JDK，作为环境配置
         //排序。迁移前，优先修复 pom 问题
@@ -152,8 +152,6 @@ public class AutoCompileAndTest extends Strategy {
         String osName = compileTestEnv.getOsName();
         Compiler compiler = compileTestEnv.getCompiler();
         ModuleNode moduleNode = compileTestEnv.getModuleNode();
-//        List<String> relatedFileList = testCaseXES.stream().map(RelatedTestCase::getRelativeFilePath).collect(Collectors.toList());
-//        MigratorUtil.purgeUnlessTestFile(compileTestEnv.getProjectDir(), relatedFileList);
         for (RelatedTestCase testCase : testCaseXES) {
             String className = testCase.getEnclosingClassName();
             if (!classesToTestWhole.contains(className)) {
