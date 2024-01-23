@@ -75,7 +75,7 @@ public class CompilationUtil {
 
     public static String addOrReplaceMethod(String codeContent, Methodx newMethod) {
         CompilationUnit unit = parseCompliationUnit(codeContent);
-        final int[] affectedLines = {0, 0};
+        final int[] affectedLines = {0, 0, 0};
         String newCodeContent = codeContent;
         try {
             List<Methodx> existingMethods = getAllMethod(codeContent);
@@ -84,8 +84,8 @@ public class CompilationUtil {
             for (Methodx existingMethod : existingMethods) {
                 if (existingMethod.getSignature().equals(newMethod.getSignature())) {
                     // 替换方法
-                    affectedLines[0] = existingMethod.getStartLine() + 1;
-                    affectedLines[1] = existingMethod.getStopLine() + 1;
+                    affectedLines[1] = existingMethod.getStartLine() + 1;
+                    affectedLines[2] = existingMethod.getStopLine() + 1;
                     methodExists = true;
                     break;
                 }
@@ -96,8 +96,9 @@ public class CompilationUtil {
                     @Override
                     public boolean visit(TypeDeclaration typeDecl) {
                         // 记录受影响的行号
-                        affectedLines[0] = unit.getLineNumber(typeDecl.getStartPosition()) + 1;
+                        affectedLines[0] = 1;
                         affectedLines[1] = unit.getLineNumber(typeDecl.getStartPosition()) + 1;
+                        affectedLines[2] = unit.getLineNumber(typeDecl.getStartPosition()) + 1;
                         return false; // 停止访问其他类
                     }
                 });
@@ -116,12 +117,15 @@ public class CompilationUtil {
             int currentLine = 1;
             boolean writen = false;
             while ((line = reader.readLine()) != null) {
-                if (currentLine >= affectedLines[0] && currentLine <= affectedLines[1]) {
+                if (affectedLines[0] == 0 && currentLine >= affectedLines[1] && currentLine <= affectedLines[2]) {
                     // 在受影响的行号范围内，将内容替换为新方法的内容
                     if (!writen) {
                         res.append(newMethod.getMethodDeclaration().toString());
                         writen = true;
                     }
+                } else if (affectedLines[0] == 1 && currentLine == affectedLines[1]) {
+                    res.append(newMethod.getMethodDeclaration().toString());
+                    res.append(line).append(System.lineSeparator());
                 } else {
                     // 在未受影响的行号范围内，保留原有内容
                     res.append(line).append(System.lineSeparator());
