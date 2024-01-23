@@ -173,16 +173,23 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
 
     public TestCaseResult.TestState test(String bic, int index) {
         try {
+            // 找到 bfc 后会清理其他无用测试，因此这里将某一个测试结果作为最终结果大概是合理的
             TestResult testResult = testMigrator.migrateAndTest(pRFC, bic);
-            testStates[index] = testResult.getCaseResultMap().values()
-                    .stream().anyMatch(testCaseResult -> testCaseResult.getState() == TestCaseResult.TestState.PASS) ?
-                    TestCaseResult.TestState.PASS :
-                    TestCaseResult.TestState.FAL;
+            if (testResult.getCaseResultMap().values().stream().anyMatch(testCaseResult -> testCaseResult.getState() == TestCaseResult.TestState.PASS)) {
+                testStates[index] = TestCaseResult.TestState.PASS;
+            } else if (testResult.getCaseResultMap().values().stream().anyMatch(testCaseResult -> testCaseResult.getState() == TestCaseResult.TestState.FAL)) {
+                testStates[index] = TestCaseResult.TestState.FAL;
+            } else if (testResult.getCaseResultMap().values().stream().anyMatch(testCaseResult -> testCaseResult.getState() == TestCaseResult.TestState.CE)) {
+                testStates[index] = TestCaseResult.TestState.CE;
+            } else {
+                testStates[index] = TestCaseResult.TestState.UNKNOWN;
+            }
             return testStates[index];
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return TestCaseResult.TestState.UNKNOWN;
+        testStates[index] = TestCaseResult.TestState.UNKNOWN;
+        return testStates[index];
     }
 
 

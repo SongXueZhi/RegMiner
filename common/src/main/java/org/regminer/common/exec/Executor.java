@@ -1,8 +1,6 @@
 package org.regminer.common.exec;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.model.OS;
 
@@ -16,7 +14,6 @@ import java.util.concurrent.TimeUnit;
  * @author knightsong
  */
 public class Executor {
-    private static final Logger logger = LogManager.getLogger(Executor.class);
     ProcessBuilder pb = new ProcessBuilder();
 
     /**
@@ -44,7 +41,6 @@ public class Executor {
      * @return return result by exec command
      */
     public ExecResult exeCmd(String cmd, int timeout) {
-        logger.debug(cmd);
         ExecResult execResult = new ExecResult();
 
         StringBuilder builder = new StringBuilder();

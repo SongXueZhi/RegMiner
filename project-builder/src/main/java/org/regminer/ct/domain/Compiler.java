@@ -7,7 +7,7 @@ public enum Compiler {
     MVN {
         @Override
         public String getCompileCommand(String osVersion, boolean isMultipleModules, String modulePath) {
-            return isMultipleModules ? "mvn clean install -Dmaven.test.skip=true" : "mvn clean compile";
+            return isMultipleModules ? "mvn clean install -Dmaven.test.skip=true" : "mvn clean compile test-compile";
         }
 
         @Override
@@ -30,9 +30,9 @@ public enum Compiler {
         @Override
         public String getCompileCommand(String osVersion, boolean isMultipleModules, String modulePath) {
             if (osVersion.equals(OS.WINDOWS)) {
-                return isMultipleModules ? "mvnw.exe clean install -Dmaven.test.skip=true" : "mvnw.exe compile";
+                return isMultipleModules ? "mvnw.exe clean install -Dmaven.test.skip=true" : "mvnw.exe compile test-compile";
             } else {
-                return isMultipleModules ? "./mvn clean install -Dmaven.test.skip=true" : "./mvn compile";
+                return isMultipleModules ? "./mvn clean install -Dmaven.test.skip=true" : "./mvn compile test-compile";
             }
         }
 

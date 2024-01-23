@@ -9,7 +9,6 @@ import org.regminer.common.exec.Executor;
 import org.regminer.common.model.ModuleNode;
 import org.regminer.common.model.RelatedTestCase;
 import org.regminer.common.tool.parser.ModuleParser;
-import org.regminer.common.utils.MigratorUtil;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.Compiler;
 import org.regminer.ct.domain.JDKs;
@@ -153,8 +152,8 @@ public class AutoCompileAndTest extends Strategy {
         String osName = compileTestEnv.getOsName();
         Compiler compiler = compileTestEnv.getCompiler();
         ModuleNode moduleNode = compileTestEnv.getModuleNode();
-        List<String> relatedFileList = testCaseXES.stream().map(RelatedTestCase::getRelativeFilePath).collect(Collectors.toList());
-        MigratorUtil.purgeUnlessTestFile(compileTestEnv.getProjectDir(), relatedFileList);
+//        List<String> relatedFileList = testCaseXES.stream().map(RelatedTestCase::getRelativeFilePath).collect(Collectors.toList());
+//        MigratorUtil.purgeUnlessTestFile(compileTestEnv.getProjectDir(), relatedFileList);
         for (RelatedTestCase testCase : testCaseXES) {
             String className = testCase.getEnclosingClassName();
             if (!classesToTestWhole.contains(className)) {

@@ -8,10 +8,7 @@ import org.regminer.common.utils.*;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
 import org.regminer.ct.api.OriginCompileFixWay;
-import org.regminer.ct.model.CommitBuildResult;
-import org.regminer.ct.model.CompileResult;
-import org.regminer.ct.model.CompileTestEnv;
-import org.regminer.ct.model.TestResult;
+import org.regminer.ct.model.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author sxz
@@ -59,7 +55,14 @@ public class TestCaseMigrator {
             compileResult = env == null ? ctContext.compile(OriginCompileFixWay.values()) : ctContext.compile(env);
             // 编译成功后执行测试
             if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
-                finalResult.getCaseResultMap().putAll(test(pRFC.getTestCaseFiles(), ctContext, compileResult.getCompileWay()).getCaseResultMap());
+                TestResult result = test(pRFC.getTestCaseFiles(), ctContext, compileResult.getCompileWay());
+                if (result.getCaseResultMap().values().stream().allMatch(testCaseResult -> testCaseResult.getState() == TestCaseResult.TestState.CE)) {
+                    // 恢复原始情况
+                    bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
+                    ceTestFiles.add(testFile);
+                } else {
+                    finalResult.getCaseResultMap().putAll(result.getCaseResultMap());
+                }
             } else {
                 // 恢复原始情况
                 bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
@@ -69,13 +72,9 @@ public class TestCaseMigrator {
         if (finalResult.isEmpty()) {
             migrateTestMethodAndTest(pRFC, bic, ceTestFiles, ctContext, compileResult, finalResult);
         }
-        // 恢复测试文件，接下来的流程还会用到
+        // 恢复测试文件列表，接下来的流程还会用到
         pRFC.setTestCaseFiles(testFiles);
-        if (!finalResult.isEmpty()) {
-            return finalResult;
-        }
-        logger.debug("compile error after migrate: {}", compileResult.getState());
-        return null; //或许返回NULL可能会引发空指针，但在当前阶段是合理的，如果编译失败，就没有测试结果。
+        return finalResult;
     }
 
     private void migrateTestMethodAndTest(PotentialBFC pRFC, String bic, List<TestFile> ceTestFiles,
@@ -87,11 +86,10 @@ public class TestCaseMigrator {
         List<SourceFile> sourceFiles = pRFC.getSourceFiles();
         MergeTask mergeJavaFileTask = new MergeTask();
         mergeJavaFileTask.addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();
-
-        List<String> relatedFiles = new ArrayList<>();
-        relatedFiles.addAll(mergeJavaFileTask.getMap().keySet());
-        relatedFiles.addAll(ceTestFiles.stream().map(TestFile::getNewPath).collect(Collectors.toList()));
-        MigratorUtil.purgeUnlessTestFile(bicDirectory, relatedFiles);
+//        List<String> relatedFiles = new ArrayList<>();
+//        relatedFiles.addAll(mergeJavaFileTask.getMap().keySet());
+//        relatedFiles.addAll(ceTestFiles.stream().map(TestFile::getNewPath).collect(Collectors.toList()));
+//        MigratorUtil.purgeUnlessTestFile(bicDirectory, relatedFiles);
 
         for (Map.Entry<String, ChangedFile> entry : mergeJavaFileTask.getMap().entrySet()) {
             String code = GitUtils.getFileContentAtCommit(bicDirectory, entry.getValue().getNewCommitId(), entry.getKey());
