@@ -30,14 +30,12 @@ public class BugStorage {
         if (!Configurations.sqlEnable) {
             return;
         }
-        ProjectEntity projectEntity = regression.getProjectEntity();
-        String sql = "INSERT IGNORE INTO regression (regression_uuid,project_uuid,project_full_name," +
-                "bug_id,bfc,buggy,bic," +
-                "work,testcase," +
+//        ProjectEntity projectEntity = regression.getProjectEntity();
+        String sql = "INSERT IGNORE INTO regressions_all (project_name," +
+                "bfc,buggy,bic," +
+                "wc,testcase," +
                 "with_gap) VALUES " +
-                "('" + regression.getRegressionUUID() + "','" + projectEntity.getProjectID() + "','"
-                + projectEntity.getOrganization() + "/" + projectEntity.getProject_name() + "','"
-                + regression.getBugId() + "','" + regression.getBfcId() + "','"
+                "('"+ Configurations.projectName + "','" + regression.getBfcId() + "','"
                 + regression.getBuggyId() + "','" + regression.getBicId() + "','" + regression.getWorkId() + "','"
                 + regression.getTestCase() + "','" + regression.getWithGap() + "')";
         MysqlManager.executeUpdate(sql);

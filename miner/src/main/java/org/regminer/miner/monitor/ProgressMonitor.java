@@ -33,7 +33,7 @@ public class ProgressMonitor {
     public static void retrieveDone(Set<String> doneTaskList) {
         if (Configurations.taskName.equals(Constant.BFC_TASK)) {
             doneTaskList.addAll(new BugRetrieve().getBFCsFromDB());
-        } else if (Configurations.taskName.equals(Constant.BIC_TASK)) {
+        } else {
             Set<String> regressionsInSql = new BugRetrieve().getRegressionsFromDB();
             doneTaskList.addAll(regressionsInSql);
         }

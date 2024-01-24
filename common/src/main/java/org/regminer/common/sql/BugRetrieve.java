@@ -11,7 +11,7 @@ public class BugRetrieve {
         if (!Configurations.sqlEnable) {
             return new HashSet<>();
         }
-        String sql = "select bfc from regression where project_full_name ='" + Configurations.projectName + "'";
+        String sql = "select bfc from regressions_all where project_name ='" + Configurations.projectName + "'";
         Set<String> result = MysqlManager.executeSql(sql);
         return result;
     }

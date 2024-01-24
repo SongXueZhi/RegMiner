@@ -7,11 +7,16 @@ import org.regminer.bic.api.SearchBICContext;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.model.PotentialBFC;
+import org.regminer.common.model.Regression;
+import org.regminer.common.sql.BugStorage;
+import org.regminer.common.sql.MysqlManager;
 import org.regminer.common.tool.SycFileCleanup;
 import org.regminer.miner.SearchBFCContext;
+import org.regminer.miner.monitor.ProgressMonitor;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Author: sxz
@@ -23,6 +28,8 @@ public class Miner {
     protected Logger logger = LogManager.getLogger(Miner.class);
     private SearchBFCContext bfcContext;
     private SearchBICContext bicContext;
+
+    private  BugStorage bugStorage =  new BugStorage();
 
     public Miner(SearchBFCContext bfcEvaluator, SearchBICContext bicFinder) {
         this.bfcContext = bfcEvaluator;
@@ -50,11 +57,26 @@ public class Miner {
     }
 
     private void searchBIC(PotentialBFC pBFC) {
+        Triple<String, String, Integer> bic = null;
         try {
-            Triple<String, String, Integer> bic = bicContext.search(pBFC);
+            bic = bicContext.search(pBFC);
             logger.info("find bic: working {}, bic {} {}", bic.getLeft(), bic.getMiddle(), bic.getRight());
         } catch (Exception e) {
             logger.info("find bic failed, bfc: {}, msg: {}", pBFC.getCommit().getName(), e.getMessage());
         }
+        try {
+            if (bic != null){
+                bugStorage.saveRegression(enCapRegression(pBFC, bic));
+            }
+            ProgressMonitor.updateState(pBFC.getCommit().getName());
+        }catch (Exception e){
+            logger.error("save regression failed, bfc: {}, msg: {}", pBFC.getCommit(), e.getMessage());
+        }
+    }
+
+    private Regression enCapRegression(PotentialBFC pbfc, Triple<String, String, Integer> bic){
+        return new Regression(pbfc.getCommit().getName(),pbfc.getBuggyCommitId(),bic.getMiddle(),
+                bic.getLeft(), pbfc.joinTestcaseString(),bic.getRight());
+
     }
 }
