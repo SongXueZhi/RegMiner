@@ -23,7 +23,7 @@ public class SearchBFCContext {
 
     public List<PotentialBFC> searchBFC() throws Exception {
         List<PotentialBFC> potentialBFCS = pbfcFilterStrategy.filter();
-//        ProgressMonitor.rePlan(potentialBFCS);
+        ProgressMonitor.rePlan(potentialBFCS);
         bfcSearchStrategy.searchRealBFC(potentialBFCS);
         return potentialBFCS;
     }
