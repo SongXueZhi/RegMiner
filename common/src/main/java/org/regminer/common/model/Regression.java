@@ -51,6 +51,17 @@ public class Regression {
         this.withGap = withGap;
     }
 
+    public Regression(String bfcId, String buggyId,
+                      String bicId, String workId,
+                      String testCase,
+                      int withGap) {
+        this.bfcId = bfcId;
+        this.buggyId = buggyId;
+        this.bicId = bicId;
+        this.workId = workId;
+        this.testCase = testCase;
+        this.withGap = withGap;
+    }
     public ProjectEntity getProjectEntity() {
         return projectEntity;
     }
