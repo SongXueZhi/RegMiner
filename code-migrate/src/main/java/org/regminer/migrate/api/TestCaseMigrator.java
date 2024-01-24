@@ -96,6 +96,12 @@ public class TestCaseMigrator {
             if (testFile.getTestMethodMap().values().stream().findFirst().isPresent()) {
                 String filePath = testFile.getTestMethodMap().values().stream().findFirst().get().getRelativeFilePath();
                 String code = FileUtilx.readContentFromFile(new File(bicDirectory, filePath));
+                if (code == null) {
+                    // bic 中不存在这个文件
+                    // 已经先迁移过整个文件并且编译失败了，那么大概率是在这个 bfc 新增的功能
+                    logger.info("BFC may be introducing a new feature rather than actually fixing an existing bug.");
+                    continue;
+                }
                 for (Map.Entry<String, RelatedTestCase> entry : testFile.getTestMethodMap().entrySet()) {
                     // 迁移方法体
                     code = CompilationUtil.addOrReplaceMethod(code, entry.getValue().getMethod());

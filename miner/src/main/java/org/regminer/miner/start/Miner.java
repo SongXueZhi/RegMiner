@@ -38,8 +38,7 @@ public class Miner {
             if (Configurations.taskName.equals(Constant.BFC_BIC_TASK)) {
                 logger.info("start to search bic");
                 for (PotentialBFC pBFC : pBFCs) {
-                    Triple<String, String, Integer> bic = bicContext.search(pBFC);
-                    logger.info("find bic: working {}, bic {} {}", bic.getLeft(), bic.getMiddle(), bic.getRight());
+                    searchBIC(pBFC);
                 }
             }
         } catch (Exception exception) {
@@ -47,6 +46,15 @@ public class Miner {
         } finally {
             File file = new File(Configurations.cachePath, Configurations.projectName);
             new SycFileCleanup().cleanDirectory(file);
+        }
+    }
+
+    private void searchBIC(PotentialBFC pBFC) {
+        try {
+            Triple<String, String, Integer> bic = bicContext.search(pBFC);
+            logger.info("find bic: working {}, bic {} {}", bic.getLeft(), bic.getMiddle(), bic.getRight());
+        } catch (Exception e) {
+            logger.info("find bic failed, bfc: {}, msg: {}", pBFC.getCommit(), e.getMessage());
         }
     }
 }
