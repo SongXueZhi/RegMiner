@@ -54,7 +54,7 @@ public class Miner {
             Triple<String, String, Integer> bic = bicContext.search(pBFC);
             logger.info("find bic: working {}, bic {} {}", bic.getLeft(), bic.getMiddle(), bic.getRight());
         } catch (Exception e) {
-            logger.info("find bic failed, bfc: {}, msg: {}", pBFC.getCommit(), e.getMessage());
+            logger.info("find bic failed, bfc: {}, msg: {}", pBFC.getCommit().getName(), e.getMessage());
         }
     }
 }
