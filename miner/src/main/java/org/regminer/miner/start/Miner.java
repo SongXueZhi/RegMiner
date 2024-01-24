@@ -7,8 +7,10 @@ import org.regminer.bic.api.SearchBICContext;
 import org.regminer.common.constant.Configurations;
 import org.regminer.common.constant.Constant;
 import org.regminer.common.model.PotentialBFC;
+import org.regminer.common.tool.SycFileCleanup;
 import org.regminer.miner.SearchBFCContext;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -29,18 +31,30 @@ public class Miner {
 
     public void start() {
         logger.info("Start {} task on {}...", Configurations.taskName, Configurations.projectName);
+        Thread.currentThread().setName(Configurations.projectName);
         try {
             List<PotentialBFC> pBFCs = bfcContext.searchBFC();
             logger.info("find {} BFCs", pBFCs.size());
             if (Configurations.taskName.equals(Constant.BFC_BIC_TASK)) {
                 logger.info("start to search bic");
                 for (PotentialBFC pBFC : pBFCs) {
-                    Triple<String, String, Integer> bic = bicContext.search(pBFC);
-                    logger.info("find bic: {} {} {}", bic.getLeft(), bic.getMiddle(), bic.getRight());
+                    searchBIC(pBFC);
                 }
             }
         } catch (Exception exception) {
             logger.error(exception.getMessage());
+        } finally {
+            File file = new File(Configurations.cachePath, Configurations.projectName);
+            new SycFileCleanup().cleanDirectory(file);
+        }
+    }
+
+    private void searchBIC(PotentialBFC pBFC) {
+        try {
+            Triple<String, String, Integer> bic = bicContext.search(pBFC);
+            logger.info("find bic: working {}, bic {} {}", bic.getLeft(), bic.getMiddle(), bic.getRight());
+        } catch (Exception e) {
+            logger.info("find bic failed, bfc: {}, msg: {}", pBFC.getCommit(), e.getMessage());
         }
     }
 }

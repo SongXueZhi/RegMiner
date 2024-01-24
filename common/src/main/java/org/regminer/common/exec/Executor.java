@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
  * @author knightsong
  */
 public class Executor {
-
     ProcessBuilder pb = new ProcessBuilder();
 
     /**
@@ -42,7 +41,6 @@ public class Executor {
      * @return return result by exec command
      */
     public ExecResult exeCmd(String cmd, int timeout) {
-
         ExecResult execResult = new ExecResult();
 
         StringBuilder builder = new StringBuilder();

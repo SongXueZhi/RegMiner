@@ -13,6 +13,8 @@
 # Then this script will generate log files in each folder.
 import subprocess
 import os
+import shutil
+from datetime import datetime
 from multiprocessing import Pool
 import argparse
 
@@ -23,34 +25,66 @@ parser.add_argument('-jar', '--jar', help='name of jar file')
 parser.add_argument('-ws', '--workspace', help='workspace path')
 parser.add_argument('-cfg', '--config', help='path of config file', default='env.properties')
 parser.add_argument('-t', '--task', help='task', default='bfc')
+parser.add_argument('-f', '--filter', help='filter', default='filter.txt')
 parser.add_argument('-maxp', '--max_processes', help='max process count', default=4, type=int)
 
 args = parser.parse_args()
 
+def rename_log_file(project_dir):
+    logs_dir = os.path.join(project_dir, "logs")
 
-def process_line(project_name):
+    if os.path.exists(logs_dir):
+        # Get current date and time as a timestamp
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+
+        # Rename app.log to app-当前日期时间戳.log
+        original_log_path = os.path.join(logs_dir, "app.log")
+        new_log_path = os.path.join(logs_dir, f"app-{timestamp}.log")
+
+        if os.path.exists(original_log_path):
+            shutil.move(original_log_path, new_log_path)
+
+def process_line(line):
+    if line.startswith("#"):
+        return  # Skip comment lines
+    line = line.strip().split()
+    project_name = line[0]
+    commits = line[1:]
+
     print("start mining: " + project_name)
     project_name = project_name.strip()
     # for each project, create a folder, then copy all jars and config file to the folder
-    project_dir = f"{project_name}_out"
+    project_dir = f".{os.sep}output_bic{os.sep}{project_name}"
     if not os.path.exists(project_dir):
         os.mkdir(project_dir)
+    rename_log_file(project_dir)
     # if project_dir already exists, do not remove the dir,
     # but also copy the jar files (update the jar files and reserve the log files)
-    subprocess.run(f"cp *.jar {args.config} .{os.sep}{project_dir}", shell=True)
+    subprocess.run(f"cp *.jar {args.config} {project_dir}", shell=True)
     # run the jar in the folder belongs to the project
     # jar parameter example:  -ws /Users/reg_space/ -pj univocity-parsers -cfg env.properties -t bfc (read README)
     # if the parameter shares the same name with the script parameter, use the script parameter
-    subprocess.run(['java', '-jar', args.jar,
-                    '-ws', args.workspace,
-                    '-pj', project_name,
-                    '-cfg', args.config,
-                    '-t', args.task
-                    ], cwd=f'.{os.sep}{project_dir}')
-
+    if commits:
+        filter_path = os.path.join(project_dir, args.filter)
+        with open(filter_path, 'w') as filter_file:
+            filter_file.write('\n'.join(commits))
+        subprocess.run(['java', '-jar', args.jar,
+                        '-ws', args.workspace,
+                        '-pj', project_name,
+                        '-cfg', args.config,
+                        '-t', args.task,
+                        '-f', args.filter
+                        ], cwd=project_dir)
+    else:
+        subprocess.run(['java', '-jar', args.jar,
+                        '-ws', args.workspace,
+                        '-pj', project_name,
+                        '-cfg', args.config,
+                        '-t', args.task
+                        ], cwd=project_dir)
 
 if __name__ == '__main__':
-    with open('project.in', 'r') as f:
+    with open('project_commits.in', 'r') as f:
         lines = f.readlines()
 
     with Pool(processes=args.max_processes) as p:

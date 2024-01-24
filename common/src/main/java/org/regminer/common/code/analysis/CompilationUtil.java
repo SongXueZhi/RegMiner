@@ -5,6 +5,8 @@ import org.eclipse.jdt.core.dom.*;
 import org.regminer.common.code.analysis.ast.JdtClassRetriever;
 import org.regminer.common.model.Methodx;
 
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,5 +71,72 @@ public class CompilationUtil {
         unit.accept(retriever);
         result = retriever.getQualityName();
         return result;
+    }
+
+    public static String addOrReplaceMethod(String codeContent, Methodx newMethod) {
+        CompilationUnit unit = parseCompliationUnit(codeContent);
+        final int[] affectedLines = {0, 0, 0};
+        String newCodeContent = codeContent;
+        try {
+            List<Methodx> existingMethods = getAllMethod(codeContent);
+            // 检查是否存在与newMethod签名相同的方法
+            boolean methodExists = false;
+            for (Methodx existingMethod : existingMethods) {
+                if (existingMethod.getSignature().equals(newMethod.getSignature())) {
+                    // 替换方法
+                    affectedLines[1] = existingMethod.getStartLine() + 1;
+                    affectedLines[2] = existingMethod.getStopLine() + 1;
+                    methodExists = true;
+                    break;
+                }
+            }
+            // 如果不存在，则插入新的方法节点
+            if (!methodExists) {
+                unit.accept(new ASTVisitor() {
+                    @Override
+                    public boolean visit(TypeDeclaration typeDecl) {
+                        // 记录受影响的行号
+                        affectedLines[0] = 1;
+                        affectedLines[1] = unit.getLineNumber(typeDecl.getStartPosition()) + 1;
+                        affectedLines[2] = unit.getLineNumber(typeDecl.getStartPosition()) + 1;
+                        return false; // 停止访问其他类
+                    }
+                });
+            }
+            newCodeContent = replaceMethod(codeContent, newMethod, affectedLines);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return newCodeContent;
+    }
+
+    private static String replaceMethod(String codeContent, Methodx newMethod, int[] affectedLines) {
+        try (BufferedReader reader = new BufferedReader(new StringReader(codeContent))) {
+            StringBuilder res = new StringBuilder();
+            String line;
+            int currentLine = 1;
+            boolean writen = false;
+            while ((line = reader.readLine()) != null) {
+                if (affectedLines[0] == 0 && currentLine >= affectedLines[1] && currentLine <= affectedLines[2]) {
+                    // 在受影响的行号范围内，将内容替换为新方法的内容
+                    if (!writen) {
+                        res.append(newMethod.getMethodDeclaration().toString());
+                        writen = true;
+                    }
+                } else if (affectedLines[0] == 1 && currentLine == affectedLines[1]) {
+                    res.append(newMethod.getMethodDeclaration().toString());
+                    res.append(line).append(System.lineSeparator());
+                } else {
+                    // 在未受影响的行号范围内，保留原有内容
+                    res.append(line).append(System.lineSeparator());
+                }
+                currentLine++;
+            }
+            // 获取替换后的代码
+            return res.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return codeContent;
     }
 }

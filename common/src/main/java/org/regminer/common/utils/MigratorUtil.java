@@ -55,7 +55,6 @@ public class MigratorUtil {
 
         // :TestDenpendency BlocK
         File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
-
         mergeTestFiles(bfcDir, tDir, testSuite, underTestDirJavaFiles, sourceFiles);
     }
 
@@ -70,11 +69,34 @@ public class MigratorUtil {
             if (newPathInBfc.contains(Constant.NONE_PATH)) {
                 continue;
             }
-            String fileContent = GitUtils.getFileContentAtCommit(bfcDir, entry.getValue().getNewCommitId(), newPathInBfc);
+            String fileContent = GitUtils.getFileContentAtCommit(tDir, entry.getValue().getNewCommitId(), newPathInBfc);
             if (fileContent == null) {
                 continue; // 文件在指定 commit 中不存在
             }
 
+            File tFile = new File(tDir, newPathInBfc);
+            try {
+                if (tFile.exists()) {
+                    FileUtils.deleteQuietly(tFile);
+                }
+                // 直接copy过去
+                if (!tFile.getParentFile().exists()) {
+                    tFile.getParentFile().mkdirs();
+                }
+                FileUtils.writeStringToFile(tFile, fileContent, StandardCharsets.UTF_8, false);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+    public static void mergeFiles(Map<String, String> path2ContentMap, File tDir) {
+        for (Map.Entry<String, String> entry : path2ContentMap.entrySet()) {
+            String newPathInBfc = entry.getKey();
+            if (newPathInBfc.contains(Constant.NONE_PATH)) {
+                continue;
+            }
+            String fileContent = entry.getValue();
             File tFile = new File(tDir, newPathInBfc);
             try {
                 if (tFile.exists()) {
@@ -125,6 +147,42 @@ public class MigratorUtil {
             }
             FileUtils.copyFileToDirectory(file, file1);
         }
+    }
+
+    public static void purgeUnlessTestFile(File tDir, List<String> relatedFileList) {
+        // 从 tDir 中，删除所有不在 relatedFileList 中的 test 文件
+        List<String> fileNameList = relatedFileList.stream().map(s -> getFileName(s)).collect(Collectors.toList());
+        // 递归处理目录及其子目录
+        processDirectory(tDir, fileNameList);
+    }
+
+    private static void processDirectory(File directory, List<String> fileNameList) {
+        File[] files = directory.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && testFilter(file.getPath()) && file.getName().endsWith(".java")
+                        && !fileNameList.contains(file.getName().toLowerCase())) {
+                    // 如果文件是测试文件并且不在相关文件列表中，则删除
+                    file.delete();
+                } else if (file.isDirectory()) {
+                    // 如果是子目录，递归处理
+                    processDirectory(file, fileNameList);
+                }
+            }
+        }
+    }
+
+    private static String getFileName(String path) {
+        String[] strs = path.split("/");
+        return strs[strs.length - 1].toLowerCase();
+    }
+
+    public static boolean testFilter(String path) {
+        String fileName = getFileName(path);
+        // test 目录下的 test 文件
+        return (path.toLowerCase().contains("/test/") || path.toLowerCase().contains("/tests/")) &&
+                (fileName.toLowerCase().startsWith("test") || fileName.toLowerCase().endsWith("test.java") || fileName.toLowerCase().endsWith("tests.java"));
     }
 
     public static void purgeUnlessTestcase(List<TestFile> testSuiteList, PotentialBFC pRFC) {
