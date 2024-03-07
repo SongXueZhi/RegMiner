@@ -14,5 +14,8 @@ public abstract class BICSearchStrategy {
 
     public abstract String[] getSearchSpace(String startPoint, File codeDir);
 
+    public abstract String[] getSearchSpaceUntilMergeNode(String s, File file);
+
+
     public abstract Triple<String, String, Integer> search(PotentialBFC potentialBFC);
 }

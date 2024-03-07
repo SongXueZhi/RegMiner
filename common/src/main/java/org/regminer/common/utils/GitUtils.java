@@ -153,6 +153,24 @@ public class GitUtils {
         return revList;
     }
 
+    public static List<String> getParentsUntilMergeNode(String commitId, File codeDir) {
+        List<String> revList = new ArrayList<>();
+        try (Repository repo = RepositoryProvider.getRepoFromLocal(codeDir)) {
+            // Use RevWalk to traverse the commit history starting from the specified commit ID
+            try (RevWalk walk = new RevWalk(repo)) {
+                RevCommit commit = walk.parseCommit(repo.resolve(commitId));
+                while (commit.getParents().length == 1) {
+                    commit = walk.parseCommit(commit.getParents()[0]);
+                    revList.add(commit.getName());
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return revList;
+    }
+
 
     public static Map<ObjectId, List<RevCommit>> buildChildrenMap(Git git, RevCommit endCommit) throws IOException {
         Map<ObjectId, List<RevCommit>> map = new HashMap<>();
