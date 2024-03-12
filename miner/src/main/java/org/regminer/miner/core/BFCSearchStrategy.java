@@ -15,4 +15,6 @@ import java.util.List;
 public abstract class BFCSearchStrategy {
     protected Logger logger = LogManager.getLogger(this);
     public abstract void searchRealBFC(List<PotentialBFC> potentialBFCs);
+
+     public  abstract boolean confirmPBFCtoBFC(PotentialBFC potentialBFC);
 }

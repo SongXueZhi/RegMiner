@@ -206,4 +206,17 @@ public class BFCEvaluator extends BFCSearchStrategy {
     public void searchRealBFC(List<PotentialBFC> potentialBFCs) {
         evoluteBFCList(potentialBFCs);
     }
+
+    @Override
+    public boolean confirmPBFCtoBFC(PotentialBFC potentialBFC) {
+        boolean isBFC = true;
+        evolute(potentialBFC);
+        if (potentialBFC.getTestCaseFiles() == null || potentialBFC.getTestCaseFiles().isEmpty()) {
+            isBFC = false;
+        }
+        if (isBFC) {
+            bugStorage.saveBFC(potentialBFC);
+        }
+        return isBFC;
+    }
 }

@@ -28,4 +28,14 @@ public class SearchBFCContext {
         return potentialBFCS;
     }
 
+    public List<PotentialBFC> searchPotentialBFC() throws Exception {
+        List<PotentialBFC> potentialBFCS = pbfcFilterStrategy.filter();
+        ProgressMonitor.rePlan(potentialBFCS);
+        return potentialBFCS;
+    }
+
+    public boolean confirmPBFCtoBFC(PotentialBFC potentialBFC) {
+        return bfcSearchStrategy.confirmPBFCtoBFC(potentialBFC);
+    }
+
 }

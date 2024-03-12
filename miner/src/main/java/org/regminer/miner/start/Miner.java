@@ -40,14 +40,20 @@ public class Miner {
         logger.info("Start {} task on {}...", Configurations.taskName, Configurations.projectName);
         Thread.currentThread().setName(Configurations.projectName);
         try {
-            List<PotentialBFC> pBFCs = bfcContext.searchBFC();
-            logger.info("find {} BFCs", pBFCs.size());
-            if (Configurations.taskName.equals(Constant.BFC_BIC_TASK)) {
-                logger.info("start to search bic");
-                for (PotentialBFC pBFC : pBFCs) {
-                    searchBIC(pBFC);
+            List<PotentialBFC> pBFCs = bfcContext.searchPotentialBFC();
+            boolean isBFC =false;
+            int bfcNum = 0;
+            for (PotentialBFC pBFC : pBFCs) {
+                isBFC = bfcContext.confirmPBFCtoBFC(pBFC);
+                if (isBFC){
+                    bfcNum++;
+                    if (Configurations.taskName.equals(Constant.BFC_BIC_TASK)) {
+                        logger.info("start to search bic");
+                        searchBIC(pBFC);
+                    }
                 }
             }
+            logger.info("total bfc: {}, find bfc: {}", pBFCs.size(), bfcNum);
         } catch (Exception exception) {
             logger.error(exception.getMessage());
         } finally {
