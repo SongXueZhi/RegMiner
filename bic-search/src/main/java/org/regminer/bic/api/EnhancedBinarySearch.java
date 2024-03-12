@@ -14,9 +14,7 @@ import org.regminer.ct.model.TestResult;
 import org.regminer.migrate.api.TestCaseMigrator;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author: sxz
@@ -24,7 +22,7 @@ import java.util.List;
  * @Description:
  */
 public class EnhancedBinarySearch extends BICSearchStrategy {
-    final int level = 0;
+    static final int LEVEL = 3;
     protected Logger logger = LogManager.getLogger(EnhancedBinarySearch.class);
     TestCaseResult.TestState[] testStates; // 切勿直接访问该数组
     //XXX:CompileErrorSearch block
@@ -56,6 +54,39 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         return candidateList.toArray(candidateList.toArray(new String[0]));
     }
 
+    @Override
+    public String[] getSearchSpaceUntilMergeNode(String startPoint, File coeDir) {
+        // 从上一个 merge commit 到 startPoint
+        List<String> candidateList = GitUtils.getParentsUntilMergeNode(startPoint, coeDir);
+        Collections.reverse(candidateList);
+        return candidateList.toArray(candidateList.toArray(new String[0]));
+    }
+
+    private Map<String, Integer> getIndexMapping(String[] arr, String[] subArr) {
+        Map<String, Integer> indexMap = new HashMap<>();
+
+        for (int i = 0; i < arr.length; i++) {
+            indexMap.put(arr[i], i);
+        }
+
+        Map<String, Integer> result = new HashMap<>();
+        for (String element : subArr) {
+            if (indexMap.containsKey(element)) {
+                result.put(element, indexMap.get(element));
+            }
+        }
+
+        return result;
+    }
+
+    private int getIndex(Map<String, Integer> commit2Idx, String commit, int defaultIdx) {
+        if (commit2Idx == null) {
+            return defaultIdx;
+        }
+        return commit2Idx.getOrDefault(commit, defaultIdx);
+    }
+
+
     //该算法实际上是将git bisect的功能阉割实现了一遍，gitbisect实际上会考虑图的拓扑结构
     //这里我的考虑方式是使用拓扑排序，将提交历史变成线性结构。这是一种退而求其次的方式，但保证了真实的父子关系。
     @Override
@@ -73,9 +104,20 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
             testStates = new TestCaseResult.TestState[arr.length];
             Arrays.fill(testStates, TestCaseResult.TestState.NOMARK);
             // recursionBinarySearch(arr, 1, arr.length - 1);//乐观二分查找，只要不能编译，就往最新的时间走
-            int a = search(arr, 1, arr.length - 1); // 指数跳跃二分查找 XXX:CompileErrorSearch
+            int a = search(arr, 1, arr.length - 1, null); // 指数跳跃二分查找 XXX:CompileErrorSearch
 
             // 处理search结果
+
+            // 可能是跳跃跨度过大，fal 节点与上一个节点不在一条支线上
+            // 另一条支线可能没有待测功能，导致全是 CE
+            if (a < 0 && passPoint < 0) {
+                // 单独搜索 fal commit 的直系 parents 链，直到上一个 merge 节点
+                String[] subSpace = getSearchSpaceUntilMergeNode(arr[falPoint], pRFC.fileMap.get(bfcId));
+                logger.info("start search sub space, end idx {}, commit: {}, size is {}", falPoint, arr[falPoint], subSpace.length);
+                Map<String, Integer> commit2Idx = getIndexMapping(arr, subSpace);
+                a = search(subSpace, 1, subSpace.length - 1, commit2Idx);
+            }
+
             //have pass but not hit regression
             if (a < 0 && passPoint >= 0) {
                 if (passPoint > falPoint) {
@@ -118,9 +160,9 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         }
     }
 
+
     //该算法实际上是将git bisect的功能阉割实现了一遍，gitbisect实际上会考虑图的拓扑结构
     //这里我的考虑方式是使用拓扑排序，将提交历史变成线性结构。这是一种退而求其次的方式，但保证了真实的父子关系。
-
     public void searchStepByStep(String[] arr) {
         int now = passPoint + 1;
         int i = 0;
@@ -274,7 +316,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
      * @param high
      * @return if find regression return working index
      */
-    public int search(String[] arr, int low, int high) {
+    public int search(String[] arr, int low, int high, Map<String, Integer> commit2Idx) {
         // 失败条件
         if (low > high || low < 0 || high > arr.length - 1) {
             logger.info("search fal");
@@ -283,40 +325,40 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
 
         int middle = (low + high) / 2;
         // 查找成功条件
-        TestCaseResult.TestState result = getTestResult(arr[middle], middle);
+        TestCaseResult.TestState result = getTestResult(arr[middle], getIndex(commit2Idx, arr[middle], middle));
 
         if (result == TestCaseResult.TestState.FAL && middle - 1 >= 0
-                && getTestResult(arr[middle - 1], middle - 1) == TestCaseResult.TestState.PASS) {
+                && getTestResult(arr[middle - 1], getIndex(commit2Idx, arr[middle - 1], middle - 1)) == TestCaseResult.TestState.PASS) {
             return middle - 1;
         }
         if (result == TestCaseResult.TestState.PASS && middle + 1 < arr.length
-                && getTestResult(arr[middle + 1], middle + 1) == TestCaseResult.TestState.FAL) {
+                && getTestResult(arr[middle + 1], getIndex(commit2Idx, arr[middle + 1], middle + 1)) == TestCaseResult.TestState.FAL) {
             return middle;
         }
         // 查找策略
         if (result == TestCaseResult.TestState.CE) {
             // 指数跳跃查找
-            int left = expLeftBoundary(arr, low, middle, 0);
+            int left = expLeftBoundary(arr, low, middle, 0,commit2Idx);
 
-            if (left != -1 && getTestResult(arr[left], left) == TestCaseResult.TestState.FAL) {
+            if (left != -1 && getTestResult(arr[left], getIndex(commit2Idx, arr[left], left)) == TestCaseResult.TestState.FAL) {
                 // 往附近看一眼
-                if (middle - 1 >= 0 && getTestResult(arr[left - 1], left - 1) == TestCaseResult.TestState.PASS) {
+                if (middle - 1 >= 0 && getTestResult(arr[left - 1], getIndex(commit2Idx, arr[left - 1], left - 1)) == TestCaseResult.TestState.PASS) {
                     return left - 1;
                 }
                 // 左边界开始新的查找
-                int a = search(arr, low, left);
+                int a = search(arr, low, left, commit2Idx);
                 if (a != -1) {
                     return a;
                 }
             }
-            int right = expRightBoundary(arr, middle, high, 0);
+            int right = expRightBoundary(arr, middle, high, 0, commit2Idx);
 
-            if (right != -1 && getTestResult(arr[right], right) == TestCaseResult.TestState.PASS) {
+            if (right != -1 && getTestResult(arr[right], getIndex(commit2Idx, arr[right], right)) == TestCaseResult.TestState.PASS) {
                 // 往附近看一眼
-                if (middle + 1 < arr.length && getTestResult(arr[right + 1], right + 1) == TestCaseResult.TestState.FAL) {
+                if (middle + 1 < arr.length && getTestResult(arr[right + 1], getIndex(commit2Idx, arr[right + 1], right + 1)) == TestCaseResult.TestState.FAL) {
                     return right;
                 }
-                int b = search(arr, right, high);
+                int b = search(arr, right, high, commit2Idx);
                 if (b != -1) {
                     return b;
                 }
@@ -325,32 +367,32 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
             return -1;
         } else if (result == TestCaseResult.TestState.FAL) {
             // notest 等unresolved的情况都乐观的往右
-            return search(arr, low, middle - 1);// 向左
+            return search(arr, low, middle - 1, commit2Idx);// 向左
         } else {
-            return search(arr, middle + 1, high); // 向右
+            return search(arr, middle + 1, high, commit2Idx); // 向右
         }
     }
 
-    public int expLeftBoundary(String[] arr, int low, int high, int index) {
+    public int expLeftBoundary(String[] arr, int low, int high, int index, Map<String, Integer> commit2Idx) {
         int left = high;
         TestCaseResult.TestState status;
-        int pos = -1;
+        int pos;
         for (int i = 0; i < 18; i++) {
             if (left < low) {
                 return -1;
             } else {
                 pos = left - (int) Math.pow(2, i);
                 if (pos < low) {
-                    if (index < level) {
-                        return expLeftBoundary(arr, low, left, index + 1);
+                    if (index < LEVEL) {
+                        return expLeftBoundary(arr, low, left, index + 1, commit2Idx);
                     } else {
                         return -1;
                     }
                 }
                 left = pos;
-                status = getTestResult(arr[left], left);
+                status = getTestResult(arr[left], getIndex(commit2Idx, arr[left], left));
                 if (status != TestCaseResult.TestState.CE) {
-                    return rightTry(arr, left, high);
+                    return rightTry(arr, left, high, commit2Idx);
                 }
             }
 
@@ -358,10 +400,10 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         return -1;
     }
 
-    public int rightTry(String[] arr, int low, int high) {
+    public int rightTry(String[] arr, int low, int high, Map<String, Integer> commit2Idx) {
         int right = low;
         TestCaseResult.TestState status;
-        int pos = -1;
+        int pos;
         for (int i = 0; i < 18; i++) {
             if (right > high) {
                 return right;
@@ -370,7 +412,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
                 if (pos > high) {
                     return right;
                 }
-                status = getTestResult(arr[pos], pos);
+                status = getTestResult(arr[pos], getIndex(commit2Idx, arr[pos], pos));
                 if (status == TestCaseResult.TestState.CE) {
                     return right;
                 } else {
@@ -381,10 +423,10 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         return right;
     }
 
-    public int leftTry(String[] arr, int low, int high) {
+    public int leftTry(String[] arr, int low, int high, Map<String, Integer> commit2Idx) {
         int left = high;
         TestCaseResult.TestState status;
-        int pos = -1;
+        int pos;
         for (int i = 0; i < 18; i++) {
             if (left < low) {
                 return left;
@@ -393,7 +435,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
                 if (pos < low) {
                     return left;
                 }
-                status = getTestResult(arr[pos], pos);
+                status = getTestResult(arr[pos], getIndex(commit2Idx, arr[pos], pos));
                 if (status == TestCaseResult.TestState.CE) {
                     return left;
                 } else {
@@ -404,26 +446,26 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         return left;
     }
 
-    public int expRightBoundary(String[] arr, int low, int high, int index) {
+    public int expRightBoundary(String[] arr, int low, int high, int index, Map<String, Integer> commit2Idx) {
         int right = low;
         TestCaseResult.TestState status;
-        int pos = -1;
+        int pos;
         for (int i = 0; i < 18; i++) {
             if (right > high) {
                 return -1;
             } else {
                 pos = right + (int) Math.pow(2, i);
                 if (pos > high) {
-                    if (index < level) {
-                        return expRightBoundary(arr, right, high, index + 1);
+                    if (index < LEVEL) {
+                        return expRightBoundary(arr, right, high, index + 1, commit2Idx);
                     } else {
                         return -1;
                     }
                 }
                 right = pos;
-                status = getTestResult(arr[right], right);
+                status = getTestResult(arr[right], getIndex(commit2Idx, arr[right], right));
                 if (status != TestCaseResult.TestState.CE) {
-                    return leftTry(arr, low, right);
+                    return leftTry(arr, low, right, commit2Idx);
                 }
             }
         }

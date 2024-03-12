@@ -4,7 +4,9 @@
 # -ws: workspace path, which has a folder named "meta_projects", and the meta_projects folder contains all the projects
 # -cfg: config used by RegMiner jar(recommended to put in the same folder with this script), default is env.properties
 # -t: task name, 'bfc' is for mining general bugs, 'bfc&bic is for mining regressions', default is bfc
+# -f: filter file(filter commits), default is filter.txt
 # -maxp: max process number, default is 4
+# -pj: the file that contains the projects to mine, default is project_commits.in
 #
 # You should also provide a file named "project.in"(in the same folder),
 # which contains the names of projects you want to mine.
@@ -13,7 +15,9 @@
 # Then this script will generate log files in each folder.
 import subprocess
 import os
+import time
 import shutil
+import psutil
 from datetime import datetime
 from multiprocessing import Pool
 import argparse
@@ -27,10 +31,32 @@ parser.add_argument('-cfg', '--config', help='path of config file', default='env
 parser.add_argument('-t', '--task', help='task', default='bfc')
 parser.add_argument('-f', '--filter', help='filter', default='filter.txt')
 parser.add_argument('-maxp', '--max_processes', help='max process count', default=4, type=int)
+parser.add_argument('-pj', '--project_file', help='project file', default='project_commits.in')
 
 args = parser.parse_args()
 
+
+def kill_java_processes():
+    for proc in psutil.process_iter(['pid', 'name']):
+        if proc.info['name'] == 'java':
+            pid = proc.pid
+            os.kill(pid, 9)
+
+
+def split_list(input_list, size):
+    """
+    Split the given list into multiple sub-lists of specified size.
+    :param input_list: The original list.
+    :param size: The specified size.
+    :return: A list of sub-lists.
+    """
+    return [input_list[i:i + size] for i in range(0, len(input_list), size)]
+
+
 def rename_log_file(project_dir):
+    if os.path.exists(f"{project_dir}{os.sep}state"):  # remove the state file
+        os.remove(f"{project_dir}{os.sep}state")
+
     logs_dir = os.path.join(project_dir, "logs")
 
     if os.path.exists(logs_dir):
@@ -43,6 +69,7 @@ def rename_log_file(project_dir):
 
         if os.path.exists(original_log_path):
             shutil.move(original_log_path, new_log_path)
+
 
 def process_line(line):
     if line.startswith("#"):
@@ -83,9 +110,21 @@ def process_line(line):
                         '-t', args.task
                         ], cwd=project_dir)
 
+
 if __name__ == '__main__':
-    with open('project_commits.in', 'r') as f:
+    with open(args.project_file, 'r') as f:
         lines = f.readlines()
 
-    with Pool(processes=args.max_processes) as p:
-        p.map(process_line, lines)
+    split_line_lists = split_list(lines, args.max_processes)
+    for line_list in split_line_lists:
+        # with Pool(processes=len(line_list)) as p:
+        #     p.map(process_line, line_list)
+        pool = Pool(processes=len(line_list))
+        pool.map(process_line, line_list)
+        pool.close()
+        pool.join()
+        time.sleep(10)
+        kill_java_processes()
+        print("Killed java processes above!")
+        time.sleep(1)
+
