@@ -4,7 +4,9 @@
 # -ws: workspace path, which has a folder named "meta_projects", and the meta_projects folder contains all the projects
 # -cfg: config used by RegMiner jar(recommended to put in the same folder with this script), default is env.properties
 # -t: task name, 'bfc' is for mining general bugs, 'bfc&bic is for mining regressions', default is bfc
+# -f: filter file(filter commits), default is filter.txt
 # -maxp: max process number, default is 4
+# -pj: the file that contains the projects to mine, default is project_commits.in
 #
 # You should also provide a file named "project.in"(in the same folder),
 # which contains the names of projects you want to mine.
@@ -29,6 +31,7 @@ parser.add_argument('-cfg', '--config', help='path of config file', default='env
 parser.add_argument('-t', '--task', help='task', default='bfc')
 parser.add_argument('-f', '--filter', help='filter', default='filter.txt')
 parser.add_argument('-maxp', '--max_processes', help='max process count', default=4, type=int)
+parser.add_argument('-pj', '--project_file', help='project file', default='project_commits.in')
 
 args = parser.parse_args()
 
@@ -51,6 +54,9 @@ def split_list(input_list, size):
 
 
 def rename_log_file(project_dir):
+    if os.path.exists(f"{project_dir}{os.sep}state"):  # remove the state file
+        os.remove(f"{project_dir}{os.sep}state")
+
     logs_dir = os.path.join(project_dir, "logs")
 
     if os.path.exists(logs_dir):
@@ -106,7 +112,7 @@ def process_line(line):
 
 
 if __name__ == '__main__':
-    with open('project_commits.in', 'r') as f:
+    with open(args.project_file, 'r') as f:
         lines = f.readlines()
 
     split_line_lists = split_list(lines, args.max_processes)
