@@ -224,13 +224,13 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
             } else if (testResult.getCaseResultMap().values().stream().anyMatch(testCaseResult -> testCaseResult.getState() == TestCaseResult.TestState.CE)) {
                 testStates[index] = TestCaseResult.TestState.CE;
             } else {
-                testStates[index] = TestCaseResult.TestState.UNKNOWN;
+                testStates[index] = TestCaseResult.TestState.CE;
             }
             return testStates[index];
         } catch (Exception e) {
             e.printStackTrace();
         }
-        testStates[index] = TestCaseResult.TestState.UNKNOWN;
+        testStates[index] = TestCaseResult.TestState.CE;
         return testStates[index];
     }
 
