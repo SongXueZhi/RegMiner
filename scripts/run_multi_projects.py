@@ -19,7 +19,7 @@ import time
 import shutil
 import psutil
 from datetime import datetime
-from multiprocessing import Pool
+from multiprocessing import Pool, Process, Queue
 import argparse
 
 # script parameter example:
@@ -56,6 +56,7 @@ def split_list(input_list, size):
 def rename_log_file(project_dir):
     if os.path.exists(f"{project_dir}{os.sep}state"):  # remove the state file
         os.remove(f"{project_dir}{os.sep}state")
+    # todo remove remote state file!
 
     logs_dir = os.path.join(project_dir, "logs")
 
@@ -81,13 +82,16 @@ def process_line(line):
     print("start mining: " + project_name)
     project_name = project_name.strip()
     # for each project, create a folder, then copy all jars and config file to the folder
+
     project_dir = f".{os.sep}output_bic{os.sep}{project_name}"
     if not os.path.exists(project_dir):
         os.mkdir(project_dir)
     rename_log_file(project_dir)
+
     # if project_dir already exists, do not remove the dir,
     # but also copy the jar files (update the jar files and reserve the log files)
     subprocess.run(f"cp *.jar {args.config} {project_dir}", shell=True)
+
     # run the jar in the folder belongs to the project
     # jar parameter example:  -ws /Users/reg_space/ -pj univocity-parsers -cfg env.properties -t bfc (read README)
     # if the parameter shares the same name with the script parameter, use the script parameter
@@ -114,16 +118,20 @@ def process_line(line):
 if __name__ == '__main__':
     with open(args.project_file, 'r') as f:
         lines = f.readlines()
+    # with Pool(processes=args.max_processes) as p:
+    #     p.map(process_line, lines)
+        # print("here!")
+    # print("here!")
 
-    split_line_lists = split_list(lines, args.max_processes)
+    split_line_lists = split_list(lines, args.max_processes * 2)
     for line_list in split_line_lists:
-        # with Pool(processes=len(line_list)) as p:
+        # with Pool(processes=args.max_processes) as p:
         #     p.map(process_line, line_list)
-        pool = Pool(processes=len(line_list))
+        pool = Pool(processes=args.max_processes)
         pool.map(process_line, line_list)
         pool.close()
         pool.join()
-        time.sleep(10)
+        time.sleep(5)
         kill_java_processes()
         print("Killed java processes above!")
         time.sleep(1)
