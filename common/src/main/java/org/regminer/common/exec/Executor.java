@@ -29,6 +29,7 @@ public class Executor {
     public ExecResult exec(String cmd, int timeout) {
         return this.exeCmd(cmd, timeout);
     }
+
     public ExecResult exec(String cmd) {
         return this.exec(cmd, 0);
     }
@@ -75,11 +76,11 @@ public class Executor {
             }
 
         } catch (IOException | InterruptedException ex) {
-            ex.printStackTrace();
+//            ex.printStackTrace();
         } finally {
             try {
                 if (process != null) {
-                    process.destroy();
+                    killProcess(process);
                 }
                 if (inputStr != null) {
                     IOUtils.close(inputStr);
@@ -88,12 +89,26 @@ public class Executor {
                     IOUtils.close(bufferReader);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
             execResult.setUsageTime(System.currentTimeMillis() - startTime);
             execResult.setMessage(builder.toString());
         }
         return execResult;
+    }
+
+    public void killProcess(Process process) {
+        ProcessHandle processHandle = process.toHandle();
+        long pid = processHandle.pid();
+        process.destroy();
+        if (process.isAlive()) {
+            process.destroyForcibly();
+        }
+        try {
+            new ProcessBuilder("kill", "-9", Long.toString(pid)).start();
+        } catch (IOException ignored) {
+        }
+
     }
 }
 
