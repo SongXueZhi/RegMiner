@@ -81,9 +81,9 @@ These commands will generate the necessary configuration for running Regminer. T
 Automated mining of target project sets.
 1. Build the JAR package for RegMiner and place it in the ``scripts`` directory, and move ``scripts`` directory to ``miner_space``.
 2. run ``python gen_config.py`` under ``scripts`` directory.
-3. Prepare a list of project names in a file ``projects.in`` under ``scripts`` directory, with one project per line.
+3. Prepare a list of project names in file ``projects.in`` under ``scripts`` directory, with one project per line.
 4. Clone the source code of these projects with ``.git`` files into ``miner_space/meta_projects``.
-5. Run the ``run_multi_projects.py`` to mine the projects in the list.
+5. Run the ``run_multi_projects.py`` under ``scripts`` directory to mine the projects in the list.
 
 You can see the comments in the scripts for more details.
 
