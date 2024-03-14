@@ -2,12 +2,6 @@
 
 A Mining Approach towards Automating Regression Dataset Construction from Code Evolution History.
 
-Now regminer has an interactive visualization platform, you can use our platform to observe the data mining process and
-the mined regressions.
-The use of the platform is demonstrated as follows:
-
-[![RegMiner Data Platform](https://github.com/SongXueZhi/images/blob/main/regminer/platshow.png)](https://youtu.be/yzcM9Y4unok "RegMiner Data Platform")
-
 ## Regressions4J
 
 We also provide UI-free tools to help users replay test results for each regression bug,get that support in
@@ -24,12 +18,11 @@ the [regs4J](https://github.com/SongXueZhi/regressions4j) project.
 3. Python: 3.0+
 
 Although we have support for the Windows system in our implementation, it has not undergone thorough testing.
+
 **Env requirements for mining projects:**
 
 1. JDK LTS: 1.7,1.8,11,17 
-
-2. Jenv*(optional)
-
+2. maven & gradle
 3. Others*: The specific environment required for a particular mining project, such as projects related to MongoDB middleware, may necessitate the installation of MongoDB.
 
 **Easy Start:**
@@ -48,7 +41,7 @@ Although we have support for the Windows system in our implementation, it has no
   mkdir meta_projects
 ```
 
-3. Prepare source code of the mined project. In example, we use uniVocity/univocity-parsers.
+3. Prepare source code of the mined project. In example, we use ``uniVocity/univocity-parsers``.
 
 ```bash
   cd meta_projects
@@ -56,37 +49,41 @@ Although we have support for the Windows system in our implementation, it has no
 ```
 (2) Generate the configuration.
 
-1. Generate a configuration file.
+1. Modify the configuration related to the database in ``scripts/gen_config.py``.
+  
+ ```bash
+ sql_enable=0
+ ```
+This modification will disable the MySQL functionality of RegMiner. We currently do not provide the SQL table structure. If you need it, please contact [Xuezhi](songxuezhi@fudan.edu.cn).
 
+3. Generate the configuration file.
+   
 ```bash
 cd /xxx/xxxx/RegMiner/scripts
 rm env.properties
 python gen_config.py
 mv env.properties ../
 ```
+These commands will generate the necessary configuration for running Regminer. The script will automatically detect the JDK installed on the system.
 
-You can check the env.properties file to see if the configuration is correct. You can set sql_enable flag as 0 to disable writing to the database.
-
-If you want to store the mined data in a database, you can ask the author for the database structure and the database configuration file.
-
-
-2. Load RegMiner Project to IDEA.
-3. Config debug params.
-4. 
-   ```
-   -ws /xxx/xxx/miner_space/ -pj univocity-parsers -cfg env.properties -t bfc
-   ```
-   ``-t bfc`` means just mine bfc, ``-t bfc&bic`` means search regression.
+3. Load RegMiner Project to IDEA.
+4. Config debug params.
+   
+```
+-ws /xxx/xxx/miner_space/ -pj univocity-parsers -cfg env.properties -t bfc
+```
+``-t bfc`` means just mine bfc, ``-t bfc&bic`` means search regression.
 
 5. Run RegMiner in ``miner/src/main/java/org/regminer/miner/start/MinerCli.java``, you can find progress info in ``logs/app.log``
 
 
-## Run multiple projects
-You can run multiple projects at the same time.
-
-1. Prepare a list of project names in a file, one project per line, such as ``projects.txt``.
-
-2. Run the ``run_multi_projects.py`` to mine the projects in the list.
+## Automate batch mining.
+Automated mining of target project sets.
+1. Build the JAR package for RegMiner and place it in the ``scripts`` directory, and move ``scripts`` directory to ``miner_space``.
+2. run ``python gen_config.py`` under ``scripts`` directory.
+3. Prepare a list of project names in a file ``projects.in`` under ``scripts`` directory, with one project per line.
+4. Clone the source code of these projects with ``.git`` files into ``miner_space/meta_projects``.
+5. Run the ``run_multi_projects.py`` to mine the projects in the list.
 
 You can see the comments in the scripts for more details.
 
