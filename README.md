@@ -15,9 +15,9 @@ the [regs4J](https://github.com/SongXueZhi/regressions4j) project.
 
 ## Tutorial
 
-**Env requirements for Regminer:**
+**Env requirements for RegMiner:**
 
-1. OS: Macos/Ubuntu/CenterOS 
+1. OS: MacOs/Ubuntu/CenterOS 
 
 2. JDK: 11
 
@@ -34,7 +34,8 @@ Although we have support for the Windows system in our implementation, it has no
 
 **Easy Start:**
 
- Steps are as follow:
+ Steps are as follows:
+
 (1) Prepare the data.
 
 1. Create a workspace for Miner.
@@ -64,15 +65,31 @@ python gen_config.py
 mv env.properties ../
 ```
 
+You can check the env.properties file to see if the configuration is correct. You can set sql_enable flag as 0 to disable writing to the database.
+
+If you want to store the mined data in a database, you can ask the author for the database structure and the database configuration file.
+
+
 2. Load RegMiner Project to IDEA.
 3. Config debug params.
 4. 
    ```
    -ws /xxx/xxx/miner_space/ -pj univocity-parsers -cfg env.properties -t bfc
    ```
-   ``-t bfc`` means just mine bfc, ``-t bfc&bic`` mean search regression.
+   ``-t bfc`` means just mine bfc, ``-t bfc&bic`` means search regression.
 
-5. Run RegMimer in ``miner/src/main/java/org/regminer/miner/start/MinerCli.java``, you can find progress info in ``logs/app.log``
+5. Run RegMiner in ``miner/src/main/java/org/regminer/miner/start/MinerCli.java``, you can find progress info in ``logs/app.log``
+
+
+## Run multiple projects
+You can run multiple projects at the same time.
+
+1. Prepare a list of project names in a file, one project per line, such as ``projects.txt``.
+
+2. Run the ``run_multi_projects.py`` to mine the projects in the list.
+
+You can see the comments in the scripts for more details.
+
 
 
 ## Paper
