@@ -3,7 +3,7 @@ from utils import read_file_to_list, download_logs, parse_logs
 
 
 # remote server info and command
-remote_dir = '/root/data/lzj_miner_space/scripts/'
+remote_dir = '/root/dd/regminer_run/lzj_miner_space/scripts/'
 remote_output_dir = 'output_bic/'
 
 

@@ -35,10 +35,24 @@ parser.add_argument('-pj', '--project_file', help='project file', default='proje
 
 args = parser.parse_args()
 
+regminer_path = 'regminer_run'  # used to determine a process is or is not a regminer-relevant process
+
+white_list = []
+with open('whitelist.txt', 'r') as file:
+    for line in file:
+        if line.startswith('#'):
+            continue
+        white_list.append(line.rstrip())
+
 
 def kill_java_processes():
     for proc in psutil.process_iter(['pid', 'name']):
-        if proc.info['name'] == 'java':
+        flag = True
+        for white_list_item in white_list:
+            if any(white_list_item in item for item in proc.cmdline()):
+                flag = False
+                break
+        if flag and proc.info['name'] == 'java' and regminer_path in proc.cmdline():
             pid = proc.pid
             os.kill(pid, 9)
 
@@ -123,7 +137,7 @@ if __name__ == '__main__':
         # print("here!")
     # print("here!")
 
-    split_line_lists = split_list(lines, args.max_processes * 2)
+    split_line_lists = split_list(lines, args.max_processes * 3)
     for line_list in split_line_lists:
         # with Pool(processes=args.max_processes) as p:
         #     p.map(process_line, line_list)
@@ -135,4 +149,3 @@ if __name__ == '__main__':
         kill_java_processes()
         print("Killed java processes above!")
         time.sleep(1)
-
