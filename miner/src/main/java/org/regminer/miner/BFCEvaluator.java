@@ -211,7 +211,10 @@ public class BFCEvaluator extends BFCSearchStrategy {
     public boolean confirmPBFCtoBFC(PotentialBFC potentialBFC) {
         boolean isBFC = true;
         evolute(potentialBFC);
-        if (potentialBFC.getTestCaseFiles() == null || potentialBFC.getTestCaseFiles().isEmpty()) {
+        if (potentialBFC.getTestCaseFiles() == null || potentialBFC.getTestCaseFiles().isEmpty()
+                || potentialBFC.joinTestcaseString().replace(";", "").isEmpty()
+                || potentialBFC.getBuggyCommitId() == null || potentialBFC.getBuggyCommitId().isEmpty()
+        ) {
             isBFC = false;
         }
         if (isBFC) {
