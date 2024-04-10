@@ -45,6 +45,7 @@ public class SycFileCleanup {
         @Override
         public void run() {
             try {
+                Thread.sleep(5000);
                 if (onFilter) {
                     cleanDirectoryOnFilter();
                 } else {
