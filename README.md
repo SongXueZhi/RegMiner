@@ -17,7 +17,7 @@ the [regs4J](https://github.com/SongXueZhi/regressions4j) project.
 
 3. Python: 3.0+
 
-Although we have support for the Windows system in our implementation, it has not undergone thorough testing.
+Note that! We have discovered that RegMiner does not run well on Windows OS, and currently, we don't plan to fix it.
 
 **Env requirements for mining projects:**
 
