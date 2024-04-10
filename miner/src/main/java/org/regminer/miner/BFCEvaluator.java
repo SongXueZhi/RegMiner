@@ -189,12 +189,11 @@ public class BFCEvaluator extends BFCSearchStrategy {
         }
         logger.info("pbfc test case size: {}", pRFC.getTestCaseFiles().size());
         logger.error(e.getMessage());
-        emptyCache(pRFC.fileMap.get(bfcID).getParentFile());
     }
 
     private void cleanUp(PotentialBFC pRFC, String bfcID) {
         if (Configurations.taskName.equals(Constant.BFC_TASK)) {
-            emptyCache(pRFC.fileMap.get(bfcID).getParentFile());
+            emptyCache(pRFC.fileMap.get(bfcID));
         }
     }
 

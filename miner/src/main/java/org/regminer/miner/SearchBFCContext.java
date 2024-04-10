@@ -1,5 +1,7 @@
 package org.regminer.miner;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.regminer.common.model.PotentialBFC;
 import org.regminer.miner.core.BFCSearchStrategy;
 import org.regminer.miner.core.PBFCFilterStrategy;
@@ -13,6 +15,7 @@ import java.util.List;
  * @Description:
  */
 public class SearchBFCContext {
+    protected Logger logger = LogManager.getLogger(this);
     private BFCSearchStrategy bfcSearchStrategy;
     private PBFCFilterStrategy pbfcFilterStrategy;
 
@@ -35,7 +38,13 @@ public class SearchBFCContext {
     }
 
     public boolean confirmPBFCtoBFC(PotentialBFC potentialBFC) {
-        return bfcSearchStrategy.confirmPBFCtoBFC(potentialBFC);
+        boolean result = false;
+        try {
+            result = bfcSearchStrategy.confirmPBFCtoBFC(potentialBFC);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        return result;
     }
 
 }
