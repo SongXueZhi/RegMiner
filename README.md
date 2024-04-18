@@ -96,3 +96,6 @@ You can see the comments in the scripts for more details.
 
 2. Xuezhi Song, Yun Lin*, Yijian Wu, Yifan Zhang, Xin Peng, Jin Song Dong, and Hong Mei. RegMiner: Mining Replicable
    Regression Dataset from Code Repositories
+
+## Acknowledgments
+We are great thanks for [JetBrains](https://jb.gg/OpenSourceSupport) support on RegMiner.
