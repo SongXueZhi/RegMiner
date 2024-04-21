@@ -96,6 +96,7 @@ You can see the comments in the scripts for more details.
 
 2. Xuezhi Song, Yun Lin*, Yijian Wu, Yifan Zhang, Xin Peng, Jin Song Dong, and Hong Mei. RegMiner: Mining Replicable
    Regression Dataset from Code Repositories
+3. Xuezhi Song, Yijian Wu*, Junming Cao, Bihuan Chen, Yun Lin, Zhengjie Lu, Dingji Wang, Xin Peng. BugMiner: Automating Precise Bug Dataset Construction by Code Evolution History Mining   
 
 ## Acknowledgments
 We are great thanks for [JetBrains](https://jb.gg/OpenSourceSupport) support on RegMiner.
