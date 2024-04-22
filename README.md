@@ -1,7 +1,7 @@
 # RegMiner 2.0
 
 A Mining Approach towards Automating Regression Dataset Construction from Code Evolution History. 
-This project is powerd by [SE lab](http://www.se.fudan.edu.cn/) in fudan university
+This project is powerd by [SE lab](http://www.se.fudan.edu.cn/) in [fudan university](https://www.fudan.edu.cn/en/)
 
 ## Regressions4J
 
