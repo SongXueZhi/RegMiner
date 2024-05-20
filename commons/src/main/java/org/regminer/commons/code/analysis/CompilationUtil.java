@@ -2,7 +2,6 @@ package org.regminer.commons.code.analysis;
 
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.*;
-import org.regminer.commons.code.analysis.ast.JdtClassRetriever;
 import org.regminer.commons.model.Methodx;
 
 import java.io.BufferedReader;
@@ -64,15 +63,6 @@ public class CompilationUtil {
         return methods;
     }
 
-
-    public static String getQualityClassName(String codeContent) {
-        String result;
-        CompilationUnit unit = parseCompliationUnit(codeContent);
-        JdtClassRetriever retriever = new JdtClassRetriever();
-        unit.accept(retriever);
-        result = retriever.getQualityName();
-        return result;
-    }
 
     public static String addOrReplaceMethod(String codeContent, Methodx newMethod) {
         CompilationUnit unit = parseCompliationUnit(codeContent);

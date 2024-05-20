@@ -1,4 +1,4 @@
-package org.regs4j;
+package org.regminer.regs4j;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.io.output.ByteArrayOutputStream;
