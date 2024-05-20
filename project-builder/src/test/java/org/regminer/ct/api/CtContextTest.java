@@ -6,8 +6,8 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Ignore;
-import org.regminer.common.model.RelatedTestCase;
-import org.regminer.common.tool.RepositoryProvider;
+import org.regminer.commons.model.RelatedTestCase;
+import org.regminer.commons.tool.RepositoryProvider;
 import org.regminer.ct.domain.JDK;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
@@ -37,7 +37,7 @@ public class CtContextTest extends TestCase {
             Assert.assertNotNull(value.getTestCommands());
             Assert.assertFalse(value.getTestCommands().equalsIgnoreCase(""));
         });
-        Assert.assertTrue(compileResult.getEnvCommands().sizes() == 2);
+        Assert.assertEquals(2, compileResult.getEnvCommands().sizes());
     }
 
     public void testAutoCompileAndTest() {
@@ -59,7 +59,7 @@ public class CtContextTest extends TestCase {
             Assert.assertNotNull(value.getTestCommands());
             Assert.assertFalse(value.getTestCommands().equalsIgnoreCase(""));
         });
-        Assert.assertTrue(compileResult.getEnvCommands().sizes() == 2);
+        Assert.assertEquals(2, compileResult.getEnvCommands().sizes());
     }
 
     public void testAutoCompileForCommit() throws Exception {

@@ -6,10 +6,10 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
-import org.regminer.common.exec.Executor;
-import org.regminer.common.tool.MavenDependencyProvider;
-import org.regminer.common.tool.MavenManager;
-import org.regminer.common.utils.FileUtil;
+import org.regminer.commons.exec.Executor;
+import org.regminer.commons.tool.MavenDependencyProvider;
+import org.regminer.commons.tool.MavenManager;
+import org.regminer.commons.utils.FileUtil;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.domain.JDK;
 import org.regminer.ct.domain.JDKs;
@@ -255,7 +255,7 @@ public enum OriginCompileFixWay {
             return compileResult;
         }
     };
-    private Integer order;
+    private final Integer order;
 
     public Integer getOrder() {
         return this.order;

@@ -1,12 +1,12 @@
 package org.regminer.miner;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.regminer.common.constant.Configurations;
-import org.regminer.common.constant.Constant;
-import org.regminer.common.model.PotentialBFC;
-import org.regminer.common.sql.BugStorage;
-import org.regminer.common.tool.SycFileCleanup;
-import org.regminer.common.utils.MigratorUtil;
+import org.regminer.commons.constant.Configurations;
+import org.regminer.commons.constant.Constant;
+import org.regminer.commons.model.PotentialBFC;
+import org.regminer.commons.sql.BugStorage;
+import org.regminer.commons.tool.SycFileCleanup;
+import org.regminer.commons.utils.MigratorUtil;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
 import org.regminer.ct.api.OriginCompileFixWay;

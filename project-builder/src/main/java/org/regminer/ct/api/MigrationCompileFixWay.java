@@ -1,6 +1,6 @@
 package org.regminer.ct.api;
 
-import org.regminer.common.exec.Executor;
+import org.regminer.commons.exec.Executor;
 import org.regminer.ct.CtReferees;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.CompileTestEnv;

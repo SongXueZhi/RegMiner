@@ -18,8 +18,8 @@
 
 package org.regminer.miner;
 
-import org.regminer.common.model.CoverNode;
-import org.regminer.common.utils.GitTracker;
+import org.regminer.commons.model.CoverNode;
+import org.regminer.commons.tool.GitTracker;
 import org.regminer.miner.utils.CodeUtil;
 
 import java.io.File;
@@ -31,7 +31,7 @@ import java.util.Map;
 public class BFCTracker {
     private final static double PROB_UNIT = 0.005;
     GitTracker gitTracker = new GitTracker();
-    private double notRegProb = 1 - PROB_UNIT;
+    private final double notRegProb = 1 - PROB_UNIT;
 
     public HashMap<String, Integer> handleTasks(List<CoverNode> coverNodes, File bfcDir) {
         HashMap<String, Integer> methodFrequencyMap = new HashMap<>();

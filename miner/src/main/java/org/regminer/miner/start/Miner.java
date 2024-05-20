@@ -4,19 +4,17 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.regminer.bic.api.SearchBICContext;
-import org.regminer.common.constant.Configurations;
-import org.regminer.common.constant.Constant;
-import org.regminer.common.model.PotentialBFC;
-import org.regminer.common.model.Regression;
-import org.regminer.common.sql.BugStorage;
-import org.regminer.common.sql.MysqlManager;
-import org.regminer.common.tool.SycFileCleanup;
+import org.regminer.commons.constant.Configurations;
+import org.regminer.commons.constant.Constant;
+import org.regminer.commons.model.PotentialBFC;
+import org.regminer.commons.model.Regression;
+import org.regminer.commons.sql.BugStorage;
+import org.regminer.commons.tool.SycFileCleanup;
 import org.regminer.miner.SearchBFCContext;
 import org.regminer.miner.monitor.ProgressMonitor;
 
 import java.io.File;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @Author: sxz
@@ -26,10 +24,10 @@ import java.util.UUID;
 public class Miner {
 
     protected Logger logger = LogManager.getLogger(Miner.class);
-    private SearchBFCContext bfcContext;
-    private SearchBICContext bicContext;
+    private final SearchBFCContext bfcContext;
+    private final SearchBICContext bicContext;
 
-    private  BugStorage bugStorage =  new BugStorage();
+    private final BugStorage bugStorage =  new BugStorage();
 
     public Miner(SearchBFCContext bfcEvaluator, SearchBICContext bicFinder) {
         this.bfcContext = bfcEvaluator;

@@ -1,7 +1,7 @@
 package org.regminer.ct.domain;
 
 import org.apache.commons.lang3.StringUtils;
-import org.regminer.common.model.OS;
+import org.regminer.commons.model.OS;
 
 public enum Compiler {
     MVN {

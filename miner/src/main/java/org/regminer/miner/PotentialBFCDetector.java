@@ -3,17 +3,17 @@ package org.regminer.miner;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.regminer.common.constant.Configurations;
-import org.regminer.common.model.*;
-import org.regminer.common.tool.RepositoryProvider;
-import org.regminer.common.utils.ChangedFileUtil;
+import org.regminer.commons.constant.Configurations;
+import org.regminer.commons.model.*;
+import org.regminer.commons.tool.RepositoryProvider;
+import org.regminer.commons.utils.ChangedFileUtil;
 import org.regminer.miner.core.PBFCFilterStrategy;
 
 import java.io.File;
 import java.util.*;
 
 public class PotentialBFCDetector extends PBFCFilterStrategy {
-    private List<String> filterList;
+    private final List<String> filterList;
 
 
     public PotentialBFCDetector(List<String> filterList) {

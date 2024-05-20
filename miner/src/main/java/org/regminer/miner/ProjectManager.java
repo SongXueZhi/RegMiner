@@ -1,9 +1,9 @@
 package org.regminer.miner;
 
 import org.apache.commons.io.FileUtils;
-import org.regminer.common.constant.Configurations;
-import org.regminer.common.model.ProjectEntity;
-import org.regminer.common.sql.ProjectDao;
+import org.regminer.commons.constant.Configurations;
+import org.regminer.commons.model.ProjectEntity;
+import org.regminer.commons.sql.ProjectDao;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class ProjectManager {
             projectEntity.setProject_name(items[1]);
             projectDao.storageProject(projectEntity);
             File file = new File(Configurations.rootDir,
-                    new StringBuilder("meta_projects").append(File.separator).append(projectEntity.getProjectID()).toString());
+                    "meta_projects" + File.separator + projectEntity.getProjectID());
             if (!file.exists()) {
                 file.mkdirs();
             }

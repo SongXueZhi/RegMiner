@@ -1,6 +1,6 @@
 package org.regminer.ct.utils;
 
-import org.regminer.common.model.PotentialBFC;
+import org.regminer.commons.model.PotentialBFC;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 

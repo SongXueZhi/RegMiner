@@ -11,9 +11,10 @@
     <modules>
         <module>miner</module>
         <module>project-builder</module>
-        <module>common</module>
+        <module>commons</module>
         <module>bic-search</module>
         <module>code-migrate</module>
+        <module>regs4j</module>
     </modules>
 
 </project>

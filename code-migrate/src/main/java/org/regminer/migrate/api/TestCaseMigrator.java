@@ -2,9 +2,9 @@ package org.regminer.migrate.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.regminer.common.code.analysis.CompilationUtil;
-import org.regminer.common.model.*;
-import org.regminer.common.utils.*;
+import org.regminer.commons.code.analysis.CompilationUtil;
+import org.regminer.commons.model.*;
+import org.regminer.commons.utils.*;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;
 import org.regminer.ct.api.OriginCompileFixWay;

@@ -2,7 +2,7 @@ package org.regminer.ct.model;
 
 
 import lombok.Data;
-import org.regminer.common.model.ModuleNode;
+import org.regminer.commons.model.ModuleNode;
 import org.regminer.ct.domain.Compiler;
 import org.regminer.ct.domain.JDK;
 

@@ -2,8 +2,8 @@ package org.regminer.ct.utils;
 
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.regminer.common.model.ModuleNode;
-import org.regminer.common.model.RelatedTestCase;
+import org.regminer.commons.model.ModuleNode;
+import org.regminer.commons.model.RelatedTestCase;
 
 import java.io.File;
 

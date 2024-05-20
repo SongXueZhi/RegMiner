@@ -1,7 +1,7 @@
 package org.regminer.bic.api.core;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.regminer.common.model.PotentialBFC;
+import org.regminer.commons.model.PotentialBFC;
 
 import java.io.File;
 
