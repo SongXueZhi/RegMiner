@@ -1,20 +1,36 @@
+
+/*
+ * Copyright 2019-2024   XueZhi Song, Yun Lin and RegMiner contributors
+ *
+ * This file is part of RegMiner
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package org.regminer.commons.model;
+
+import lombok.Getter;
+import lombok.Setter;
+import spoon.reflect.declaration.CtMethod;
 
 import java.util.Objects;
 
+@Setter
+@Getter
 public class RelatedTestCase {
     private String enclosingClassName;
     private String methodName;
-    private Methodx method;
+    private CtMethod<?> method;
     private String relativeFilePath;
-
-    public Methodx getMethod() {
-        return method;
-    }
-
-    public void setMethod(Methodx method) {
-        this.method = method;
-    }
 
     @Override
     public String toString() {
@@ -27,8 +43,7 @@ public class RelatedTestCase {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof RelatedTestCase)) return false;
-        RelatedTestCase testCaseX = (RelatedTestCase) o;
+        if (!(o instanceof RelatedTestCase testCaseX)) return false;
         return Objects.equals(getEnclosingClassName(), testCaseX.getEnclosingClassName())
                 && Objects.equals(getMethodName(), testCaseX.getMethodName());
     }
@@ -36,33 +51,5 @@ public class RelatedTestCase {
     @Override
     public int hashCode() {
         return Objects.hash(getEnclosingClassName(), getMethodName());
-    }
-
-    public String getName() {
-        return String.join("#", enclosingClassName, methodName);//use # to split class name and method name
-    }
-
-    public String getEnclosingClassName() {
-        return enclosingClassName;
-    }
-
-    public void setEnclosingClassName(String enclosingClassName) {
-        this.enclosingClassName = enclosingClassName;
-    }
-
-    public String getMethodName() {
-        return methodName;
-    }
-
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
-    }
-
-    public void setRelativeFilePath(String relativeFilePath) {
-        this.relativeFilePath = relativeFilePath;
-    }
-
-    public String getRelativeFilePath() {
-        return relativeFilePath;
     }
 }

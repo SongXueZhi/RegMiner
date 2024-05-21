@@ -18,6 +18,7 @@ import org.regminer.commons.constant.Constant;
 import org.regminer.commons.model.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.regminer.commons.constant.Constant.SEARCH_DEPTH;
 
@@ -30,22 +31,26 @@ import static org.regminer.commons.constant.Constant.SEARCH_DEPTH;
 public class ChangedFileUtil {
     private static final Logger logger = LogManager.getLogger(ChangedFileUtil.class);
 
-    public static boolean searchPotentialTestFiles(RevCommit curCommit, Git git, List<TestFile> testFiles,
-                                             List<SourceFile> sourceFiles) throws Exception {
+    public static boolean searchPotentialTestFiles(RevCommit curCommit, Git git, List<TestSourceFile> testSourceFiles,
+                                                   List<ResourceOrConfigFile> resourceOrConfigFiles) throws Exception {
         if (curCommit == null) {
             return false;
         }
         // 前后找 5? 个 commit
         // 先往后找
-        if (searchPotentialTestFilesFromChildren(curCommit, git, testFiles, sourceFiles, SEARCH_DEPTH)) {
+        if (searchPotentialTestFilesFromChildren(curCommit, git, testSourceFiles, resourceOrConfigFiles,
+                SEARCH_DEPTH)) {
             return true;
         }
         // 再往前找
-        return searchPotentialTestFilesFromParents(curCommit, git, testFiles, sourceFiles, SEARCH_DEPTH);
+        return searchPotentialTestFilesFromParents(curCommit, git, testSourceFiles, resourceOrConfigFiles,
+                SEARCH_DEPTH);
     }
 
-    private static boolean searchPotentialTestFilesFromParents(RevCommit curCommit, Git git, List<TestFile> testFiles,
-                                                        List<SourceFile> sourceFiles, int maxDepth) throws Exception {
+    private static boolean searchPotentialTestFilesFromParents(RevCommit curCommit, Git git,
+                                                               List<TestSourceFile> testSourceFiles,
+                                                               List<ResourceOrConfigFile> resourceOrConfigFiles,
+                                                               int maxDepth) throws Exception {
         // 拓扑排序，找到 parent 的数据
         Queue<RevCommit> queue = new LinkedList<>();
         queue.offer(curCommit);
@@ -58,13 +63,13 @@ public class ChangedFileUtil {
                 }
                 List<ChangedFile> files = getLastDiffFiles(commit, git);
                 if (files == null) continue;
-                List<TestFile> tmpTestFiles = getTestFiles(files);
-                List<NormalFile> tmpNormalJavaFiles = getNormalJavaFiles(files);
-                List<SourceFile> tmpSourceFiles = getSourceFiles(files);
-                if (!tmpTestFiles.isEmpty() && tmpNormalJavaFiles.isEmpty()) {
+                List<TestSourceFile> tmpTestSourceFiles = getTestSourceFiles(files);
+                List<SourceCodeFile> tmpNormalJavaFiles = getSourceCodeFiles(files);
+                List<ResourceOrConfigFile> tmpResourceOrConfigFiles = getResourceOrConfigFiles(files);
+                if (!tmpTestSourceFiles.isEmpty() && tmpNormalJavaFiles.isEmpty()) {
                     // 找到一个就行了？
-                    testFiles.addAll(tmpTestFiles);
-                    sourceFiles.addAll(tmpSourceFiles);
+                    testSourceFiles.addAll(tmpTestSourceFiles);
+                    resourceOrConfigFiles.addAll(tmpResourceOrConfigFiles);
                     return true;
                 }
             }
@@ -73,8 +78,10 @@ public class ChangedFileUtil {
         return false;
     }
 
-    private static boolean searchPotentialTestFilesFromChildren(RevCommit curCommit, Git git, List<TestFile> testFiles,
-                                                         List<SourceFile> sourceFiles, int maxDepth) throws Exception {
+    private static boolean searchPotentialTestFilesFromChildren(RevCommit curCommit, Git git,
+                                                                List<TestSourceFile> testSourceFiles,
+                                                                List<ResourceOrConfigFile> resourceOrConfigFiles,
+                                                                int maxDepth) throws Exception {
         // 反向拓扑排序，保证先找到最近的子 commit
         Map<ObjectId, List<RevCommit>> childrenMap = GitUtils.buildChildrenMap(git, curCommit);
         Queue<RevCommit> commitsToCheck = new LinkedList<>();
@@ -89,13 +96,13 @@ public class ChangedFileUtil {
                     commitsToCheck.offer(child);
                     List<ChangedFile> files = getLastDiffFiles(child, git);
                     if (files == null) continue;
-                    List<TestFile> tmpTestFiles = getTestFiles(files);
-                    List<NormalFile> tmpNormalJavaFiles = getNormalJavaFiles(files);
-                    List<SourceFile> tmpSourceFiles = getSourceFiles(files);
-                    if (!tmpTestFiles.isEmpty() && tmpNormalJavaFiles.isEmpty()) {
+                    List<TestSourceFile> tmpTestSourceFiles = getTestSourceFiles(files);
+                    List<SourceCodeFile> tmpNormalJavaFiles = getSourceCodeFiles(files);
+                    List<ResourceOrConfigFile> tmpResourceOrConfigFiles = getResourceOrConfigFiles(files);
+                    if (!tmpTestSourceFiles.isEmpty() && tmpNormalJavaFiles.isEmpty()) {
                         // 找到一个就行了？
-                        testFiles.addAll(tmpTestFiles);
-                        sourceFiles.addAll(tmpSourceFiles);
+                        testSourceFiles.addAll(tmpTestSourceFiles);
+                        resourceOrConfigFiles.addAll(tmpResourceOrConfigFiles);
                         return true;
                     }
                 }
@@ -117,7 +124,8 @@ public class ChangedFileUtil {
         ObjectId id = commit.getTree().getId();
         ObjectId oldId = null;
         if (commit.getParentCount() > 0) {
-            oldId = Optional.ofNullable(commit.getParent(0).getTree() == null ? null : commit.getParent(0).getTree().getId())
+            oldId = Optional.ofNullable(commit.getParent(0).getTree() == null ? null :
+                            commit.getParent(0).getTree().getId())
                     .orElseGet(() -> {
                         try (RevWalk revWalk = new RevWalk(git.getRepository())) {
                             return revWalk.parseCommit(ObjectId.fromString(commit.getParent(0).getName())).getTree().getId();
@@ -155,7 +163,6 @@ public class ChangedFileUtil {
             }
         }
         return result;
-
     }
 
     /**
@@ -185,122 +192,61 @@ public class ChangedFileUtil {
     }
 
     /**
-     * 判断是否只有测试文件，如果所有的修改文件路径都包含test，认为所有的 被修改文件只与测试用例有关
-     *
-     * @param files
-     * @return
-     */
-    public static boolean justChangeTestFileOnly(List<ChangedFile> files) {
-        int num = 0;
-        int num_1 = 0;
-        for (ChangedFile file : files) {
-            String str = file.getNewPath().toLowerCase();
-            if (!str.contains("test") && str.endsWith(".java")) {
-                num++;
-            }
-            if (str.endsWith(".java")) {
-                num_1++;
-            }
-
-        }
-        return (num == 0 && num_1 > 0);
-    }
-
-    /**
      * 获取所有测试用例文件
      *
      * @param files
      * @return
      */
-    public static List<TestFile> getTestFiles(List<ChangedFile> files) {
-        List<TestFile> testFiles = new LinkedList<>();
+    public static List<TestSourceFile> getTestSourceFiles(List<ChangedFile> files) {
+        return filterFilesByType(files, TestSourceFile.class);
+    }
+
+    public static List<SourceCodeFile> getSourceCodeFiles(List<ChangedFile> files) {
+        return filterFilesByType(files, SourceCodeFile.class);
+    }
+
+    public static List<ResourceOrConfigFile> getResourceOrConfigFiles(List<ChangedFile> files) {
         if (files == null) {
-            return testFiles;
+            return List.of();
         }
-        for (ChangedFile file : files) {
-            if (file instanceof TestFile) {
-                testFiles.add((TestFile) file);
-            }
-        }
-        return testFiles;
+        return files.stream()
+                .filter(file -> !file.getNewPath().contains("pom.xml") && !file.getNewPath().equals(Constant.NONE_PATH))
+                .filter(file -> file instanceof ResourceOrConfigFile)
+                .map(file -> (ResourceOrConfigFile) file)
+                .collect(Collectors.toList());
     }
 
-    /**
-     * 获取所有普通文件
-     */
-    public static List<NormalFile> getNormalJavaFiles(List<ChangedFile> files) {
-        List<NormalFile> normalJavaFiles = new LinkedList<>();
-        for (ChangedFile file : files) {
-            if (file instanceof NormalFile) {
-                normalJavaFiles.add((NormalFile) file);
-            }
+    private static <T extends ChangedFile> List<T> filterFilesByType(List<ChangedFile> files, Class<T> type) {
+        if (files == null) {
+            return List.of();
         }
-        return normalJavaFiles;
-    }
-
-    public static List<SourceFile> getSourceFiles(List<ChangedFile> files) {
-        List<SourceFile> sourceFiles = new LinkedList<>();
-        for (ChangedFile file : files) {
-            if (file.getNewPath().contains("pom.xml") || file.getNewPath().equals(Constant.NONE_PATH)) {
-                continue;
-            }
-            if (file instanceof SourceFile) {
-                sourceFiles.add((SourceFile) file);
-            }
-        }
-        return sourceFiles;
+        return files.stream()
+                .filter(type::isInstance)
+                .map(type::cast)
+                .collect(Collectors.toList());
     }
 
     public static void getChangedFile(DiffEntry entry, List<ChangedFile> files, Git git) throws Exception {
         String path = entry.getNewPath();
+        ChangedFile file;
         if (path.contains("test") && path.endsWith(".java")) {
-            ChangedFile file = new TestFile(entry.getNewPath());
-            file.setOldPath(entry.getOldPath());
-            file.setEditList(getEdits(entry, git));
-            files.add(file);
+            file = new TestSourceFile(entry.getNewPath());
+        } else if (!path.contains("test") && path.endsWith(".java")) {
+            file = new SourceCodeFile(entry.getNewPath());
+        } else {
+            file = new ResourceOrConfigFile(entry.getNewPath());
         }
-        if ((!path.contains("test")) && path.endsWith(".java")) {
-            ChangedFile file = new NormalFile(entry.getNewPath());
-            file.setOldPath(entry.getOldPath());
-            file.setEditList(getEdits(entry, git));
-            files.add(file);
-        }
-
-//      if not end with ".java",it may be source file
-        if (!path.endsWith(".java")) {
-            ChangedFile file = new SourceFile(entry.getNewPath());
-            file.setOldPath(entry.getOldPath());
-            file.setEditList(getEdits(entry, git));
-            files.add(file);
-        }
+        file.setOldPath(entry.getOldPath());
+        file.setEditList(getEdits(entry, git));
+        files.add(file);
     }
 
-    /**
-     * 判断全部都是普通的Java文件
-     *
-     * @param files
-     * @return
-     */
-    public static boolean justNormalJavaFile(List<ChangedFile> files) {
-        for (ChangedFile file : files) {
-            String str = file.getNewPath().toLowerCase();
-            // 如果有一个文件路径中不包含test
-            // 便立即返回false
-            if (str.contains("test")) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static List<RelatedTestCase> convertTestFilesToTestCaseXList(List<TestFile> testFiles) {
+    public static List<RelatedTestCase> convertTestFilesToTestCaseXList(List<TestSuiteFile> testSuiteFileList) {
         List<RelatedTestCase> allTestCaseXs = new ArrayList<>();
-
-        for (TestFile testFile : testFiles) {
-            List<RelatedTestCase> testCaseXs = testFile.getTestCaseList();
+        for (TestSuiteFile testSuiteFile : testSuiteFileList) {
+            List<RelatedTestCase> testCaseXs = testSuiteFile.getTestCaseList();
             allTestCaseXs.addAll(testCaseXs);
         }
-
         return allTestCaseXs;
     }
 }

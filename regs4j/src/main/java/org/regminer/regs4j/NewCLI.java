@@ -122,7 +122,6 @@ public class NewCLI {
         } catch (Exception e) {
             System.out.println("Test failed");
         }
-        System.out.println(testResult);
     }
 
 

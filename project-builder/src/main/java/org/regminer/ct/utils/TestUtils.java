@@ -47,7 +47,7 @@ public class TestUtils {
             return;
         }
 
-        potentialBFC.getTestCaseFiles().removeIf(testFile -> {
+        potentialBFC.getTestSuiteFiles().removeIf(testFile -> {
             testFile.getTestMethodMap().entrySet().removeIf(
                     entry -> testCasesToRemove.contains(entry.getValue().toString())
             );
@@ -66,7 +66,7 @@ public class TestUtils {
             return;
         }
 
-        potentialBFC.getTestCaseFiles().removeIf(testFile -> {
+        potentialBFC.getTestSuiteFiles().removeIf(testFile -> {
             testFile.getTestMethodMap().entrySet().removeIf(
                     entry -> !testCasesToRetain.contains(entry.getValue().toString())
             );

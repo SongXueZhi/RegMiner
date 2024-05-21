@@ -1,6 +1,5 @@
 package org.regminer.ct.api;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
@@ -25,7 +24,7 @@ public class CtContextTest extends TestCase {
         ctContext.setProjectDir(new File("/Users/lsn/Desktop/regminer/regminer-x/regminerx-test/datas/commons-jexl"));
         //ctContext.setProjectDir(new File("../projects-for-test/fastjson-84835dd3cfb46939eb595742ea8d7d74918034bd"));
         CompileResult compileResult = ctContext.compile();
-        Assert.assertEquals(CompileResult.CompileState.SUCCESS, compileResult.getState());
+        assertEquals(CompileResult.CompileState.SUCCESS, compileResult.getState());
         List<RelatedTestCase> testCaseXES = new ArrayList<>();
         RelatedTestCase testCaseX = new RelatedTestCase();
         testCaseX.setEnclosingClassName("com.alibaba.json.bvt.parser.deser.list.ListFieldTest");
@@ -33,11 +32,11 @@ public class CtContextTest extends TestCase {
         testCaseXES.add(testCaseX);
         TestResult testResult = ctContext.test(testCaseXES, compileResult.getCompileWay());
         testResult.getCaseResultMap().forEach((key, value) -> {
-            Assert.assertEquals(TestCaseResult.TestState.PASS, value.getState());
-            Assert.assertNotNull(value.getTestCommands());
-            Assert.assertFalse(value.getTestCommands().equalsIgnoreCase(""));
+           assertEquals(TestCaseResult.TestState.PASS, value.getState());
+            assertNotNull(value.getTestCommands());
+            assertFalse(value.getTestCommands().equalsIgnoreCase(""));
         });
-        Assert.assertEquals(2, compileResult.getEnvCommands().sizes());
+        assertEquals(2, compileResult.getEnvCommands().sizes());
     }
 
     public void testAutoCompileAndTest() {
@@ -45,7 +44,7 @@ public class CtContextTest extends TestCase {
         ctContext.setProjectDir(new File("/Users/lsn/Desktop/regminer/regminer-x/regminerx-test/datas/commons-jexl"));
 //        ctContext.setProjectDir(new File("../projects-for-test/fastjson-84835dd3cfb46939eb595742ea8d7d74918034bd"));
         CompileResult compileResult = ctContext.compile();
-        Assert.assertEquals(CompileResult.CompileState.SUCCESS, compileResult.getState());
+        assertEquals(CompileResult.CompileState.SUCCESS, compileResult.getState());
         JDK[] jdks = {compileResult.getCompileWay().getJdk()};
         ctContext.setJdkSearchRange(jdks);
         List<RelatedTestCase> testCaseXES = new ArrayList<>();
@@ -55,11 +54,11 @@ public class CtContextTest extends TestCase {
         testCaseXES.add(testCaseX);
         TestResult testResult = ctContext.test(testCaseXES, compileResult.getCompileWay());
         testResult.getCaseResultMap().forEach((key, value) -> {
-            Assert.assertEquals(TestCaseResult.TestState.PASS, value.getState());
-            Assert.assertNotNull(value.getTestCommands());
-            Assert.assertFalse(value.getTestCommands().equalsIgnoreCase(""));
+            assertEquals(TestCaseResult.TestState.PASS, value.getState());
+            assertNotNull(value.getTestCommands());
+            assertFalse(value.getTestCommands().equalsIgnoreCase(""));
         });
-        Assert.assertEquals(2, compileResult.getEnvCommands().sizes());
+        assertEquals(2, compileResult.getEnvCommands().sizes());
     }
 
     public void testAutoCompileForCommit() throws Exception {

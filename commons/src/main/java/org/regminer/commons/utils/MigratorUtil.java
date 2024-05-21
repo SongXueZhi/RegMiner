@@ -3,15 +3,22 @@ package org.regminer.commons.utils;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.jdt.core.dom.*;
-import org.regminer.commons.code.analysis.CompilationUtil;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultEdge;
+import org.regminer.commons.code.analysis.SpoonCodeAnalyst;
 import org.regminer.commons.constant.Configurations;
 import org.regminer.commons.constant.Constant;
 import org.regminer.commons.model.*;
+import spoon.Launcher;
+import spoon.reflect.code.CtFieldAccess;
+import spoon.reflect.declaration.*;
+import spoon.reflect.visitor.filter.TypeFilter;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,62 +38,76 @@ public class MigratorUtil {
         return codeDir;
     }
 
-    public static void mergeTwoVersion_BaseLine(PotentialBFC pRFC, File tDir) {
+    public static void mergeTwoVersion_BaseLine(PotentialBFC pRFC, File tDir) throws IOException {
         /**
          *
          * 注意！bfc的patch中可能存在 普通java文件，测试文件（相关测试用例，非测试用例但测试目录下的java文件），配置文件(测试目录下的，其他)
          * 在base_line中我们只迁移 测试文件，和之前不存在的配置文件（暂时不做文本的merge）
          */
-        List<TestFile> testSuite = pRFC.getTestCaseFiles();
+        List<TestSuiteFile> testSuite = pRFC.getTestSuiteFiles();
         // 非测试用例的在测试目录下的其他文件
 
         //###XXX:TestDenpendency BlocK
-        List<TestFile> underTestDirJavaFiles = pRFC.getTestRelates();
-        List<SourceFile> sourceFiles = pRFC.getSourceFiles();
+        List<TestSourceFile> underTestDirJavaFiles = pRFC.getTestSourceFiles().stream().filter(
+                testSourceFile -> testSourceFile.getType() == ChangedFile.Type.TEST_DEPEND).collect(Collectors.toList());
+
+        List<ResourceOrConfigFile> resourceOrConfigFiles = pRFC.getResourceOrConfigFiles();
         //##block end
 
         // merge测试文件
         // 整合任务
         MergeTask mergeJavaFileTask = new MergeTask();
-        mergeJavaFileTask.addAll(testSuite).addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();//XXX
+        mergeJavaFileTask.addAll(testSuite).addAll(underTestDirJavaFiles).addAll(resourceOrConfigFiles).compute();//XXX
 
-        Set<String> commits = mergeJavaFileTask.getElementList().stream().map(ChangedFile::getNewCommitId).collect(Collectors.toSet());
+        Set<String> commits =
+                mergeJavaFileTask.getElementList().stream().map(ChangedFile::getNewCommitId).collect(Collectors.toSet());
         LOGGER.info("migrate testFiles from {} to {}", commits, tDir);
 
         // :TestDenpendency BlocK
-        File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
-        mergeTestFiles(bfcDir, tDir, testSuite, underTestDirJavaFiles, sourceFiles);
+        File bfcDir = Path.of(pRFC.fileMap.get(pRFC.getCommit().getName())).toFile();
+        mergeTestFiles(bfcDir, tDir, testSuite, underTestDirJavaFiles, resourceOrConfigFiles);
     }
 
-    private static void mergeTestFiles(File bfcDir, File tDir, List<TestFile> testSuite, List<TestFile> underTestDirJavaFiles, List<SourceFile> sourceFiles) {
-        // merge测试文件
-        // 整合任务
+    private static void mergeTestFiles(File bfcDir, File tDir, List<TestSuiteFile> testSuite,
+                                       List<TestSourceFile> underTestDirJavaFiles, List<ResourceOrConfigFile> resourceOrConfigFiles) throws IOException {
+        // 合并测试文件
         MergeTask mergeJavaFileTask = new MergeTask();
-        mergeJavaFileTask.addAll(testSuite).addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();//XXX
-        // :TestDenpendency BlocK
+        mergeJavaFileTask.addAll(testSuite).addAll(underTestDirJavaFiles).addAll(resourceOrConfigFiles).compute();
+
         for (Map.Entry<String, ChangedFile> entry : mergeJavaFileTask.getMap().entrySet()) {
             String newPathInBfc = entry.getKey();
             if (newPathInBfc.contains(Constant.NONE_PATH)) {
                 continue;
             }
-            String fileContent = GitUtils.getFileContentAtCommit(tDir, entry.getValue().getNewCommitId(), newPathInBfc);
-            if (fileContent == null) {
-                continue; // 文件在指定 commit 中不存在
+            // 确定源文件路径
+            Path pathFrom = Path.of(bfcDir.getAbsolutePath(), newPathInBfc);
+
+            // 确保目标文件夹存在
+            createDirectoriesIfNotExists(pathFrom.getParent());
+
+            // 如果文件在BFC目录中不存在，从commit中获取文件内容并写入
+            if (!Files.exists(pathFrom)) {
+                String fileContent = GitUtils.getFileContentAtCommit(tDir, entry.getValue().getNewCommitId(), newPathInBfc);
+                if (fileContent == null) {
+                    continue; // 文件在指定 commit 中不存在
+                }
+                Files.writeString(pathFrom, fileContent, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
             }
 
-            File tFile = new File(tDir, newPathInBfc);
+            // 确定目标文件路径并复制文件
+            Path pathTo = Path.of(tDir.getAbsolutePath(), newPathInBfc);
             try {
-                if (tFile.exists()) {
-                    FileUtils.deleteQuietly(tFile);
-                }
-                // 直接copy过去
-                if (!tFile.getParentFile().exists()) {
-                    tFile.getParentFile().mkdirs();
-                }
-                FileUtils.writeStringToFile(tFile, fileContent, StandardCharsets.UTF_8, false);
+                createDirectoriesIfNotExists(pathTo.getParent());
+                Files.copy(pathFrom, pathTo, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                LOGGER.error("Error copying file from {} to {}: {}", pathFrom, pathTo, e.getMessage());
             }
+        }
+    }
+
+    private static void createDirectoriesIfNotExists(Path path) throws IOException {
+        if (path != null && !Files.exists(path)) {
+            Files.createDirectories(path);
         }
     }
 
@@ -113,138 +134,125 @@ public class MigratorUtil {
         }
     }
 
-    /**
-     * @param pRFC
-     * @param targetProjectDirectory
-     * @throws IOException
-     */
-    public void copyToTarget(PotentialBFC pRFC, File targetProjectDirectory) throws IOException {
-        // copy
-        String targetPath = null;
-        File bfcFile = pRFC.fileMap.get(pRFC.getCommit().getName());
-        List<ChangedFile> taskFiles = new ArrayList<>();
-        //now none test file be remove
-        //test Related file is removed after test bfc
-        taskFiles.addAll(pRFC.getTestCaseFiles());
+    public static void purgeUnlessTestcase(List<TestSuiteFile> testSuiteList, PotentialBFC pRFC) {
+        SpoonCodeAnalyst spoonCodeAnalyst = new SpoonCodeAnalyst();
+        File bfcDir = Path.of(pRFC.fileMap.get(pRFC.getCommit().getName())).toFile();
 
-        //###XXX:TestDenpendency BlocK
-        taskFiles.addAll(pRFC.getTestRelates());
-        taskFiles.addAll(pRFC.getSourceFiles());
-        //####Block end#####
+        for (TestSuiteFile testSuiteFile : testSuiteList) {
+            File file = new File(bfcDir, testSuiteFile.getNewPath());
+            Launcher launcher = spoonCodeAnalyst.modelCode(file.getAbsolutePath());
+            CtCompilationUnit compilationUnit = launcher.getFactory().CompilationUnit().getMap().get(file.getAbsolutePath());
 
-        for (ChangedFile cFile : taskFiles) {
-            File file = new File(bfcFile, cFile.getNewPath());
-            // 测试文件是被删除则什么也不作。
-            if (cFile.getNewPath().contains(Constant.NONE_PATH)) {
-                continue;
-            }
-            targetPath = cFile.getNewPath();
-            // 测试文件不是删除，则copy
-            targetPath = FileUtilx.getDirectoryFromPath(targetPath);
-            File file1 = new File(targetProjectDirectory, targetPath);
-            if (!file1.exists()) {
-                file1.mkdirs();
-            }
-            FileUtils.copyFileToDirectory(file, file1);
+            Set<String> testCaseSet = testSuiteFile.getTestMethodMap().keySet();
+            removeUnusedTestMethods(compilationUnit, testCaseSet);
+            Graph<CtMethod<?>, DefaultEdge> graph = buildTestCallGraph(compilationUnit);
+            Set<CtMethod<?>> vertexSet = graph.vertexSet();
+            removeUnusedMethods(compilationUnit, vertexSet);
+            removeUnusedFields(compilationUnit, vertexSet);
+            removeUnusedImports(compilationUnit);
+            compilationUnit.updateAllParentsBelow();
+            writeToFile(file, compilationUnit.prettyprint());
         }
     }
 
-    public static void purgeUnlessTestFile(File tDir, List<String> relatedFileList) {
-        // 从 tDir 中，删除所有不在 relatedFileList 中的 test 文件
-        List<String> fileNameList = relatedFileList.stream().map(s -> getFileName(s)).collect(Collectors.toList());
-        // 递归处理目录及其子目录
-        processDirectory(tDir, fileNameList);
+    private static void removeUnusedTestMethods(CtCompilationUnit compilationUnit, Set<String> testCaseSet) {
+        compilationUnit.getDeclaredTypes().forEach(ctType ->
+                ctType.getMethods().forEach(ctMethod -> {
+                    String name = ctMethod.getSimpleName();
+                    String signature = ctMethod.getSignature();
+                    if (isTestMethod(ctMethod, name) && !testCaseSet.contains(signature)) {
+                        ctMethod.delete();
+                    }
+                })
+        );
     }
 
-    private static void processDirectory(File directory, List<String> fileNameList) {
-        File[] files = directory.listFiles();
+    private static boolean isTestMethod(CtMethod<?> ctMethod, String name) {
+        return ctMethod.toString().contains("@Test") || name.startsWith("test") || name.endsWith("Test");
+    }
 
-        if (files != null) {
-            for (File file : files) {
-                if (file.isFile() && testFilter(file.getPath()) && file.getName().endsWith(".java")
-                        && !fileNameList.contains(file.getName().toLowerCase())) {
-                    // 如果文件是测试文件并且不在相关文件列表中，则删除
-                    file.delete();
-                } else if (file.isDirectory()) {
-                    // 如果是子目录，递归处理
-                    processDirectory(file, fileNameList);
+
+    private  static void removeUnusedFields(CtCompilationUnit compilationUnit, Set<CtMethod<?>> methodSet) {
+        Set<CtField<?>> reachableFieldSet = new HashSet<>();
+        methodSet.forEach(
+                ctMethod -> {
+                    ctMethod.getElements(new TypeFilter<>(CtFieldAccess.class)).forEach(
+                            ctFieldAccess -> {
+                                reachableFieldSet.add(ctFieldAccess.getVariable().getFieldDeclaration());
+                            }
+                    );
                 }
+        );
+        compilationUnit.getDeclaredTypes().forEach(ctType -> {
+            ctType.getFields().forEach(ctField -> {
+                if (!reachableFieldSet.contains(ctField)) {
+                    ctField.delete();
+                }
+            });
+        });
+    }
+
+
+    private  static   Graph<CtMethod<?>, DefaultEdge>  buildTestCallGraph(CtCompilationUnit compilationUnit){
+        Set<CtMethod<?>> ctMethods = new HashSet<>();
+        compilationUnit.getDeclaredTypes().forEach(ctType -> {
+                    ctType.getMethods().forEach(ctMethod -> {
+                        String name = ctMethod.getSimpleName();
+                        if (isTestMethod(ctMethod, name)) {
+                            ctMethods.add(ctMethod);
+                        }
+                    });
+                }
+        );
+        SpoonCodeAnalyst spoonCodeAnalyst = new SpoonCodeAnalyst();
+        return spoonCodeAnalyst.buildCallGraph(new LinkedList<>(ctMethods),
+                new HashSet<>());
+
+    }
+
+    private static void removeUnusedMethods(CtCompilationUnit compilationUnit,Set<CtMethod<?>> vertexSet) {
+        compilationUnit.getDeclaredTypes().forEach(ctType -> {
+            ctType.getMethods().forEach(ctMethod -> {
+                if (!vertexSet.contains(ctMethod)) {
+                    ctMethod.delete();
+                }
+            });
+        });
+    }
+
+
+
+    private static void removeUnusedImports(CtCompilationUnit compilationUnit) {
+        List<CtImport> importsToRemove = new ArrayList<>();
+        List<CtImport> imports = compilationUnit.getImports();
+
+        for (CtImport ctImport : imports) {
+            String importName = extractImportName(ctImport);
+            boolean isUsed = compilationUnit.getDeclaredTypes().stream()
+                    .anyMatch(type -> type.toString().contains(importName));
+
+            if (!isUsed && !ctImport.toString().contains("*")) {
+                importsToRemove.add(ctImport);
             }
         }
+
+        importsToRemove.forEach(CtImport::delete);
     }
 
-    private static String getFileName(String path) {
-        String[] strs = path.split("/");
-        return strs[strs.length - 1].toLowerCase();
+    private static String extractImportName(CtImport ctImport) {
+        String importName = ctImport.toString();
+        int lastDotIndex = importName.lastIndexOf(".");
+        if (lastDotIndex > -1) {
+            importName = importName.substring(lastDotIndex + 1).replace(";", "");
+        }
+        return importName;
     }
 
-    public static boolean testFilter(String path) {
-        String fileName = getFileName(path);
-        // test 目录下的 test 文件
-        return (path.toLowerCase().contains("/test/") || path.toLowerCase().contains("/tests/")) &&
-                (fileName.toLowerCase().startsWith("test") || fileName.toLowerCase().endsWith("test.java") || fileName.toLowerCase().endsWith("tests.java"));
-    }
-
-    public static void purgeUnlessTestcase(List<TestFile> testSuiteList, PotentialBFC pRFC) {
-        File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
-        for (TestFile testFile : testSuiteList) {
-            String path = testFile.getNewPath();
-            File file = new File(bfcDir, path);
-            try {
-                CompilationUnit unit = CompilationUtil.parseCompliationUnit(FileUtils.readFileToString(file,
-                        "UTF-8"));
-                Set<String> testCaseSet = testFile.getTestMethodMap().keySet();
-                List<TypeDeclaration> types = unit.types();
-                for (TypeDeclaration type : types) {
-                    MethodDeclaration[] mdArray = type.getMethods();
-                    for (int i = 0; i < mdArray.length; i++) {
-                        MethodDeclaration method = mdArray[i];
-                        String name = method.getName().toString();
-                        List<ASTNode> parameters = method.parameters();
-                        // SingleVariableDeclaration
-                        StringJoiner sj = new StringJoiner(",", name + "(", ")");
-                        for (ASTNode param : parameters) {
-                            sj.add(param.toString());
-                        }
-                        String signature = sj.toString();
-                        if ((method.toString().contains("@Test") || name.startsWith("test") || name.endsWith("test")) && !testCaseSet.contains(signature)) {
-                            method.delete();
-                        }
-                    }
-                }
-                List<ImportDeclaration> imports = unit.imports();
-                int len = imports.size();
-                ImportDeclaration[] importDeclarations = new ImportDeclaration[len];
-                for (int i = 0; i < len; i++) {
-                    importDeclarations[i] = imports.get(i);
-                }
-
-                for (ImportDeclaration importDeclaration : importDeclarations) {
-                    String importName = importDeclaration.getName().getFullyQualifiedName();
-                    if (importName.lastIndexOf(".") > -1) {
-                        importName = importName.substring(importName.lastIndexOf(".") + 1);
-                    } else {
-                        importName = importName;
-                    }
-
-                    boolean flag = false;
-                    for (TypeDeclaration type : types) {
-                        if (type.toString().contains(importName)) {
-                            flag = true;
-                            break;
-                        }
-                    }
-                    if (!(flag || importDeclaration.toString().contains("*"))) {
-                        importDeclaration.delete();
-                    }
-                }
-                if (file.exists()) {
-                    file.delete();
-                }
-                FileUtils.writeStringToFile(file, unit.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    private static void writeToFile(File file, String content) {
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write(content);
+        } catch (IOException e) {
+            LOGGER.error("Failed to write to file: {}", file.getAbsolutePath());
         }
     }
 }

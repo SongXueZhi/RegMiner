@@ -21,7 +21,9 @@ import org.regminer.miner.core.BFCSearchStrategy;
 import org.regminer.miner.monitor.ProgressMonitor;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class BFCEvaluator extends BFCSearchStrategy {
 
@@ -43,24 +45,24 @@ public class BFCEvaluator extends BFCSearchStrategy {
      * @param potentialRFCList potential BFC list
      */
     public void evoluteBFCList(List<PotentialBFC> potentialRFCList) {
-        Iterator<PotentialBFC> iterator = potentialRFCList.iterator();
-        int i = 0;
-        while (iterator.hasNext()) {
-            PotentialBFC potentialRFC = iterator.next();
-            try {
-                evolute(potentialRFC);
-                if (potentialRFC.getTestCaseFiles() == null || potentialRFC.getTestCaseFiles().isEmpty()) {
-                    iterator.remove();
-                    continue;
-                }
-                ++i;
-                logger.info("pRFC total: {}", i);
-                bugStorage.saveBFC(potentialRFC);
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-                iterator.remove();
-            }
-        }
+        List<PotentialBFC> validPotentialRFCList = potentialRFCList.stream()
+                .filter(potentialRFC -> {
+                    try {
+                        evolute(potentialRFC);
+                        if (potentialRFC.getTestSourceFiles() == null || potentialRFC.getTestSourceFiles().isEmpty()) {
+                            return false;
+                        }
+                        bugStorage.saveBFC(potentialRFC);
+                        return true;
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+        potentialRFCList.clear();
+        potentialRFCList.addAll(validPotentialRFCList);
+        logger.info("Processed {} RFCs", validPotentialRFCList.size());
     }
 
     public void evolute(PotentialBFC pRFC) {
@@ -68,7 +70,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
         try {
             if (!prepareBFC(pRFC, bfcID)) return;
 
-            Triple<Boolean, CompileResult, CtContext> compileResultTriple = compileBFC(pRFC, bfcID);
+            Triple<Boolean, CompileResult, CtContext> compileResultTriple = compileBFC(pRFC);
             if (!Boolean.TRUE.equals(compileResultTriple.getLeft())) return;
 
             if (!testBFC(pRFC, bfcID, compileResultTriple.getMiddle(), compileResultTriple.getRight())) return;
@@ -87,27 +89,27 @@ public class BFCEvaluator extends BFCSearchStrategy {
         try {
             logger.info("{} checkout ", bfcID);
             logger.info("commit message:{}", pRFC.getCommit().getShortMessage());
-            logger.info("before analysis, test case size: {}", pRFC.getTestCaseFiles() == null ? 0 : pRFC.getTestCaseFiles().size());
+            logger.info("before analysis, test case size: {}", pRFC.getTestSourceFiles() == null ? 0 : pRFC.getTestSourceFiles().size());
             File bfcDirectory = MigratorUtil.checkoutCiForBFC(bfcID, bfcID);
-            pRFC.fileMap.put(bfcID, bfcDirectory);
+            pRFC.fileMap.put(bfcID, bfcDirectory.getAbsolutePath());
             return true;
         } catch (Exception exception) {
             return false;
         }
     }
 
-    private Triple<Boolean, CompileResult, CtContext> compileBFC(PotentialBFC pRFC, String bfcID) {
+    private Triple<Boolean, CompileResult, CtContext> compileBFC(PotentialBFC pRFC) {
         try {
+            String bfcID = pRFC.getCommit().getName();
             CtContext ctContext = new CtContext(new AutoCompileAndTest());
-            File bfcDirectory = pRFC.fileMap.get(bfcID);
-            ctContext.setProjectDir(bfcDirectory);
+            ctContext.setProjectDir(Path.of(pRFC.fileMap.get(bfcID)).toFile());
 
             CompileResult compileResult = ctContext.compile(OriginCompileFixWay.values());
             CommitBuildResult.originalCompileResult.putIfAbsent(bfcID, compileResult);
 
             if (compileResult.getState() == CompileResult.CompileState.CE) {
-                if (pRFC.getTestCaseFiles() != null) {
-                    pRFC.getTestCaseFiles().clear();
+                if (pRFC.getTestSourceFiles() != null) {
+                    pRFC.getTestSourceFiles().clear();
                 }
                 logger.info("BFC compile error");
                 return Triple.of(false, compileResult, ctContext);
@@ -122,10 +124,10 @@ public class BFCEvaluator extends BFCSearchStrategy {
         //4. parser Testcase
         testCaseParser.parseTestCases(pRFC);
         //5. 测试BFC
-        TestResult testResult = testCaseMigrator.test(pRFC.getTestCaseFiles(), ctContext,
+        TestResult testResult = testCaseMigrator.test(pRFC.getTestSuiteFiles(), ctContext,
                 compileResult.getCompileWay());
         TestUtils.retainTestFilesMatchingStates(pRFC, testResult, List.of(TestCaseResult.TestState.PASS));
-        if (pRFC.getTestCaseFiles().isEmpty()) {
+        if (pRFC.getTestSourceFiles().isEmpty()) {
             logger.error("BFC all test fal");
             return false;
         }
@@ -160,15 +162,15 @@ public class BFCEvaluator extends BFCSearchStrategy {
             TestUtils.retainTestFilesMatchingFilter(pRFC, matchTestCase);
             logger.info(bfcpTestResult.getCaseResultMap());
             logger.info("bfc~1 test fal");
-            MigratorUtil.purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
+            MigratorUtil.purgeUnlessTestcase(pRFC.getTestSuiteFiles(), pRFC);
             // REDUCE
             findBFCPFlag = true;
             pRFC.setBuggyCommitId(bfcpID);
             break;  //跳出，找到一个就够了
         }
         if (!findBFCPFlag) {
-            if (pRFC.getTestCaseFiles() != null) {
-                pRFC.getTestCaseFiles().clear();
+            if (pRFC.getTestSourceFiles() != null) {
+                pRFC.getTestSourceFiles().clear();
             }
             logger.info("Can't find a bfc-1");
             return false;
@@ -183,17 +185,17 @@ public class BFCEvaluator extends BFCSearchStrategy {
     }
 
     private void handleException(PotentialBFC pRFC, String bfcID, Exception e) {
-        if (pRFC.getTestCaseFiles() == null) {
+        if (pRFC.getTestSourceFiles() == null) {
             logger.error("pbfc test case is null");
-            pRFC.setTestCaseFiles(new ArrayList<>());
+            pRFC.setTestSourceFiles(new ArrayList<>());
         }
-        logger.info("pbfc test case size: {}", pRFC.getTestCaseFiles().size());
+        logger.info("pbfc test case size: {}", pRFC.getTestSourceFiles().size());
         logger.error(e.getMessage());
     }
 
     private void cleanUp(PotentialBFC pRFC, String bfcID) {
         if (Configurations.taskName.equals(Constant.BFC_TASK)) {
-            emptyCache(pRFC.fileMap.get(bfcID));
+            emptyCache(Path.of(pRFC.fileMap.get(bfcID)).toFile());
         }
     }
 
@@ -210,7 +212,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
     public boolean confirmPBFCtoBFC(PotentialBFC potentialBFC) {
         boolean isBFC = true;
         evolute(potentialBFC);
-        if (potentialBFC.getTestCaseFiles() == null || potentialBFC.getTestCaseFiles().isEmpty()
+        if (potentialBFC.getTestSourceFiles() == null || potentialBFC.getTestSourceFiles().isEmpty()
                 || potentialBFC.joinTestcaseString().replace(";", "").isEmpty()
                 || potentialBFC.getBuggyCommitId() == null || potentialBFC.getBuggyCommitId().isEmpty()
         ) {

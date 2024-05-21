@@ -1,14 +1,36 @@
+
+/*
+ * Copyright 2019-2024   XueZhi Song, Yun Lin and RegMiner contributors
+ *
+ * This file is part of RegMiner
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package org.regminer.commons.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.eclipse.jgit.diff.Edit;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ChangedFile {
+@Getter
+@Setter
+public class ChangedFile implements Serializable {
     private String newCommitId;
     private String newPath;
     private String oldPath;
-    private List<Methodx> methods;
     private List<Edit> editList;
     private Type type;
 
@@ -16,57 +38,8 @@ public class ChangedFile {
         this.newPath = newPath;
     }
 
-    public void setNewCommitId(String newCommitId) {
-        this.newCommitId = newCommitId;
-    }
-
-    public String getNewCommitId() {
-        return newCommitId;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public String getOldPath() {
-        return oldPath;
-    }
-
-    public void setOldPath(String oldPath) {
-        this.oldPath = oldPath;
-    }
-
-    public List<Edit> getEditList() {
-        return editList;
-    }
-
-    public void setEditList(List<Edit> editList) {
-        this.editList = editList;
-    }
-
-
-    public String getNewPath() {
-        return newPath;
-    }
-
-    public void setNewPath(String newPath) {
-        this.newPath = newPath;
-    }
-
-    public List<Methodx> getMethods() {
-        return methods;
-    }
-
-    public void setMethods(List<Methodx> methods) {
-        this.methods = methods;
-    }
-
     public enum Type {
-        TEST_SUITE, TEST_RELATE, JAVA_FILE, ANOTHER
+        TEST_SUITE, TEST_DEPEND, JAVA_FILE, ANOTHER
     }
 
 }

@@ -2,7 +2,6 @@ package org.regminer.migrate.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.regminer.commons.code.analysis.CompilationUtil;
 import org.regminer.commons.model.*;
 import org.regminer.commons.utils.*;
 import org.regminer.ct.api.AutoCompileAndTest;
@@ -26,7 +25,7 @@ public class TestCaseMigrator {
     public TestResult migrateAndTest(PotentialBFC pRFC, String bic) throws Exception {
         logger.info("start to migrate in {}", pRFC.getCommit().getName());
         File bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
-        pRFC.fileMap.put(bic, bicDirectory);
+        pRFC.fileMap.put(bic, bicDirectory.getAbsolutePath());
         CtContext ctContext = new CtContext(new AutoCompileAndTest());
         ctContext.setProjectDir(bicDirectory);
 
@@ -40,80 +39,75 @@ public class TestCaseMigrator {
             logger.debug("compile error before migrate");
             return null;
         }
-        List<TestFile> testFiles = new ArrayList<>(pRFC.getTestCaseFiles());
+        List<TestSuiteFile> testSuiteFiles = new ArrayList<>(pRFC.getTestSuiteFiles());
         TestResult finalResult = new TestResult();
-        List<TestFile> ceTestFiles = new ArrayList<>();
+        List<TestSuiteFile> ctTestSuiteFiles = new ArrayList<>();
         // 多个测试文件同时迁移容易导致编译失败，逐个尝试
-        for (TestFile testFile : testFiles) {
-            List<TestFile> curTestFiles = new ArrayList<>();
-            curTestFiles.add(testFile);
-            pRFC.setTestCaseFiles(curTestFiles);
+        for (TestSuiteFile testSuiteFile : testSuiteFiles) {
+            List<TestSourceFile> curTestSourceFiles = new ArrayList<>();
+            curTestSourceFiles.add(testSuiteFile);
+            pRFC.setTestSourceFiles(curTestSourceFiles);
             MigratorUtil.mergeTwoVersion_BaseLine(pRFC, bicDirectory);
             // 编译
             compileResult = compile(bic, ctContext, compileResult);
             // 编译成功后执行测试
             if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
-                TestResult result = test(pRFC.getTestCaseFiles(), ctContext, compileResult.getCompileWay());
+                TestResult result = test(pRFC.getTestSuiteFiles(), ctContext, compileResult.getCompileWay());
                 if (result.getCaseResultMap().values().stream().allMatch(testCaseResult -> testCaseResult.getState() == TestCaseResult.TestState.CE)) {
                     // 恢复原始情况
                     bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
-                    ceTestFiles.add(testFile);
+                    ctTestSuiteFiles.add(testSuiteFile);
                 } else {
                     finalResult.getCaseResultMap().putAll(result.getCaseResultMap());
                 }
             } else {
                 // 恢复原始情况
                 bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
-                ceTestFiles.add(testFile);
+                ctTestSuiteFiles.add(testSuiteFile);
             }
         }
         if (finalResult.isEmpty()) {
-            migrateTestMethodAndTest(pRFC, bic, ceTestFiles, ctContext, compileResult, finalResult);
+            migrateTestMethodAndTest(pRFC, bic, ctTestSuiteFiles, ctContext, compileResult, finalResult);
         }
         // 恢复测试文件列表，接下来的流程还会用到
-        pRFC.setTestCaseFiles(testFiles);
+        pRFC.setTestSuiteFiles(testSuiteFiles);
         return finalResult;
     }
 
-    private void migrateTestMethodAndTest(PotentialBFC pRFC, String bic, List<TestFile> ceTestFiles,
+    private void migrateTestMethodAndTest(PotentialBFC pRFC, String bic, List<TestSuiteFile> ceTestSuitedFiles,
                                           CtContext ctContext, CompileResult compileResult, TestResult finalResult) throws IOException {
         File bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
 
         Map<String, String> path2ContentMap = new HashMap<>();
-        List<TestFile> underTestDirJavaFiles = pRFC.getTestRelates();
-        List<SourceFile> sourceFiles = pRFC.getSourceFiles();
+        List<TestSourceFile> underTestDirJavaFiles = pRFC.getTestDependFile();
+        List<ResourceOrConfigFile> resourceOrConfigFiles = pRFC.getResourceOrConfigFiles();
         MergeTask mergeJavaFileTask = new MergeTask();
-        mergeJavaFileTask.addAll(underTestDirJavaFiles).addAll(sourceFiles).compute();
+        mergeJavaFileTask.addAll(underTestDirJavaFiles).addAll(resourceOrConfigFiles).compute();
 
         for (Map.Entry<String, ChangedFile> entry : mergeJavaFileTask.getMap().entrySet()) {
             String code = GitUtils.getFileContentAtCommit(bicDirectory, entry.getValue().getNewCommitId(), entry.getKey());
             path2ContentMap.put(entry.getKey(), code);
         }
-        for (TestFile testFile : ceTestFiles) {
-            List<TestFile> curTestFiles = new ArrayList<>();
-            curTestFiles.add(testFile);
-            pRFC.setTestCaseFiles(curTestFiles);
-            if (testFile.getTestMethodMap().values().stream().findFirst().isPresent()) {
-                String filePath = testFile.getTestMethodMap().values().stream().findFirst().get().getRelativeFilePath();
-                String code = FileUtilx.readContentFromFile(new File(bicDirectory, filePath));
-                if (code == null) {
-                    // bic 中不存在这个文件
-                    // 已经先迁移过整个文件并且编译失败了，那么大概率是在这个 bfc 新增的功能
-                    logger.info("BFC may be introducing a new feature rather than actually fixing an existing bug.");
-                    continue;
-                }
-                for (Map.Entry<String, RelatedTestCase> entry : testFile.getTestMethodMap().entrySet()) {
-                    // 迁移方法体
-                    code = CompilationUtil.addOrReplaceMethod(code, entry.getValue().getMethod());
-                }
-                path2ContentMap.put(filePath, code);
-                logger.info("migrate test methods from {} to {}", testFile.getNewCommitId(), filePath);
+        for (TestSuiteFile testSuiteFile : ceTestSuitedFiles) {
+            List<TestSuiteFile> curTestFiles = new ArrayList<>();
+            curTestFiles.add(testSuiteFile);
+            pRFC.setTestSuiteFiles(curTestFiles);
+            if (testSuiteFile.getTestMethodMap().values().stream().findFirst().isPresent()) {
+                String filePath = testSuiteFile.getTestMethodMap().values().stream().findFirst().get().getRelativeFilePath();
+                String realPath = bicDirectory+File.separator+filePath;
+                // TODO Song Xuezhi 这里的代码有问题，应该是将测试方法迁移到源代码中，而不是将源代码迁移到测试代码中。
+//                for (Map.Entry<String, RelatedTestCase> entry : testSourceFile.getTestMethodMap().entrySet()) {
+//                    // 迁移方法体
+//                    code = CompilationUtil.addOrReplaceMethod(code, entry.getValue().getMethod());
+//                }
+//                path2ContentMap.put(filePath, code);
+                logger.info("migrate test methods from {} to {}", testSuiteFile.getNewCommitId(), filePath);
                 MigratorUtil.mergeFiles(path2ContentMap, bicDirectory);
                 // 编译
                 compileResult = compile(bic, ctContext, compileResult);
                 // 编译成功后执行测试
                 if (compileResult.getState() == CompileResult.CompileState.SUCCESS) {
-                    finalResult.getCaseResultMap().putAll(test(pRFC.getTestCaseFiles(), ctContext, compileResult.getCompileWay()).getCaseResultMap());
+                    finalResult.getCaseResultMap().putAll(test(pRFC.getTestSuiteFiles(), ctContext, compileResult.getCompileWay()).getCaseResultMap());
                 } else {
                     // 恢复原始情况
                     bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
@@ -132,8 +126,8 @@ public class TestCaseMigrator {
     //TODO Song Xuezhi 现在这样的重构必然会造成损失，有些项目（maven低版本）没有办法只测试一个具体的方法，可能只能测试一个类。
     // 但这个问题，我觉的大概可能在未来项目构建模块解决。
     // 我认为这件事情的优先级和compile同等。
-    public TestResult test(List<TestFile> testFiles, CtContext ctContext, CompileTestEnv compileTestEnv) {
-        TestResult testResult = ctContext.test(ChangedFileUtil.convertTestFilesToTestCaseXList(testFiles), compileTestEnv);
+    public TestResult test(List<TestSuiteFile> testSuiteFiles, CtContext ctContext, CompileTestEnv compileTestEnv) {
+        TestResult testResult = ctContext.test(ChangedFileUtil.convertTestFilesToTestCaseXList(testSuiteFiles), compileTestEnv);
         return testResult;
     }
 

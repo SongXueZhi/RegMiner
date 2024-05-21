@@ -1,5 +1,6 @@
 package org.regminer.ct.api;
 
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.maven.model.Dependency;
@@ -255,11 +256,8 @@ public enum OriginCompileFixWay {
             return compileResult;
         }
     };
+    @Getter
     private final Integer order;
-
-    public Integer getOrder() {
-        return this.order;
-    }
 
     OriginCompileFixWay(Integer order) {
         this.order = order;
