@@ -14,6 +14,7 @@ import org.regminer.miner.SearchBFCContext;
 import org.regminer.miner.monitor.ProgressMonitor;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -23,11 +24,10 @@ import java.util.List;
  */
 public class Miner {
 
-    protected Logger logger = LogManager.getLogger(Miner.class);
     private final SearchBFCContext bfcContext;
     private final SearchBICContext bicContext;
-
-    private final BugStorage bugStorage =  new BugStorage();
+    private final BugStorage bugStorage = new BugStorage();
+    protected Logger logger = LogManager.getLogger(Miner.class);
 
     public Miner(SearchBFCContext bfcEvaluator, SearchBICContext bicFinder) {
         this.bfcContext = bfcEvaluator;
@@ -39,17 +39,18 @@ public class Miner {
         Thread.currentThread().setName(Configurations.projectName);
         try {
             List<PotentialBFC> pBFCs = bfcContext.searchPotentialBFC();
-            boolean isBFC =false;
+            boolean isBFC = false;
             int bfcNum = 0;
             for (PotentialBFC pBFC : pBFCs) {
                 isBFC = bfcContext.confirmPBFCtoBFC(pBFC);
-                if (isBFC){
+                if (isBFC) {
                     bfcNum++;
                     if (Configurations.taskName.equals(Constant.BFC_BIC_TASK)) {
                         logger.info("start to search bic");
                         searchBIC(pBFC);
                     }
                 }
+                endOneTask(pBFC);
             }
             logger.info("total bfc: {}, find bfc: {}", pBFCs.size(), bfcNum);
         } catch (Exception exception) {
@@ -57,6 +58,16 @@ public class Miner {
         } finally {
             File file = new File(Configurations.cachePath, Configurations.projectName);
             new SycFileCleanup().cleanDirectory(file);
+        }
+    }
+
+    private void endOneTask(PotentialBFC bfc) {
+        try {
+            ProgressMonitor.updateState(bfc.getCommit().getName());
+            new  SycFileCleanup().cleanDirectory(Path.of(Configurations.cachePath, Configurations.projectName,
+                    bfc.getCommit().getName()).toFile());
+        } catch (Exception e) {
+            logger.error("end task error ",e.getMessage());
         }
     }
 
@@ -69,18 +80,18 @@ public class Miner {
             logger.info("find bic failed, bfc: {}, msg: {}", pBFC.getCommit().getName(), e.getMessage());
         }
         try {
-            if (bic != null){
+            if (bic != null) {
                 bugStorage.saveRegression(enCapRegression(pBFC, bic));
             }
             ProgressMonitor.updateState(pBFC.getCommit().getName());
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("save regression failed, bfc: {}, msg: {}", pBFC.getCommit(), e.getMessage());
         }
     }
 
-    private Regression enCapRegression(PotentialBFC pbfc, Triple<String, String, Integer> bic){
-        return new Regression(pbfc.getCommit().getName(),pbfc.getBuggyCommitId(),bic.getMiddle(),
-                bic.getLeft(), pbfc.joinTestcaseString(),bic.getRight());
+    private Regression enCapRegression(PotentialBFC pbfc, Triple<String, String, Integer> bic) {
+        return new Regression(pbfc.getCommit().getName(), pbfc.getBuggyCommitId(), bic.getMiddle(),
+                bic.getLeft(), pbfc.joinTestcaseString(), bic.getRight());
 
     }
 }

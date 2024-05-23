@@ -1,15 +1,20 @@
 package org.regminer.commons.utils;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.regminer.commons.constant.Configurations;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FileUtilx {
 
-
+    private static final Logger LOGGER = LogManager.getLogger(FileUtilx.class);
     // /home/sxz/document/mmmmm-ddahkdak989/123.java
     public static String getDirectoryFromPath(String path) {
         return path.contains("/") ? path.substring(0, path.lastIndexOf("/")) : "";
@@ -23,19 +28,17 @@ public class FileUtilx {
         String dirName =
                 Configurations.cachePath + File.separator + Configurations.projectName + File.separator + shortBfc + File.separator + shortBic;
 
-        // 创建一个File对象
-        File directory = new File(dirName);
+        Path path = Path.of(dirName);
 
-        // 如果目录不存在，则创建它
-        if (directory.exists()) {
-            try {
-                FileUtils.forceDelete(directory);
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
+        try {
+            if (Files.exists(path)){
+                FileUtils.forceDelete(path.toFile());
             }
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            LOGGER.error(e.getLocalizedMessage());
         }
-        directory.mkdirs();
-        return directory;
+        return path.toFile();
     }
 
     public static String readContentFromFile(File file) {

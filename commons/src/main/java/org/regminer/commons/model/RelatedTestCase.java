@@ -19,17 +19,22 @@
 package org.regminer.commons.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import spoon.reflect.declaration.CtMethod;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Setter
 @Getter
-public class RelatedTestCase {
+@NoArgsConstructor
+public class RelatedTestCase implements Serializable {
     private String enclosingClassName;
     private String methodName;
-    private CtMethod<?> method;
+    private String methodSignature;
+
+    private transient CtMethod<?> method;
     private String relativeFilePath;
 
     @Override

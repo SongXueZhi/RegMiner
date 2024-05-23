@@ -22,7 +22,10 @@ import org.regminer.miner.monitor.ProgressMonitor;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BFCEvaluator extends BFCSearchStrategy {
@@ -37,19 +40,13 @@ public class BFCEvaluator extends BFCSearchStrategy {
         bugStorage = new BugStorage();
     }
 
-    /**
-     * Firstly,checkout BFC ,and manage BFC DIR In the map
-     * Then try the code coverage feature
-     * sort BFC
-     *
-     * @param potentialRFCList potential BFC list
-     */
+    @Deprecated
     public void evoluteBFCList(List<PotentialBFC> potentialRFCList) {
         List<PotentialBFC> validPotentialRFCList = potentialRFCList.stream()
                 .filter(potentialRFC -> {
                     try {
-                        evolute(potentialRFC);
-                        if (potentialRFC.getTestSourceFiles() == null || potentialRFC.getTestSourceFiles().isEmpty()) {
+                        evaluate(potentialRFC);
+                        if (potentialRFC.getTestSuiteFiles() == null || potentialRFC.getTestSuiteFiles().isEmpty()) {
                             return false;
                         }
                         bugStorage.saveBFC(potentialRFC);
@@ -65,31 +62,37 @@ public class BFCEvaluator extends BFCSearchStrategy {
         logger.info("Processed {} RFCs", validPotentialRFCList.size());
     }
 
-    public void evolute(PotentialBFC pRFC) {
+    public boolean evaluate(PotentialBFC pRFC) {
+        boolean result = false;
         String bfcID = pRFC.getCommit().getName();
         try {
-            if (!prepareBFC(pRFC, bfcID)) return;
+            if (!prepareBFC(pRFC, bfcID)) return result;
+
+            testCaseParser.parseTestCases(pRFC);
+            if (pRFC.getTestSuiteFiles() == null || pRFC.getTestSuiteFiles().isEmpty()) {
+                logger.error("BFC has no test case");
+                return result;
+            }
 
             Triple<Boolean, CompileResult, CtContext> compileResultTriple = compileBFC(pRFC);
-            if (!Boolean.TRUE.equals(compileResultTriple.getLeft())) return;
+            if (!Boolean.TRUE.equals(compileResultTriple.getLeft())) return result;
 
-            if (!testBFC(pRFC, bfcID, compileResultTriple.getMiddle(), compileResultTriple.getRight())) return;
+            if (!testBFC(pRFC, compileResultTriple.getMiddle(), compileResultTriple.getRight())) return result;
 
-            if (!chooseBFCP(pRFC, bfcID)) return;
-
-            updateProgress(bfcID);
+            if (!chooseBFCP(pRFC, bfcID)) return result;
+            result = true;
         } catch (Exception e) {
             handleException(pRFC, bfcID, e);
-        } finally {
-            cleanUp(pRFC, bfcID);
-        }
+        } 
+        return result;
     }
 
     private boolean prepareBFC(PotentialBFC pRFC, String bfcID) {
         try {
             logger.info("{} checkout ", bfcID);
             logger.info("commit message:{}", pRFC.getCommit().getShortMessage());
-            logger.info("before analysis, test case size: {}", pRFC.getTestSourceFiles() == null ? 0 : pRFC.getTestSourceFiles().size());
+            logger.info("before analysis, test source files size: {}", pRFC.getTestSourceFiles() == null ? 0 :
+                    pRFC.getTestSourceFiles().size());
             File bfcDirectory = MigratorUtil.checkoutCiForBFC(bfcID, bfcID);
             pRFC.fileMap.put(bfcID, bfcDirectory.getAbsolutePath());
             return true;
@@ -120,88 +123,77 @@ public class BFCEvaluator extends BFCSearchStrategy {
         }
     }
 
-    private boolean testBFC(PotentialBFC pRFC, String bfcID, CompileResult compileResult, CtContext ctContext) {
-        //4. parser Testcase
-        testCaseParser.parseTestCases(pRFC);
+    private boolean testBFC(PotentialBFC pRFC, CompileResult compileResult, CtContext ctContext) {
         //5. 测试BFC
         TestResult testResult = testCaseMigrator.test(pRFC.getTestSuiteFiles(), ctContext,
                 compileResult.getCompileWay());
         TestUtils.retainTestFilesMatchingStates(pRFC, testResult, List.of(TestCaseResult.TestState.PASS));
-        if (pRFC.getTestSourceFiles().isEmpty()) {
+        if (pRFC.getTestSuiteFiles().isEmpty()) {
             logger.error("BFC all test fal");
             return false;
         }
         return true;
     }
 
-    private boolean chooseBFCP(PotentialBFC pRFC, String bfcID) throws Exception {
-        //6. 选择BFCP
-        int count = pRFC.getCommit().getParentCount();
-        if (count == 0) {
-            logger.error("BFC has no parent");
-            return false;
-        }
-
+    private boolean chooseBFCP(PotentialBFC pRFC, String bfcID) {
         boolean findBFCPFlag = false;
-        for (int i = 0; i < count; i++) {
-            String bfcpID = pRFC.getCommit().getParent(i).getName();
-            logger.info("bfc~1 {} of {}", bfcpID, bfcID);
-            TestResult bfcpTestResult = testCaseMigrator.migrateAndTest(pRFC, bfcpID);
-            if (bfcpTestResult == null) { //这说明编译失败
-                continue;
+        try {
+            int count = pRFC.getCommit().getParentCount();
+            if (count == 0) {
+                logger.error("BFC has no parent");
+                return false;
+            }
+            for (int i = 0; i < count; i++) {
+                String bfcpID = pRFC.getCommit().getParent(i).getName();
+                logger.info("bfc~1 {} of {}", bfcpID, bfcID);
+                TestResult bfcpTestResult = testCaseMigrator.migrateAndTest(pRFC, bfcpID);
+                if (bfcpTestResult == null) { //这说明编译失败
+                    continue;
+                }
+                Set<String> matchTestCase = TestUtils.collectTestCases(bfcpTestResult,
+                        testState -> Arrays.asList(TestCaseResult.TestState.FAL,
+                                TestCaseResult.TestState.TE).contains(testState)).keySet();
+
+                if (matchTestCase.isEmpty()) {
+                    continue;
+                }
+                //查找成功，删除无关的测试用例
+                TestUtils.retainTestFilesMatchingFilter(pRFC, matchTestCase);
+                logger.info(bfcpTestResult.getCaseResultMap());
+                logger.info("bfc~1 test fal");
+                // REDUCE
+                findBFCPFlag = true;
+                pRFC.setBuggyCommitId(bfcpID);
+                break;  //跳出，找到一个就够了
             }
 
-            Set<String> matchTestCase = TestUtils.collectTestCases(bfcpTestResult,
-                    testState -> Arrays.asList(TestCaseResult.TestState.FAL,
-                            TestCaseResult.TestState.TE).contains(testState)).keySet();
-
-            if (matchTestCase.isEmpty()) {
-                continue;
+            if (!findBFCPFlag) {
+                if (pRFC.getTestSuiteFiles() != null) {
+                    pRFC.getTestSuiteFiles().clear();
+                }
+                logger.info("Can't find a bfc-1");
             }
-            //查找成功，删除无关的测试用例
-            TestUtils.retainTestFilesMatchingFilter(pRFC, matchTestCase);
-            logger.info(bfcpTestResult.getCaseResultMap());
-            logger.info("bfc~1 test fal");
-            MigratorUtil.purgeUnlessTestcase(pRFC.getTestSuiteFiles(), pRFC);
-            // REDUCE
-            findBFCPFlag = true;
-            pRFC.setBuggyCommitId(bfcpID);
-            break;  //跳出，找到一个就够了
+        } catch (Exception exception) {
+            logger.error(exception.getMessage());
         }
-        if (!findBFCPFlag) {
-            if (pRFC.getTestSourceFiles() != null) {
-                pRFC.getTestSourceFiles().clear();
-            }
-            logger.info("Can't find a bfc-1");
-            return false;
-        }
-        return true;
+        return findBFCPFlag;
     }
 
-    private void updateProgress(String bfcID) {
-        if (Configurations.taskName.equals(Constant.BFC_TASK)) {
-            ProgressMonitor.updateState(bfcID);
-        }
-    }
+//    private void updateProgress(String bfcID) {
+//        if (Configurations.taskName.equals(Constant.BFC_TASK)) {
+//            ProgressMonitor.updateState(bfcID);
+//        }
+//    }
 
     private void handleException(PotentialBFC pRFC, String bfcID, Exception e) {
-        if (pRFC.getTestSourceFiles() == null) {
+        if (pRFC.getTestSuiteFiles() == null) {
             logger.error("pbfc test case is null");
-            pRFC.setTestSourceFiles(new ArrayList<>());
+            pRFC.setTestSuiteFiles(new ArrayList<>());
         }
-        logger.info("pbfc test case size: {}", pRFC.getTestSourceFiles().size());
+        logger.info("pbfc test case size: {}", pRFC.getTestSuiteFiles().size());
         logger.error(e.getMessage());
     }
 
-    private void cleanUp(PotentialBFC pRFC, String bfcID) {
-        if (Configurations.taskName.equals(Constant.BFC_TASK)) {
-            emptyCache(Path.of(pRFC.fileMap.get(bfcID)).toFile());
-        }
-    }
-
-    public void emptyCache(File file) {
-        new SycFileCleanup().cleanDirectory(file.getParentFile());
-    }
 
     @Override
     public void searchRealBFC(List<PotentialBFC> potentialBFCs) {
@@ -210,14 +202,13 @@ public class BFCEvaluator extends BFCSearchStrategy {
 
     @Override
     public boolean confirmPBFCtoBFC(PotentialBFC potentialBFC) {
-        boolean isBFC = true;
-        evolute(potentialBFC);
-        if (potentialBFC.getTestSourceFiles() == null || potentialBFC.getTestSourceFiles().isEmpty()
+        boolean isBFC = evaluate(potentialBFC);
+        boolean checkCondition =
+                (potentialBFC.getTestSuiteFiles() == null || potentialBFC.getTestSuiteFiles().isEmpty()
                 || potentialBFC.joinTestcaseString().replace(";", "").isEmpty()
                 || potentialBFC.getBuggyCommitId() == null || potentialBFC.getBuggyCommitId().isEmpty()
-        ) {
-            isBFC = false;
-        }
+        );
+        isBFC = isBFC && !checkCondition;
         if (isBFC) {
             bugStorage.saveBFC(potentialBFC);
         }
