@@ -1,30 +1,30 @@
 # RegMiner 2.0
 
 A Mining Approach towards Automating Regression Dataset Construction from Code Evolution History. 
-This project is powerd by [SE lab](http://www.se.fudan.edu.cn/) in [fudan university](https://www.fudan.edu.cn/en/)
+This project is powerd by [SE lab](http://www.se.fudan.edu.cn/) in [Fudan University](https://www.fudan.edu.cn/en/)
 
 ## Regressions4J
 
-We also provide UI-free tools to help users replay test results for each regression bug,get that support in
+We also provide UI-free tools to help users replay test results for each regression bug. Get that support in
 the [regs4J](https://github.com/SongXueZhi/regressions4j) project.
 
 ## Tutorial
 
 **Env requirements for RegMiner:**
 
-1. OS: MacOs/Ubuntu/CenterOS 
+1. OS: MacOS/Ubuntu/CentOS 
 
 2. JDK: 11
 
 3. Python: 3.0+
 
-Note that! We have discovered that RegMiner does not run well on Windows OS, and currently, we don't plan to fix it.
+Attention! We have discovered that RegMiner does not run well on Windows OS, and currently, we don't plan to fix it.
 
 **Env requirements for mining projects:**
 
 1. JDK LTS: 1.7,1.8,11,17 
-2. maven & gradle
-3. Others*: The specific environment required for a particular mining project, such as projects related to MongoDB middleware, may necessitate the installation of MongoDB.
+2. Maven or Gradle
+3. Others*: The specific environment required by a particular project. For example, MongoDB may be necessary for a project related to MongoDB middleware.
 
 **Easy Start:**
 
@@ -42,7 +42,7 @@ Note that! We have discovered that RegMiner does not run well on Windows OS, and
   mkdir meta_projects
 ```
 
-3. Prepare source code of the mined project. In example, we use ``uniVocity/univocity-parsers``.
+3. Prepare source code of the mined project. In the example, we use ``uniVocity/univocity-parsers``.
 
 ```bash
   cd meta_projects
@@ -73,7 +73,7 @@ These commands will generate the necessary configuration for running Regminer. T
 ```
 -ws /xxx/xxx/miner_space/ -pj univocity-parsers -cfg env.properties -t bfc
 ```
-``-t bfc`` means just mine bfc, ``-t bfc&bic`` means search regression.
+``-t bfc`` means just mine bfc; ``-t bfc&bic`` means search for regressions.
 
 5. Run RegMiner in ``miner/src/main/java/org/regminer/miner/start/MinerCli.java``, you can find progress info in ``logs/app.log``
 
@@ -81,7 +81,7 @@ These commands will generate the necessary configuration for running Regminer. T
 ## Automate batch mining.
 Automated mining of target project sets.
 1. Build the JAR package for RegMiner and place it in the ``scripts`` directory, and move ``scripts`` directory to ``miner_space``.
-2. run ``python gen_config.py`` under ``scripts`` directory.
+2. Run ``python gen_config.py`` under ``scripts`` directory.
 3. Prepare a list of project names in file ``projects.in`` under ``scripts`` directory, with one project per line.
 4. Clone the source code of these projects with ``.git`` files into ``miner_space/meta_projects``.
 5. Run the ``run_multi_projects.py`` under ``scripts`` directory to mine the projects in the list.
@@ -100,4 +100,4 @@ You can see the comments in the scripts for more details.
 3. Xuezhi Song, Yijian Wu*, Junming Cao, Bihuan Chen, Yun Lin, Zhengjie Lu, Dingji Wang, Xin Peng. BugMiner: Automating Precise Bug Dataset Construction by Code Evolution History Mining   
 
 ## Acknowledgments
-We are great thanks for [JetBrains](https://jb.gg/OpenSourceSupport) support on RegMiner.
+We express our great thanks for [JetBrains](https://jb.gg/OpenSourceSupport) support on RegMiner.
