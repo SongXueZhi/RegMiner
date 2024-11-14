@@ -158,8 +158,13 @@ public class AutoCompileAndTest extends Strategy {
                 String testCommand = CtUtils.combineTestCommand(testCase, compiler, osName, moduleNode);
                 envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
                 ExecResult execResult = new Executor().setDirectory(compileTestEnv.getProjectDir()).exec(envCommands.compute(), 2);
+
                 TestCaseResult testCaseResult = CtReferees.judgeTestCaseResult(execResult);
                 testCaseResult.setTestCommands(testCommand);
+                testCaseResult.setExceptionMessage(execResult.getMessage()); // add exception msg
+                if (execResult.getMessage() == null || execResult.getMessage().isEmpty()) {
+                    logger.info("execResult.getMessage() is null or empty!");
+                }
                 logger.info("command: {}, result: {}", testCommand, testCaseResult.getState());
                 if (testCaseResult.getState() == TestCaseResult.TestState.NOTEST) {
                     // 如果测试结果为 NOTEST，将其类添加到整体测试列表中
@@ -191,8 +196,14 @@ public class AutoCompileAndTest extends Strategy {
             ExecResult execResult = new Executor().setDirectory(compileTestEnv.getProjectDir()).exec(envCommands.compute(), 2);
             TestCaseResult classTestCaseResult = CtReferees.judgeTestCaseResult(execResult);
             classTestCaseResult.setTestCommands(testCommand);
+            if (execResult.getMessage() == null || execResult.getMessage().isEmpty()) {
+                logger.info("execResult.getMessage() is null or empty!");
+            }
+            classTestCaseResult.setExceptionMessage(execResult.getMessage()); //add exception msg!
             logger.info("command: {}, result: {}", testCommand, classTestCaseResult.getState());
             // 将类的测试结果应用于该类的所有测试案例
+
+            //todo: maybe only one testcase failed! should not set the result to each testcase in the class
             for (RelatedTestCase testCase : testWholeEntry.getValue()) {
                 if (!testResult.exists(testCase.toString())) {
                     testResult.takeTestCaseResult(testCase.toString(), classTestCaseResult);

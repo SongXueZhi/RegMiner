@@ -62,7 +62,8 @@ public class Executor {
                 boolean completed = process.waitFor(timeout, TimeUnit.MINUTES);
                 if (!completed) {
                     execResult.setTimeOut(true);
-                    return execResult;
+                    System.out.println("Time out");//although timeout, but there may still contain some useful exception message
+//                    return execResult;
                 }
             }
 
@@ -93,6 +94,9 @@ public class Executor {
             }
             execResult.setUsageTime(System.currentTimeMillis() - startTime);
             execResult.setMessage(builder.toString());
+            if (execResult.isTimeOut()) {//although timeout, but there may still contain some useful exception message
+                System.out.println("timeout, but msg stored with length: " + execResult.getMessage().length());
+            }
         }
         return execResult;
     }

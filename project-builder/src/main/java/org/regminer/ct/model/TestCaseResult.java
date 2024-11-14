@@ -1,11 +1,17 @@
 package org.regminer.ct.model;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import org.apache.logging.log4j.Logger;
+
 public class TestCaseResult {
 
     private TestState state;
     private long usageTime;
     private String exceptionMessage;
     private String testCommands;
+    private Logger logger = null;
 
     public String getTestCommands() {
         return testCommands;
@@ -35,8 +41,17 @@ public class TestCaseResult {
         return exceptionMessage;
     }
 
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+
+    public void removeLogger() {
+        this.logger = null;
+    }
+
     public void setExceptionMessage(String exceptionMessage) {
-        this.exceptionMessage = exceptionMessage;
+        String ansiPattern = "\\x1B\\[[0-?]*[ -/]*[@-~]";
+        this.exceptionMessage = exceptionMessage.replaceAll(ansiPattern, "");//remove ANSI escape code
     }
 
     public enum TestState {
@@ -55,5 +70,34 @@ public class TestCaseResult {
                 "TestState='" + state.name() + '\'' +
                 ", usageTime='" + usageTime + '\'' +
                 '}';
+    }
+
+    public void execMsgToFile(String storeFilePath) {
+        File storeFile = new File(storeFilePath);
+        if (exceptionMessage == null || exceptionMessage.isEmpty()) {
+            return;
+        }
+
+        if (!storeFile.exists()) {
+            try {
+                storeFile.createNewFile();
+            } catch (IOException e) {
+                if (logger != null) {
+                    logger.error("Failed to create file: " + storeFilePath);
+                } else {
+                    System.out.println("Failed to create file: " + storeFilePath);
+                }
+            }
+
+            try (FileWriter fileWriter = new FileWriter(storeFile)) {
+                fileWriter.write(exceptionMessage);
+            } catch (IOException e) {
+                if (logger != null) {
+                    logger.error("Failed to write to file: " + storeFilePath);
+                } else {
+                    System.out.println("Failed to write to file: " + storeFilePath);
+                }
+            }
+        }
     }
 }

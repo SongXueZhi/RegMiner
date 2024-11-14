@@ -35,6 +35,8 @@ public class Configurations {
     public static String tmpFile = projectPath + File.separator + "tmp";
     public static String resultPath = projectPath + File.separator + "regression.csv";
     public static String cachePath = rootDir + File.separator + "cache";
+    public static String exceptionUrl;// will be updated after setting rootPath (-ws)
+
     // extra with clone
     public static String cloneUrl = "";
     public static boolean sqlEnable = false;
@@ -86,5 +88,6 @@ public class Configurations {
         tmpFile = projectPath + File.separator + "tmp";
         resultPath = projectPath + File.separator + "regression.csv";
         cachePath = rootDir + File.separator + "cache";
+        exceptionUrl = rootDir + File.separator + "exception";
     }
 }

@@ -50,7 +50,7 @@ public class BugStorage {
             return;
         }
         String projectName = Configurations.projectName;
-        String sql = "INSERT IGNORE INTO " + tableName + " (project_name,bic,bfc,testcase) VALUES " +
+        String sql = "INSERT IGNORE INTO " + tableName + " (project_name,buggy,bfc,testcase) VALUES " +
                 "('" + projectName + "','" + potentialBFC.getBuggyCommitId() + "','" +
                 potentialBFC.getCommit().getName() + "','" + potentialBFC.joinTestcaseString() + "')";
         MysqlManager.executeUpdate(sql);
