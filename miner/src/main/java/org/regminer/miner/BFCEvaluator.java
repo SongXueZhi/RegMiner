@@ -155,6 +155,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
                             TestCaseResult.TestState.TE).contains(testState)).keySet();
 
             if (matchTestCase.isEmpty()) {
+                logger.info("no test case match");
                 continue;
             }
             //查找成功，删除无关的测试用例
@@ -165,34 +166,6 @@ public class BFCEvaluator extends BFCSearchStrategy {
 
             storeException(bfcpTestResult, bfcpID, bfcID); //write as xxxxxxx_xxxxxxx.txt
 
-//            File excepProjDir = new File(Configurations.exceptionUrl + File.separator + Configurations.projectName);
-//            logger.info("exception dir: {}", excepProjDir.getPath());
-//            if (!excepProjDir.exists()) {
-//                boolean r = excepProjDir.mkdirs();
-//                logger.info("create exception dir: {} {}", r, excepProjDir.getPath());
-//            }
-//
-//            AtomicInteger cnt = new AtomicInteger(0);
-//
-//            bfcpTestResult.getCaseResultMap().forEach((k, v) -> {//store exception msg to file
-//                if (v.getState() == TestCaseResult.TestState.FAL || v.getState() == TestCaseResult.TestState.TE) {
-//                    if (v.getExceptionMessage() == null || v.getExceptionMessage().isEmpty()) {
-//                        logger.info("exception msg is empty for {}", k);
-//                        return;
-//                    }
-//                    String storePath = excepProjDir.getAbsolutePath() + File.separator + bfcpID.substring(0, 7) + '_' + bfcID.substring(0, 7) + '_' + cnt.get() + ".txt";
-//                    logger.info("stored to {} with {}", storePath, v.getTestCommands());
-//                    v.setLogger(logger);
-//                    v.testMsgToFile(storePath);
-//                    v.removeLogger();
-//                    cnt.getAndIncrement();
-//                }
-//            });
-//            if (cnt.get() > 0) {
-//                logger.info("bfc~1 exception msg stored");
-//            } else {
-//                logger.info("no exception msg stored");
-//            }
 
             // REDUCE
             findBFCPFlag = true;
@@ -235,9 +208,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 uniqueCommands.add(v.getTestCommands());
                 String storePath = excepProjDir.getAbsolutePath() + File.separator + bfcpID.substring(0, 7) + '_' + bfcID.substring(0, 7) + '_' + cnt.get() + ".txt";
                 logger.info("stored to {} with {}", storePath, v.getTestCommands());
-                v.setLogger(logger);
                 v.execMsgToFile(storePath);
-                v.removeLogger();
                 cnt.getAndIncrement();
             }
         });

@@ -3,6 +3,8 @@ package org.regminer.ct.model;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class TestCaseResult {
@@ -11,7 +13,7 @@ public class TestCaseResult {
     private long usageTime;
     private String exceptionMessage;
     private String testCommands;
-    private Logger logger = null;
+    private Logger logger = LogManager.getLogger(this);
 
     public String getTestCommands() {
         return testCommands;
@@ -41,15 +43,12 @@ public class TestCaseResult {
         return exceptionMessage;
     }
 
-    public void setLogger(Logger logger) {
-        this.logger = logger;
-    }
 
-    public void removeLogger() {
-        this.logger = null;
-    }
 
     public void setExceptionMessage(String exceptionMessage) {
+        if (exceptionMessage == null) {
+            return;
+        }
         String ansiPattern = "\\x1B\\[[0-?]*[ -/]*[@-~]";
         this.exceptionMessage = exceptionMessage.replaceAll(ansiPattern, "");//remove ANSI escape code
     }
