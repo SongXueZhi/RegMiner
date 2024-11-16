@@ -22,12 +22,13 @@ import org.regminer.miner.monitor.ProgressMonitor;
 
 import java.io.File;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.List;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BFCEvaluator extends BFCSearchStrategy {
