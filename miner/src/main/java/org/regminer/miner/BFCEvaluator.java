@@ -22,6 +22,7 @@ import org.regminer.miner.monitor.ProgressMonitor;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BFCEvaluator extends BFCSearchStrategy {
 
@@ -55,7 +56,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
                 }
                 ++i;
                 logger.info("pRFC total: {}", i);
-                bugStorage.saveBFC(potentialRFC);
+                bugStorage.saveBFC(potentialRFC, "bfcs_enhancement");
             } catch (Exception e) {
                 logger.error(e.getMessage());
                 iterator.remove();
@@ -154,6 +155,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
                             TestCaseResult.TestState.TE).contains(testState)).keySet();
 
             if (matchTestCase.isEmpty()) {
+                logger.info("no test case match");
                 continue;
             }
             //查找成功，删除无关的测试用例
@@ -161,6 +163,10 @@ public class BFCEvaluator extends BFCSearchStrategy {
             logger.info(bfcpTestResult.getCaseResultMap());
             logger.info("bfc~1 test fal");
             MigratorUtil.purgeUnlessTestcase(pRFC.getTestCaseFiles(), pRFC);
+
+            storeException(bfcpTestResult, bfcpID, bfcID); //write as xxxxxxx_xxxxxxx.txt
+
+
             // REDUCE
             findBFCPFlag = true;
             pRFC.setBuggyCommitId(bfcpID);
@@ -179,6 +185,38 @@ public class BFCEvaluator extends BFCSearchStrategy {
     private void updateProgress(String bfcID) {
         if (Configurations.taskName.equals(Constant.BFC_TASK)) {
             ProgressMonitor.updateState(bfcID);
+        }
+    }
+
+    private void storeException(TestResult bfcpTestResult, String bfcpID, String bfcID) {
+        File excepProjDir = new File(Configurations.exceptionUrl + File.separator + Configurations.projectName);
+        logger.info("exception dir: {}", excepProjDir.getPath());
+        if (!excepProjDir.exists()) {
+            boolean r = excepProjDir.mkdirs();
+            logger.info("create exception dir: {} {}", r, excepProjDir.getPath());
+        }
+
+        AtomicInteger cnt = new AtomicInteger(0);
+        Set<String> uniqueCommands = new HashSet<>();
+        bfcpTestResult.getCaseResultMap().forEach((k, v) -> {//store exception msg to file
+            if ((v.getState() == TestCaseResult.TestState.FAL || v.getState() == TestCaseResult.TestState.TE) &&
+                    (v.getTestCommands() != null && !uniqueCommands.contains(v.getTestCommands()) ) ) {
+                if (v.getExceptionMessage() == null || v.getExceptionMessage().isEmpty()) {
+                    logger.info("exception msg is empty for {}", k);
+                    return;
+                }
+                uniqueCommands.add(v.getTestCommands());
+                String storePath = excepProjDir.getAbsolutePath() + File.separator + bfcpID.substring(0, 7) + '_' + bfcID.substring(0, 7) + '_' + cnt.get() + ".txt";
+                logger.info("stored to {} with {}", storePath, v.getTestCommands());
+                v.execMsgToFile(storePath);
+                cnt.getAndIncrement();
+            }
+        });
+
+        if (cnt.get() > 0) {
+            logger.info("bfc~1 exception msg stored");
+        } else {
+            logger.info("no exception msg stored");
         }
     }
 
@@ -217,7 +255,7 @@ public class BFCEvaluator extends BFCSearchStrategy {
             isBFC = false;
         }
         if (isBFC) {
-            bugStorage.saveBFC(potentialBFC);
+            bugStorage.saveBFC(potentialBFC, "bfcs_enhancement");
         }
         return isBFC;
     }

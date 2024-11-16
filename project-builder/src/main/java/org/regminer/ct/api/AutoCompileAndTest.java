@@ -17,6 +17,8 @@ import org.regminer.ct.utils.CtUtils;
 
 import java.io.File;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class AutoCompileAndTest extends Strategy {
@@ -158,8 +160,13 @@ public class AutoCompileAndTest extends Strategy {
                 String testCommand = CtUtils.combineTestCommand(testCase, compiler, osName, moduleNode);
                 envCommands.takeCommand(CtCommands.CommandKey.TEST, testCommand);
                 ExecResult execResult = new Executor().setDirectory(compileTestEnv.getProjectDir()).exec(envCommands.compute(), 2);
+
                 TestCaseResult testCaseResult = CtReferees.judgeTestCaseResult(execResult);
                 testCaseResult.setTestCommands(testCommand);
+                testCaseResult.setExceptionMessage(execResult.getMessage()); // add exception msg
+                if (execResult.getMessage() == null || execResult.getMessage().isEmpty()) {
+                    logger.info("execResult.getMessage() is null or empty!");
+                }
                 logger.info("command: {}, result: {}", testCommand, testCaseResult.getState());
                 if (testCaseResult.getState() == TestCaseResult.TestState.NOTEST) {
                     // 如果测试结果为 NOTEST，将其类添加到整体测试列表中
@@ -191,14 +198,64 @@ public class AutoCompileAndTest extends Strategy {
             ExecResult execResult = new Executor().setDirectory(compileTestEnv.getProjectDir()).exec(envCommands.compute(), 2);
             TestCaseResult classTestCaseResult = CtReferees.judgeTestCaseResult(execResult);
             classTestCaseResult.setTestCommands(testCommand);
+            if (execResult.getMessage() == null || execResult.getMessage().isEmpty()) {
+                logger.info("execResult.getMessage() is null or empty!");
+            }
+            classTestCaseResult.setExceptionMessage(execResult.getMessage()); //add exception msg!
             logger.info("command: {}, result: {}", testCommand, classTestCaseResult.getState());
-            // 将类的测试结果应用于该类的所有测试案例
-            for (RelatedTestCase testCase : testWholeEntry.getValue()) {
-                if (!testResult.exists(testCase.toString())) {
-                    testResult.takeTestCaseResult(testCase.toString(), classTestCaseResult);
+
+            Set<String> failedTestMethods = getFailedTestMethods(execResult.getMessage());
+            logger.info("failedTestMethods: {}", String.join(", ", failedTestMethods));
+
+            //todo: maybe only one testcase failed! should not set the result to each testcase in the class
+//            if (failedTestMethods.isEmpty()) {//set to whole testcases as default
+//                logger.info("failedTestMethod set is empty, write all");
+                for (RelatedTestCase testCase : testWholeEntry.getValue()) {
+                    if (!testResult.exists(testCase.toString())) {
+                        testResult.takeTestCaseResult(testCase.toString(), classTestCaseResult);
+                    }
+                }
+//            } else {//try to filter specific failure test cases
+//                logger.info("failedTestMethod set is not empty, write failed cases only!");
+//                for (RelatedTestCase testCase : testWholeEntry.getValue()) {
+//                    if (!testResult.exists(testCase.toString()) && failedTestMethods.contains(testCase.getMethodName())) {
+//                        testResult.takeTestCaseResult(testCase.toString(), classTestCaseResult);
+//                    }
+//                }
+//            }
+
+        }
+    }
+
+    private static Set<String> getFailedTestMethods(String execMessage) {//used to filter specific failure test cases when test as class
+        Set<String> failedAndErroredTests = new HashSet<>();
+        if (execMessage == null || execMessage.isEmpty()) {
+            return failedAndErroredTests;
+        }
+
+        String [] regexs = {
+                "Failed tests:\\s+((?:\\s{2}[^\\n]+\\n)+)",
+                "Tests in error:\\s+((?:\\s{2}[^\\n]+\\n)+)"
+        };
+
+        for (String regex : regexs) {
+            Pattern failedPattern = Pattern.compile(regex);
+            Matcher failedMatcher = failedPattern.matcher(execMessage);
+
+            // handle each regex block
+            while (failedMatcher.find()) {
+                String failedSection = failedMatcher.group(1);
+                String[] testCases = failedSection.split("\\n");
+
+                for (String testCase : testCases) {
+                    if (!testCase.trim().isEmpty()) {
+                        failedAndErroredTests.add(testCase.trim().split(":")[0].split("\\.")[1]);
+                    }
                 }
             }
         }
+
+        return failedAndErroredTests;
     }
 
 

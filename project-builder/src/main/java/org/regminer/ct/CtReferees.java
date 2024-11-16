@@ -19,7 +19,7 @@ public class CtReferees {
                 CompileResult.CompileState.CE;
     }
 
-    public static TestCaseResult judgeTestCaseResult(ExecResult execResult) {
+    public static TestCaseResult judgeTestCaseResult(ExecResult execResult) {//todo 三种检查策略
 
         TestCaseResult testCaseResult = new TestCaseResult();
         if (execResult.isTimeOut()) {
@@ -31,7 +31,7 @@ public class CtReferees {
         String message = execResult.getMessage();
 
         // 检查message是否为null
-        if (message != null) {
+        if (message != null) {//&& !message.isEmpty()
             message = message.toLowerCase();
             TestCaseResult.TestState testState = getTestState(message);
             testCaseResult.setState(testState);
@@ -68,7 +68,7 @@ public class CtReferees {
             testResult = message.substring(splitStartNum, splitEndNum).replace("-", "")
                     .replace("[info] ", "").replace("[error] ", "")
                     .replace("[info]", "").replace("[error]", "");
-            System.out.println(testResult);
+//            System.out.println(testResult);
         } catch (Exception e) {
             logger.info(e.getLocalizedMessage());
         }
