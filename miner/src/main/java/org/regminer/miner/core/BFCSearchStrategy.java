@@ -2,8 +2,7 @@ package org.regminer.miner.core;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.regminer.common.model.PotentialBFC;
-import org.regminer.miner.BFCEvaluator;
+import org.regminer.commons.model.PotentialBFC;
 
 import java.util.List;
 

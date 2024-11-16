@@ -12,7 +12,7 @@ import java.nio.file.Paths;
  * @Description: Manage the state of the miner.
  */
 public class MinerStateManager {
-    private String filePath;
+    private final String filePath;
 
     public MinerStateManager(String filePath) {
         this.filePath = filePath;

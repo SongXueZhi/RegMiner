@@ -1,27 +1,28 @@
 package org.regminer.ct.api;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.lib.Repository;
-import org.jetbrains.annotations.NotNull;
-import org.regminer.common.constant.Configurations;
-import org.regminer.common.constant.Constant;
-import org.regminer.common.model.*;
-import org.regminer.common.model.ChangedFile.Type;
-import org.regminer.common.tool.RepositoryProvider;
-import org.regminer.common.utils.ChangedFileUtil;
-import org.regminer.common.code.analysis.CompilationUtil;
-import org.regminer.common.utils.FileUtilx;
-import org.regminer.common.utils.MigratorUtil;
+import org.regminer.commons.code.analysis.SpoonCodeAnalyst;
+import org.regminer.commons.constant.Configurations;
+import org.regminer.commons.constant.Constant;
+import org.regminer.commons.model.ChangedFile.Type;
+import org.regminer.commons.model.PotentialBFC;
+import org.regminer.commons.model.RelatedTestCase;
+import org.regminer.commons.model.TestSourceFile;
+import org.regminer.commons.model.TestSuiteFile;
+import org.regminer.commons.tool.RepositoryProvider;
+import org.regminer.commons.utils.ChangedFileUtil;
+import org.regminer.commons.utils.FileUtilx;
+import org.regminer.commons.utils.MigratorUtil;
+import spoon.reflect.declaration.CtMethod;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.regex.Pattern;
 
 //获取每一个测试文件中的测试方法（暂时不用），并且过滤测试文件是否真实
@@ -30,27 +31,14 @@ import java.util.regex.Pattern;
 public class TestCaseParser {
     protected Logger logger = LogManager.getLogger(this);
 
-    public void handlePotentialTestFile(@NotNull List<PotentialTestCase> potentialTestCaseList, File bfcDir,
-                                        PotentialBFC pRFC) {
-        for (PotentialTestCase potentialTestCase : potentialTestCaseList) {
-            //if index > 0 ,test file in (c,c+2),we need copy test file to bfcdir
-            //file map size > 0, meaning have test file need to copy
-            if (potentialTestCase.getIndex() > 0 && !potentialTestCase.fileMap.isEmpty()) {
-                List<TestFile> testFiles = potentialTestCase.getTestFiles();
-                List<SourceFile> sourceFiles = potentialTestCase.getSourceFiles();
-                copyPotentialTestFileToBFC(testFiles, bfcDir, potentialTestCase);
-                copyPotentialTestFileToBFC(sourceFiles, bfcDir, potentialTestCase);
-                pRFC.setTestCaseFiles(testFiles);
-                pRFC.setSourceFiles(sourceFiles);
-            }
-        }
-    }
 
     private void handlePotentialTestFile(PotentialBFC pRFC) {
         try (Repository repo = RepositoryProvider.getRepoFromLocal(new File(Configurations.projectPath));
              Git git = new Git(repo)) {
-            if (!ChangedFileUtil.searchPotentialTestFiles(pRFC.getCommit(), git, pRFC.getTestCaseFiles(), pRFC.getSourceFiles())) {
-                logger.warn("no commits that only involve modifications to test files in the {} commits before and after commit '{}'.",
+            if (!ChangedFileUtil.searchPotentialTestFiles(pRFC.getCommit(), git, pRFC.getTestSourceFiles(),
+                    pRFC.getResourceOrConfigFiles())) {
+                logger.warn("no commits that only involve modifications to test files in the {} commits before and " +
+                                "after commit '{}'.",
                         Constant.SEARCH_DEPTH * 2, pRFC.getCommit());
             }
         } catch (Exception e) {
@@ -58,94 +46,87 @@ public class TestCaseParser {
         }
     }
 
-    private void copyPotentialTestFileToBFC(List<? extends ChangedFile> files, File bfcDir,
-                                            PotentialTestCase potentialTestCase) {
-        Iterator<? extends ChangedFile> iterator = files.iterator();
-        while (iterator.hasNext()) {
-            ChangedFile changedFile = iterator.next();
-            try {
-                FileUtils.copyToDirectory(potentialTestCase.fileMap.get(changedFile.getNewPath()), bfcDir);
-            } catch (Exception e) {
-                iterator.remove();
-                e.printStackTrace();
-            }
-        }
-    }
-
     // 现在每个测试文件被分为测试相关和测试文件。
     public void parseTestCases(PotentialBFC pRFC) {
-        File bfcDir = pRFC.fileMap.get(pRFC.getCommit().getName());
+        File bfcDir = Path.of(pRFC.fileMap.get(pRFC.getCommit().getName())).toFile();
         // Prepare for no testcase in bfc but in range of (c~2,c^2)
         // 可能在这里找不到测试，需要尝试在本次 commit 四周寻找是否有单独的新增测试
         if (pRFC.getTestcaseFrom() == PotentialBFC.TESTCASE_FROM_SEARCH) {
             logger.info("BFC doesn't contains TestCases, try to search");
-//            handlePotentialTestFile(pRFC.getPotentialTestCaseList(), bfcDir, pRFC);
             handlePotentialTestFile(pRFC);
         }
 
-        if (pRFC.getTestCaseFiles().stream()
+        if (pRFC.getTestSourceFiles().stream()
                 .noneMatch(testFile -> pRFC.getCommit().getName().equals(testFile.getNewCommitId()))) {
             // 不包含当前 commit 中的测试文件时，测试前也需要迁移测试文件
             // 先迁移，再解析 4. 否则解析结果可能和 git 提供的文件修改记录对应不上
-            MigratorUtil.mergeTwoVersion_BaseLine(pRFC, pRFC.fileMap.get(pRFC.getCommit().getName()));
+            try {
+                MigratorUtil.mergeTwoVersion_BaseLine(pRFC, bfcDir);
+            } catch (IOException e) {
+                logger.error("merge test files failed, error message is: {}", e.getMessage());
+            }
         }
-
-        Iterator<TestFile> iterator = pRFC.getTestCaseFiles().iterator();
+        List<TestSuiteFile> testSuiteFiles = new ArrayList<>();
+        pRFC.setTestSuiteFiles(testSuiteFiles);
+        Iterator<TestSourceFile> iterator = pRFC.getTestSourceFiles().iterator();
         while (iterator.hasNext()) {
-            TestFile file = iterator.next();
-            if (file.getNewPath().equals(Constant.NONE_PATH)) {
+            TestSourceFile testSourceFile = iterator.next();
+            if (testSourceFile.getNewPath().equals(Constant.NONE_PATH)) {
                 continue;
             }
-            String code = FileUtilx.readContentFromFile(new File(bfcDir, file.getNewPath()));
+            String code = FileUtilx.readContentFromFile(new File(bfcDir, testSourceFile.getNewPath()));
             if (code == null) {
                 continue;
             }
             if (!isTestSuite(code)) {
-//                System.out.println("remove here!");
-                file.setType(Type.TEST_RELATE);
-                pRFC.getTestRelates().add(file);
-                iterator.remove();
+                testSourceFile.setType(Type.TEST_DEPEND);
             } else {
-                file.setType(Type.TEST_SUITE);
-                Map<String, RelatedTestCase> methodMap = parse(file, code);
-                file.setTestMethodMap(methodMap);
+                testSourceFile.setType(Type.TEST_SUITE);
+                TestSuiteFile testSuiteFile = new TestSuiteFile(testSourceFile);
+                Map<String, RelatedTestCase> methodMap = parse(testSuiteFile, bfcDir.getAbsolutePath());
+                testSuiteFile.getTestMethodMap().clear();
+                testSuiteFile.getTestMethodMap().putAll(methodMap);
+                testSuiteFiles.add(testSuiteFile);
+                iterator.remove();
             }
         }
-//        System.out.println("prfc testcase file size(after parsing): " + pRFC.getTestCaseFiles().size());
+        pRFC.getTestSourceFiles().addAll(testSuiteFiles);//保持原有的文件
     }
 
 
-    private Map<String, RelatedTestCase> parse(TestFile file, String code) {
+    private Map<String, RelatedTestCase> parse(TestSourceFile file, String dirPath) {
+        SpoonCodeAnalyst spoonCodeAnalyst = new SpoonCodeAnalyst();
         List<Edit> editList = file.getEditList();
 
 //		cleanEmpty(editList);
-        List<Methodx> methodList = CompilationUtil.getAllMethod(code);
+        List<CtMethod<?>> methodList =
+                spoonCodeAnalyst.getMethods(spoonCodeAnalyst.modelCode(dirPath + File.separator + file.getNewPath()).getModel());
         Map<String, RelatedTestCase> testCaseMap = new HashMap<>();
         getTestMethod(editList, methodList, testCaseMap);
         testCaseMap.forEach((s, testCase) -> testCase.setRelativeFilePath(file.getNewPath()));
         return testCaseMap;
     }
 
-    private void getTestMethod(List<Edit> editList, List<Methodx> methodList,
+    private void getTestMethod(List<Edit> editList, List<CtMethod<?>> methodList,
                                Map<String, RelatedTestCase> testCaseMap) {
         for (Edit edit : editList) {
             matchAll(edit, methodList, testCaseMap);
         }
     }
 
-    private void matchAll(Edit edit, List<Methodx> methods, Map<String, RelatedTestCase> testCaseMap) {
-        for (Methodx method : methods) {
+    private void matchAll(Edit edit, List<CtMethod<?>> methods, Map<String, RelatedTestCase> testCaseMap) {
+        for (CtMethod<?> method : methods) {
             match(edit, method, testCaseMap);
         }
     }
 
     //
-    private void match(Edit edit, Methodx method, Map<String, RelatedTestCase> testCaseMap) {
+    private void match(Edit edit, CtMethod<?> method, Map<String, RelatedTestCase> testCaseMap) {
         int editStart = edit.getBeginB() + 1;
         int editEnd = edit.getEndB();
 
-        int methodStart = method.getStartLine();
-        int methodStop = method.getStopLine();
+        int methodStart = method.getPosition().getLine();
+        int methodStop = method.getPosition().getEndLine();
 
         if (editStart <= methodStart && editEnd >= methodStop || editStart >= methodStart && editEnd <= methodStop
                 || editEnd >= methodStart && editEnd <= methodStop
@@ -155,7 +136,7 @@ public class TestCaseParser {
                 RelatedTestCase testCase = new RelatedTestCase();
                 // 暂时不设定方法的类型
                 // testCase.setType(RelatedTestCase.Type.Created);
-                testCase.setEnclosingClassName(method.getEnclosingClassName());
+                testCase.setEnclosingClassName(method.getDeclaringType().getQualifiedName());
                 testCase.setMethod(method);
                 testCase.setMethodName(method.getSimpleName());
                 testCaseMap.put(name, testCase);
@@ -173,5 +154,4 @@ public class TestCaseParser {
         Pattern testMethodPattern = Pattern.compile("public\\s+void\\s+.*[tT]est");
         return testClassPattern.matcher(code).find() && testMethodPattern.matcher(code).find();
     }
-
 }

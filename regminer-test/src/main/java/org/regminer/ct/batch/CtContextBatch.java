@@ -4,7 +4,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.regminer.common.tool.RepositoryProvider;
+import org.regminer.commons.tool.RepositoryProvider;
 import org.regminer.ct.ConfigLoader;
 import org.regminer.ct.api.AutoCompileAndTest;
 import org.regminer.ct.api.CtContext;

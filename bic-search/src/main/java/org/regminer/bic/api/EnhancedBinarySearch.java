@@ -1,19 +1,37 @@
+/*
+ * Copyright 2019-2024   XueZhi Song, Yun Lin and RegMiner contributors
+ *
+ * This file is part of RegMiner
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and limitations under the License.
+ */
+
 package org.regminer.bic.api;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.regminer.bic.api.core.BICSearchStrategy;
-import org.regminer.common.constant.Configurations;
-import org.regminer.common.model.PotentialBFC;
-import org.regminer.common.tool.SycFileCleanup;
-import org.regminer.common.utils.GitUtils;
+import org.regminer.commons.constant.Configurations;
+import org.regminer.commons.model.PotentialBFC;
+import org.regminer.commons.tool.SycFileCleanup;
+import org.regminer.commons.utils.GitUtils;
 import org.regminer.ct.api.CtContext;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 import org.regminer.migrate.api.TestCaseMigrator;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
 
 /**
@@ -97,7 +115,8 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         try {
             passPoint = Integer.MIN_VALUE;
             // 方法主要逻辑
-            String[] arr = getSearchSpace(pRFC.getCommit().getParent(0).getName(), pRFC.fileMap.get(bfcId));
+            String[] arr = getSearchSpace(pRFC.getCommit().getParent(0).getName(),
+                    Path.of(pRFC.fileMap.get(bfcId)).toFile());
             falPoint = arr.length - 1;
             logger.info("Start search {}, search space is {}", pRFC.getCommit().getName(), arr.length);
             // 针对每一个BFC使用一个status数组记录状态，测试过的不再测试
@@ -112,8 +131,10 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
             // 另一条支线可能没有待测功能，导致全是 CE
             if (a < 0 && passPoint < 0) {
                 // 单独搜索 fal commit 的直系 parents 链，直到上一个 merge 节点
-                String[] subSpace = getSearchSpaceUntilMergeNode(arr[falPoint], pRFC.fileMap.get(bfcId));
-                logger.info("start search sub space, end idx {}, commit: {}, size is {}", falPoint, arr[falPoint], subSpace.length);
+                String[] subSpace = getSearchSpaceUntilMergeNode(arr[falPoint],
+                        Path.of(pRFC.fileMap.get(bfcId)).toFile());
+                logger.info("start search sub space, end idx {}, commit: {}, size is {}", falPoint, arr[falPoint],
+                        subSpace.length);
                 Map<String, Integer> commit2Idx = getIndexMapping(arr, subSpace);
                 a = search(subSpace, 1, subSpace.length - 1, commit2Idx);
             }
@@ -225,7 +246,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
                 testStates[index] = TestCaseResult.TestState.CE;
             } else if (testResult.getCaseResultMap().values().stream().anyMatch(testCaseResult -> testCaseResult.getState() == TestCaseResult.TestState.TE)) {
                 testStates[index] = TestCaseResult.TestState.FAL;
-            }else {
+            } else {
                 testStates[index] = TestCaseResult.TestState.CE;
             }
             return testStates[index];
@@ -340,7 +361,7 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
         // 查找策略
         if (result == TestCaseResult.TestState.CE) {
             // 指数跳跃查找
-            int left = expLeftBoundary(arr, low, middle, 0,commit2Idx);
+            int left = expLeftBoundary(arr, low, middle, 0, commit2Idx);
 
             if (left != -1 && getTestResult(arr[left], getIndex(commit2Idx, arr[left], left)) == TestCaseResult.TestState.FAL) {
                 // 往附近看一眼
@@ -357,7 +378,8 @@ public class EnhancedBinarySearch extends BICSearchStrategy {
 
             if (right != -1 && getTestResult(arr[right], getIndex(commit2Idx, arr[right], right)) == TestCaseResult.TestState.PASS) {
                 // 往附近看一眼
-                if (middle + 1 < arr.length && getTestResult(arr[right + 1], getIndex(commit2Idx, arr[right + 1], right + 1)) == TestCaseResult.TestState.FAL) {
+                if (middle + 1 < arr.length && getTestResult(arr[right + 1], getIndex(commit2Idx, arr[right + 1],
+                        right + 1)) == TestCaseResult.TestState.FAL) {
                     return right;
                 }
                 int b = search(arr, right, high, commit2Idx);

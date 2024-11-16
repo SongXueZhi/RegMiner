@@ -1,10 +1,10 @@
 package org.regminer.miner.monitor;
 
 import org.apache.commons.lang3.StringUtils;
-import org.regminer.common.constant.Configurations;
-import org.regminer.common.constant.Constant;
-import org.regminer.common.model.PotentialBFC;
-import org.regminer.common.sql.BugRetrieve;
+import org.regminer.commons.constant.Configurations;
+import org.regminer.commons.constant.Constant;
+import org.regminer.commons.model.PotentialBFC;
+import org.regminer.commons.sql.BugRetrieve;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,7 +20,7 @@ import java.util.Set;
  * 加入断点
  */
 public class ProgressMonitor {
-    private static MinerStateManager minerStateManager;
+    private static final MinerStateManager minerStateManager;
 
     static {
         minerStateManager = new MinerStateManager("state");

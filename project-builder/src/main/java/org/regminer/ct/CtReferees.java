@@ -1,7 +1,7 @@
 package org.regminer.ct;
 
 import org.jetbrains.annotations.NotNull;
-import org.regminer.common.exec.ExecResult;
+import org.regminer.commons.exec.ExecResult;
 import org.regminer.ct.model.CompileResult;
 import org.regminer.ct.model.TestCaseResult;
 

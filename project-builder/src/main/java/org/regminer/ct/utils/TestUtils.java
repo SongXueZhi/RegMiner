@@ -1,6 +1,6 @@
 package org.regminer.ct.utils;
 
-import org.regminer.common.model.PotentialBFC;
+import org.regminer.commons.model.PotentialBFC;
 import org.regminer.ct.model.TestCaseResult;
 import org.regminer.ct.model.TestResult;
 
@@ -47,7 +47,7 @@ public class TestUtils {
             return;
         }
 
-        potentialBFC.getTestCaseFiles().removeIf(testFile -> {
+        potentialBFC.getTestSuiteFiles().removeIf(testFile -> {
             testFile.getTestMethodMap().entrySet().removeIf(
                     entry -> testCasesToRemove.contains(entry.getValue().toString())
             );
@@ -66,7 +66,7 @@ public class TestUtils {
             return;
         }
 
-        potentialBFC.getTestCaseFiles().removeIf(testFile -> {
+        potentialBFC.getTestSuiteFiles().removeIf(testFile -> {
             testFile.getTestMethodMap().entrySet().removeIf(
                     entry -> !testCasesToRetain.contains(entry.getValue().toString())
             );

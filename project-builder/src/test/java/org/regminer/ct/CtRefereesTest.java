@@ -2,7 +2,7 @@ package org.regminer.ct;
 
 import junit.framework.TestCase;
 import org.apache.maven.model.Dependency;
-import org.regminer.common.tool.MavenDependencyProvider;
+import org.regminer.commons.tool.MavenDependencyProvider;
 
 import java.io.BufferedInputStream;
 import java.io.File;

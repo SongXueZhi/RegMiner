@@ -2,7 +2,7 @@ package org.regminer.bic.api;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.regminer.bic.api.core.BICSearchStrategy;
-import org.regminer.common.model.PotentialBFC;
+import org.regminer.commons.model.PotentialBFC;
 
 /**
  * @Author: sxz
@@ -10,7 +10,7 @@ import org.regminer.common.model.PotentialBFC;
  * @Description:
  */
 public class SearchBICContext {
-    private BICSearchStrategy bicSearchStrategy;
+    private final BICSearchStrategy bicSearchStrategy;
 
     public SearchBICContext(BICSearchStrategy strategy) {
         this.bicSearchStrategy = strategy;

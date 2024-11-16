@@ -1,6 +1,6 @@
 package org.regminer.ct.domain;
 
-import org.regminer.common.constant.Configurations;
+import org.regminer.commons.constant.Configurations;
 
 public enum JDK {
     J7 {

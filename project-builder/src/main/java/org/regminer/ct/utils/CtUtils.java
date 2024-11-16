@@ -1,7 +1,7 @@
 package org.regminer.ct.utils;
 
-import org.regminer.common.model.ModuleNode;
-import org.regminer.common.model.RelatedTestCase;
+import org.regminer.commons.model.ModuleNode;
+import org.regminer.commons.model.RelatedTestCase;
 import org.regminer.ct.domain.Compiler;
 
 import java.io.File;

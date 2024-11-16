@@ -6,8 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.regminer.bic.api.EnhancedBinarySearch;
 import org.regminer.bic.api.SearchBICContext;
-import org.regminer.common.constant.Configurations;
-import org.regminer.common.constant.Constant;
+import org.regminer.commons.constant.Configurations;
+import org.regminer.commons.constant.Constant;
 import org.regminer.ct.api.TestCaseParser;
 import org.regminer.migrate.api.TestCaseMigrator;
 import org.regminer.miner.BFCEvaluator;
@@ -128,7 +128,7 @@ public class MinerCli {
         helpFormatter.printHelp(printWriter, HelpFormatter.DEFAULT_WIDTH, "regs4j", null,
                 OPTIONS, HelpFormatter.DEFAULT_LEFT_PAD, HelpFormatter.DEFAULT_DESC_PAD, null, false);
         printWriter.flush();
-        HELP_STRING = new String(byteArrayOutputStream.toByteArray());
+        HELP_STRING = byteArrayOutputStream.toString();
         printWriter.close();
     }
 }
