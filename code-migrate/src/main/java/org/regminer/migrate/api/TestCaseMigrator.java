@@ -23,7 +23,7 @@ import java.util.Map;
 public class TestCaseMigrator {
     protected Logger logger = LogManager.getLogger(TestCaseMigrator.class);
 
-    public TestResult migrateAndTest(PotentialBFC pRFC, String bic) throws Exception {
+    public TestResult migrateAndTest(PotentialBFC pRFC, String bic) throws Exception {//todo may fix bug
         logger.info("start to migrate in {}", pRFC.getCommit().getName());
         File bicDirectory = MigratorUtil.checkoutCiForBFC(pRFC.getCommit().getName(), bic);
         pRFC.fileMap.put(bic, bicDirectory);

@@ -17,6 +17,8 @@ import org.regminer.ct.utils.CtUtils;
 
 import java.io.File;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class AutoCompileAndTest extends Strategy {
@@ -201,15 +203,59 @@ public class AutoCompileAndTest extends Strategy {
             }
             classTestCaseResult.setExceptionMessage(execResult.getMessage()); //add exception msg!
             logger.info("command: {}, result: {}", testCommand, classTestCaseResult.getState());
-            // 将类的测试结果应用于该类的所有测试案例
+
+            Set<String> failedTestMethods = getFailedTestMethods(execResult.getMessage());
+            logger.info("failedTestMethods: {}", String.join(", ", failedTestMethods));
 
             //todo: maybe only one testcase failed! should not set the result to each testcase in the class
-            for (RelatedTestCase testCase : testWholeEntry.getValue()) {
-                if (!testResult.exists(testCase.toString())) {
-                    testResult.takeTestCaseResult(testCase.toString(), classTestCaseResult);
+//            if (failedTestMethods.isEmpty()) {//set to whole testcases as default
+//                logger.info("failedTestMethod set is empty, write all");
+                for (RelatedTestCase testCase : testWholeEntry.getValue()) {
+                    if (!testResult.exists(testCase.toString())) {
+                        testResult.takeTestCaseResult(testCase.toString(), classTestCaseResult);
+                    }
+                }
+//            } else {//try to filter specific failure test cases
+//                logger.info("failedTestMethod set is not empty, write failed cases only!");
+//                for (RelatedTestCase testCase : testWholeEntry.getValue()) {
+//                    if (!testResult.exists(testCase.toString()) && failedTestMethods.contains(testCase.getMethodName())) {
+//                        testResult.takeTestCaseResult(testCase.toString(), classTestCaseResult);
+//                    }
+//                }
+//            }
+
+        }
+    }
+
+    private static Set<String> getFailedTestMethods(String execMessage) {//used to filter specific failure test cases when test as class
+        Set<String> failedAndErroredTests = new HashSet<>();
+        if (execMessage == null || execMessage.isEmpty()) {
+            return failedAndErroredTests;
+        }
+
+        String [] regexs = {
+                "Failed tests:\\s+((?:\\s{2}[^\\n]+\\n)+)",
+                "Tests in error:\\s+((?:\\s{2}[^\\n]+\\n)+)"
+        };
+
+        for (String regex : regexs) {
+            Pattern failedPattern = Pattern.compile(regex);
+            Matcher failedMatcher = failedPattern.matcher(execMessage);
+
+            // handle each regex block
+            while (failedMatcher.find()) {
+                String failedSection = failedMatcher.group(1);
+                String[] testCases = failedSection.split("\\n");
+
+                for (String testCase : testCases) {
+                    if (!testCase.trim().isEmpty()) {
+                        failedAndErroredTests.add(testCase.trim().split(":")[0].split("\\.")[1]);
+                    }
                 }
             }
         }
+
+        return failedAndErroredTests;
     }
 
 
