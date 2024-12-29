@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
-  <component name="AdditionalModuleElements">
-    <content url="file://$MODULE_DIR$" dumb="true">
-      <excludeFolder url="file://$MODULE_DIR$/Regs4jCleaner/.idea" />
-      <excludeFolder url="file://$MODULE_DIR$/platform-web/src/.umi" />
-      <excludeFolder url="file://$MODULE_DIR$/platform-web/src/.umi-production" />
-      <excludeFolder url="file://$MODULE_DIR$/platform/.idea" />
-      <excludeFolder url="file://$MODULE_DIR$/platform/target" />
-    </content>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="a80848ff-d543-4a77-aa70-5e39ca0b8291" />
   </component>
 </module>
